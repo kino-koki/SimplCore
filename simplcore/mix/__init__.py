@@ -13,7 +13,16 @@ SimplCore Mix - 融合架构
 - inference: 推理引擎
 - export: 模型导出
 """
-from .config import SimplCoreMixConfig, mix_tiny_text, mix_150m_text, mix_1b, mix_7b, mix_33b
+from .config import (
+    SimplCoreMixConfig,
+    mix_tiny_text,
+    mix_150m_text,
+    mix_7b_text,
+    mix_14b_text,
+    mix_1b,
+    mix_7b,
+    mix_33b,
+)
 from .model import SimplCoreMix
 from .blocks import (
     PreludeBlock,
@@ -53,6 +62,8 @@ __all__ = [
     "SimplCoreMixConfig",
     "mix_tiny_text",
     "mix_150m_text",
+    "mix_7b_text",
+    "mix_14b_text",
     "mix_1b",
     "mix_7b",
     "mix_33b",

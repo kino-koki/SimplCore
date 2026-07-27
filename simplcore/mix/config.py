@@ -213,3 +213,51 @@ def mix_150m_text() -> SimplCoreMixConfig:
         cognitive_enabled=False,
         anti_hallucination=False,
     )
+
+
+def mix_7b_text() -> SimplCoreMixConfig:
+    """7B pure-text target config for parameter stacking."""
+    return SimplCoreMixConfig(
+        vocab_size=32000,
+        dim=4096,
+        n_heads=32,
+        n_kv_heads=8,
+        max_seq_len=8192,
+        max_loop_iters=16,
+        prelude_layers=6,
+        coda_layers=6,
+        n_experts=64,
+        n_shared_experts=2,
+        n_experts_per_tok=4,
+        expert_dim=2048,
+        n_bases=64,
+        n_memory_channels=8,
+        memory_dim=512,
+        lora_rank=16,
+        cognitive_enabled=False,
+        anti_hallucination=False,
+    )
+
+
+def mix_14b_text() -> SimplCoreMixConfig:
+    """14B pure-text target config for post-7B expansion."""
+    return SimplCoreMixConfig(
+        vocab_size=32000,
+        dim=5120,
+        n_heads=40,
+        n_kv_heads=8,
+        max_seq_len=8192,
+        max_loop_iters=20,
+        prelude_layers=8,
+        coda_layers=8,
+        n_experts=96,
+        n_shared_experts=4,
+        n_experts_per_tok=4,
+        expert_dim=2560,
+        n_bases=96,
+        n_memory_channels=12,
+        memory_dim=640,
+        lora_rank=24,
+        cognitive_enabled=False,
+        anti_hallucination=False,
+    )
