@@ -37,3 +37,11 @@
 ## Deprecated For This Route
 
 The old `qingxiaotuan` package route is not used by this training path. Multimodal, vision, speech, camera, and world-model modules remain in the repository but are outside this route.
+
+## Local Validation
+
+Run the pure-text route tests:
+
+```powershell
+python -m pytest simplcore/mix/tests simplcore/mix/test_fullstack.py -q
+```
