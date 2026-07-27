@@ -1,6 +1,13 @@
 import torch
 
 
+def test_run_smoke_training_public_alias_matches_train_smoke():
+    from simplcore.mix.training import run_smoke_training
+    from simplcore.mix.training.train_smoke import run_train_smoke
+
+    assert run_smoke_training is run_train_smoke
+
+
 def test_train_smoke_runs_backward_optimizer_and_checkpoint(tmp_path):
     from simplcore.mix.training.train_smoke import run_train_smoke
 

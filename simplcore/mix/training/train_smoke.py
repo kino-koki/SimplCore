@@ -125,3 +125,6 @@ def run_train_smoke(
         "backward_ran": backward_ran,
         "checkpoint_path": str(checkpoint_path),
     }
+
+
+run_smoke_training = run_train_smoke
