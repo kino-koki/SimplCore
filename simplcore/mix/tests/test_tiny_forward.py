@@ -1,4 +1,4 @@
-import torch
+import simplcore.tensor as torch
 
 
 def test_tiny_text_model_forward_backward():

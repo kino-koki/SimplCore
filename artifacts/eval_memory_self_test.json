@@ -1,0 +1,51 @@
+{
+  "schema": "simplcore.sgc.eval/1",
+  "provenance": {
+    "timestamp_utc": "2026-10-05T11:58:13+00:00",
+    "command_line": "python.exe G:\\SimplCore-V 0.1-ALPHA\\simplcore\\sgc\\eval.py self-test --out artifacts/eval_memory_self_test.json",
+    "argv": [
+      "G:\\SimplCore-V 0.1-ALPHA\\simplcore\\sgc\\eval.py",
+      "self-test",
+      "--out",
+      "artifacts/eval_memory_self_test.json"
+    ],
+    "cwd": "G:\\SimplCore-V 0.1-ALPHA",
+    "python": "3.11.15 (main, Jun 11 2026, 04:59:07) [MSC v.1944 64 bit (AMD64)]",
+    "python_executable": "G:\\SimplCore-V 0.1-ALPHA\\.venv311\\Scripts\\python.exe",
+    "platform": "Windows-10-10.0.26340-SP0",
+    "machine": "AMD64",
+    "processor": "AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",
+    "torch_version": "2.4.1+cpu",
+    "torch_num_threads": 8,
+    "torch_num_interop_threads": 8,
+    "device": "cpu",
+    "device_type": "cpu",
+    "dtype": "float32",
+    "cuda_available": false,
+    "cuda_device_name": null,
+    "cudnn_version": null,
+    "git_commit": "d8202aa4444b3af59412dfa5f27c49a7003662b9",
+    "git_dirty": true,
+    "memory_method": "tensor_accounting (sum of numel()*element_size() over live parameters, gradients, audited forward/backward activations and transients) + torch.cuda.max_memory_allocated() when CUDA is available.  GetProcessMemoryInfo/PROCESS_MEMORY_COUNTERS is BROKEN on this host (returns 0, GetLastError 122) and is never used.",
+    "eval_module_sha256": "c515e60d6d7cd598ba1a558a4d393f4da622bf39e3405765e92dca5215ed55f6",
+    "numpy_version": "2.4.6"
+  },
+  "result": {
+    "checks": {
+      "stub_exact": {
+        "fwd_bytes": 772,
+        "expected": 772,
+        "grad_bytes": 256,
+        "expected_grad": 256
+      },
+      "width_scaling": {
+        "accounted_bytes_32": 229396,
+        "accounted_bytes_64": 720660,
+        "param_bytes_32": 94216,
+        "param_bytes_64": 335752
+      }
+    },
+    "ok": true,
+    "cuda_available": false
+  }
+}

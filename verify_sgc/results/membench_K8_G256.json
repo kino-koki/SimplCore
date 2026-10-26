@@ -1,0 +1,12 @@
+[
+  {
+    "mixer": "attn",
+    "K": 8,
+    "G": 256,
+    "recall_last": 0.0,
+    "best": 0.0625,
+    "chance": 0.03125,
+    "params": 425186,
+    "steps": 120
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "task": "real_chinese_corpus_language_modeling",
+  "corpus": "G:\\SimplCore-V 0.1-ALPHA\\corpus",
+  "train_tokens": 174854,
+  "val_tokens": 18872,
+  "val_split": "document_holdout",
+  "vocab_size": 424,
+  "steps": 220,
+  "hidden": 128,
+  "layers": 4,
+  "seq_len": 64,
+  "batch": 4,
+  "lr": 0.003,
+  "seed": 0,
+  "attention_free": true,
+  "results": [
+    {
+      "model": "SimplCore",
+      "params": 1250056,
+      "final_train_loss": 0.3217,
+      "val_perplexity": 1.2786,
+      "train_seconds": 122.1
+    },
+    {
+      "model": "Baseline",
+      "params": 1235072,
+      "final_train_loss": 0.6928,
+      "val_perplexity": 2.0461,
+      "train_seconds": 11.0
+    }
+  ],
+  "note": "真实中文语料困惑度对比（CPU 小尺度可复现证据）。SimplCore 为无注意力架构（LocalInteraction+RFP+DMC+MoE），Baseline 为标准 GQA+RoPE+SwiGLU Transformer。验证集为文档级留出（整篇文档不进入训练）。诚实限制：语料仅约 19 万字符、词表 424，模型在训练集上严重过拟合（val_ppl 接近 1 属正常），本对比回答'无注意力架构能否在真实数据上学习并达到与 Transformer 相当或更优的泛化'，非大规模语料 SOTA 对比。val_perplexity 越低越好。"
+}

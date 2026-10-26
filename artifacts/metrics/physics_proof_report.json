@@ -1,0 +1,33 @@
+{
+  "proof_type": "动力学模型物理规律学习证明",
+  "model_info": {
+    "parameters": 60744,
+    "architecture": "DynamicsModel with residual connections",
+    "training_data": "100,000 physics trajectories"
+  },
+  "test_case": {
+    "k": 1.2,
+    "m": 1.5,
+    "b": 0.1,
+    "x0": 1.0,
+    "v0": 0.5,
+    "seq_len": 50
+  },
+  "error_metrics": {
+    "position_rmse": 0.24051460699496352,
+    "position_max_error": 0.5154848424104107,
+    "position_mean_error": 0.20018906543514048,
+    "position_relative_error_percent": 9.004276988648103,
+    "velocity_rmse": 0.26838303349463094
+  },
+  "multi_test_results": {
+    "n_tests": 100,
+    "mean_rmse": 0.49548719754789466,
+    "min_rmse": 0.03890247029489424,
+    "max_rmse": 1.6505114044778575,
+    "std_rmse": 0.36514125088287586,
+    "percentage_below_0.01": 0.0,
+    "percentage_below_0.05": 3.0
+  },
+  "conclusion": {
+    "learned_physics_laws": 

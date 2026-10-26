@@ -23,7 +23,36 @@ from .config import (
     mix_7b,
     mix_33b,
 )
+from .core import (
+    SCBackend,
+    SCDropout,
+    SCEmbedding,
+    SCFunctional,
+    SCLinear,
+    SCModule,
+    SCModuleList,
+    SCParameter,
+    SCReLU,
+    SCRMSNorm,
+    SCSequential,
+    SCSigmoid,
+)
 from .model import SimplCoreMix
+from .baseline import BaselineTransformer
+from .ablation import AblationConfig, AblationStudy, run_ablation_smoke
+from .mska import MultiScaleKernelAttention
+from .fusion import (
+    StructuredGatedIntervention,
+    SimplCoreGatedIntervention,
+    GatedCompression,
+    LowRankProjection,
+    ResidualAdaptationModule,
+)
+from .frontier import SCMilestoneSpec
+from .runtime import SCRuntimeProfile
+from .readiness import ReadinessCheck, build_7b_readiness_report, check_python311
+from .calibration import build_calibration_plan
+from .optim import SCAdamW, SCOptimizer
 from .blocks import (
     PreludeBlock,
     RecurrentBlock,
@@ -33,11 +62,12 @@ from .blocks import (
     ACTHalting,
     loop_index_embedding,
 )
-from .attention import RFPAttention, RFPMLAttention
-from .moe import TARMoE, Expert
-from .memory import DynamicMemoryChannel
+from .attention import ModulatedBasisAttention, ModulatedBasisMLAttention
+from .moe import PrototypeMoE, Expert
+from .memory import WorkingMemoryBuffer
 from .tokenizer import BPETokenizer, CharTokenizer
 from .data_loader import (
+    SCDataLoader,
     TextDataset,
     MemoryMappedDataset,
     StreamingTextDataset,
@@ -45,13 +75,15 @@ from .data_loader import (
     build_data_loader,
     pretokenize_corpus,
 )
-from .evaluation import Evaluator
+from .evaluation import Evaluator, FactualEvaluator
 from .inference import InferenceEngine
 from .export import (
     export_pytorch_checkpoint,
     export_safetensors,
     export_raw_weights,
     export_for_java,
+    export_java26_manifest,
+    export_jdk24_manifest,
     export_onnx,
 )
 
@@ -67,8 +99,41 @@ __all__ = [
     "mix_1b",
     "mix_7b",
     "mix_33b",
+    # 自研核心抽象
+    "SCBackend",
+    "SCDropout",
+    "SCEmbedding",
+    "SCFunctional",
+    "SCLinear",
+    "SCModule",
+    "SCModuleList",
+    "SCParameter",
+    "SCReLU",
+    "SCRMSNorm",
+    "SCSequential",
+    "SCSigmoid",
+    # SimplCore深度融合组件
+    "SimplCoreGatedIntervention",
+    "StructuredGatedIntervention",
+    "GatedCompression",
+    "LowRankProjection",
+    "ResidualAdaptationModule",
+    "SCMilestoneSpec",
+    # 跨运行时与优化器
+    "SCRuntimeProfile",
+    "ReadinessCheck",
+    "build_7b_readiness_report",
+    "check_python311",
+    "build_calibration_plan",
+    "SCOptimizer",
+    "SCAdamW",
     # 模型
     "SimplCoreMix",
+    "BaselineTransformer",
+    # 消融实验
+    "AblationConfig",
+    "AblationStudy",
+    "run_ablation_smoke",
     # 核心Block (三家融合)
     "PreludeBlock",
     "RecurrentBlock",
@@ -77,18 +142,20 @@ __all__ = [
     "LoRAAdapter",
     "ACTHalting",
     "loop_index_embedding",
-    # 注意力 (SimplCore RFP)
-    "RFPAttention",
-    "RFPMLAttention",
-    # MoE (SimplCore TAR)
-    "TARMoE",
+    # 注意力 (SimplCore MBA / MSKA)
+    "ModulatedBasisAttention",
+    "ModulatedBasisMLAttention",
+    "MultiScaleKernelAttention",
+    # MoE (SimplCore CCR)
+    "PrototypeMoE",
     "Expert",
     # 记忆 (SimplCore DMC)
-    "DynamicMemoryChannel",
+    "WorkingMemoryBuffer",
     # 分词器
     "BPETokenizer",
     "CharTokenizer",
     # 数据
+    "SCDataLoader",
     "TextDataset",
     "MemoryMappedDataset",
     "StreamingTextDataset",
@@ -97,6 +164,7 @@ __all__ = [
     "pretokenize_corpus",
     # 评估
     "Evaluator",
+    "FactualEvaluator",
     # 推理
     "InferenceEngine",
     # 导出
@@ -104,5 +172,7 @@ __all__ = [
     "export_safetensors",
     "export_raw_weights",
     "export_for_java",
+    "export_java26_manifest",
+    "export_jdk24_manifest",
     "export_onnx",
 ]

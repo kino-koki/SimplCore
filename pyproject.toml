@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# ---------------------------------------------------------------------------
+# SimplCore SGC — content-gated causal spectral global convolution.
+#
+# This replaces the previous root metadata, which still described `simplcore-mix`
+# as the "active route". That route was proven non-causal AND to run on a NumPy
+# engine rather than PyTorch (docs/HONEST_STATUS.md §0.2), so it is not shipped
+# here. Only `simplcore.sgc` — the audited, causality-tested mainline — installs.
+# ---------------------------------------------------------------------------
+[project]
+name = "simplcore-sgc"
+version = "2.0.0"
+description = "SGC: content-gated causal spectral global convolution (attention-free, O(L log L) training / O(1)-state streaming)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+authors = [{ name = "青奈科技青小团团队" }]
+dependencies = [
+    "torch>=2.1",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+data = [
+    "tokenizers>=0.15",
+    "pyarrow>=14",
+    "huggingface_hub>=0.20",
+]
+export = [
+    "safetensors>=0.4",
+]
+dev = [
+    "pytest>=7.4",
+    "tqdm",
+    "pyyaml",
+]
+all = [
+    "simplcore-sgc[data,export,dev]",
+]
+
+[project.scripts]
+sgc-train = "simplcore.sgc.train:main"
+sgc-eval = "simplcore.sgc.eval:main"
+sgc-corpus = "simplcore.sgc.data:main"
+sgc-tokenizer = "simplcore.sgc.tokenizer:main"
+sgc-presets = "simplcore.sgc.config:report_presets"
+sgc-export = "simplcore.sgc.export:main"
+
+# Explicit package list: the legacy tree (`simplcore.mix`, `simplcore.tensor`,
+# `simplcore.architecture`, `simplcore_pg`, ...) deliberately does NOT ship.
+[tool.setuptools]
+packages = ["simplcore", "simplcore.sgc", "simplcore.sgc.tests"]
+
+[tool.setuptools.package-data]
+"simplcore.sgc" = ["py.typed"]

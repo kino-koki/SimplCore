@@ -1,0 +1,25 @@
+{
+  "task": "scaling_curve_real_chinese_corpus",
+  "corpus": "G:\\SimplCore-V 0.1-ALPHA\\corpus",
+  "val_split": "document_holdout",
+  "vocab_size": 424,
+  "steps": 400,
+  "seq_len": 96,
+  "batch": 4,
+  "lr": 0.003,
+  "seed": 0,
+  "attention_free": true,
+  "rfp_freeze_evolution": true,
+  "results": [
+    {
+      "hidden": 128,
+      "layers": 3,
+      "params": 951142,
+      "rfp_freeze_evolution": true,
+      "final_train_loss": 0.2861,
+      "val_perplexity": 1.2294,
+      "train_seconds": 553.8
+    }
+  ],
+  "note": "规模扩展（真实中文语料，CPU 小尺度可复现证据）。仅改变 hidden/layers，其余协议固定；val_perplexity 越低越好。诚实限制：语料约 19 万字符、模型在训练集上过拟合（val_ppl 接近 1 属正常），本表展示无注意力架构的困惑度随规模下降趋势，非大规模语料 SOTA 对比。"
+}

@@ -1,0 +1,43 @@
+{
+  "all_ok": false,
+  "failed_phases": [
+    "Cognition",
+    "RolloutEngine",
+    "PerceptionPipeline",
+    "SimplCoreModel"
+  ],
+  "skipped_phases": [
+    "SimplCoreViT",
+    "ModalityRouter"
+  ],
+  "results": {
+    "TinyViT": {
+      "status": "OK",
+      "message": "梯度流: OK"
+    },
+    "SimplCoreViT": {
+      "status": "SKIP",
+      "message": "跳过: module 'simplcore.tensor.nn' has no attribute 'Conv2d'"
+    },
+    "ModalityRouter": {
+      "status": "SKIP",
+      "message": "跳过: module 'simplcore.tensor.nn' has no attribute 'Conv2d'"
+    },
+    "Cognition": {
+      "status": "FAIL",
+      "message": "失败(断链): cannot import name 'KnowledgeReasoner' from 'SimplCore.knowledge.knowledge_graph' (G:\\SimplCore-V 0.1-ALPHA\\simplcore\\knowledge\\knowledge_graph.py)"
+    },
+    "RolloutEngine": {
+      "status": "FAIL",
+      "message": "失败(断链): 'SimplCoreConfig' object has no attribute 'tar_topk'"
+    },
+    "PerceptionPipeline": {
+      "status": "FAIL",
+      "message": "失败(断链): module 'simplcore.tensor.nn' has no attribute 'Conv2d'"
+    },
+    "SimplCoreModel": {
+      "status": "FAIL",
+      "message": "失败(断链): Module.register_buffer() got an unexpected keyword argument 'persistent'"
+    }
+  }
+}

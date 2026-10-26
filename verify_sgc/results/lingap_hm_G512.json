@@ -1,0 +1,11 @@
+{
+  "V": 16,
+  "task": "interval-memory",
+  "mixer": "hm",
+  "G": 512,
+  "recall_last": 0.1875,
+  "best": 0.1875,
+  "chance": 0.0625,
+  "params": 440642,
+  "steps": 700
+}

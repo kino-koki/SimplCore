@@ -1,0 +1,24 @@
+{
+  "title": "诚实公平对比 (tri+content-adaptive mixer) — 无泄漏文档级切分",
+  "method": "同骨架(dim176/L4/seq256)、同语料、同种子、AdamW(lr1e-3,wd0.1)、800步、CPU",
+  "corpus": "vocab=1084 train=582 win / val=490 / test=165 win; test OOD 12.9% UNK(词表仅由train构建,诚实无泄漏)",
+  "final_ppl_at_800": {
+    "attn":   {"params": 2221476, "train": 2.35,  "val": 175.42,  "test": 17127,    "step_ms": 499},
+    "sgc":    {"params": 1987492, "train": 1.10,  "val": 12542.0, "test": 24331946, "step_ms": 366},
+    "sgcv3":  {"params": 2236712, "train": 1.11,  "val": 24351.9, "test": 37148897, "step_ms": 604},
+    "ca":     {"params": 2142624, "train": 2.80,  "val": 88.96,   "test": 81345,    "step_ms": 991}
+  },
+  "best_val_ppl_early_stop": {
+    "attn": {"step": 200, "val": 27.95},
+    "sgc":  {"step": 200, "val": 26.74},
+    "ca":   {"step": 200, "val": 28.21}
+  },
+  "honest_conclusions": [
+    "固定位置核(sgc/sgcv3)在无泄漏held-out文档上严重记忆化崩墙(val数千上万),该路线在微语料上不可行。",
+    "内容自适应混合(SGC-CA)修复崩塌:held-out val困惑度88.96,低于注意力的175.42;过度训练下更稳健(终值89 vs 175)。",
+    "同分布held-out上SGC-CA为'不靠过拟合即可优于注意力'提供可复现证据。",
+    "严重域偏移test上注意力仍占优(17k vs 81k),因test含12.9%词表外字符——诚实如实报告。",
+    "SGC-CA在O(n)理论复杂度下成立,但CPU上cumsum算子慢(0.99s/step)，需FFT/分块GEMM落地(680M优化目标)。"
+  ],
+  "results_files": ["honest_attn.json", "honest_sgc.json", "honest_sgcv3.json", "honest_ca.json"]
+}

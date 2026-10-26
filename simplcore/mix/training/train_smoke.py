@@ -10,11 +10,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-import torch
-import torch.nn.functional as F
+import simplcore.tensor as torch
 
 from simplcore.mix.config import SimplCoreMixConfig
+from simplcore.mix.core import SCFunctional
 from simplcore.mix.model import SimplCoreMix
+from simplcore.mix.optim import SCAdamW
 
 
 def _smoke_config(seq_len: int) -> SimplCoreMixConfig:
@@ -27,19 +28,19 @@ def _smoke_config(seq_len: int) -> SimplCoreMixConfig:
         max_loop_iters=1,
         prelude_layers=0,
         coda_layers=0,
-        attn_type="rfp_gqa",
-        n_bases=2,
+        attn_type="mba_gqa",
+        n_basis_vectors=2,
         n_experts=2,
         n_shared_experts=1,
         n_experts_per_tok=1,
         expert_dim=16,
         n_memory_channels=1,
         memory_dim=8,
-        dmc_use_associative=False,
+        wm_use_associative=False,
         loop_lora_enabled=False,
-        spm_enabled=False,
-        cognitive_enabled=False,
-        anti_hallucination=False,
+        hebbian_enabled=False,
+        reasoning_enabled=False,
+        confidence_gate_enabled=False,
         q_lora_rank=4,
         kv_lora_rank=4,
         qk_rope_head_dim=8,
@@ -73,7 +74,7 @@ def run_train_smoke(
     cfg = _smoke_config(seq_len)
     model = SimplCoreMix(cfg).to(device)
     model.train()
-    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
+    optimizer = SCAdamW(model.parameters(), lr=1e-3)
 
     last_loss = None
     optimizer_steps = 0
@@ -92,7 +93,7 @@ def run_train_smoke(
 
         optimizer.zero_grad(set_to_none=True)
         logits = model(x, n_loops=1)
-        loss = F.cross_entropy(logits.reshape(-1, cfg.vocab_size), y.reshape(-1))
+        loss = SCFunctional.cross_entropy(logits.reshape(-1, cfg.vocab_size), y.reshape(-1))
         loss.backward()
         backward_ran = any(
             p.grad is not None and torch.isfinite(p.grad).all()
@@ -110,6 +111,8 @@ def run_train_smoke(
             "step": steps,
             "model_state_dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
+            "optimizer_name": optimizer.__class__.__name__,
+            "optimizer_backend": optimizer.backend_name,
             "loss": loss_value,
             "config": cfg.__dict__,
         },
@@ -122,6 +125,8 @@ def run_train_smoke(
         "seq_len": seq_len,
         "loss": loss_value,
         "optimizer_steps": optimizer_steps,
+        "optimizer_name": optimizer.__class__.__name__,
+        "optimizer_backend": optimizer.backend_name,
         "backward_ran": backward_ran,
         "checkpoint_path": str(checkpoint_path),
     }

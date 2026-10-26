@@ -1,0 +1,23 @@
+{
+  "device": "cpu",
+  "config": {
+    "vocab": 4096,
+    "H": 128,
+    "layers": 3,
+    "experts": 4,
+    "use_rfp": true,
+    "use_dmc": true,
+    "seq_len": 128
+  },
+  "n_parameters": 2801254,
+  "steps": 80,
+  "loss_first": 5.7565,
+  "loss_last": 1.8817,
+  "loss_min": 1.8666,
+  "loss_delta": 3.8748,
+  "loss_decreased": true,
+  "aux_first": 0.0679,
+  "aux_last": 0.0634,
+  "all_finite": true,
+  "note": "CPU 小尺度真实语料训练，验证端到端链路；非收敛质量结论。"
+}

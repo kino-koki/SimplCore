@@ -1,0 +1,21 @@
+{
+  "vocab_size": 32000,
+  "dim": 768,
+  "num_layers": 12,
+  "ffn_hidden": null,
+  "ffn_ratio": 4.0,
+  "mixer": "sgc",
+  "num_bases": 64,
+  "decay_max": 8192,
+  "local_kernel": 4,
+  "content_gate": true,
+  "out_gate": false,
+  "norm": "rmsnorm",
+  "num_heads": 12,
+  "tie_embeddings": true,
+  "dropout": 0.0,
+  "norm_eps": 1e-06,
+  "fft_dtype": "float32",
+  "grad_checkpoint": false,
+  "init_std": 0.02
+}

@@ -1,0 +1,68 @@
+# ── Python 运行时缓存 ──────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.pytest_cache/
+.pytest_tmp/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ── 虚拟环境（历史环境保留在本地磁盘，不入库）──────
+.venv/
+.venv*/
+venv/
+env/
+
+# ── 编辑器 / IDE ──────────────────────────────────
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# ── 构建产物 ──────────────────────────────────────
+build/
+dist/
+wheels/
+*.egg
+*.whl
+*.jar
+
+# ── vendored 第三方依赖（应装进 venv，不入库）───────
+libs/
+
+# ── 训练产物（由 scripts/ 与 train 入口重建）────────
+runs/
+checkpoints/
+output/
+logs/
+*.log
+*.err
+
+# ── 数据与语料（由 scripts/download_corpus.py + build_corpus.py 重建）
+data/raw/
+data/processed/
+tokenized_cache/
+corpus/
+artifacts/tok_train_test/
+artifacts/mix_smoke/
+artifacts/mix_smoke_native/
+artifacts/tok_test_corpus.jsonl
+*.parquet
+*.arrow
+
+# ── 模型权重（可由训练重建）────────────────────────
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.pkl
+models/
+
+# ── 本地临时 ──────────────────────────────────────
+*.tmp
+*.bak
+*.old

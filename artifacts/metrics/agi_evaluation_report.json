@@ -1,0 +1,418 @@
+{
+  "summary": {
+    "total_tasks": 26,
+    "passed_tasks": 21,
+    "pass_rate": 0.8076923076923077,
+    "avg_score": 0.6564102564102564,
+    "avg_response_time": 0.01225739258986253
+  },
+  "categories": {
+    "语言理解": {
+      "total": 5,
+      "passed": 1,
+      "pass_rate": 0.2,
+      "avg_score": 0.13333333333333333
+    },
+    "世界模型": {
+      "total": 2,
+      "passed": 2,
+      "pass_rate": 1.0,
+      "avg_score": 0.8
+    },
+    "知识检索": {
+      "total": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "avg_score": 1.0
+    },
+    "现场学习": {
+      "total": 3,
+      "passed": 3,
+      "pass_rate": 1.0,
+      "avg_score": 1.0
+    },
+    "高级推理": {
+      "total": 6,
+      "passed": 6,
+      "pass_rate": 1.0,
+      "avg_score": 0.5833333333333334
+    },
+    "元认知": {
+      "total": 3,
+      "passed": 2,
+      "pass_rate": 0.6666666666666666,
+      "avg_score": 0.6333333333333333
+    },
+    "多模态": {
+      "total": 2,
+      "passed": 2,
+      "pass_rate": 1.0,
+      "avg_score": 0.7
+    }
+  },
+  "detailed_results": [
+    {
+      "category": "语言理解",
+      "task": "基础问答",
+      "success": true,
+      "score": 0.6666666666666666,
+      "confidence": 0.9,
+      "response_time": 0.0001895427703857422,
+      "details": {
+        "response": "根据知识库:\n问题: 什么是人工智能?\n相关知识:\n1. 人工智能发展 (AI历史): 人工智能领域诞生于1956年达特茅斯会议。重要里程碑包括深度学习的兴起、AlphaGo战胜围棋世界冠军、以及大型",
+        "expected_keywords": [
+          "AI",
+          "机器学习",
+          "深度学习"
+        ]
+      }
+    },
+    {
+      "category": "语言理解",
+      "task": "复杂问答",
+      "success": false,
+      "score": 0.0,
+      "confidence": 0.9,
+      "response_time": 0.00014448165893554688,
+      "details": {
+        "response": "根据知识库:\n问题: 量子计算和经典计算有什么区别?\n相关知识:\n1. 计算机网络 (计算机网络教科书): 计算机网络是连接多台计算机的系统。包括局域网(LAN)、广域网(WAN)、互联网等。TCP/",
+        "expected_keywords": [
+          "量子比特",
+          "叠加态",
+          "并行"
+        ]
+      }
+    },
+    {
+      "category": "语言理解",
+      "task": "推理问答",
+      "success": false,
+      "score": 0.0,
+      "confidence": 0.9,
+      "response_time": 0.0001533031463623047,
+      "details": {
+        "response": "根据知识库:\n问题: 如果所有的鸟都会飞，企鹅是鸟，那么企鹅会飞吗?\n相关知识:\n1. 微积分基本定理 (牛顿、莱布尼茨): 微积分基本定理建立了微分和积分之间的联系。第一部分：如果f是连续函数，那么",
+        "expected_keywords": [
+          "不会",
+          "例外",
+          "演绎"
+        ]
+      }
+    },
+    {
+      "category": "语言理解",
+      "task": "创意生成",
+      "success": false,
+      "score": 0.0,
+      "confidence": 0.9,
+      "response_time": 0.00013566017150878906,
+      "details": {
+        "response": "根据知识库:\n问题: 描述一个未来的智能城市\n相关知识:\n1. 爱因斯坦质能方程 (爱因斯坦狭义相对论): 质能方程 E = mc^2 描述了质量和能量之间的等价关系，其中E是能量，m是质量，c是光速",
+        "expected_keywords": [
+          "自动驾驶",
+          "智能建筑",
+          "可持续"
+        ]
+      }
+    },
+    {
+      "category": "语言理解",
+      "task": "情感理解",
+      "success": false,
+      "score": 0.0,
+      "confidence": 0.9,
+      "response_time": 8.177757263183594e-05,
+      "details": {
+        "response": "根据知识库:\n问题: 解释为什么人们会感到孤独\n相关知识:\n1. 光电效应 (爱因斯坦): 光电效应是指光照射到金属表面时，金属会发射出电子的现象。爱因斯坦解释了这一现象，并因此获得诺贝尔物理学奖。\n",
+        "expected_keywords": [
+          "社交",
+          "情感",
+          "连接"
+        ]
+      }
+    },
+    {
+      "category": "世界模型",
+      "task": "状态预测",
+      "success": true,
+      "score": 0.8,
+      "confidence": 0.8,
+      "response_time": 0.013599634170532227,
+      "details": {
+        "output_shape": [
+          1,
+          10,
+          128
+        ],
+        "expected_shape": [
+          1,
+          10,
+          128
+        ]
+      }
+    },
+    {
+      "category": "世界模型",
+      "task": "多步预测",
+      "success": true,
+      "score": 0.8,
+      "confidence": 0.8,
+      "response_time": 0.009957075119018555,
+      "details": {
+        "output_shape": [
+          1,
+          10,
+          128
+        ],
+        "expected_shape": [
+          1,
+          10,
+          128
+        ]
+      }
+    },
+    {
+      "category": "知识检索",
+      "task": "物理学知识检索",
+      "success": true,
+      "score": 1.0,
+      "confidence": 0.9,
+      "response_time": 0.00010561943054199219,
+      "details": {
+        "found_count": 5,
+        "samples": [
+          "相对论 (爱因斯坦): 相对论分为狭义相对论和广义相对论。狭义相对论研究匀速运动的参考系，广义相对论",
+          "量子纠缠 (量子力学教科书): 量子纠缠是量子力学中的一种现象，两个粒子无论相距多远，其状态都相互关",
+          "爱因斯坦质能方程 (爱因斯坦狭义相对论): 质能方程 E = mc^2 描述了质量和能量之间的等价关"
+        ]
+      }
+    },
+    {
+      "category": "知识检索",
+      "task": "数学知识检索",
+      "success": true,
+      "score": 1.0,
+      "confidence": 0.9,
+      "response_time": 5.14984130859375e-05,
+      "details": {
+        "found_count": 5,
+        "samples": [
+          "微积分基本定理 (牛顿、莱布尼茨): 微积分基本定理建立了微分和积分之间的联系。第一部分：如果f是连",
+          "卷积神经网络 (深度学习教科书): 卷积神经网络(CNN)是一种专门用于处理网格数据的神经网络。通过",
+          "生物分类 (分类学教科书): 生物分类学将生物分为界、门、纲、目、科、属、种七个等级。目前公认的五界"
+        ]
+      }
+    },
+    {
+      "category": "知识检索",
+      "task": "计算机科学知识检索",
+      "success": true,
+      "score": 1.0,
+      "confidence": 0.9,
+      "response_time": 0.00010895729064941406,
+      "details": {
+        "found_count": 5,
+        "samples": [
+          "深度学习 (深度学习教科书): 深度学习是机器学习的一个分支，使用多层神经网络来学习数据的表示。关键",
+          "机器学习 (机器学习教科书): 机器学习是人工智能的一个分支，使计算机能够从数据中学习模式并做出预测",
+          "强化学习 (强化学习教科书): 强化学习是机器学习的一种范式，智能体通过与环境交互获得奖励来学习最优"
+        ]
+      }
+    },
+    {
+      "category": "知识检索",
+      "task": "生物学知识检索",
+      "success": true,
+      "score": 1.0,
+      "confidence": 0.9,
+      "response_time": 2.765655517578125e-05,
+      "details": {
+        "found_count": 1,
+        "samples": [
+          "DNA双螺旋结构 (沃森、克里克): DNA的双螺旋结构由沃森和克里克于1953年发现。DNA由两条"
+        ]
+      }
+    },
+    {
+      "category": "知识检索",
+      "task": "化学知识检索",
+      "success": true,
+      "score": 1.0,
+      "confidence": 0.9,
+      "response_time": 5.793571472167969e-05,
+      "details": {
+        "found_count": 5,
+        "samples": [
+          "元素周期表 (门捷列夫): 元素周期表是按原子序数排列的化学元素表格。元素按周期和族排列，同族元素具",
+          "原子结构 (原子物理学教科书): 原子由原子核和电子组成。原子核包含质子和中子，电子在核外围绕原子核",
+          "中国古代文明 (中国历史教科书): 中国古代文明是世界上最古老的文明之一，拥有五千年历史。包括夏朝、"
+        ]
+      }
+    },
+    {
+      "category": "现场学习",
+      "task": "知识盲区检测",
+      "success": true,
+      "score": 1.0,
+      "confidence": 0.7,
+      "response_time": 0.0001201629638671875,
+      "details": {
+        "knowledge_found": false,
+        "answer_length": 125
+      }
+    },
+    {
+      "category": "现场学习",
+      "task": "知识检索与融入",
+      "success": true,
+      "score": 1.0,
+      "confidence": 0.7,
+      "response_time": 0.00012755393981933594,
+      "details": {
+        "knowledge_found": false,
+        "answer_length": 138
+      }
+    },
+    {
+      "category": "现场学习",
+      "task": "复杂问题现场学习",
+      "success": true,
+      "score": 1.0,
+      "confidence": 0.7,
+      "response_time": 0.00012230873107910156,
+      "details": {
+        "knowledge_found": false,
+        "answer_length": 142
+      }
+    },
+    {
+      "category": "高级推理",
+      "task": "类比推理",
+      "success": true,
+      "score": 0.5,
+      "confidence": 0.5,
+      "response_time": 9.775161743164062e-05,
+      "details": {
+        "reasoner_type": "analogical"
+      }
+    },
+    {
+      "category": "高级推理",
+      "task": "因果推理",
+      "success": true,
+      "score": 0.5,
+      "confidence": 0.5,
+      "response_time": 0.00016951560974121094,
+      "details": {
+        "reasoner_type": "causal"
+      }
+    },
+    {
+      "category": "高级推理",
+      "task": "演绎推理",
+      "success": true,
+      "score": 0.5,
+      "confidence": 0.5,
+      "response_time": 0.00024366378784179688,
+      "details": {
+        "reasoner_type": "deductive"
+      }
+    },
+    {
+      "category": "高级推理",
+      "task": "归纳推理",
+      "success": true,
+      "score": 0.5,
+      "confidence": 0.5,
+      "response_time": 0.0002167224884033203,
+      "details": {
+        "reasoner_type": "inductive"
+      }
+    },
+    {
+      "category": "高级推理",
+      "task": "溯因推理",
+      "success": true,
+      "score": 0.5,
+      "confidence": 0.5,
+      "response_time": 0.00012636184692382812,
+      "details": {
+        "reasoner_type": "abductive"
+      }
+    },
+    {
+      "category": "高级推理",
+      "task": "多推理器综合",
+      "success": true,
+      "score": 1.0,
+      "confidence": 0.5,
+      "response_time": 0.0006096363067626953,
+      "details": {
+        "reasoner_type": "N/A"
+      }
+    },
+    {
+      "category": "元认知",
+      "task": "置信度评估",
+      "success": true,
+      "score": 0.8999999999999999,
+      "confidence": 0.8999999999999999,
+      "response_time": 0.0005717277526855469,
+      "details": {
+        "type": "evaluation"
+      }
+    },
+    {
+      "category": "元认知",
+      "task": "自我修正",
+      "success": false,
+      "score": 0.2,
+      "confidence": 0.2,
+      "response_time": 0.000118255615234375,
+      "details": {
+        "type": "correction"
+      }
+    },
+    {
+      "category": "元认知",
+      "task": "思考过程反思",
+      "success": true,
+      "score": 0.7999999999999999,
+      "confidence": 0.7999999999999999,
+      "response_time": 0.00039076805114746094,
+      "details": {
+        "type": "evaluation"
+      }
+    },
+    {
+      "category": "多模态",
+      "task": "视觉编码",
+      "success": true,
+      "score": 0.8,
+      "confidence": 0.7,
+      "response_time": 0.1762857437133789,
+      "details": {
+        "features_shape": [
+          1,
+          196,
+          128
+        ]
+      }
+    },
+    {
+      "category": "多模态",
+      "task": "视觉理解",
+      "success": true,
+      "score": 0.6,
+      "confidence": 0.7,
+      "response_time": 0.11487889289855957,
+      "details": {
+        "features_shape": [
+          1,
+          196,
+          128
+        ]
+      }
+    }
+  ]
+}

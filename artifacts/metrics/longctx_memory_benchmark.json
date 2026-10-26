@@ -1,0 +1,77 @@
+{
+  "fp16_B1": {
+    "batch": 1,
+    "dtype": "fp16",
+    "H": 4096,
+    "layers": 14,
+    "chunk": 512,
+    "has_kv_cache": false,
+    "rfp_state_bytes": 57568,
+    "dmc_state_bytes": 939524096,
+    "fixed_state_bytes": 939581664,
+    "activation_bytes": 352321536,
+    "peak_activation_bytes": 1291903200,
+    "peak_activation_GB": 1.2031786143779755,
+    "delta_per_double_bytes": 0,
+    "independent_of_seq_len": true
+  },
+  "fp16_B32": {
+    "batch": 32,
+    "dtype": "fp16",
+    "H": 4096,
+    "layers": 14,
+    "chunk": 512,
+    "has_kv_cache": false,
+    "rfp_state_bytes": 1842176,
+    "dmc_state_bytes": 939524096,
+    "fixed_state_bytes": 941366272,
+    "activation_bytes": 11274289152,
+    "peak_activation_bytes": 12215655424,
+    "peak_activation_GB": 11.376715660095215,
+    "delta_per_double_bytes": 0,
+    "independent_of_seq_len": true
+  },
+  "fp32_B1": {
+    "batch": 1,
+    "dtype": "fp32",
+    "H": 4096,
+    "layers": 14,
+    "chunk": 512,
+    "has_kv_cache": false,
+    "rfp_state_bytes": 115136,
+    "dmc_state_bytes": 1879048192,
+    "fixed_state_bytes": 1879163328,
+    "activation_bytes": 704643072,
+    "peak_activation_bytes": 2583806400,
+    "peak_activation_GB": 2.406357228755951,
+    "delta_per_double_bytes": 0,
+    "independent_of_seq_len": true
+  },
+  "fp32_B32": {
+    "batch": 32,
+    "dtype": "fp32",
+    "H": 4096,
+    "layers": 14,
+    "chunk": 512,
+    "has_kv_cache": false,
+    "rfp_state_bytes": 3684352,
+    "dmc_state_bytes": 1879048192,
+    "fixed_state_bytes": 1882732544,
+    "activation_bytes": 22548578304,
+    "peak_activation_bytes": 24431310848,
+    "peak_activation_GB": 22.75343132019043,
+    "delta_per_double_bytes": 0,
+    "independent_of_seq_len": true
+  },
+  "invariance_check": {
+    "lengths": [
+      1048576,
+      2097152,
+      4194304
+    ],
+    "peak_constant_across_lengths": true,
+    "peak_GB_fp16_B1": 1.2031786143779755,
+    "delta_GB_per_double": 0.0,
+    "note": "激活显存由固定状态(RFP频域+DMC记忆，无KV缓存)与chunk级激活决定，均不含序列长度 n 项；因此 1M→2M→4M 翻倍时激活显存增量理论为 0。实际部署中 +~1GB/翻倍来自权重常驻显存与CUDA上下文，属常量而非O(n)。"
+  }
+}

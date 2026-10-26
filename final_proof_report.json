@@ -1,0 +1,33 @@
+﻿{
+  "proof_type": "SimplCore世界模型物理规律学习证明",
+  "model_info": {
+    "parameters": 234048,
+    "hidden_dim": 256,
+    "num_layers": 3,
+    "training_data": "200,000 physics trajectories",
+    "sequence_length": 16
+  },
+  "test_results": {
+    "n_tests": 1000,
+    "mean_rmse": 0.043422799557447433,
+    "min_rmse": 0.009886089712381363,
+    "max_rmse": 0.16882780194282532,
+    "std_rmse": 0.02582566626369953,
+    "pct_below_0.01": 0.2,
+    "pct_below_0.05": 68.8,
+    "pct_below_0.1": 96.7
+  },
+  "single_sample": {
+    "k": 1.2,
+    "m": 1.5,
+    "b": 0.1,
+    "x0": 1.0,
+    "v0": 0.5,
+    "relative_error_percent": 4.006144046783447
+  },
+  "conclusion": {
+    "learned_physics": 0,
+    "generalization_good": 0,
+    "statement": "模型部分达标，需要进一步优化。"
+  }
+}

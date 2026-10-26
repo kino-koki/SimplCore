@@ -1,0 +1,47 @@
+{
+  "passed": 8,
+  "total": 8,
+  "rate": 100.0,
+  "results": [
+    {
+      "name": "MoE模型 构造/前向/反向",
+      "ok": true,
+      "detail": "params=310,484 (1269.7ms)"
+    },
+    {
+      "name": "无注意力架构 构造/前向/反向 (Local+RFP+DMC+MoE)",
+      "ok": true,
+      "detail": "params=109,540 (无注意力) (170.2ms)"
+    },
+    {
+      "name": "长上下文流式 前向/反向/状态传递",
+      "ok": true,
+      "detail": "peak_GB=0.001 (7475.9ms)"
+    },
+    {
+      "name": "ResonanceField 频谱演化 梯度可达",
+      "ok": true,
+      "detail": "grad OK (14.8ms)"
+    },
+    {
+      "name": "DynamicMemoryChannels 记忆读写 梯度可达",
+      "ok": true,
+      "detail": "grad OK (3.1ms)"
+    },
+    {
+      "name": "RFP vs 注意力 长序列延迟基准 (含真实数据)",
+      "ok": true,
+      "detail": "RFP=3.65ms attn=29.00ms (157.8ms)"
+    },
+    {
+      "name": "物理规律诚实证明 加载权重实测",
+      "ok": true,
+      "detail": "rel_err spring=12.2% (1.1ms)"
+    },
+    {
+      "name": "torch.compile 安全回退",
+      "ok": true,
+      "detail": "eager/compile OK (6750.4ms)"
+    }
+  ]
+}

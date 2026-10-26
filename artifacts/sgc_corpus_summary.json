@@ -1,0 +1,185 @@
+{
+  "out_dir": "data\\processed\\sgc_zh",
+  "parquet_files": [
+    "data\\raw\\fineweb_zh\\map\\00007.parquet",
+    "data\\raw\\fineweb_zh\\map\\00008.parquet",
+    "data\\raw\\fineweb_zh\\map\\00009.parquet",
+    "data\\raw\\fineweb_zh\\map\\00010.parquet",
+    "data\\raw\\fineweb_zh\\map\\00012.parquet",
+    "data\\raw\\fineweb_zh\\tele\\00117.parquet"
+  ],
+  "parquet_bytes": 1428995168,
+  "tokenizer": {
+    "kind": "bpe",
+    "vocab_size": 32000,
+    "requested_vocab_size": 32000,
+    "special_tokens": [
+      "<pad>",
+      "<unk>",
+      "\u001f"
+    ],
+    "eos_id": 2,
+    "eos_token": "\u001f",
+    "unk_id": 1,
+    "compression_ratio": 1.837066,
+    "sample_chars": 114778289,
+    "sample_tokens": 62479139,
+    "train_seconds": 436.769,
+    "path": "data\\processed\\sgc_zh",
+    "tokenizer_json": "data\\processed\\sgc_zh\\tokenizer.json"
+  },
+  "manifest": {
+    "format": "simplcore.sgc.corpus",
+    "format_version": 1,
+    "created_utc": "2026-10-05T11:49:26Z",
+    "seq_len": 4096,
+    "vocab_size": 32000,
+    "eos_id": 2,
+    "dtype": "uint32",
+    "byteorder": "little",
+    "tokenizer": {
+      "kind": "bpe",
+      "vocab_size": 32000,
+      "requested_vocab_size": 32000,
+      "special_tokens": [
+        "<pad>",
+        "<unk>",
+        "\u001f"
+      ],
+      "eos_id": 2,
+      "eos_token": "\u001f",
+      "unk_id": 1,
+      "compression_ratio": 1.837066,
+      "sample_chars": 114778289,
+      "sample_tokens": 62479139,
+      "train_seconds": 436.769,
+      "path": "data\\processed\\sgc_zh",
+      "tokenizer_json": "data\\processed\\sgc_zh\\tokenizer.json"
+    },
+    "cleaning": {
+      "min_chars": 200,
+      "max_chars": 200000,
+      "max_lines": 20000,
+      "collapse_blank_lines": 1,
+      "blank_line_collapse_threshold": 2,
+      "noise_ratio_threshold": 0.4,
+      "min_keep_ratio": 0.1,
+      "strip_urls": true,
+      "strip_emails": true,
+      "drop_noise_lines": true
+    },
+    "packing": {
+      "val_frac": 0.002,
+      "test_frac": 0.002,
+      "seed": 1337,
+      "shard_tokens": 200000000,
+      "drop_last": true,
+      "append_eos_after_last": true,
+      "split_unit": "document"
+    },
+    "documents": {
+      "n_in": 1567795,
+      "n_kept": 1269586,
+      "n_dropped": 298209,
+      "n_empty": 0,
+      "drop_reasons": {
+        "too_short": 298015,
+        "too_noisy": 159,
+        "no_renderable_text": 34,
+        "too_long": 1
+      },
+      "chars": 850216164,
+      "per_split": {
+        "train": 1264508,
+        "val": 2539,
+        "test": 2539
+      }
+    },
+    "total_tokens": 469561344,
+    "total_tokens_encoded": 469567642,
+    "dropped_tail_tokens": 6298,
+    "compression_ratio": 1.810636,
+    "compression_basis": "chars of kept documents / encoded tokens (incl. dropped tail)",
+    "splits": {
+      "train": {
+        "n_docs": 1264508,
+        "n_tokens": 467718144,
+        "n_tokens_encoded": 467719895,
+        "n_windows": 114189,
+        "remainder_tokens": 1751,
+        "bytes": 1870872576,
+        "elapsed_seconds": 837.186,
+        "files": [
+          {
+            "path": "train-00001.bin",
+            "n_tokens": 199999488,
+            "windows": 48828,
+            "bytes": 799997952,
+            "sha256": "3808705abe04a8b0ca7fef9460438289725b96b9802ff2d88039ea3baff844eb"
+          },
+          {
+            "path": "train-00002.bin",
+            "n_tokens": 199999488,
+            "windows": 48828,
+            "bytes": 799997952,
+            "sha256": "91c7e4069a0578af3deecc2bc169a3b0662ba4f764b887c3757a62aca981a5e7"
+          },
+          {
+            "path": "train-00003.bin",
+            "n_tokens": 67719168,
+            "windows": 16533,
+            "bytes": 270876672,
+            "sha256": "3a41e15b28bd627e438948ada903fc5d1142ca76936aa624ac0eb81c8ed8d2c7"
+          }
+        ]
+      },
+      "val": {
+        "n_docs": 2539,
+        "n_tokens": 913408,
+        "n_tokens_encoded": 914224,
+        "n_windows": 223,
+        "remainder_tokens": 816,
+        "bytes": 3653632,
+        "elapsed_seconds": 1.59,
+        "files": [
+          {
+            "path": "val-00001.bin",
+            "n_tokens": 913408,
+            "windows": 223,
+            "bytes": 3653632,
+            "sha256": "bb5c538c3d9fc8f5d0f609fa1c55f8877dc553d215a561e0ef628c977ffbd21d"
+          }
+        ]
+      },
+      "test": {
+        "n_docs": 2539,
+        "n_tokens": 929792,
+        "n_tokens_encoded": 933523,
+        "n_windows": 227,
+        "remainder_tokens": 3731,
+        "bytes": 3719168,
+        "elapsed_seconds": 1.418,
+        "files": [
+          {
+            "path": "test-00001.bin",
+            "n_tokens": 929792,
+            "windows": 227,
+            "bytes": 3719168,
+            "sha256": "349b64c55806b15ee339aa0cd41a2a96510e645598d8b6af260b55ea39c09813"
+          }
+        ]
+      }
+    },
+    "source_files": [
+      "data\\raw\\fineweb_zh\\map\\00007.parquet",
+      "data\\raw\\fineweb_zh\\map\\00008.parquet",
+      "data\\raw\\fineweb_zh\\map\\00009.parquet",
+      "data\\raw\\fineweb_zh\\map\\00010.parquet",
+      "data\\raw\\fineweb_zh\\map\\00012.parquet",
+      "data\\raw\\fineweb_zh\\tele\\00117.parquet"
+    ],
+    "elapsed_seconds": 1970.639
+  },
+  "elapsed_seconds": 2796.938,
+  "packing_seconds": 2025.12
+}

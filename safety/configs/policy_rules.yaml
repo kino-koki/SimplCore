@@ -1,0 +1,250 @@
+# ============================================================
+# 青小团(Qingxiaotuan) 内容策略规则
+# Qingxiaotuan Content Policy Rules
+# ============================================================
+
+policy_metadata:
+  name: "青小团内容安全策略"
+  version: "1.0.0"
+  effective_date: "2026-01-01"
+  last_updated: "2026-06-01"
+  authority: "Qingxiaotuan Safety Committee"
+
+# 违规级别定义
+violation_levels:
+  critical:
+    code: "CRITICAL"
+    name: "严重违规"
+    description: "涉及法律禁止内容、极端暴力、儿童安全等严重违规"
+    action: "立即阻止并记录，上报安全管理员"
+    auto_block: true
+    notify_admin: true
+    response_template: "refusal_strict"
+  high:
+    code: "HIGH"
+    name: "高危违规"
+    description: "涉及仇恨言论、暴力威胁、色情内容等高度违规"
+    action: "阻止内容，记录违规详情"
+    auto_block: true
+    notify_admin: false
+    response_template: "refusal_standard"
+  medium:
+    code: "MEDIUM"
+    name: "中度违规"
+    description: "涉及偏见言论、不当暗示等中度违规"
+    action: "标记并警告，可选阻止"
+    auto_block: false
+    notify_admin: false
+    response_template: "warning"
+  low:
+    code: "LOW"
+    name: "轻度违规"
+    description: "边缘性内容、轻微不当用语等轻度违规"
+    action: "记录但不阻止，提供委婉纠正"
+    auto_block: false
+    notify_admin: false
+    response_template: "gentle_correction"
+
+# 规则引擎配置
+rule_engine:
+  evaluation_order: ["critical", "high", "medium", "low"]
+  parallel_evaluation: false
+  stop_on_first_match: true
+  allow_partial_match: true
+  match_score_threshold: 0.6
+
+# 内容规则定义
+content_rules:
+  - id: "RULE-001"
+    name: "禁止违法内容"
+    category: "legal"
+    violation_level: "critical"
+    description: "任何违法内容、犯罪指导、非法活动相关"
+    keywords:
+      - "制作爆炸物"
+      - "制作毒品"
+      - "非法武器"
+      - "黑客攻击教程"
+      - "网络攻击工具"
+      - "信用卡欺诈"
+      - "身份盗窃"
+      - "洗钱方法"
+      - "逃税指南"
+      - "非法入侵"
+    regex_patterns:
+      - "(制作|制造|合成).*(炸药|炸弹|毒品|毒药|武器)"
+      - "(黑客|渗透|入侵).*(教程|工具|方法|技术)"
+      - "(信用卡|银行卡).*(伪造|盗刷|破解)"
+
+  - id: "RULE-002"
+    name: "禁止暴力极端内容"
+    category: "violence"
+    violation_level: "critical"
+    description: "极端暴力、恐怖主义、伤害他人相关内容"
+    keywords:
+      - "恐怖袭击"
+      - "大规模杀伤"
+      - "种族清洗"
+      - "虐待儿童"
+      - "人口贩卖"
+      - "恐怖组织"
+      - "极端组织"
+      - "自杀式袭击"
+      - "暴力伤害他人"
+    regex_patterns:
+      - "(恐怖|极端).*(组织|袭击|活动|分子)"
+      - "(伤害|杀害|谋杀).*(儿童|人群|群众)"
+      - "(虐待|折磨|残害).*(儿童|老人|妇女)"
+
+  - id: "RULE-003"
+    name: "禁止仇恨言论"
+    category: "hate_speech"
+    violation_level: "high"
+    description: "基于种族、民族、宗教、性别等的仇恨言论"
+    keywords:
+      - "种族歧视"
+      - "种族灭绝"
+      - "宗教仇恨"
+      - "民族歧视"
+      - "性别歧视"
+      - "仇视同性恋"
+      - "仇外言论"
+      - "煽动仇恨"
+    regex_patterns:
+      - ".*(种族|民族|宗教).*(消灭|清除|驱逐|歧视)"
+      - ".*(性别|性取向).*(变态|恶心|异常|疾病)"
+
+  - id: "RULE-004"
+    name: "禁止色情内容"
+    category: "pornographic"
+    violation_level: "high"
+    description: "色情、露骨性内容、色情服务相关"
+    keywords:
+      - "色情内容"
+      - "儿童色情"
+      - "淫秽内容"
+      - "色情服务"
+      - "色情交易"
+      - "裸露照片"
+      - "性交易"
+    regex_patterns:
+      - "(色情|情色|成人).*(网站|视频|图片|内容|服务|平台)"
+      - "(儿童|未成年人).*(色情|性|裸)"
+
+  - id: "RULE-005"
+    name: "禁止自残自杀内容"
+    category: "self_harm"
+    violation_level: "critical"
+    description: "自残、自杀方法、自伤行为相关"
+    keywords:
+      - "自杀方法"
+      - "如何自杀"
+      - "自残方法"
+      - "伤害自己"
+      - "结束生命"
+      - "自杀教程"
+      - "安乐死方法"
+    regex_patterns:
+      - "(自杀|自残|自伤).*(方法|教程|方式|手段|指南)"
+      - "(如何|怎样).*(自杀|了结生命|结束生命)"
+
+  - id: "RULE-006"
+    name: "滥用警示"
+    category: "abuse"
+    violation_level: "medium"
+    description: "辱骂、侮辱、人身攻击等不当言论"
+    keywords:
+      - "人身攻击"
+      - "辱骂"
+      - "侮辱人格"
+      - "恶意中伤"
+      - "诽谤"
+      - "恶意诋毁"
+      - "攻击谩骂"
+    regex_patterns:
+      - "(你个|你这个).*(废物|蠢货|白痴|混蛋)"
+      - "(去死|滚开|闭嘴|垃圾|废物)"
+
+  - id: "RULE-007"
+    name: "隐私合规"
+    category: "privacy"
+    violation_level: "high"
+    description: "未经授权收集或传播他人隐私信息"
+    keywords:
+      - "出售个人信息"
+      - "倒卖信息"
+      - "查询他人信息"
+      - "人肉搜索"
+      - "信息泄露"
+      - "倒卖数据"
+    regex_patterns:
+      - "(出售|倒卖|提供).*(个人信息|隐私数据|公民信息)"
+      - "(人肉搜索|人肉).*(地址|电话|信息)"
+
+  - id: "RULE-008"
+    name: "医疗健康建议边界"
+    category: "medical"
+    violation_level: "medium"
+    description: "限制提供专业医疗诊断、处方建议"
+    keywords:
+      - "癌症治疗方案"
+      - "代替医生诊断"
+      - "开具处方"
+      - "药物治疗方案"
+      - "手术建议"
+      - "停止服药"
+      - "更改用药"
+    regex_patterns:
+      - "(诊断|治疗).*(癌症|肿瘤|心脏病|糖尿病)"
+      - "(处方|用药|药物).*(建议|方案|推荐)"
+
+  - id: "RULE-009"
+    name: "金融法律建议边界"
+    category: "financial"
+    violation_level: "medium"
+    description: "限制提供专业金融投资、法律咨询服务"
+    keywords:
+      - "股票推荐"
+      - "投资建议"
+      - "法律咨询意见"
+      - "合同审核"
+      - "税务筹划"
+      - "避税方案"
+    regex_patterns:
+      - "(股票|基金|期货).*(推荐|预测|必涨|涨停)"
+      - "(法律|律师).*(意见|建议|咨询|代理)"
+
+  - id: "RULE-010"
+    name: "歧视偏见内容"
+    category: "bias"
+    violation_level: "medium"
+    description: "基于地域、职业、外貌等的歧视性内容"
+    keywords:
+      - "地域歧视"
+      - "地域黑"
+      - "职业歧视"
+      - "外貌歧视"
+      - "年龄歧视"
+      - "学历歧视"
+      - "收入歧视"
+    regex_patterns:
+      - ".*(省|市|地方|地区).*(人都|全是|都是).*(差劲|落后|低素质)"
+      - "(长得|长这么|这么).*(丑|难看|吓人|恐怖)"
+
+# 例外规则
+exception_rules:
+  - id: "EXC-001"
+    name: "教育研究豁免"
+    description: "用于学术研究、教育目的的安全内容讨论"
+    allowed_contexts:
+      - "学术研究"
+      - "课堂教学"
+      - "安全培训"
+      - "新闻报道"
+  - id: "EXC-002"
+    name: "文学创作豁免"
+    description: "文学作品中必要的场景描写"
+    allowed_contexts:
+      - "文学分析"
+      - "经典文学讨论"
+      - "文学批评"

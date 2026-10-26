@@ -1,0 +1,45 @@
+{
+  "passed": 3,
+  "total": 3,
+  "cases": [
+    {
+      "name": "A.MoE前向+训练",
+      "ok": true,
+      "detail": "loss=5.0351 aux=0.0401 finite=True",
+      "metrics": {
+        "loss": 5.035066604614258,
+        "aux": 0.040098294615745544
+      }
+    },
+    {
+      "name": "B.流式前向+显存常数",
+      "ok": true,
+      "detail": "peaks=[67648, 67648, 67648] ratios=[1.0, 1.0, 1.0] constant=True finite=True",
+      "metrics": {
+        "peaks": [
+          67648,
+          67648,
+          67648
+        ],
+        "ratios": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "C.原生多模态前向+生成",
+      "ok": true,
+      "detail": "hidden_shape=(1, 5, 64) gen='[PAD][PAD][PAD][PAD][PAD]' finite=True",
+      "metrics": {
+        "hidden_shape": [
+          1,
+          5,
+          64
+        ],
+        "gen": "[PAD][PAD][PAD][PAD][PAD]"
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+# SimplCore 生产级实现依赖 (PyTorch 2.1)
+# 安装示例 (CPU)：
+#   pip install torch==2.1.2 --index-url https://download.pytorch.org/whl/cpu
+# CUDA 11.8：
+#   pip install torch==2.1.2 --index-url https://download.pytorch.org/whl/cu118
+torch==2.1.2
+# 测试与基准 (可选)
+pytest>=7.4

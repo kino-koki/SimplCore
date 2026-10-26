@@ -1,0 +1,49 @@
+{
+  "device": "AMD Radeon 680M (RDNA2, 12 CU, shared system memory / UMA)",
+  "architecture": "SimplCore streaming core (fixed-state long context)",
+  "note": "本架构激活显存与序列长度 L 解耦，故 L 不再消耗额外显存；限制来自权重常驻 + 固定状态 + chunk 激活。",
+  "per_length_runtime_gb": {
+    "fp16": 3.6095,
+    "fp32": 7.219,
+    "bf16": 3.6095
+  },
+  "uma_capacity_gb": {
+    "2GB": {
+      "can_load_56b_model": false,
+      "verdict": "无法加载 56B 模型 (权重 104.3GB 远超 2GB 共享显存)；仅适合运行小模型 (≤数 B) 的长上下文实验"
+    },
+    "4GB": {
+      "can_load_56b_model": false,
+      "verdict": "无法加载 56B 模型 (权重 104.3GB 远超 4GB 共享显存)；仅适合运行小模型 (≤数 B) 的长上下文实验"
+    },
+    "8GB": {
+      "can_load_56b_model": false,
+      "verdict": "无法加载 56B 模型 (权重 104.3GB 远超 8GB 共享显存)；仅适合运行小模型 (≤数 B) 的长上下文实验"
+    }
+  },
+  "deployment_paths": {
+    "windows_native": {
+      "pytorch_amd_support": false,
+      "verdict": "不可用：Windows 原生 PyTorch 仅支持 NVIDIA CUDA，AMD 680M 无法被 torch 识别用于训练。",
+      "workaround": "可用 torch-directml 做极轻量推理，但不支持本架构的 FSDP/torch.compile/长上下文训练。"
+    },
+    "wsl2_roc": {
+      "pytorch_amd_support": true,
+      "verdict": "推荐路径：WSL2 (Ubuntu 22.04) + ROCm 5.7/6.x，680M 属 RDNA2 (gfx1033/gfx1034) 受支持。",
+      "workaround": "需设置 HSA_OVERRIDE_GFX_VERSION=10.3.0 并安装 ROCm 版 PyTorch。"
+    },
+    "linux_native": {
+      "pytorch_amd_support": true,
+      "verdict": "最佳路径：纯 Linux 双系统 + ROCm，免 WSL2 开销。",
+      "workaround": "同 WSL2 ROCm 安装。"
+    }
+  },
+  "length_scalability": "由于激活/状态不随 L 增长，序列长度从 1M 翻倍到 2M/4M 时常驻显存增量≈0；可支持的上下文长度上限由数值精度与地址空间决定，而非显存 OOM。",
+  "weights_56b_bf16_gb": 104.3,
+  "cpu_small_scale_verify_KB": {
+    "512": 66.06,
+    "1024": 66.06,
+    "2048": 66.06
+  },
+  "cpu_verify_constant": true
+}

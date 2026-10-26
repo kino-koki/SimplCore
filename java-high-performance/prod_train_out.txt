@@ -1,0 +1,75 @@
+════════════════════════════════════════════════════════════
+          SC Production Training - Configuration
+════════════════════════════════════════════════════════════
+  Optimizer        : Adam
+  Learning rate    : 0.001000
+  Epochs           : 20
+  Batch size       : 2
+  Warmup epochs    : 30
+  Weight decay     : 0.01
+  Dropout          : 0.20
+  Mixed precision  : true
+  Data workers     : 2
+  Model dModel     : 64
+  Model nLayers    : 4
+  Model nHeads     : 8
+  Sequence length  : 32
+  Print interval   : 10 epochs
+  Dropout compare  : false
+════════════════════════════════════════════════════════════
+
+[1/6] Training BPE tokenizer...
+BPE training complete. Vocab size: 359, Merges: 100
+  Vocabulary size: 359
+
+[2/6] Tokenizing corpus...
+  Training tokens: 272
+  Validation tokens: 86
+
+[3/6] Building sliding-window sequences...
+  Training sequences: 16 (seqLen=32, stride=16)
+  Validation sequences: 5
+
+[4/6] Training...
+  Model parameters: 0.25M
+  Scheduler: LinearWarmup(30) -> CosineAnnealing(1)
+  DataLoader: 16 sequences, 8 batches/epoch, 2 workers
+  Epoch   0/20 | train_loss=6.3668 val_loss=6.4789 ppl=582.17 acc=0.00% lr=0.000033
+  Epoch  10/20 | train_loss=5.1945 val_loss=5.1036 ppl=180.28 acc=7.74% lr=0.000367
+  Epoch  19/20 | train_loss=4.6129 val_loss=4.1961 ppl=100.77 acc=5.81% lr=0.000667
+
+Training finished in 16.95s
+  Final train loss: 4.6129 | Final val loss: 4.1961
+  MixedPrecision[enabled=true, scale=65536.0, steps=320, overflows=0 (0.00%), mem_saved=-12.5%]
+
+[5/6] Exporting metrics...
+  CSV exported: sc_production_metrics.csv
+
+════════════════════════════════════════════════════════════
+                 Training Metrics Summary
+════════════════════════════════════════════════════════════
+  Total records: 20
+  Initial loss:  6.3668 (PPL: 582.17)
+  Final loss:    4.6129 (PPL: 100.77)
+  Best val loss: 4.1961
+  Final accuracy: 5.81%
+  Total alerts:  0 (WARNING: 0, CRITICAL: 0)
+════════════════════════════════════════════════════════════
+
+
+--- Recent Alerts ---
+  No alerts.
+--- End Alerts ---
+
+Model saved: sc_production_model.bin
+
+[6/6] Generation test...
+  Autoregressive generation (max 20 tokens):
+  ["Machine learning"] -> "tttttttttttttttttttt"
+  ["Deep learning"] -> "tttttttttttttttttttt"
+  ["Neural networks"] -> "tttttttttttttttttttt"
+  ["The quick"] -> "tttttttttttttttttttt"
+
+════════════════════════════════════════════════════════════
+              SC Production Training Complete!
+════════════════════════════════════════════════════════════

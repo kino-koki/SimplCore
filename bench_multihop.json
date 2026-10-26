@@ -1,0 +1,72 @@
+{
+  "task": "global_first_token_copy",
+  "seq_len": 40,
+  "S": 8,
+  "vocab": 64,
+  "train_steps": 120,
+  "lr": 0.003,
+  "attention_free": true,
+  "local_receptive_field": "kernel(7)+dilation(2)*(7-1)=19 tokens",
+  "variants": [
+    "local_only",
+    "rfp_nodmc",
+    "rfp_global"
+  ],
+  "trials": [
+    {
+      "variant": "local_only",
+      "params": 128576,
+      "final_train_loss": 2.208,
+      "eval_accuracy": 0.0969,
+      "train_seconds": 12.3
+    },
+    {
+      "variant": "rfp_nodmc",
+      "params": 133060,
+      "final_train_loss": 2.1902,
+      "eval_accuracy": 0.0969,
+      "train_seconds": 14.0
+    },
+    {
+      "variant": "rfp_global",
+      "params": 412740,
+      "final_train_loss": 2.1881,
+      "eval_accuracy": 0.0969,
+      "train_seconds": 37.9
+    }
+  ],
+  "scale_sweep": {
+    "description": "扩展训练步数（500/1500）验证可学习性：local_only 门控线性递归本身即全局可达，500 步可达 acc≈0.756、1500 步≈0.731；RFP 带限谱卷积对尖锐长距复制不占优（acc≈0.24–0.27）。结论：两路径均具全局可达性，RFP 优势在效率与常数显存流式而非尖锐内容路由。",
+    "results": [
+      {
+        "variant": "local_only",
+        "steps": 500,
+        "final_loss": 0.5943,
+        "acc": 0.7562,
+        "seconds": 113.0
+      },
+      {
+        "variant": "local_only",
+        "steps": 1500,
+        "final_loss": 0.466,
+        "acc": 0.7312,
+        "seconds": 317.0
+      },
+      {
+        "variant": "rfp_global",
+        "steps": 500,
+        "final_loss": 1.4303,
+        "acc": 0.2656,
+        "seconds": 273.6
+      },
+      {
+        "variant": "rfp_global",
+        "steps": 1500,
+        "final_loss": 1.4736,
+        "acc": 0.2437,
+        "seconds": 744.5
+      }
+    ]
+  },
+  "note": "全局路由复制（消融/压力探针，非'RFP 必胜'演示）：实测表明 local_only 的门控线性递归本身即全局可达，在该任务上不弱于 RFP。RFP 的真实优势在效率(bench_rfp_vs_attention: n=2048 快 3.0×) 与常数显存流式，而非尖锐内容路由。本基准记录两路径均具全局可达性的诚实事实。"
+}

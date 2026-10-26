@@ -20,56 +20,71 @@ class SimplCoreMixConfig:
     prelude_layers: int = 2
     coda_layers: int = 2
 
-    # 注意力类型: "rfp_mla" | "rfp_gqa"
-    # RFP = Resonance Field Processor (SimplCore创新)
-    attn_type: str = "rfp_mla"
+    # 注意力类型: "mba_mla" | "mba_gqa" | "mska"
+    # MBA = Modulated Basis Attention (SimplCore创新)
+    # MSKA = Multi-Scale Kernel Attention (SimplCore核心创新)
+    attn_type: str = "mba_mla"
     kv_lora_rank: int = 512
     q_lora_rank: int = 1536
     qk_rope_head_dim: int = 64
     qk_nope_head_dim: int = 128
     v_head_dim: int = 128
 
-    # RFP 共振场参数 (SimplCore)
-    n_bases: int = 64
+    # MBA 基向量场参数 (SimplCore)
+    n_basis_vectors: int = 64
     freq_scale_init: float = 1.0
     phase_shift_init: float = 0.0
-    rfp_temperature: float = 1.0
+    attn_temperature: float = 1.0
 
-    # MoE + TAR 拓扑路由 (SimplCore + OpenMythos)
+    # MoE + CCR 拓扑路由 (SimplCore + OpenMythos)
     n_experts: int = 64
     n_shared_experts: int = 2
     n_experts_per_tok: int = 4
     expert_dim: int = 512
-    tar_topk: int = 4
-    tar_use_confidence: bool = True
-    tar_uncertainty_threshold: float = 0.3
+    proto_topk: int = 4
+    proto_use_confidence: bool = True
+    proto_low_sim_threshold: float = 0.3
 
-    # DMC 动态记忆通道 (SimplCore)
+    # DMC 工作记忆缓冲 (SimplCore)
     n_memory_channels: int = 8
     memory_dim: int = 512
     memory_decay_init: float = 0.95
     memory_gate_init: float = 0.5
-    dmc_use_associative: bool = True
-    dmc_assoc_mem_size: int = 64
+    wm_use_associative: bool = True
+    wm_assoc_mem_size: int = 64
 
-    # CIN 因果干预 (SimplCore)
+    # CIN 因果干预 — SGI 结构化门控干预 (SimplCore)
     cin_threshold: float = 0.5
     cin_use_confounder: bool = True
+    cin_n_groups: int = 8           # 分组变量数量
+    cin_top_k_parents: int = 3      # 每个变量的父节点上限
+    cin_scale: float = 0.1          # 残差缩放
 
-    # SPM 自发可塑性 (SimplCore)
-    spm_enabled: bool = True
-    spm_learning_rate: float = 0.001
-    spm_gamma: float = 0.01
+    # SPM Hebbian在线适应 (SimplCore)
+    hebbian_enabled: bool = True
+    hebbian_lr: float = 0.001
+    hebbian_decay: float = 0.01
+
+    # MSKA 多尺度核注意力参数 (SimplCore核心创新)
+    mska_n_bands: int = 4           # 频带数量
+    mska_kernel_rank: int = 16      # 双线性核的秩
+    mska_scheduling_steps: int = 1  # 循环精化步数 (1=关闭)
 
     # Parcae 稳定性控制 (OpenMythos)
     stability_method: str = "parcae"  # "parcae" | "none"
     dt_init: float = 0.01
     act_threshold: float = 0.99
 
-    # 认知模块集成
-    cognitive_enabled: bool = True
-    cognitive_dim: int = 512
+    # 推理模块集成
+    reasoning_enabled: bool = True
+    reasoning_dim: int = 512
     reasoning_mode: str = "balanced"  # fast/deep/balanced/creative
+    iterative_refinement_enabled: bool = False
+    max_refinement_loops: int = 16
+    web_search_enabled: bool = False
+
+    # 训练省显存能力
+    gradient_checkpointing: bool = False
 
     # 深度LoRA适配 (OpenMythos LoRAAdapter)
     lora_rank: int = 16
@@ -96,9 +111,9 @@ class SimplCoreMixConfig:
     # 生成
     max_output_tokens: int = 4096
 
-    # 反幻觉
-    anti_hallucination: bool = True
-    ah_threshold: float = 0.4
+    # 置信度门控
+    confidence_gate_enabled: bool = True
+    confidence_threshold: float = 0.4
 
 
 def mix_1b() -> SimplCoreMixConfig:
@@ -116,7 +131,7 @@ def mix_1b() -> SimplCoreMixConfig:
         n_shared_experts=2,
         n_experts_per_tok=2,
         expert_dim=1024,
-        n_bases=32,
+        n_basis_vectors=32,
         n_memory_channels=4,
         memory_dim=256,
         lora_rank=8,
@@ -138,7 +153,7 @@ def mix_7b() -> SimplCoreMixConfig:
         n_shared_experts=2,
         n_experts_per_tok=4,
         expert_dim=2048,
-        n_bases=64,
+        n_basis_vectors=64,
         n_memory_channels=8,
         memory_dim=512,
         lora_rank=16,
@@ -160,7 +175,7 @@ def mix_33b() -> SimplCoreMixConfig:
         n_shared_experts=4,
         n_experts_per_tok=4,
         expert_dim=4096,
-        n_bases=128,
+        n_basis_vectors=128,
         n_memory_channels=16,
         memory_dim=1024,
         lora_rank=32,
@@ -182,14 +197,18 @@ def mix_tiny_text() -> SimplCoreMixConfig:
         n_shared_experts=1,
         n_experts_per_tok=2,
         expert_dim=128,
-        n_bases=8,
+        n_basis_vectors=8,
         n_memory_channels=2,
         memory_dim=32,
         lora_rank=4,
-        cognitive_enabled=False,
-        anti_hallucination=False,
+        reasoning_enabled=False,
+        confidence_gate_enabled=False,
     )
 
+
+# ============================================================
+# 统一配置入口
+# ============================================================
 
 def mix_150m_text() -> SimplCoreMixConfig:
     """Approximately 150M pure-text config; exact count is verified by script."""
@@ -206,12 +225,44 @@ def mix_150m_text() -> SimplCoreMixConfig:
         n_shared_experts=1,
         n_experts_per_tok=2,
         expert_dim=1024,
-        n_bases=24,
+        n_basis_vectors=24,
         n_memory_channels=4,
         memory_dim=192,
         lora_rank=8,
-        cognitive_enabled=False,
-        anti_hallucination=False,
+        reasoning_enabled=False,
+        confidence_gate_enabled=False,
+        gradient_checkpointing=True,
+        iterative_refinement_enabled=True,
+        max_refinement_loops=8,
+        web_search_enabled=True,
+    )
+
+
+def mix_3b_text() -> SimplCoreMixConfig:
+    """3B pure-text config — 生产级中等规模配置。"""
+    return SimplCoreMixConfig(
+        vocab_size=32000,
+        dim=3584,
+        n_heads=28,
+        n_kv_heads=8,
+        max_seq_len=8192,
+        max_loop_iters=12,
+        prelude_layers=3,
+        coda_layers=3,
+        n_experts=48,
+        n_shared_experts=2,
+        n_experts_per_tok=4,
+        expert_dim=1792,
+        n_basis_vectors=48,
+        n_memory_channels=6,
+        memory_dim=448,
+        lora_rank=12,
+        reasoning_enabled=True,
+        confidence_gate_enabled=True,
+        gradient_checkpointing=True,
+        iterative_refinement_enabled=True,
+        max_refinement_loops=16,
+        web_search_enabled=True,
     )
 
 
@@ -230,12 +281,18 @@ def mix_7b_text() -> SimplCoreMixConfig:
         n_shared_experts=2,
         n_experts_per_tok=4,
         expert_dim=2048,
-        n_bases=64,
+        n_basis_vectors=64,
         n_memory_channels=8,
         memory_dim=512,
         lora_rank=16,
-        cognitive_enabled=False,
-        anti_hallucination=False,
+        # 纯文本 causal LM 路线: 主推理开关关闭;
+        # 独立的 web_search / iterative_refinement 能力保持开启 (供后续路线启用)
+        reasoning_enabled=False,
+        confidence_gate_enabled=False,
+        gradient_checkpointing=True,
+        iterative_refinement_enabled=True,
+        max_refinement_loops=24,
+        web_search_enabled=True,
     )
 
 
@@ -254,10 +311,37 @@ def mix_14b_text() -> SimplCoreMixConfig:
         n_shared_experts=4,
         n_experts_per_tok=4,
         expert_dim=2560,
-        n_bases=96,
+        n_basis_vectors=96,
         n_memory_channels=12,
         memory_dim=640,
         lora_rank=24,
-        cognitive_enabled=False,
-        anti_hallucination=False,
+        reasoning_enabled=False,
+        confidence_gate_enabled=False,
     )
+
+_CONFIG_REGISTRY = {
+    "tiny": mix_tiny_text,
+    "150m": mix_150m_text,
+    "3b": mix_3b_text,
+    "1b": mix_1b,
+    "7b": mix_7b,
+    "7b_text": mix_7b_text,
+    "14b": mix_14b_text,
+    "33b": mix_33b,
+}
+
+
+def get_config(name: str = "150m") -> SimplCoreMixConfig:
+    """根据名称获取预定义配置。
+
+    支持的名称: tiny / 150m / 3b / 1b / 7b / 7b_text / 14b / 33b
+    """
+    key = name.strip().lower()
+    if key not in _CONFIG_REGISTRY:
+        raise ValueError(
+            f"未知配置名称: {name}\n"
+            f"可选: {', '.join(_CONFIG_REGISTRY.keys())}"
+        )
+    return _CONFIG_REGISTRY[key]()
+
+

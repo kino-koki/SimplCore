@@ -1,0 +1,289 @@
+# 青奈科技 (Qingnai Technology) - 青小团 (Qingxiaotuan) 大模型数据管线
+# 大规模数据预处理引擎配置文件 v1.0
+# 青小团70B MoE 模型专用数据管线配置
+
+# =============================================================================
+# 全局设置
+# =============================================================================
+global:
+  project_name: "qingxiaotuan_70b_moe"
+  seed: 42
+  num_workers: 32
+  output_dir: "./output"
+  temp_dir: "./tmp"
+  log_level: "INFO"
+  max_retries: 3
+  retry_delay_sec: 5.0
+
+# =============================================================================
+# 数据集列表及权重配置
+# =============================================================================
+datasets:
+  # ---- 通用语料 (70%) ----
+  general_corpus:
+    target_ratio: 0.70
+    sources:
+      - name: "c4"
+        url: "https://huggingface.co/datasets/allenai/c4"
+        weight: 0.25
+        max_samples: null
+        split: "train"
+      - name: "the_pile"
+        url: "https://huggingface.co/datasets/EleutherAI/the_pile"
+        weight: 0.15
+        max_samples: null
+        split: "train"
+      - name: "refined_web"
+        url: "https://huggingface.co/datasets/tiiuae/falcon-refinedweb"
+        weight: 0.20
+        max_samples: null
+        split: "train"
+      - name: "wudao"
+        url: "https://huggingface.co/datasets/BAAI/WuDaoCorpus2.0"
+        weight: 0.10
+        max_samples: null
+        split: "train"
+      - name: "mc4"
+        url: "https://huggingface.co/datasets/allenai/mc4"
+        weight: 0.10
+        max_samples: null
+        split: "train"
+      - name: "pile_cc"
+        url: "https://huggingface.co/datasets/EleutherAI/pile-cc"
+        weight: 0.08
+        max_samples: null
+        split: "train"
+      - name: "bookcorpus"
+        url: "https://huggingface.co/datasets/bookcorpus"
+        weight: 0.07
+        max_samples: null
+        split: "train"
+      - name: "wikipedia"
+        url: "https://huggingface.co/datasets/wikipedia"
+        weight: 0.05
+        max_samples: null
+        split: "train"
+
+  # ---- 代码语料 (20%) ----
+  code_corpus:
+    target_ratio: 0.20
+    sources:
+      - name: "starcoder"
+        url: "https://huggingface.co/datasets/bigcode/starcoderdata"
+        weight: 0.60
+        max_samples: null
+        split: "train"
+      - name: "github_code"
+        url: "https://huggingface.co/datasets/codeparrot/github-code"
+        weight: 0.30
+        max_samples: null
+        split: "train"
+      - name: "the_stack"
+        url: "https://huggingface.co/datasets/bigcode/the-stack"
+        weight: 0.10
+        max_samples: null
+        split: "train"
+
+  # ---- 数学语料 (10%) ----
+  math_corpus:
+    target_ratio: 0.10
+    sources:
+      - name: "openwebmath"
+        url: "https://huggingface.co/datasets/openwebmath"
+        weight: 0.40
+        max_samples: null
+        split: "train"
+      - name: "math_dataset"
+        url: "https://huggingface.co/datasets/math_dataset"
+        weight: 0.30
+        max_samples: null
+        split: "train"
+      - name: "proof_pile"
+        url: "https://huggingface.co/datasets/EleutherAI/proof_pile"
+        weight: 0.20
+        max_samples: null
+        split: "train"
+      - name: "numina_math"
+        url: "https://huggingface.co/datasets/AI-MO/numina_math"
+        weight: 0.10
+        max_samples: null
+        split: "train"
+
+# =============================================================================
+# 质量过滤阈值配置
+# =============================================================================
+quality_filter:
+  enabled: true
+  lang_detect: true
+  target_languages:
+    - "zh"
+    - "en"
+    - "code"
+  perplexity:
+    enabled: true
+    max_threshold: 1000.0
+    model_path: "./models/fasttext/lid.176.bin"
+  ngram_repeat:
+    enabled: true
+    n: 3
+    max_ratio: 0.30
+  punctuation:
+    enabled: true
+    min_ratio: 0.05
+    max_ratio: 0.60
+  word_length:
+    enabled: true
+    min_avg_length: 3.0
+    max_avg_length: 50.0
+  special_chars:
+    enabled: true
+    max_ratio: 0.20
+    chars: "�\x00\x01\x02\x1a��"
+  url_ratio:
+    enabled: true
+    max_ratio: 0.40
+  stopword_ratio:
+    enabled: true
+    min_ratio: 0.02
+  min_text_length: 50
+  max_text_length: 1000000
+  batch_size: 10000
+  num_workers: 16
+
+# =============================================================================
+# 去重参数配置
+# =============================================================================
+deduplication:
+  enabled: true
+  exact_dedup: true
+  fuzzy_dedup: true
+  minhash:
+    num_perm: 128
+    threshold: 0.80
+    ngram_size: 5
+    bands: 16
+    rows_per_band: 8
+  level: "document"  # document, paragraph, both
+  paragraph_level: true
+  paragraph_separator: "\n\n"
+  storage:
+    type: "disk"  # memory, disk, redis
+    redis_host: "localhost"
+    redis_port: 6379
+    redis_db: 0
+  streaming_batch_size: 50000
+  num_workers: 16
+
+# =============================================================================
+# 分词参数配置
+# =============================================================================
+tokenization:
+  enabled: true
+  tokenizer_path: "./models/tokenizer/tokenizer.json"
+  tokenizer_type: "bpe"  # bpe, sentencepiece, huggingface
+  max_length: 524288
+  truncation: true
+  padding: false
+  add_special_tokens: true
+  sequence_packing: true
+  packing_max_sequences: 8
+  num_workers: 32
+  output_formats:
+    - "arrow"
+    - "parquet"
+    - "jsonl"
+    - "mmap"
+  output_dir: "./output/tokenized"
+  shuffle_before_save: true
+  compression: "zstd"  # none, zstd, gzip, lz4
+
+# =============================================================================
+# 数据混合配置
+# =============================================================================
+mixing:
+  enabled: true
+  strategy: "weighted"  # weighted, proportional, stratified
+  epoch_less: true
+  shuffle_buffer_size: 1000000
+  refresh_weights_interval: 10000  # steps
+  categories:
+    general:
+      weight: 0.70
+      max_samples_ratio: 1.0
+    code:
+      weight: 0.20
+      max_samples_ratio: 1.0
+    math:
+      weight: 0.10
+      max_samples_ratio: 1.0
+  dynamic_adjustment:
+    enabled: true
+    adjustment_interval: 5000  # steps
+    min_weight: 0.05
+    max_weight: 0.80
+
+# =============================================================================
+# 缓存路径配置
+# =============================================================================
+cache:
+  enabled: true
+  l1_cache:
+    type: "memory"
+    max_size_gb: 64.0
+    eviction_policy: "lru_lfu"  # lru, lfu, lru_lfu
+  l2_cache:
+    type: "disk"
+    cache_dir: "./cache/disk"
+    max_size_gb: 1024.0
+    eviction_policy: "lru"
+  l3_cache:
+    type: "distributed"
+    backend: "redis"  # redis, ray
+    redis_host: "localhost"
+    redis_port: 6379
+    redis_password: null
+    cluster_mode: false
+  mmap_enabled: true
+  mmap_dir: "./cache/mmap"
+  serialization: "arrow"  # pickle, arrow, numpy
+  warmup_on_start: true
+  cleanup_interval_hours: 24
+
+# =============================================================================
+# 输出格式配置
+# =============================================================================
+output:
+  formats:
+    - "arrow"
+    - "parquet"
+    - "jsonl"
+  compression: "zstd"
+  shard_size: 10000  # samples per shard
+  output_dir: "./output/final"
+  save_intermediate: false
+  intermediate_dir: "./output/intermediate"
+
+# =============================================================================
+# 分布式协调配置
+# =============================================================================
+distributed:
+  enabled: false
+  num_nodes: 1
+  node_rank: 0
+  master_addr: "localhost"
+  master_port: 29500
+  backend: "gloo"  # gloo, nccl, mpi
+  timeout_sec: 3600
+
+# =============================================================================
+# 监控与日志配置
+# =============================================================================
+monitoring:
+  log_file: "./logs/pipeline.log"
+  log_interval_sec: 30
+  metrics_enabled: true
+  metrics_port: 9090
+  progress_bar: true
+  report_stats: true
+  alert_on_error: false
+  alert_email: null

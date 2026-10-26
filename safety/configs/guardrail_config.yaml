@@ -1,0 +1,143 @@
+# ============================================================
+# 青小团(Qingxiaotuan) 模型护栏配置
+# Qingxiaotuan Model Guardrail Configuration
+# ============================================================
+
+guardrail_metadata:
+  name: "青小团模型行为护栏"
+  version: "1.0.0"
+  description: "定义模型行为边界和安全回复策略"
+
+# 拒绝回答模板
+refusal_templates:
+  strict:
+    - "抱歉，我无法回答这个问题。请提出其他合规的问题。"
+    - "我不能提供这方面的信息。请理解我的内容安全限制。"
+    - "这个问题涉及不允许讨论的内容。请换个话题。"
+  standard:
+    - "我无法回答这个问题，因为它涉及可能不安全的内容。请重新表述您的问题。"
+    - "作为一个负责任的语言模型，我不能提供这方面的信息。"
+    - "抱歉，我无法满足这个请求。请提出其他问题。"
+  medical:
+    - "我无法提供医疗诊断或治疗建议。请咨询专业医疗人员。"
+    - "作为一个AI助手，我不能替代医生的专业诊断。如有健康问题，请咨询医生。"
+  legal:
+    - "我无法提供法律建议。请咨询专业律师获取法律意见。"
+    - "法律问题需要专业人士解答。建议您联系律师获取准确信息。"
+  financial:
+    - "我无法提供投资建议。投资有风险，请咨询专业的财务顾问。"
+    - "金融投资涉及风险，我不能提供具体的投资建议。"
+  self_harm:
+    - "我很抱歉您感到痛苦。请记住，您并不孤单，有很多人关心您。建议拨打心理援助热线：400-161-9995。"
+    - "您的感受很重要。如果您正在经历困难，请寻求专业心理帮助。全国心理援助热线：400-161-9995。"
+
+# 安全回复生成
+safe_response:
+  enabled: true
+  rewrite_unsafe_content: true
+  add_disclaimer: true
+  disclaimer_text: "请注意：以上内容由AI生成，仅供参考。"
+  max_safe_response_length: 1024
+
+# 话题重定向策略
+topic_redirection:
+  enabled: true
+  redirection_templates:
+    - "这个话题我不太了解。不如我们聊聊其他的？比如{}"
+    - "关于这个问题，我建议换个角度。{}可能更有趣。"
+    - "不如我们换个话题吧？我可以帮您了解{}方面的内容。"
+  suggestion_topics:
+    - "科学技术"
+    - "文化艺术"
+    - "教育学习"
+    - "生活健康"
+    - "编程开发"
+    - "语言学习"
+    - "历史地理"
+  max_redirections_per_session: 5
+
+# 内容范围限制
+content_scope:
+  topic_whitelist:
+    enabled: true
+    topics:
+      - "教育"
+      - "科技"
+      - "文化"
+      - "艺术"
+      - "科学"
+      - "编程"
+      - "语言"
+      - "历史"
+      - "地理"
+      - "数学"
+      - "物理"
+      - "化学"
+      - "生物"
+      - "音乐"
+      - "体育"
+  topic_blacklist:
+    enabled: true
+    topics:
+      - "非法活动指导"
+      - "暴力极端内容"
+      - "仇恨言论"
+      - "色情内容"
+      - "自残自杀指导"
+      - "隐私侵犯"
+      - "欺诈活动"
+  sensitive_domains:
+    enabled: true
+    domains:
+      - "武器制造"
+      - "毒品合成"
+      - "网络攻击"
+      - "身份伪造"
+      - "医疗诊断"
+      - "法律判决"
+
+# 护栏触发统计
+guardrail_statistics:
+  enabled: true
+  tracking_metrics:
+    - "total_refusals"
+    - "refusals_by_category"
+    - "redirections_triggered"
+    - "safe_responses_generated"
+    - "filter_warnings"
+  aggregation_interval_seconds: 3600
+  stats_retention_days: 90
+
+# 护栏配置
+guardrail_settings:
+  max_refusal_count_per_session: 20
+  cooldown_minutes: 5
+  enable_proactive_detection: true
+  enable_post_generation_filter: true
+  enable_context_aware_guardrails: true
+  strict_mode_on_high_risk: true
+  log_all_guardrail_triggers: true
+  performance_sampling_rate: 0.1
+
+# 行为限制
+behavior_limits:
+  max_session_turns: 100
+  max_tokens_per_response: 4096
+  max_context_length: 8192
+  temperature_range:
+    min: 0.1
+    max: 1.5
+    default: 0.7
+  top_p_range:
+    min: 0.1
+    max: 1.0
+    default: 0.9
+
+# 紧急响应配置
+emergency_response:
+  enabled: true
+  critical_violation_action: "immediate_block"
+  notify_on_critical: true
+  auto_escalation: true
+  escalation_contact: "safety-team@qingxiaotuan.ai"
+  emergency_cooldown_minutes: 30

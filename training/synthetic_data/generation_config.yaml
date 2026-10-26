@@ -1,0 +1,200 @@
+# ============================================================
+# 青小团 合成数据生成引擎 - 全局配置文件
+# 青奈科技 (QingNai Technology)
+# ============================================================
+
+# 全局设置
+global:
+  random_seed: 42
+  output_dir: "./output"
+  log_dir: "./logs"
+  tmp_dir: "./tmp"
+  num_workers: 4
+  batch_size: 1000
+  max_retries: 3
+  verbose: true
+
+# 数据输出格式
+output:
+  formats:
+    - jsonl
+    - parquet
+  compression: gzip
+  max_file_size_mb: 100
+  shard_by_topic: true
+  include_metadata: true
+
+# 各类数据生成配置
+data_types:
+
+  instruction:
+    enabled: true
+    total_count: 300000
+    target_languages:
+      - zh-CN
+      - en
+    difficulty_distribution:
+      easy: 0.3
+      medium: 0.4
+      hard: 0.2
+      expert: 0.1
+    length_distribution:
+      short: 0.3
+      medium: 0.4
+      long: 0.2
+      very_long: 0.1
+    multi_turn_ratio: 0.3
+    role_play_ratio: 0.15
+    style_distribution:
+      formal: 0.35
+      friendly: 0.35
+      professional: 0.2
+      creative: 0.1
+    template_categories:
+      - writing
+      - translation
+      - summarization
+      - reasoning
+      - analysis
+      - coding
+      - explanation
+      - creative
+
+  reasoning:
+    enabled: true
+    total_count: 200000
+    categories:
+      math_algebra: 0.15
+      math_geometry: 0.1
+      math_probability: 0.1
+      math_statistics: 0.1
+      logic_deductive: 0.1
+      logic_inductive: 0.08
+      logic_analogical: 0.07
+      common_causal: 0.08
+      common_temporal: 0.05
+      common_social: 0.05
+      science_physics: 0.05
+      science_chemistry: 0.04
+      science_biology: 0.03
+    chain_of_thought: true
+    min_steps: 2
+    max_steps: 10
+    verification_ratio: 0.3
+
+  code:
+    enabled: true
+    total_count: 250000
+    languages:
+      python: 0.25
+      javascript: 0.2
+      typescript: 0.15
+      java: 0.12
+      cpp: 0.1
+      go: 0.08
+      rust: 0.05
+      csharp: 0.05
+    code_types:
+      algorithm: 0.2
+      data_structure: 0.15
+      api_usage: 0.15
+      system_design: 0.1
+      bug_fix: 0.15
+      optimization: 0.1
+      code_review: 0.1
+      documentation: 0.05
+    include_explanation: true
+    ast_validation: true
+    test_cases_ratio: 0.3
+
+  conversation:
+    enabled: true
+    total_count: 150000
+    scenarios:
+      customer_service: 0.2
+      education: 0.2
+      consultation: 0.15
+      creative_writing: 0.15
+      technical_support: 0.15
+      daily_chat: 0.15
+    min_turns: 2
+    max_turns: 20
+    style_distribution:
+      formal: 0.3
+      friendly: 0.4
+      professional: 0.3
+    topic_switch_probability: 0.15
+    context_window_tokens: 4096
+
+  knowledge:
+    enabled: true
+    total_count: 100000
+    domains:
+      science: 0.15
+      history: 0.12
+      literature: 0.1
+      art: 0.08
+      technology: 0.15
+      medicine: 0.1
+      law: 0.08
+      finance: 0.1
+      philosophy: 0.07
+      geography: 0.05
+    question_types:
+      factual: 0.3
+      explanatory: 0.35
+      comparative: 0.2
+      structured: 0.15
+    difficulty:
+      basic: 0.3
+      intermediate: 0.4
+      advanced: 0.3
+
+# 数据增强配置
+augmentation:
+  enabled: true
+  techniques:
+    back_translation: 0.15
+    synonym_replacement: 0.2
+    random_insertion: 0.1
+    random_deletion: 0.05
+    sentence_shuffle: 0.1
+    noise_injection: 0.05
+    length_variation: 0.15
+    style_transfer: 0.1
+    round_trip: 0.1
+  augmented_ratio: 0.3
+  preserve_semantics: true
+
+# 数据验证配置
+validation:
+  enabled: true
+  checks:
+    format: true
+    content_empty: true
+    content_too_short: true
+    content_too_long: true
+    duplicate_detection: true
+    language_consistency: true
+    toxicity_filter: true
+    pii_detection: true
+    quality_score: true
+  thresholds:
+    min_length: 10
+    max_length: 8192
+    min_quality_score: 0.6
+    max_duplicate_similarity: 0.95
+  toxicity_threshold: 0.8
+  report_dir: "./validation_reports"
+  halt_on_error: false
+
+# 分布式生成配置
+distributed:
+  enabled: false
+  num_nodes: 1
+  node_rank: 0
+  master_addr: "localhost"
+  master_port: 29500
+  backend: "gloo"
+  checkpoint_interval: 5000
+  resume_from_checkpoint: true

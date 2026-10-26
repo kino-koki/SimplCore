@@ -1,4 +1,4 @@
-import torch
+import simplcore.tensor as torch
 
 
 def test_run_smoke_training_public_alias_matches_train_smoke():

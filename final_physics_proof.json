@@ -1,0 +1,31 @@
+{
+  "spring_test": {
+    "k": 1.1590320565447338,
+    "m": 1.6257541510076043,
+    "b": 0.06698065771886177,
+    "rmse": 0.3125098943710327,
+    "relative_error_percent": 12.16149192371005,
+    "passed": 0
+  },
+  "gravity_test": {
+    "g": 10.230275083525209,
+    "rmse": 61.87748336791992,
+    "relative_error_percent": 34.52673224745419,
+    "passed": 0
+  },
+  "generalization_test": {
+    "n_tests": 100,
+    "mean_rmse": 0.45460302211344245,
+    "min_rmse": 0.040045008063316345,
+    "max_rmse": 1.5825790166854858,
+    "pct_below_0.05": 2.0,
+    "passed": 0
+  },
+  "final_conclusion": "基于实测：spring 相对误差 12.16%，gravity 相对误差 34.53%，泛化平均 RMSE 0.4546。存在未达通过阈值的项目，判定为尚未充分学习物理规律，结论需以真实误差为准。",
+  "all_passed": false,
+  "weight_loaded": true,
+  "pass_thresholds": {
+    "relative_error_percent": 10.0,
+    "generalization_mean_rmse": 0.05
+  }
+}

@@ -1,4 +1,4 @@
-import torch
+import simplcore.tensor as torch
 
 from simplcore.mix.stacking.manifest import SourceCheckpoint, StackManifest
 from simplcore.mix.stacking.mapper import copy_matching_tensors_strict

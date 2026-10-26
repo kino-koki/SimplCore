@@ -1,0 +1,192 @@
+# ============================================================
+# 青小团(Qingxiaotuan) 安全系统主配置
+# Qingxiaotuan Safety System - Master Configuration
+# ============================================================
+
+# 系统全局配置
+system:
+  name: "Qingxiaotuan Safety System"
+  version: "1.0.0"
+  environment: "production"  # development | testing | production
+  log_level: "INFO"          # DEBUG | INFO | WARNING | ERROR | CRITICAL
+  cache_enabled: true
+  cache_ttl_seconds: 300
+
+# 过滤级别配置
+filter_level:
+  strict:
+    name: "严格"
+    description: "最高安全标准，适用于正式生产环境"
+    block_all_sensitive: true
+    block_suspicious: true
+    min_confidence_threshold: 0.3
+  standard:
+    name: "标准"
+    description: "常规安全标准，适用于一般使用场景"
+    block_all_sensitive: true
+    block_suspicious: false
+    min_confidence_threshold: 0.6
+ 宽松:
+    name: "宽松"
+    description: "较低安全标准，适用于研究或受控环境"
+    block_all_sensitive: false
+    block_suspicious: false
+    min_confidence_threshold: 0.85
+
+# 内容过滤配置
+content_filter:
+  enabled: true
+  input_filtering: true
+  output_filtering: true
+  keyword_filtering: true
+  model_based_review: true
+  sensitive_word_matching: true
+  regex_based_filtering: true
+  max_input_length: 8192
+  max_output_length: 4096
+  encoding: "utf-8"
+
+# 有害内容检测配置
+toxicity_detector:
+  enabled: true
+  rule_based_detection: true
+  model_based_detection: true
+  categories:
+    hate_speech:
+      enabled: true
+      threshold: 0.5
+    violence:
+      enabled: true
+      threshold: 0.5
+    pornographic:
+      enabled: true
+      threshold: 0.5
+    self_harm:
+      enabled: true
+      threshold: 0.4
+    illegal:
+      enabled: true
+      threshold: 0.5
+  confidence_scoring: true
+  structured_output: true
+
+# 偏见检测配置
+bias_detector:
+  enabled: true
+  dimensions:
+    gender:
+      enabled: true
+      threshold: 0.6
+    race:
+      enabled: true
+      threshold: 0.6
+    region:
+      enabled: true
+      threshold: 0.6
+    occupation:
+      enabled: true
+      threshold: 0.6
+  reporting_enabled: true
+  report_format: "detailed"
+
+# 隐私过滤配置
+privacy_filter:
+  enabled: true
+  pii_detection: true
+  patterns:
+    email: true
+    phone: true
+    id_card: true
+    address: true
+    bank_card: true
+    passport: true
+    ip_address: true
+  dual_detection: true  # 正则+模型双重检测
+  masking_enabled: true
+  masking_char: "*"
+  masking_mode: "partial"  # partial | full
+  risk_assessment: true
+
+# 越狱检测配置
+jailbreak_detector:
+  enabled: true
+  known_patterns_matching: true
+  semantic_similarity_detection: true
+  role_play_attack_detection: true
+  multi_turn_attack_detection: true
+  similarity_threshold: 0.75
+  max_history_turns: 10
+  pattern_update_interval_hours: 24
+
+# 模型护栏配置
+model_guardrail:
+  enabled: true
+  refusal_templates: true
+  safe_response_generation: true
+  topic_redirection: true
+  content_scope_limiting: true
+  guardrail_statistics: true
+  max_refusal_count_per_session: 20
+  cooldown_minutes: 5
+
+# 安全评估配置
+safety_evaluator:
+  enabled: true
+  red_team_testing: true
+  attack_vector_generation: true
+  evaluation_metrics:
+    - "refusal_rate"
+    - "bypass_rate"
+    - "false_positive_rate"
+    - "false_negative_rate"
+    - "response_quality"
+  scoring_enabled: true
+  report_generation: true
+  improvement_suggestions: true
+
+# 内容策略配置
+content_policy:
+  enabled: true
+  policy_version: "1.0.0"
+  auto_update_enabled: true
+  policy_check_interval_hours: 72
+  violation_levels:
+    critical: "严重违规"
+    high: "高危违规"
+    medium: "中度违规"
+    low: "轻度违规"
+
+# 审计日志配置
+audit_logger:
+  enabled: true
+  log_retention_days: 365
+  integrity_check: true
+  hash_algorithm: "sha256"
+  log_format: "json"
+  log_directory: "./logs/audit/"
+  log_file_prefix: "qingxiaotuan_audit_"
+  max_log_file_size_mb: 100
+  backup_count: 30
+  real_time_reporting: true
+
+# 文本编码配置
+text_encoding:
+  default_encoding: "utf-8"
+  fallback_encoding: "gbk"
+  normalize_unicode: true
+  traditional_to_simplified: false
+
+# 速率限制
+rate_limiting:
+  enabled: true
+  max_requests_per_minute: 60
+  max_requests_per_hour: 1000
+  cooldown_seconds: 30
+
+# 模型配置引用
+model:
+  safety_checkpoint: "qingxiaotuan_safety_v1"
+  embedding_model: "qingxiaotuan_embedding_v1"
+  classifier_model: "qingxiaotuan_classifier_v1"
+  max_batch_size: 32
+  device: "auto"  # auto | cpu | cuda

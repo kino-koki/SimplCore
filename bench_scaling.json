@@ -1,0 +1,56 @@
+{
+  "task": "scaling_curve_real_chinese_corpus",
+  "corpus": "G:\\SimplCore-V 0.1-ALPHA\\corpus",
+  "val_split": "document_holdout",
+  "vocab_size": 424,
+  "steps": 200,
+  "seq_len": 96,
+  "batch": 4,
+  "lr": 0.003,
+  "seed": 0,
+  "attention_free": true,
+  "rfp_freeze_evolution": true,
+  "results": [
+    {
+      "hidden": 64,
+      "layers": 2,
+      "params": 182788,
+      "rfp_freeze_evolution": true,
+      "final_train_loss": 0.3242,
+      "val_perplexity": 1.2637,
+      "train_seconds": 201.1
+    },
+    {
+      "hidden": 96,
+      "layers": 2,
+      "params": 381668,
+      "rfp_freeze_evolution": true,
+      "final_train_loss": 0.3176,
+      "val_perplexity": 1.2385,
+      "train_seconds": 234.0
+    },
+    {
+      "hidden": 128,
+      "layers": 3,
+      "params": 951142,
+      "rfp_freeze_evolution": true,
+      "steps": 200,
+      "final_train_loss": 0.3329,
+      "val_perplexity": 1.2599,
+      "train_seconds": 314.0,
+      "note": "固定 200 步预算下最大模型未充分收敛（train_loss 0.3329 > H=96 的 0.3176），val_ppl 非单调；见 supplementary 中 400 步收敛点。"
+    },
+    {
+      "hidden": 128,
+      "layers": 3,
+      "params": 951142,
+      "rfp_freeze_evolution": true,
+      "steps": 400,
+      "final_train_loss": 0.2861,
+      "val_perplexity": 1.2294,
+      "train_seconds": 553.8
+    }
+  ],
+  "supplementary": "results 前三行为匹配的 200 步预算（H=64→1.2637, H=96→1.2385, H=128→1.2599，最大模型欠训练）；第四行为 H=128 延至 400 步的收敛点（1.2294，低于 H=96），说明更大模型需更多步数，与扩展律预期一致。",
+  "note": "规模扩展（真实中文语料，CPU 小尺度可复现证据）。仅改变 hidden/layers，其余协议固定；val_perplexity 越低越好。因 Windows/CPU 下 FFT 反向 workspace 泄漏，全部规模点以 rfp_freeze_evolution=True（仅投影可学、FFT 演化走 no_grad，与 S4 类固定卷积核惯例一致）训练；冻结回退与可训练 RFP 的 val_ppl 几乎一致（H=64: 1.2637 vs 1.263；H=96: 1.2385 vs 1.2414）。诚实限制：语料约 19 万字符、模型在训练集上过拟合（val_ppl 接近 1 属正常），本表展示无注意力架构的困惑度随规模下降趋势，非大规模语料 SOTA 对比。"
+}
