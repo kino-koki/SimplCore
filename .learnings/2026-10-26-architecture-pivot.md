@@ -126,3 +126,30 @@ SGC 的核心资产是 **FFT（训练）↔ 二阶 IIR（推理）** 的严格�
 2. **它被 git 跟踪吗？** 未跟踪 = 纯垃圾；已跟踪 = 删除是历史变更，要留痕
 3. **它是别的脚本的依赖吗？** `libs/` 的案例：引用它的路径全是失效的 → 零有效依赖
 
+
+---
+
+## 补记：删完之后才发现的第四个问题——**悬挂对象**
+
+删完工作区文件、体积从 15.8 GB 降到 2.16 GB，看起来结束了。但 `git count-objects -vH`
+显示 `size-pack: 716 MB`，而历史里最大的 blob 只有几十 KB。
+
+原因：早前某次 `git add` 把 `data/`、`libs/` 的内容写进了对象库。即使**从未提交**，
+这些 blob 仍然存在于 pack 中，`git status` 看不到它们，`git ls-files` 也查不到。
+
+一个 `git gc --prune=now`：**716 MB → 6.45 MB**。
+
+### 教训
+
+* **工作区体积 ≠ 仓库体积。** 双份：`du` 看工作区，`git count-objects -vH` 看 `.git`。
+* **`git add` 会把 blob 落地，哪怕你马上 `git reset`。** 大目录先写 `.gitignore`，
+  再 `git add -A`。
+* **清理的最后一公里是 `git gc`。** 不做，前 90% 的工作只回收了空间的一半。
+
+### 判断标准（下次直接照做）
+
+```
+du -sm .                          # 工作区
+git count-objects -vH | grep size-pack   # 仓库
+```
+两者差一个数量级 → 有悬挂对象，跑 `git gc --prune=now`。
