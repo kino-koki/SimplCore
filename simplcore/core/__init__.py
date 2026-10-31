@@ -206,6 +206,14 @@ from .envlearn import (
     EnvironmentLearner,
     summarize_failures,
 )
+from .jitrl import (
+    TrajectoryMemory,
+    Transition,
+    AdvantageEstimator,
+    advantage_logit_bias,
+    apply_logit_bias,
+    JitRLController,
+)
 from .extrapolation import (
     extrapolation_probe,
     decay_ablation,

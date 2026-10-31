@@ -481,19 +481,35 @@ class SimplCoreModel(nn.Module):
     def generate(self, idx: torch.Tensor, max_new_tokens: int = 32,
                  temperature: float = 1.0, top_k: Optional[int] = None,
                  top_p: Optional[float] = None, use_state: bool = True,
-                 eos_token_id: Optional[int] = None) -> torch.Tensor:
+                 eos_token_id: Optional[int] = None,
+                 logit_bias_fn: Optional[object] = None) -> torch.Tensor:
         """Autoregressive sampling.
 
         ``use_state=True`` uses the O(1) recurrent path: per-token cost and memory
         do not grow with the context length.
+
+        ``logit_bias_fn``（v1.2，JitRL 式测试时调制钩子，默认 None）：
+        每步在采样前以当前 ``(B, V)`` logits 调用，返回**加性偏置**
+        （可广播到 logits 形状，如 ``(V,)``）或 ``None``（恒等）。
+        供 ``jitrl`` 的经验优势偏置使用——**免训练的输出端策略调制**
+        （KL 约束策略优化的加性闭式更新，见 JitRL arXiv:2601.18510）。
+        默认 None 时所有路径与未接入**逐位一致**（测试锁定）；模型本身
+        不依赖任何经验记忆实现。
         """
         was_training = self.training
         self.eval()
         B = idx.shape[0]
+
+        def _mod(lg: torch.Tensor) -> torch.Tensor:
+            if logit_bias_fn is None:
+                return lg
+            out = logit_bias_fn(lg)
+            return lg if out is None else lg + out
+
         if not use_state:
             out = idx
             for _ in range(max_new_tokens):
-                logits = self(out)[:, -1, :]
+                logits = _mod(self(out)[:, -1, :])
                 nxt = self._sample(logits, temperature, top_k, top_p)
                 out = torch.cat([out, nxt], dim=1)
                 if eos_token_id is not None and bool((nxt == eos_token_id).all()):
@@ -508,7 +524,7 @@ class SimplCoreModel(nn.Module):
             logits, state = self.stream_step(idx[:, t], state)
         out = idx
         for _ in range(max_new_tokens):
-            nxt = self._sample(logits, temperature, top_k, top_p)
+            nxt = self._sample(_mod(logits), temperature, top_k, top_p)
             out = torch.cat([out, nxt], dim=1)
             if eos_token_id is not None and bool((nxt == eos_token_id).all()):
                 break

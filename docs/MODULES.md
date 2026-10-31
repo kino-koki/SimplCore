@@ -23,6 +23,13 @@
   `test_sgc_routed` 按 `test_mixer_math` 同等强度守护，细节见 `SGC_CORE.md` §10。
   `RMSNorm` / `make_norm` 是归一化；`_init_oscillator_grid`（v1.2 默认 logfreq +
   `_assert_no_common_zero` 公共零点守护）/ `_logit` 是振荡基初始化。
+- **`jitrl.py`** — JitRL 式测试时优势调制（v1.2，agent 域免训练持续适应）：
+  `TrajectoryMemory`（非参数经验轨迹库）+ `AdvantageEstimator`（检索式动作优势）
+  + `advantage_logit_bias`/`apply_logit_bias`（加性 logit 调制——KL 约束策略
+  优化的闭式更新形式，JitRL arXiv:2601.18510）；`SimplCoreModel.generate(logit_bias_fn=...)`
+  是一等接入钩子（默认 None 逐位恒等，测试锁定）。与 Reflexion arXiv:2303.11366
+  （提示端）和 L2 证据门（mixer 端）构成"经验约束生成"三位置实例化。
+  **无环境实测**（WebArena 判据见论文 §7.4 W4）。
 - **`srf.py`** — `SpectralResonanceFlow`：SGC + `SelectiveSpectralSSM`（输入相关 Δ）的
   selective 谱振流混合器（`mixer="srf"`）。
 - **`ssm.py`** — `SelectiveSpectralSSM` / `SSMState`：复对角 SSM（复特征值，可表达周期记忆），

@@ -135,6 +135,12 @@ python -m simplcore.core.pilot --rounds 2 --out runs/pilot
 * `sgc_route_groups` / `sgc_route_topk` / `sgc_route_aux` —— SGC-R 谱专家路由
   （见 `docs/SGC_CORE.md` §10）。
 
+**Agent 域 v1.2**：`jitrl.py` —— JitRL 式**免训练测试时优势调制**（非参数经验
+轨迹记忆 + 检索式动作优势 + 加性 logit 调制，KL 约束策略优化的闭式更新；
+JitRL arXiv:2601.18510）。`SimplCoreModel.generate(logit_bias_fn=...)` 为一等
+接入钩子（默认 None 逐位恒等）。与 Reflexion（提示端）、L2 证据门（mixer 端）
+构成"经验约束生成"三位置实例化。无环境实测（WebArena 判据 W4 见论文 §7.4）。
+
 ---
 
 ## 5. 文档索引

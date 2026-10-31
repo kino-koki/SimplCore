@@ -145,6 +145,12 @@ $y_t = \mathrm{long}_t + \mathrm{local}_t + f\odot u_t;\qquad \text{out}=W_{out}
 
 **(c) Simpl Model Memory（`smm.py`）**：把 §3.5 的组件整合为**三层记忆门面**——工作记忆（O(1) 流式状态）→ 情景记忆（CMT 库：`experience()` 落两处、`recall()` 检索聚合、`answer()` 检索注入流式生成）→ 语义记忆（`sleep()` Dreaming 巩固 + no-regression gate + 回滚，回滚同步回滚记忆库）。`think_max_iters>0` 时 `answer()` 走 (a) 的 latent 思考流式路径——`_consume` 与 `stream_step` 同构且兼容 `state.memory` 注入，思考与记忆在同一 O(1) 状态上叠加。硬约束继承自 Dreaming：`mode="weights"` 无 verifier 拒绝写权、零初始化记忆注入恒等（训练后分叉，测试锁定）。**诚实边界**：SMM 是整合接线层而非已训好的自学习模型；"越用越好"未在真实任务实测前不得宣称；思考层参数不在巩固优化器范围内。其目标函数层面的理论动机（为什么 O(1) 状态与世界模型互补）见 §3.5——动机不改变本边界：该节同样是未实测的。
 
+**(d) JitRL 式测试时优势调制（`jitrl.py`，v1.2 新增：agent 域的免训练持续适应）**：部署后权重冻结是 LLM agent 持续适应的瓶颈；常规 RL 微调（WebRL [17]，ICLR 2025——自进化在线课程 + ORM + KL 约束迭代，WebArena-Lite 上把开源 8B 模型从 4.8% 提到 42.4%）算力昂贵且有灾难性遗忘风险。JitRL [18]（ICML 2026 Oral）证明**免梯度**的替代路线：非参数经验轨迹记忆 + 检索式即时动作优势估计 + 优势**加性调制输出 logits**，且该更新形式是 KL 约束策略优化的精确闭式解；在 WebArena 上超过 WebRL 而成本降低 30× 以上。
+
+本架构的三处结构同构与一处更优落点：(i) 经验记忆 ↔ SMM 情景层——CMT 存知识条目，`jitrl.TrajectoryMemory` 存 (状态, 动作, 结果) 三元组，优势估计需要**动作粒度**，压缩会丢失；(ii) 即时检索 ↔ O(1) 流式的成本结构——优势估计开销与上下文长度无关；(iii) **logits 调制的落点比原论文更干净**——JitRL 调制的是外部 LLM API 的 logits（受 logit-bias 接口限制），SimplCore 的 logits 出自自家 `head`，`generate(logit_bias_fn=...)` 把调制做成一等结构化通路（加性偏置、可广播、默认 None 逐位恒等，测试锁定）。与 Reflexion [19]（语言反思入 episodic memory，**提示端**）和 L2 证据门（前缀证据调制路径权重，**mixer 端**）构成"经验约束生成"的三位置实例化，正交叠加。评测环境为 WebArena [20]（真实网站 + 功能正确性自动判定）。
+
+**诚实边界**：本模块是机制接线 + 数值守护（`test_jitrl`，13 项：恒等性/优势数学/闭环/钩子等价），**无任何环境基准数字**——WebArena/Jericho 结果属于原论文的外部 API 模型（GPT-4 级 agent），SimplCore 主干在 30M–2B 量级的效果未验证（判据 W4，§7.4）。verifier 语义沿用 §3.6(c)：只信独立判定（ORM/pass@k/环境判定），不信自报。
+
 ---
 
 ## 4 理论结果
@@ -397,6 +403,7 @@ $$\text{worst }|\Delta| = 0.000\times10^{+0}\quad(\text{阈值 } 10^{-4}\text{�
 | 4 | 长上下文外推的质量 | 仅"L=1024 前向有限" | 训 4K 推 32K 的困惑度未测（工具已就位：`extrapolation_probe`/`decay_ablation`，缺一次 A100 运行） |
 | 5 | `decay_max` 的必要性 | 默认 8192/16384 是先验 | 未消融 |
 | 6 | 显式世界模型底架的增量与"越用越好"（v1.2，§3.5） | §3.5 是理论动机（重解释定理 3 与轴 C/D 的含义），无任何实验；W1–W3 判据未运行 | 同算力有/无显式世界模型头的状态追踪对照（接 `ab_compare`）；真实任务上的自进化曲线 |
+| 7 | agent 域：JitRL 式测试时调制与环境基准表现（v1.2，§3.6(d)） | `jitrl` 机制接线 + 13 项数值守护；WebArena/WebRL 的数字属于原论文的外部 API 模型，SimplCore 主干未在 WebArena [20] 上运行 | W4：同模型有/无经验调制的 WebArena 对照（评测环境 [20]，基线 Reflexion [19] 免训练 / WebRL [17] 微调） |
 
 另附五项方法学声明：(a) "$O(1)$" **仅指流式/分块推理的常驻状态**——训练侧 FFT 整段前向激活仍随 $L$ 线性（$O(DL)$，FFT 形式固有），分块 IIR 训练激活为 $O(D\cdot\text{chunk})$（战役采用后者）；引用本文"$O(1)$"必须带上此上下文（v1.1.1 强化，防误读）；(b) 四层闸门是结构性约束，非幻觉消除保证；(c) 闸门默认开启改变了模型行为，复现旧实验须显式关闭 L2/L3；(d) **fp32 长序列（$L\ge10^5$）累积误差从未实测**，命题 5 的误差界在 $\rho_m\to1$ 时急剧保守（见命题 5 后的保守性警告），长序列数值稳健性以 Phase 0 conformance 实测为准；(e) **勘误记录**：v1.1.1 修正流式状态公式漏计 M 因子的实现与文档错误（§5.3/§5.12 勘误），该错误由外部核对发现、mathproof P12 硬断言在修复时暴露——同类"数字-公式-实现三方不一致"今后以 P12 式逐字节重推为标准防线。
 
@@ -471,6 +478,7 @@ Phase 2 的 2B 适配器由**独立 verifier 验证过的失败轨迹**蒸馏（
 | W1 显式底架增量（§3.5(e)） | 加世界模型头后，状态追踪类任务（Othello/棋盘/多跳实体追踪）样本效率显著高于同算力纯 LM 基线 | 显式底架无增量，隐式学习已足够 |
 | W2 verifier 反馈无冲突（§3.5(d)-2） | 训练中加入 verifier 反馈后，域内 pass@k 提升且域外 held-out ppl 不劣化 | 存在优化冲突，需重新平衡两目标 |
 | W3 巩固/回滚必要性（§3.5(c)） | 移除巩固/回滚后质量显著下降 | 自进化叙事不成立，退回普通 PEFT |
+| W4 JitRL 免训练层增量（§3.6(d)） | WebArena 任务上，启用经验优势调制（`jitrl`）相对同模型无调制基线的成功率显著提升，且随经验轨迹增长单调 | 测试时调制无增量或负增益 → 检索优势在 30M–2B 主干上不成立，退回纯 Reflexion 提示层 |
 
 W1–W3 为 v1.2 新增（§3.5 世界模型动机的可证伪化），协议与上五行同源：同算力、除被测变量外一切钉死；在对应对照运行完成前，§3.5 的主张为**理论动机**而非结论。
 
@@ -508,6 +516,10 @@ v1.1 的增补把这份清单延长为：13 项机器可验证的数学证明（
 14. A. Vaswani, et al. Attention Is All You Need. NeurIPS 2017.
 15. Compression Memory Training (CMT). AAAI 2025.（作者与题名以原文为准；本仓库依此引用并作残差流注入适配，见 §3.5 与官网模块 12 的差异声明表）
 16. Y. Bai, et al. Constitutional AI: Harmlessness from AI Feedback. arXiv:2212.08073, 2022.（Dreaming REFLECT 钩子的生产实现参考）
+17. Z. Qi, et al. WebRL: Training LLM Web Agents via Self-Evolving Online Curriculum Reinforcement Learning. ICLR 2025, arXiv:2411.02337.（最强微调基线；失败任务课程 + ORM 的 verifier 语义与 §3.6(d)/(envlearn) 对齐）
+18. Y. Li, et al. Just-In-Time Reinforcement Learning: Continual Learning in LLM Agents Without Gradient Updates. ICML 2026 Oral, arXiv:2601.18510.（免训练测试时策略优化；加性 logit 调制的闭式解结论由本仓库 `jitrl.py` 复用）
+19. N. Shinn, et al. Reflexion: Language Agents with Verbal Reinforcement Learning. NeurIPS 2023, arXiv:2303.11366.（免训练基线：提示端语言反思，与 §3.6(d) 的输出端调制正交）
+20. S. Zhou, et al. WebArena: A Realistic Web Environment for Building Autonomous Agents. ICLR 2024, arXiv:2307.13854.（agent 评测环境；功能正确性自动判定为 W4 的 verifier 来源）
 
 ---
 
