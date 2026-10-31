@@ -66,3 +66,24 @@ models/
 *.tmp
 *.bak
 *.old
+
+# ── 本地归档（不入库）────────────────────────────────
+# .trash/          —— 已删除模块与脚本的可回滚归档
+# research/        —— 早期路线原型（不发布、不进 CI）
+.trash/
+research/
+
+# ── pytest 临时目录 ────────────────────────────────
+tmp/
+
+# ── 开源排除（2026-10-31 开源核对）────────────────
+# 训练产物 / 语料 / 本地工具目录不入库
+runs/
+corpus/
+.artifacts_local/
+.arts/
+.workbuddy/
+.merkle-snapshot.json
+# 第三方项目（有自己的版权与许可证，随 PyPI/上游获取）
+third_party/OpenMythos/
+.archive/third_party_docs/

@@ -7,7 +7,7 @@
 
     python scripts/build_corpus.py \\
         --parquet-dir data/raw/fineweb_zh \\
-        --out data/processed/sgc_zh \\
+        --out data/processed/tuan_zh \\
         --vocab-size 32000 --seq-len 4096 --val-frac 0.005
 
 产出 (all inside ``--out``)::
@@ -46,9 +46,9 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from simplcore.sgc import data as sgc_data  # noqa: E402
-from simplcore.sgc import tokenizer as sgc_tok  # noqa: E402
-from simplcore.sgc.data import CleanConfig, DataPipelineError  # noqa: E402
+from simplcore.core import data as sgc_data  # noqa: E402
+from simplcore.core import tokenizer as sgc_tok  # noqa: E402
+from simplcore.core.data import CleanConfig, DataPipelineError  # noqa: E402
 
 _LOG = logging.getLogger("build_corpus")
 
@@ -65,7 +65,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     src = p.add_argument_group("输入 / 输出 (input / output)")
     src.add_argument("--parquet-dir", default="data/raw/fineweb_zh",
                      help="原始 parquet 目录 (递归; 自动跳过 .incomplete/.lock)")
-    src.add_argument("--out", default="data/processed/sgc_zh", help="输出目录")
+    src.add_argument("--out", default="data/processed/tuan_zh", help="输出目录")
     src.add_argument("--text-column", default=None,
                      help="文本列名; 默认自动识别 text/content/raw_content")
     src.add_argument("--force", action="store_true", help="即使 --out 下已有分词器也重新训练")

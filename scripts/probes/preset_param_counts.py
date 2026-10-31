@@ -3,9 +3,9 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from simplcore.sgc.config import SGC_PRESETS, SGCConfig
+from simplcore.core.config import SIMPLCORE_PRESETS, SimplCoreConfig
 
-def count(cfg: SGCConfig):
+def count(cfg: SimplCoreConfig):
     d, L, V = cfg.dim, cfg.num_layers, cfg.vocab_size
     h = cfg.hidden
     emb = V * d
@@ -30,6 +30,6 @@ def count(cfg: SGCConfig):
     return total, total - (0 if cfg.tie_embeddings else emb), per
 
 print(f"{'preset':12s} {'params':>13s} {'non-emb':>13s} {'per-layer':>11s}  {'bf16 wts':>9s}  mixer")
-for name, cfg in SGC_PRESETS.items():
+for name, cfg in SIMPLCORE_PRESETS.items():
     tot, nonemb, per = count(cfg)
     print(f"{name:12s} {tot:13,d} {nonemb:13,d} {per:11,d}  {tot*2/1e9:8.2f}G  {cfg.mixer}")

@@ -1,0 +1,63 @@
+{
+  "vocab_size": 32000,
+  "dim": 2048,
+  "num_layers": 31,
+  "ffn_hidden": null,
+  "ffn_ratio": 4.0,
+  "mixer": "sgc",
+  "num_bases": 128,
+  "decay_max": 4000000,
+  "local_kernel": 4,
+  "content_gate": true,
+  "out_gate": false,
+  "evidence_gate": false,
+  "uncertainty_gate": false,
+  "use_abstain": false,
+  "use_memory": false,
+  "norm": "rmsnorm",
+  "num_heads": 16,
+  "tie_embeddings": true,
+  "dropout": 0.0,
+  "norm_eps": 1e-06,
+  "fft_dtype": "float32",
+  "grad_checkpoint": false,
+  "init_std": 0.02,
+  "gate_ab": false,
+  "use_mixer_stream": false,
+  "srf_heads": 8,
+  "srf_chunk": 32,
+  "codec_kind": "char",
+  "codec_kwargs": null,
+  "context": {
+    "max_seq_len": 4000000,
+    "curriculum": [
+      {
+        "seq_len": 4096,
+        "until_frac": 0.18
+      },
+      {
+        "seq_len": 16384,
+        "until_frac": 0.36
+      },
+      {
+        "seq_len": 65536,
+        "until_frac": 0.54
+      },
+      {
+        "seq_len": 262144,
+        "until_frac": 0.7
+      },
+      {
+        "seq_len": 1048576,
+        "until_frac": 0.9
+      },
+      {
+        "seq_len": 4000000
+      }
+    ]
+  },
+  "sgc_path_gate": false,
+  "sgc_inst_nonlin": false,
+  "sgc_init_mode": "logfreq",
+  "sgc_rho_param": "logspace"
+}

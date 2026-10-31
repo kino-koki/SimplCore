@@ -136,6 +136,7 @@ class SimplCoreModel(nn.Module):
             if name.endswith("out_proj.weight") or name.endswith("down.weight"):
                 nn.init.normal_(p, mean=0.0, std=config.init_std / math.sqrt(2 * config.num_layers))
 
+
     def _init_weights(self, m: nn.Module) -> None:
         if isinstance(m, nn.Linear):
             nn.init.normal_(m.weight, mean=0.0, std=self.config.init_std)
@@ -149,7 +150,8 @@ class SimplCoreModel(nn.Module):
                 return_hidden: bool = False,
                 text: Optional[str] = None, codec=None,
                 return_abstain: bool = False,
-                memory: Optional[torch.Tensor] = None):
+                memory: Optional[torch.Tensor] = None,
+                stream_state: Optional[SGCStreamState] = None):
         """统一前向入口：接受 token ID 张量或文本字符串（无词表模式）.
 
         * ``idx_or_x`` 为张量 → 传统路径：token ID → 嵌入 → 前向；
@@ -172,6 +174,18 @@ class SimplCoreModel(nn.Module):
             targets = torch.tensor([codec.encode(targets)],
                                    device=next(self.parameters()).device)
         B, L = idx_or_x.shape
+        # 单块带状态前向：DDP 逐块训练必须经由 DDP.forward（reducer 才能
+        # 在 no_sync / 最后一块同步之间正确切换），因此入口放在 forward。
+        if stream_state is not None:
+            if return_hidden or return_abstain or memory is not None:
+                raise ValueError(
+                    "stream_state 模式不支持 return_hidden/return_abstain/memory")
+            logits, loss_sum, n_tok, _ = self.forward_chunk_step(
+                idx_or_x, targets, stream_state)
+            if targets is None:
+                return logits
+            return logits, loss_sum / max(n_tok, 1)
+
         x = self.drop(self.tok_emb(idx_or_x))
         mem = self._project_memory(memory)
         for blk in self.blocks:
@@ -267,6 +281,12 @@ class SimplCoreModel(nn.Module):
         return self.head(x[:, -1, :]), state
 
     def stream_bytes(self, batch: int = 1, dtype=torch.float32) -> int:
+        """常驻流式状态字节数（与序列长度无关）。
+
+        逐层调用 mixer 的 ``streaming_state_bytes``；递推部分按 ``recurrent_dtype``
+        计费——低精度计算时递推状态恒为 fp32，故账单以 fp32 元素大小为准，不随
+        计算精度缩半（与 :func:`scaling.stream_state_bytes` 口径一致）。
+        """
         total = 0
         for blk in self.blocks:
             mx = blk.mixer
@@ -275,6 +295,111 @@ class SimplCoreModel(nn.Module):
             elif hasattr(mx, "stream_bytes"):
                 total += mx.stream_bytes(batch, dtype)
         return total
+
+    # -- chunked training ----------------------------------------------------
+    @staticmethod
+    def _detach_stream_state(state: "SGCStreamState") -> "SGCStreamState":
+        """把流式状态整体 detach（截断 BPTT 的块间语义）。"""
+        from .sgc import LayerStreamState, SGCStreamState
+        layers = []
+        for st in state.layers:
+            if isinstance(st, LayerStreamState):
+                layers.append(LayerStreamState(
+                    y1=st.y1.detach(), y2=st.y2.detach(),
+                    conv_buf=(st.conv_buf.detach()
+                              if st.conv_buf is not None else None),
+                    length=st.length,
+                    energy_sum=(st.energy_sum.detach()
+                                if st.energy_sum is not None else None)))
+            else:
+                layers.append(st)
+        return SGCStreamState(
+            layers=layers, length=state.length,
+            memory=(state.memory.detach() if state.memory is not None else None))
+
+    def forward_chunk_step(self, idx_chunk: torch.Tensor,
+                           targets_chunk: Optional[torch.Tensor],
+                           state: SGCStreamState):
+        """跑**一个** chunk，返回 ``(logits, loss_sum, n_tok, new_state)``。
+
+        训练循环必须逐块调用它并**立即 backward**：只保留当前块的计算图，
+        激活才是 ``O(chunk·D)``。若把多个 chunk 的 logits 拼起来再 backward，
+        所有块的图会同时存活，显存退回 ``O(L)``。
+        """
+        if not self.supports_streaming:
+            raise ValueError("forward_chunk_step 需要所有 mixer 提供 O(1) init_state/step")
+        for blk in self.blocks:
+            if not hasattr(blk.mixer, "forward_chunk"):
+                raise ValueError(
+                    f"forward_chunk_step 尚未为 mixer {type(blk.mixer).__name__} 提供"
+                    "带状态的分块前向；请用 mixer='sgc' 系列")
+        x = self.drop(self.tok_emb(idx_chunk))
+        mem = state.memory
+        for i, (blk, st) in enumerate(zip(self.blocks, state.layers)):
+            if mem is not None:
+                x = x + mem.unsqueeze(1)
+            x, st = blk.mixer.forward_chunk(x, st)
+            state.layers[i] = st
+            x = blk.ffn(x)
+        x = self.ln_f(x)
+        logits = self.head(x)
+        loss_sum = None
+        n_tok = 0
+        if targets_chunk is not None:
+            loss_sum = F.cross_entropy(
+                logits.reshape(-1, logits.size(-1)), targets_chunk.reshape(-1),
+                ignore_index=-100, reduction="sum")
+            n_tok = int((targets_chunk != -100).sum().item())
+        state.length += idx_chunk.shape[1]
+        return logits, loss_sum, n_tok, state
+
+    def forward_chunked(self, idx_or_x, targets: Optional[torch.Tensor] = None,
+                        chunk_size: int = 4096, state: Optional[SGCStreamState] = None,
+                        detach_state: bool = True):
+        """分块前向的**便利接口**（评估/推理）：返回整段 logits。
+
+        与 :meth:`forward` 数值等价（fp32 误差内）。注意它会把所有 chunk 的
+        logits 保留在同一张图里，因此 **不适合带梯度的训练**——训练请逐块
+        调用 :meth:`forward_chunk_step` 并立即 backward。
+
+        Args:
+            idx_or_x: (B, L) token id。
+            targets: (B, L) 目标；提供时返回 ``(logits, loss)``。
+            chunk_size: 每块的序列长度。
+            state: 可选的初始流式状态；``None`` 时从零开始。
+            detach_state: 块间是否 detach 状态。
+        """
+        if isinstance(idx_or_x, str):
+            raise ValueError("forward_chunked 只接受 token id 张量；文本请先编码")
+        if chunk_size <= 0:
+            raise ValueError("chunk_size must be positive")
+        B, L = idx_or_x.shape
+        if L == 0:
+            raise ValueError("empty sequence")
+        if state is None:
+            state = self.init_stream(B, device=idx_or_x.device,
+                                     dtype=self.tok_emb.weight.dtype)
+        logits_parts = []
+        loss_sum = None
+        n_tok = 0
+        pos = 0
+        while pos < L:
+            end = min(pos + chunk_size, L)
+            logits, part, n_part, state = self.forward_chunk_step(
+                idx_or_x[:, pos:end],
+                None if targets is None else targets[:, pos:end], state)
+            logits_parts.append(logits)
+            if part is not None:
+                loss_sum = part if loss_sum is None else loss_sum + part
+                n_tok += n_part
+            pos = end
+            if detach_state and pos < L:
+                state = self._detach_stream_state(state)
+        logits = torch.cat(logits_parts, dim=1)
+        if targets is None:
+            return logits
+        loss = loss_sum / max(n_tok, 1)
+        return logits, loss
 
     # -- streaming checkpoint/restore ----------------------------------------
     def checkpoint_stream(self, state: "SGCStreamState") -> dict:

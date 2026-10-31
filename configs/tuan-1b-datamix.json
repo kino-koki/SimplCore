@@ -1,0 +1,108 @@
+{
+  "name": "tuan-1b-base",
+  "version": "1.0",
+  "model_family": "青小团 / Tuan",
+  "description": "1B 基座（中文为主、英文保底、代码/Computer Use 基础）数据混合配比 spec。配套 2B 代码/Computer Use 适配器（见 adapter_2b）。所有 share 为 token 占比，互不重叠，按总量归一。",
+  "token_budget": {
+    "target_base_tokens": "3e11 (~300B, 单 MI250 实际可行)",
+    "target_full_tokens": "1e12 (~1T, 多节点)",
+    "note": "比例与总量无关，可直接套用任意预算；单 MI250 受算力限制，先跑 300B 阶段验证，再决定是否扩节点到 1T。"
+  },
+  "base_mix": [
+    {
+      "id": "zh_general",
+      "share": 0.30,
+      "lang": "zh",
+      "role": "中文通用网页/书籍/社区，最大单一来源",
+      "datasets": ["BAAI/CCI3-HQ", "Shanghai_AI_Lab/WanJuan-1.0", "Skywork/SkyPile-150B", "map-cc/map-cc", "ChineseWebText"],
+      "prep": "按质量分（perplexity/毒性/去重）过滤；中文分词保留，不强行 BPE 拉丁化"
+    },
+    {
+      "id": "en_general",
+      "share": 0.20,
+      "lang": "en",
+      "role": "英文通用，编程/Computer Use 的语言基础，不能太少",
+      "datasets": ["HuggingFaceFW/fineweb-edu", "allenai/dolma", "tiiuae/Falcon-RefinedWeb"],
+      "prep": "edu 分类优先；保留代码相关英文语料作为下游 computer-use 的语义底座"
+    },
+    {
+      "id": "code_foundation",
+      "share": 0.15,
+      "lang": "multi",
+      "role": "多语言代码（偏 Python），Computer Use 的代码基础",
+      "datasets": ["bigcode/the-stack-v2", "bigcode/starcoderdata", "codeparrot/github-code"],
+      "prep": "按许可证过滤（跳过 copyleft 强约束仓库）；去掉超长单文件（>64K token）留到 long_context"
+    },
+    {
+      "id": "math_reasoning",
+      "share": 0.08,
+      "lang": "multi",
+      "role": "数学与形式化推理，提升 agentic 规划质量",
+      "datasets": ["open-web-math/open-web-math", "DRaiLab/MathPile", "deepseek-ai/DeepSeek-Math"],
+      "prep": "去重；保留 LaTeX/证明结构"
+    },
+    {
+      "id": "knowledge_live",
+      "share": 0.07,
+      "lang": "zh+en",
+      "role": "百科/事实知识，且接实时联网管线（见 live_pipeline）",
+      "datasets": ["wikipedia (zh+en)", "wikidata", "live-crawl (continual)"],
+      "prep": "静态 wiki 打底；live-crawl 增量追加，带时间截戳与去重"
+    },
+    {
+      "id": "long_context",
+      "share": 0.08,
+      "lang": "multi",
+      "role": "长文档/长仓库/书籍，喂出超长上下文卖点",
+      "datasets": ["bookcorpus", "pg19", "Project Gutenberg (zh)", "long-repo (The Stack v2 长文件)"],
+      "prep": "整本文档不截断；与 base 的短样本按比例 pack"
+    },
+    {
+      "id": "instruction_dialog",
+      "share": 0.07,
+      "lang": "zh+en",
+      "role": "指令/对话弱监督，对齐种子",
+      "datasets": ["teknium/OpenHermes-2.5", "BAAI/Infinity-Instruct", "中文指令集 (内部整理)"],
+      "prep": "仅作轻量 SFT 种子；不喧宾夺主"
+    },
+    {
+      "id": "computer_use_seed",
+      "share": 0.05,
+      "lang": "multi",
+      "role": "GUI/agentic 轨迹文本化种子，为 2B 适配器预热",
+      "datasets": ["OS-Copilot/OS-Atlas (文本化)", "xlang-ai/aguvis (轨迹)", "UI-TARS 描述/教程"],
+      "prep": "把 (截图描述, 动作) 转为文本轨迹；多模态截图留待后续视觉版"
+    }
+  ],
+  "long_context_curriculum": [
+    {"stage": 1, "seq_len": 4096, "steps": "0-10%", "mix_shift": "基础配比"},
+    {"stage": 2, "seq_len": 16384, "steps": "10-25%", "mix_shift": "long_context 权重 ×1.5"},
+    {"stage": 3, "seq_len": 65536, "steps": "25-45%", "mix_shift": "long_context 权重 ×2.0，加入整本中文书"},
+    {"stage": 4, "seq_len": 262144, "steps": "45-65%", "mix_shift": "整仓库/长文档，验证 O(1) 状态外推"},
+    {"stage": 5, "seq_len": 1048576, "steps": "65-85%", "mix_shift": "百万级上下文，长程依赖专项"},
+    {"stage": 6, "seq_len": 4000000, "steps": "85-100%", "mix_shift": "4M 总上下文收敛（卖点）；显存受限时此阶段需 grad-checkpoint + micro_batch=1"}
+  ],
+  "max_seq_len": 4000000,
+  "live_pipeline": {
+    "training_side": "常驻爬虫 + 质量过滤器，把新鲜网页 tokenize 后增量追加到 knowledge_live 切片；带 dedup 与时间戳，避免概念漂移。",
+    "inference_side": "靠 2B 适配器的 Computer Use + tool 能力直接联网浏览（RAG-over-internet）：知识库=实时互联网，由 agent harness 拉取并注入。",
+    "note": "训练侧保底静态知识，推理侧补齐实时性——两者互补。"
+  },
+  "adapter_2b": {
+    "description": "≤2B 可学适配器（envlearn），全代码 + Computer Use 能力；冻结 1B 基座，只训 LearnedAdapter（WeightBudget 守 3B 上限）。",
+    "train_mode": "freeze_base + train_adapter；真实沙箱/电脑环境中自进化（dream 回滚 + accel 自适应深度 + reasoning 迭代）。",
+    "mix": [
+      {"id": "code_multiling", "share": 0.45, "role": "多语言代码主体", "datasets": ["bigcode/the-stack-v2", "bigcode/starcoderdata"]},
+      {"id": "computer_use_trajectories", "share": 0.25, "role": "GUI/电脑操作轨迹（UI-TARS/OS-Atlas/Aguvis/InSTA/Explorer）", "datasets": ["OS-Copilot/OS-Atlas", "xlang-ai/aguvis", "data-for-agents/insta-150k-v3"]},
+      {"id": "agentic_coding_traces", "share": 0.18, "role": "真实仓库 agent 轨迹（自进化核心燃料）", "datasets": ["Contextbench/Tracebench", "NJU-LINK/CodeTraceBench", "mlx-community/optiq-code-traces", "princeton-nlp/SWE-bench"]},
+      {"id": "en_general_retain", "share": 0.07, "role": "防遗忘英文底座", "datasets": ["HuggingFaceFW/fineweb-edu (采样)"]},
+      {"id": "zh_general_retain", "share": 0.05, "role": "防遗忘中文底座", "datasets": ["BAAI/CCI3-HQ (采样)"]}
+    ],
+    "self_evolution_loop": "沙箱内跑真实任务→收集轨迹→dream 巩固(no-regression gate 逐位回滚)→accel 压浅易样本→reasoning 迭代复盘→下一轮。模型冻结、程序生长，与 Harness Learning 精神一致（手工/规则驱动版）。"
+  },
+  "hardware": {
+    "target": "1× AMD Instinct MI250 (128GB HBM2e, bf16, ROCm)",
+    "recommended": "8× MI250 跑 1T 阶段",
+    "launch": "scripts/train_tuan_mi250.sh --preset tuan-1b --enhance accel,reasoning"
+  }
+}

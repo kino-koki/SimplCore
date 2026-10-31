@@ -52,7 +52,7 @@ def test_default_sgc_is_attention_free() -> None:
 
 
 def test_sgc_1b_preset_is_pure() -> None:
-    cfg = get_preset("sgc-1b")
+    cfg = get_preset("tuan-1b")
     assert_pure_config(cfg)  # 只查配置，不实例化 1B
 
 
@@ -141,3 +141,54 @@ def test_every_registered_mixer_builds_and_streams() -> None:
         cfg = _tiny(mixer=kind, srf_heads=2, srf_chunk=8)
         m = SimplCoreModel(cfg)
         assert m.supports_streaming, f"mixer {kind!r} 不支持 O(1) 流式"
+
+# ---------------------------------------------------------------------------
+# 5. 源码级守卫：改名不能绕开"无注意力"
+# ---------------------------------------------------------------------------
+def test_source_scan_is_clean_on_product_line() -> None:
+    from simplcore.core.purity import assert_source_attention_free
+    assert assert_source_attention_free() is True
+
+
+def test_source_scan_catches_renamed_attention_module(tmp_path) -> None:
+    """把类名改成 MixerA、但保留 q_proj/k_proj/v_proj 的实现必须被抓。"""
+    from simplcore.core.purity import scan_source_attention_free
+
+    (tmp_path / "sneaky.py").write_text(
+        "import torch.nn as nn\n"
+        "class MixerA(nn.Module):\n"
+        "    def __init__(self, d):\n"
+        "        super().__init__()\n"
+        "        self.q_proj = nn.Linear(d, d)\n"
+        "        self.k_proj = nn.Linear(d, d)\n"
+        "        self.v_proj = nn.Linear(d, d)\n",
+        encoding="utf-8")
+    hits = scan_source_attention_free(tmp_path)
+    idents = {h[2] for h in hits}
+    assert {"q_proj", "k_proj", "v_proj"} <= idents
+
+
+def test_source_scan_catches_attention_api_in_forward(tmp_path) -> None:
+    from simplcore.core.purity import scan_source_attention_free
+
+    (tmp_path / "sneaky.py").write_text(
+        "import torch.nn.functional as F\n"
+        "class MixerB:\n"
+        "    def forward(self, q, k, v):\n"
+        "        return F.scaled_dot_product_attention(q, k, v)\n",
+        encoding="utf-8")
+    idents = {h[2] for h in scan_source_attention_free(tmp_path)}
+    assert "scaled_dot_product_attention" in idents
+
+
+def test_source_scan_ignores_auditor_names(tmp_path) -> None:
+    """守卫自身的函数名引用 attention 是为了检查它不存在，不能算实现。"""
+    from simplcore.core.purity import scan_source_attention_free
+
+    (tmp_path / "audit.py").write_text(
+        "def assert_attention_free(model):\n"
+        "    return True\n"
+        "def _check_no_attention(adapter):\n"
+        "    return True\n",
+        encoding="utf-8")
+    assert scan_source_attention_free(tmp_path) == []

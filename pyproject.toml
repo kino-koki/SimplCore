@@ -3,21 +3,36 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 # ---------------------------------------------------------------------------
-# SimplCore SGC — content-gated causal spectral global convolution.
+# SimplCore — 非注意力序列建模架构
 #
-# This replaces the previous root metadata, which still described `simplcore-mix`
-# as the "active route". That route was proven non-causal AND to run on a NumPy
-# engine rather than PyTorch (docs/HONEST_STATUS.md §0.2), so it is not shipped
-# here. Only `simplcore.sgc` — the audited, causality-tested mainline — installs.
+# 架构名是 **SimplCore**，不是 SGC。
+# SGC（内容门控因果谱全局卷积）只是 SimplCore 内部的一个 mixer 模块
+# （simplcore.core.sgc）；SimplCore 还提供 SRFN（simplcore.core.srf）与
+# GatedSpectralConv2（simplcore.core.selective）等其它非注意力 mixer。
+#
+# 打包只发布唯一一条产品线：
+#   simplcore            —— 包根（缓存环境引导）
+#   simplcore.core       —— SimplCore 架构本体（模型 / mixer / 训练 / 评测 /
+#                            记忆 / 对话 / 拒答 / Dreaming / 代码执行）
+#   simplcore.safety     —— 内容安全与权限子系统
+#
+# 早期路线的原型（research/：自研张量引擎、attention_res、共振场、数值引擎
+# 第二版等）**刻意不发布**，也不参与 CI。
 # ---------------------------------------------------------------------------
 [project]
-name = "simplcore-sgc"
-version = "2.0.0"
-description = "SGC: content-gated causal spectral global convolution (attention-free, O(L log L) training / O(1)-state streaming)"
+name = "simplcore"
+version = "3.0.0"
+description = "SimplCore: an attention-free sequence architecture (O(L log L) training via FFT / O(1)-state streaming via IIR, no KV cache, no positional table)"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "Proprietary" }
+license = { text = "Apache-2.0" }
 authors = [{ name = "青奈科技青小团团队" }]
+keywords = ["architecture", "attention-free", "state-space", "spectral", "streaming"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: Apache Software License",
+]
 dependencies = [
     "torch>=2.1",
     "numpy>=1.24",
@@ -32,27 +47,57 @@ data = [
 export = [
     "safetensors>=0.4",
 ]
+# 联网检索（`simplcore.search`）—— 可选：缺失时包仍可导入，
+# 只有真正发起网络请求才会提示安装。
+search = [
+    "requests>=2.28",
+    "fake_useragent>=1.4",
+]
 dev = [
     "pytest>=7.4",
     "tqdm",
     "pyyaml",
 ]
 all = [
-    "simplcore-sgc[data,export,dev]",
+    "simplcore[data,export,search,dev]",
 ]
 
 [project.scripts]
-sgc-train = "simplcore.sgc.train:main"
-sgc-eval = "simplcore.sgc.eval:main"
-sgc-corpus = "simplcore.sgc.data:main"
-sgc-tokenizer = "simplcore.sgc.tokenizer:main"
-sgc-presets = "simplcore.sgc.config:report_presets"
-sgc-export = "simplcore.sgc.export:main"
+simplcore-train = "simplcore.core.train:main"
+simplcore-eval = "simplcore.core.eval:main"
+simplcore-corpus = "simplcore.core.data:main"
+simplcore-tokenizer = "simplcore.core.tokenizer:main"
+simplcore-presets = "simplcore.core.config:report_presets"
+simplcore-export = "simplcore.core.export:main"
+simplcore-theory = "simplcore.core.theory:main"
+simplcore-reason = "simplcore.core.reasoning:main"
+simplcore-envlearn = "simplcore.core.envlearn:main"
+simplcore-campaign = "simplcore.core.campaign:main"
+simplcore-backend-contract = "simplcore.core.backend_contract:main"
+simplcore-conformance = "simplcore.core.conformance_runner:main"
+simplcore-trainer = "simplcore.core.trainer:main"
+simplcore-equal-budget = "simplcore.core.equal_budget:main"
+simplcore-longctx = "simplcore.core.longctx_eval:main"
+simplcore-passk = "simplcore.core.code_passk_eval:main"
+simplcore-throughput = "simplcore.core.throughput_eval:main"
+simplcore-phase1 = "simplcore.core.phase1_train:main"
+simplcore-deploy-budget = "simplcore.core.deploy_budget:main"
+simplcore-mathproof = "simplcore.core.mathproof:main"
+simplcore-audit = "simplcore.core.paper_audit:main"
 
-# Explicit package list: the legacy tree (`simplcore.mix`, `simplcore.tensor`,
-# `simplcore.architecture`, `simplcore_pg`, ...) deliberately does NOT ship.
+# Explicit package list: the research archive (`research.*`) deliberately does NOT ship.
 [tool.setuptools]
-packages = ["simplcore", "simplcore.sgc", "simplcore.sgc.tests"]
+packages = [
+    "simplcore",
+    "simplcore.core",
+    "simplcore.core.tests",
+    "simplcore.safety",
+    "simplcore.ops",
+]
 
 [tool.setuptools.package-data]
-"simplcore.sgc" = ["py.typed"]
+"simplcore.core" = ["py.typed"]
+"simplcore.safety" = ["py.typed"]
+# 融合热路径的 C++/CUDA 源文件需随包发布，供 torch.utils.cpp_extension 在
+# 目标机上 JIT 编译（无需把源码另存）。
+"simplcore" = ["csrc/*.h", "csrc/*.cpp", "csrc/*.cu"]

@@ -1,5 +1,11 @@
 # SimplCore 架构演进蓝图：SGC 自研化 · 多模态钉桩 · 四层闸门抗幻觉
 
+> ⚠️ **历史文档（2026-10-26 的架构对话沉淀件）**。文中提到的
+> `docs/SGC_SPEC.md` 与 `docs/HONEST_STATUS.md` 已随清理策略归档/移除；
+> 注意力族（`hybrid` / `reason_attn` / RoPE 缩放）也已从产品线整体删除。
+> **当前架构状态以 `docs/ARCHITECTURE.md`、`docs/MODULES.md`、
+> `docs/THEORETICAL_EDGE.md` 为准。** 本文保留是为了记录设计演化过程。
+
 > 本文是 2026-10-26 架构对话的沉淀件。所有"已实测"结论可在本仓库复现，
 > "待验证"条目明确标注，不混写。
 > 与 `docs/SGC_SPEC.md`（算子规格）、`docs/HONEST_STATUS.md`（诚实状态总表）配套阅读。
@@ -12,7 +18,7 @@
 
 | 路线 | 引擎 | 多模态 | 状态 |
 |---|---|---|---|
-| `simplcore/sgc/`（原 sgc2） | **PyTorch 2.4.1** | 无 | 493 项测试全绿，架构最强 |
+| `simplcore/core/`（原 sgc2） | **PyTorch 2.4.1** | 无 | 493 项测试全绿，架构最强 |
 | `simplcore/mix/` | **自研 `simplcore.tensor`（NumPy 自动微分）** | 代码在 `mix/multimodal/`，但 README 明确排除在主线外 | 可训，但架构弱于 SGC |
 | `simplcore/tensor/` | 自研张量引擎：反向模式自动微分（拓扑排序 + 梯度累积）、AMP、梯度检查点、集合通信、显存预估、NumPy/CuPy/OpenCL 三后端 | — | **代码里显式拒绝 torch 后端** |
 | `simplcore/engine/` | 统一 API + C++ 热路径 `csimplcore.cpp` + FFT + GPU | — | 第二层引擎，尚未与 tensor 层打通 |
@@ -48,7 +54,7 @@
 
 ```
 ┌─ 训练栈 ──────── trainer / 调度 / 精度策略 / 断点续训 / 指标 ──────────┐
-├─ 模块层 ──────── SGCBlock / HybridBlock / FFN(SwiGLU) / 路由 / 多模态 ──┤
+├─ 模块层 ──────── SimplCoreBlock / HybridBlock / FFN(SwiGLU) / 路由 / 多模态 ──┤
 ├─ 自动微分层 ──── simplcore.tensor 反向模式 tape（Python 层）──────────┤
 ├─ 算子层 ──────── ★ C++/CUDA 融合核（谱卷积 / 门控 / RMSNorm+SwiGLU）───┤
 └─ 后端层 ──────── NumPy(CPU) / CuPy(CUDA) / OpenCL ────────────────────┘
@@ -230,10 +236,10 @@ L_cal = BCE( logit_max , y )                  # 校准损失，权重 γ
 
 | 阶段 | 内容 | 验收标准 |
 |---|---|---|
-| **P0** | 去版本化（**已完成**：包 `sgc2`→`sgc`，标识符 `SGC2`→`SGC`，预设 `sgc2-*`→`sgc-*`，规格文档 `SGC_SPEC.md`，63 个文件内容替换 + 路径级 `git mv`）；四层闸门 L1~L4 **已完成**（`simplcore/sgc/mixer.py` + `simplcore/sgc/abstain.py`，18 项守护测试）；引擎 FFT 算子（含反向）**待做** | ✅ 零版本后缀；✅ 511 项测试全绿；⬜ `simplcore/tensor` 具备可微 `rfft/irfft` |
+| **P0** | 去版本化（**已完成**：包 `sgc2`→`sgc`，标识符 `SGC2`→`SGC`，预设 `sgc2-*`→`sgc-*`，规格文档 `SGC_SPEC.md`，63 个文件内容替换 + 路径级 `git mv`）；四层闸门 L1~L4 **已完成**（`simplcore/core/sgc.py` + `simplcore/core/abstain.py`，18 项守护测试）；引擎 FFT 算子（含反向）**待做** | ✅ 零版本后缀；✅ 511 项测试全绿；⬜ `simplcore/tensor` 具备可微 `rfft/irfft` |
 | **P1** | SGC 核心移植到自研引擎：mixer → model → config → train | 逐算子与 PyTorch 参考 `max|Δ|≤1e-5`；流式==整段；因果性守护通过 |
 | **P2** | 四层闸门在两条路线同时落地 | 每层可消融；4 类守护测试全绿；带引用评测集上的幻觉率实测下降 |
-| **P2.5** | **Dreaming 自进化循环 + CMT 连续知识学习（本次已完成 D0）** —— 见 `docs/DREAMING_CMT.md` | ✅ `simplcore/sgc/dream.py` + `memory.py` 实现为 SGC 一等能力；✅ 27 项守护测试；✅ 模型默认行为零变化；⬜ 接入真实批判模型后 `synthesized > 0` |
+| **P2.5** | **Dreaming 自进化循环 + CMT 连续知识学习（本次已完成 D0）** —— 见 `docs/DREAMING_CMT.md` | ✅ `simplcore/core/dream.py` + `memory.py` 实现为 SGC 一等能力；✅ 27 项守护测试；✅ 模型默认行为零变化；⬜ 接入真实批判模型后 `synthesized > 0` |
 | **P3** | 多模态钉桩：统一 token 化 + 编码器 + 模态路由门 | `MultimodalConfig` 冻结；缺模态降级测试通过；无 softmax 注意力 |
 | **P4** | HBM 优化与 A100 实测 | 1.3B/seq4096 在单卡 80GB 内跑通；显存曲线由 `probe_batch` 实测归档 |
 | **P5** | PyTorch 参考实现退场 | 自研路线通过全部等价性测试 **且** 训练曲线对齐 **且** P4 显存达标 |
@@ -274,7 +280,7 @@ L_cal = BCE( logit_max , y )                  # 校准损失，权重 γ
 * **D6** 对话结论即时沉淀进 `.learnings/` 与本仓库文档，不停留在会话里。
 * **D7** **Dreaming 是架构能力，不是 Agent 技巧**：反思发生在离线、产物是训练信号、
   作用对象是模型自身。CMT 的记忆机制作为 SGC 的一等能力实现
-  （`simplcore/sgc/memory.py`），注入点用**残差流加性项**而非 KV
+  （`simplcore/core/memory.py`），注入点用**残差流加性项**而非 KV
   —— 因为 SGC 无注意力、无 KV 缓存，引入 KV 等于把 Transformer 拽回来。
 * **D8** 自进化的默认模式是 **`memory`（冻结基座）**，写回权重必须过
   no-regression gate。反思钩子是外部输入点，它的输出只是**候选信号**，

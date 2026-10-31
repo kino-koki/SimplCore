@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Turn a training run directory into a readable report and loss-curve SVG.
 
-Reads ``<run>/metrics.jsonl`` (written by ``simplcore.sgc.train``) plus
+Reads ``<run>/metrics.jsonl`` (written by ``simplcore.core.train``) plus
 ``run.json``/``summary.json`` and emits:
 
   * ``report.md``  -- tables of throughput, train loss and validation perplexity,

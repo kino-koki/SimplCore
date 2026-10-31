@@ -56,9 +56,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # 振荡器基初始化与 SGC 共用同一实现（单一事实源）：
-# SGC 与 SRF 的 A/B 对照实验（srf-30m vs sgc-30m）要求两边初始化分布逐位一致，
+# SGC 与 SRF 的 A/B 对照实验（srf-30m vs tuan-30m）要求两边初始化分布逐位一致，
 # 这里曾逐字复制一份，一旦只改其中一份，对照基线即被静默污染。
-from .sgc import _init_oscillator_grid, _logit
+from .sgc import _init_oscillator_grid, _logit, recurrent_dtype
 
 
 # ----------------------------------------------------------------------------
@@ -72,15 +72,23 @@ class SSMState:
         h_re: (B, M, D) real part of the per-base state.
         h_im: (B, M, D) imaginary part of the per-base state.
         length: tokens consumed so far (diagnostics only).
+        scratch: optional reusable buffer dict for :meth:`step`. ``None`` until the
+            first ``step``; thereafter holds ``(B, M, D)`` working tensors reused
+            in-place across tokens so the streaming loop performs no large
+            allocation per position (only the tiny ``(B, 1, D)`` reduction
+            remains). Reallocated only when ``(B, M, D, dtype)`` changes.
     """
 
     h_re: torch.Tensor
     h_im: torch.Tensor
     length: int = 0
+    scratch: Optional[dict] = None
 
     def num_bytes(self) -> int:
-        return (self.h_re.numel() * self.h_re.element_size()
-                + self.h_im.numel() * self.h_im.element_size())
+        n = (self.h_re.numel() * self.h_re.element_size()
+             + self.h_im.numel() * self.h_im.element_size())
+        # scratch 是 step 的复用工作集，非模型逻辑状态；不计入常驻递推态字节。
+        return n
 
 
 # ----------------------------------------------------------------------------
@@ -265,38 +273,81 @@ class SelectiveSpectralSSM(nn.Module):
 
     # -- streaming form -------------------------------------------------------
     def init_state(self, batch: int, device, dtype) -> SSMState:
+        # 递推状态恒用高精度（低精度计算时退化为 fp32）：复数 SSM 递推在 bf16/fp16
+        # 下会逐 token 累积舍入误差；Mamba/Mamba2 同样把状态留在 fp32。
+        rd = recurrent_dtype(dtype)
         return SSMState(
-            h_re=torch.zeros(batch, self.num_bases, self.dim, device=device, dtype=dtype),
-            h_im=torch.zeros(batch, self.num_bases, self.dim, device=device, dtype=dtype),
+            h_re=torch.zeros(batch, self.num_bases, self.dim, device=device, dtype=rd),
+            h_im=torch.zeros(batch, self.num_bases, self.dim, device=device, dtype=rd),
         )
 
     def step(self, u_t: torch.Tensor, state: SSMState) -> Tuple[torch.Tensor, SSMState]:
-        """One token, O(1) state and compute."""
+        """One token, O(1) state and compute.
+
+        递推在状态的 dtype（``state.h_re.dtype``）中进行：低精度计算时 SSM 状态
+        已被 :meth:`init_state` 分配为 fp32，因此复数递推始终在 fp32 进行，输出
+        再交给调用方按计算精度 cast（见 ``SpectralResonanceFlow.step``）。fp32 计算
+        时状态即 fp32，行为与原实现逐位一致。
+
+        **复用 scratch**：所有 ``(B, M, D)`` 中间量（new_re / new_im / 输入耦合项）
+        写入 ``state.scratch`` 里的常驻缓冲，原地算子完成，流式循环每 token 不再分配
+        大张量；只有 ``(B, 1, D)`` 的归约结果会新分配（量级 B*D，可忽略）。``scratch``
+        由首 token 分配、形状变化时才重建，因此跨 token 复用有效（SRF 路径通过持久
+        保存本 ``SSMState`` 让其在多层/多 token 间持续存在）。
+        """
         squeeze = u_t.dim() == 2
         if squeeze:
             u_t = u_t.unsqueeze(1)
         B, one, D = u_t.shape
         assert one == 1, "step() consumes exactly one position"
         M = self.num_bases
+        rd = state.h_re.dtype
+        dev = state.h_re.device
 
-        delta = self.step_size(u_t).view(B, 1)                       # (B,1)
+        # 复用 scratch：首 token 或 (B, M, D, dtype) 变化时才分配。
+        key = (B, M, D, rd)
+        if state.scratch is None or state.scratch["key"] != key:
+            state.scratch = {
+                "key": key,
+                "nr": torch.empty(B, M, D, device=dev, dtype=rd),
+                "ni": torch.empty(B, M, D, device=dev, dtype=rd),
+            }
+        nr = state.scratch["nr"]
+        ni = state.scratch["ni"]
+
+        delta = self.step_size(u_t).view(B, 1).to(rd)                 # (B,1)
         rho, theta = self.oscillator_params()
+        rho = rho.to(rd)
+        theta = theta.to(rd)
 
-        amp = torch.exp(delta * torch.log(rho).clamp_max(-1e-6).view(1, M))   # (B,M)
+        log_rho = torch.log(rho).clamp_max(-1e-6).view(1, M)
+        amp = torch.exp(delta * log_rho)                              # (B,M)
         ph = delta * theta.view(1, M)
         c, s = torch.cos(ph), torch.sin(ph)
+        ar = (amp * c).unsqueeze(-1)                                  # (B,M,1)
+        ai = (amp * s).unsqueeze(-1)                                  # (B,M,1)
+        b_in = self.b_in.view(1, M, D).to(rd)                         # (1,M,D)
+        uu = u_t.squeeze(1).unsqueeze(1)                              # (B,1,D)
 
-        xb = u_t.squeeze(1).unsqueeze(1) * self.b_in.view(1, M, D)    # (B,M,D)
-        ar = (amp * c).unsqueeze(-1)
-        ai = (amp * s).unsqueeze(-1)
+        # new_re = ar*h_re - ai*h_im + uu*b_in  —— 全部原地，无 (B,M,D) 分配。
+        nr.copy_(state.h_re).mul_(ar)                                 # ar*h_re
+        ni.copy_(state.h_im).mul_(ai)                                 # 暂存 ai*h_im
+        nr.sub_(ni)                                                   # - ai*h_im
+        nr.addcmul_(uu, b_in)                                         # + uu*b_in
 
-        new_re = ar * state.h_re - ai * state.h_im + xb
-        new_im = ai * state.h_re + ar * state.h_im
+        # new_im = ai*h_re + ar*h_im
+        ni.copy_(state.h_re).mul_(ai)                                 # ai*h_re
+        ni.addcmul_(ar, state.h_im)                                   # + ar*h_im
 
-        y = (new_re * self.coef.view(1, M, D)).sum(1).unsqueeze(1)     # (B,1,D)
-        y = y + u_t * self.skip.view(1, 1, D)
+        # 先把 new_im 落盘（ni 随后被复用为 y 的中间量）
+        state.h_im.copy_(ni)
+        # y = (new_re * coef).sum(1) + u_t*skip  —— ni 复用为乘积累加缓冲
+        coef = self.coef.view(1, M, D).to(rd)
+        ni.copy_(nr).mul_(coef)                                       # new_re*coef
+        y = ni.sum(1, keepdim=True)                                   # (B,1,D)
+        y = y + u_t.to(rd) * self.skip.view(1, 1, D).to(rd)
 
-        state.h_re, state.h_im = new_re, new_im
+        state.h_re.copy_(nr)
         state.length += 1
         return (y.squeeze(1) if squeeze else y), state
 

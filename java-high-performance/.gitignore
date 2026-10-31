@@ -1,0 +1,27 @@
+# 构建产物
+target/
+out/
+bin/
+bin-test/
+test-reports/
+*.class
+
+# JVM 崩溃/诊断日志
+hs_err_pid*.log
+replay_pid*.log
+
+# 运行/基准/训练日志与机器生成的结果输出
+*.log
+*_out.txt
+*_err.txt
+*_result.txt
+sweep_*.txt
+*_metrics.csv
+
+# 模型与语料二进制（可由训练流程重新生成）
+*.model
+model.bin
+sc_production_model.bin
+
+# 依赖 jar（由 pom.xml 管理，可重新下载）
+lib/

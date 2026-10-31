@@ -22,7 +22,7 @@
 | **缺失** | — | **SGC 架构层没有自进化循环**；记忆机制与 SGC 无关 |
 
 **本次交付**：把 Dreaming 循环与 CMT 记忆机制**实现为 SGC 的一等架构能力**
-（`simplcore/sgc/dream.py` + `simplcore/sgc/memory.py`），
+（`simplcore/core/dream.py` + `simplcore/core/memory.py`），
 而不是再造第三套机制。
 
 ---
@@ -132,12 +132,46 @@ x ← x + memory_in(retrieved_memory)     # 投影到模型宽度，逐层注入
 
 | 项 | CMT 原文 | 本实现 | 原因 |
 |---|---|---|---|
-| 压缩器 | 可训练的 causal Transformer decoder | 训练无关的隐状态读出 | 保持零依赖与 attention-free |
+| 压缩器 | 可训练的 causal Transformer decoder | `TrainableMemoryCompressor`（因果深度卷积堆叠，**可训练**）；`MemoryCompressor` 保留为训练无关基线 | 保持零依赖与 attention-free |
 | 记忆库 | 无上限 | 定容 + LRU 驱逐 | 线上内存占用可预测 |
 | 注入 | 注意力层 KV | 残差流加性项 | SGC 无 KV 缓存 |
-| 记忆写入 | 外部文档流 | Dreaming 反思产出的洞见 | 本项目的自进化目标 |
+| memory-aware 目标 | 对比式 logit 集成 | 增量 logits 的 CE（**双路前向已落地**：`memory_aware_loss`） | 与原文同量级成本（2× 前向） |
+| 记忆写入 | 外部文档流 | 事实记录（证据支撑的分句）+ 修正记录（有原文的错例） | 本项目的自进化目标 |
 
-**压缩器是可替换的**：`MemoryCompressor` 是独立类，换成可训练版本即可对齐 CMT 效果。
+**压缩器是可替换的**：`MemoryCompressor` / `TrainableMemoryCompressor` 同一接口
+（`(B, L, D) → (B, k, D)`）。训练入口 `train_compressor_step`：
+`x = model.tok_emb(ids)` → 压缩 → 池化 → 双路前向增量损失 → 只更新压缩器
+（基座 `requires_grad` 在步内屏蔽、步后恢复）。回归测试断言"训练后参数真的变了
+且增量损失下降"，并附一条对照组断言 `MemoryCompressor` 的参数**任何调用都不变**
+（那正是 G1 的旧缺陷）。
+
+> **读 memory-aware 损失时必须知道**：增量 logits 全零时损失 = `ln(V)`，
+> 不是 0。该目标度量的是"记忆带来的那部分 logits 能不能独立预测下一个 token"，
+> 所以"记忆什么都没带"等于均匀分布 = 随机猜测的熵。与 `ln(vocab_size)` 比，
+> 不要与 0 比。
+
+### 3.5 记忆写入：键、值、以及"为什么写了却召回不到"
+
+`DreamingLoop._write_memory` 每轮写两类条目，键空间一致（都是"将来会出现的查询"），
+值一律是**证据原文**：
+
+| 类型 | 键 | 值 | 来源 |
+|---|---|---|---|
+| `knowledge` | `source.prompt` | 该轨迹里被证据支撑的分句（去重拼接） | 本轮采集到的轨迹 |
+| `repair` | `source.prompt` | 洞见的 `repair`（证据原文） | 反思阶段 |
+
+**旧实现有两个独立的致命问题，都不会让任何测试失败：**
+
+1. 键 = `float(abs(hash(text)) % 1e8) / 1e8` **填满整条向量** → 所有条目共线，
+   任意两条余弦恒为 1.0，检索退化成"永远返回库里任意一条"；且内置 `hash()`
+   带进程随机盐，重启后同一文本的键就变了。
+2. 记忆巩固被挂在"有合成训练样本"的 `if` 上 → **全部答对的一轮什么都不写**，
+   库永远是空的。
+
+修复：键改用 `TextKeyEncoder`（字符 3-gram + 带符号 `blake2b` 哈希 + L2 归一化，
+跨进程可复现、不同文本近似正交）；记忆巩固与"有没有训练样本"解耦。
+回归测试在干扰规模 0 / 64 / 128 / 512 上断言 top-1 命中正确条目 ——
+旧实现在 ≥64 时必然失败。
 
 ---
 
@@ -150,9 +184,31 @@ Dreaming 是会自己改模型的系统，**必须能观测**。每轮 `DreamRep
 | `harvested` | 采样到多少经验 | < batch_size/2 → 经验池枯竭 |
 | `insights` | 产出多少洞见 | 连续多轮为 0 → 反思钩子失效 |
 | `synthesized` | 产出多少训练样本 | **连续为 0 → 无有效学习信号，必须人工介入** |
-| `score_delta` | held-out 分数变化 | 连续为负 → 暂停自进化 |
+| `metrics_base` / `metrics_new` | 逐指标均值（base / 巩固后） | — |
+| `ci_lower` | 每个指标 delta 的配对 bootstrap 置信下界 | **判定用这一列，不看点估计** |
+| `failed_metrics` | 失守的指标名 | 非空即回滚 |
+| `score_delta` | 主指标点估计变化（兼容旧字段） | 仅供参考，不作判定 |
 | `rolled_back` | 是否发生回滚 | 频繁回滚 → 反思策略有问题 |
 | `seconds` | 单轮耗时 | 超出离线窗口 → 降频 |
+
+### 4.1 no-regression gate 的统计口径
+
+旧实现比较两个**标量点估计**：`new - base < -tolerance` 就回滚。小评测集上
+同一份权重换个种子重跑的抖动常常就有几个百分点，于是 gate 变成噪声判定器。
+现在：
+
+1. verifier 返回**逐样本分数**（`EvalScores`，兼容 `float` / `Dict[str, float]` 并标注降级）；
+2. 每个共同指标算**配对 bootstrap** 的 delta 置信下界（默认 95%，1000 次重采样）；
+3. **任一**指标下界低于 `-|tolerance|` 即回滚 —— 总分涨了不能抵消某项崩掉；
+4. 只出现在一侧的指标写进 `notes`，不静默丢弃；
+5. 回滚**同时**恢复权重与记忆库（只回权重会把学错的东西留在库里，下一轮继续注入）；
+6. **没有独立评测器时拒绝写回权重**：`DreamingLoop` 记得调用方是否提供 verifier，
+   `mode in ("weights", "both")` 且 verifier 为默认常量时直接回滚并说明原因 ——
+   否则 gate 恒通过，等于没有 gate。
+
+回归测试包含一条"点估计 +0.4 但置信下界 −0.2 → 回滚"的用例，
+以及"评测器抛异常 → 保守回滚（不能声称没退化）"的用例。
+
 
 ---
 
@@ -172,12 +228,27 @@ Dreaming 是会自己改模型的系统，**必须能观测**。每轮 `DreamRep
 
 ## 6. 已知缺口
 
-| # | 缺口 | 影响 | 计划 |
-|---|---|---|---|
-| G1 | 压缩器是训练无关读出，非可训练模块 | 压缩质量弱于 CMT 原文 | 替换 `MemoryCompressor` |
-| G2 | 记忆注入是**残差流加性项**，未做"记忆 vs 无记忆"的双路前向 | memory-aware objective 需要两次前向，成本 2× | `MemoryAwareObjective` 已支持，接入训练器 |
-| G3 | 反思/合成默认钩子是占位实现 | `synthesized` 长期为 0 | 接入真实批判模型 |
-| G4 | `gate_ab` 分支（`GatedSpectralConv2`）仍无 L2/L3 闸门 | 闸门能力在两条分支间不一致 | 与 P2 一并补齐 |
+| # | 缺口 | 状态 |
+|---|---|---|
+| G1 | 压缩器是训练无关读出，非可训练模块 | **已闭环**：`TrainableMemoryCompressor`（因果深度卷积，严格因果、定长输出）+ `train_compressor_step` 训练入口；对照组测试断言旧 `MemoryCompressor` 参数恒不变 |
+| G2 | 未做"记忆 vs 无记忆"的双路前向 | **已闭环**：`memory_aware_loss` 做两次前向并只对增量计损失（2× 前向是 CMT 原文的固有成本） |
+| G3 | 反思/合成默认钩子是占位实现 | **已闭环**：默认反思器改为**基于外部证据的逐句归因**（不调模型自评），`repair` 只取证据原文；默认合成器只接受带 `repair` 的洞见，产出**最小编辑**修订目标。`synthesized > 0` 已有端到端测试 |
+| G4 | `gate_ab` 分支（`GatedSpectralConv2`）无 L2/L3 闸门 | **已闭环**：闸门数学收敛到 `gates.py`，两条分支共用；流式态补 `energy_sum` |
+| G5 | 旧引擎侧（`simplcore/cognition/*`、`simplcore/unity/*`）未迁移 | **未处理**（需引擎合并决策，不在架构修复范围） |
+
+### 6.1 G3 的诚实边界
+
+默认反思器**仍然不是**一个"批判者模型"（Constitutional AI 那种）。它做的是
+**文本层可归因性检查**，能力边界就是 `grounding` 的边界：
+
+* 能发现：编造、数字篡改、否定翻转、跨文档拼接、以及"证据里根本没有这句话"；
+* **不能**发现：逐字引用但语境误用（反讽、条件句、引述他人观点）、
+  语义等价改写（保守偏差：把正确改写判成无依据）、繁简混写（已知保守偏差）。
+
+因此默认钩子的产出定位是**"在证据里找不到出处的句子"**，不是"错误的句子"。
+接入真实批判模型时它仍然是外部输入点，其输出只能作为候选信号，
+最终由 no-regression gate 与 held-out 评测裁决。
+
 | G5 | 旧引擎侧（`simplcore/cognition/*`、`simplcore/unity/*`）未迁移 | 两套自进化机制并存 | P1 引擎合并后统一 |
 
 ---
@@ -197,7 +268,7 @@ Dreaming 是会自己改模型的系统，**必须能观测**。每轮 `DreamRep
 ## 8. 用法速查
 
 ```python
-from simplcore.sgc import (
+from simplcore.core import (
     CompressedMemoryBank, DreamConfig, DreamingLoop, ExperienceBuffer, Trajectory,
 )
 

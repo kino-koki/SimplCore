@@ -109,7 +109,7 @@ rows = [
      "待修：ca 的历史结果跨脚本不可比"),
     ("sgc / sgcv3 有静默上下文上限",
      "self.low[:L, :] 截断；L > max_len 时退化为固定窗，不报错",
-     "已在 SGC 消除（simplcore/sgc）"),
+     "已在 SGC 消除（simplcore/core）"),
     ("冒烟测试用未移位目标",
      "sgc_pytorch.py:196、sgc_v3.py:391 把输入本身当 target，"
      "tie-embedding 模型只需回声即得 loss=0.0，测试恒过；"

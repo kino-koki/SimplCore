@@ -13,7 +13,7 @@ memory budget without measuring it is how runs die at step 3000. This script:
 
 Example::
 
-    python -m scripts.probe_batch --config configs/sgc-1_3b.json --seq-len 4096
+    python -m scripts.probe_batch --config configs/tuan-1_3b.json --seq-len 4096
 """
 from __future__ import annotations
 
@@ -26,17 +26,17 @@ import time
 import torch
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from simplcore.sgc.config import SGCConfig  # noqa: E402
-from simplcore.sgc.model import SGCModel  # noqa: E402
+from simplcore.core.config import SimplCoreConfig  # noqa: E402
+from simplcore.core.model import SimplCoreModel  # noqa: E402
 
 
-def attempt(cfg: SGCConfig, seq_len: int, batch: int, device, amp_dtype,
+def attempt(cfg: SimplCoreConfig, seq_len: int, batch: int, device, amp_dtype,
             backward: bool = True, grad_checkpoint: bool = False) -> dict:
     if device.type == "cuda":
         torch.cuda.empty_cache()
         torch.cuda.reset_peak_memory_stats()
     cfg.grad_checkpoint = grad_checkpoint
-    model = SGCModel(cfg).to(device)
+    model = SimplCoreModel(cfg).to(device)
     model.train()
     opt = torch.optim.AdamW(model.parameters(), lr=1e-4)
     x = torch.randint(0, cfg.vocab_size, (batch, seq_len), device=device)
@@ -100,7 +100,7 @@ def main() -> int:
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
-    cfg = SGCConfig.from_json(args.config)
+    cfg = SimplCoreConfig.from_json(args.config)
     device = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
     amp_dtype = None if args.dtype == "fp32" or device.type == "cpu" else \
         {"bf16": torch.bfloat16, "fp16": torch.float16}[args.dtype]

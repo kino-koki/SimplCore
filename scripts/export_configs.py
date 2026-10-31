@@ -3,7 +3,7 @@
 """Export JSON training configs from the SGC presets.
 
 Keeping the configs generated (rather than hand-maintained) guarantees they cannot
-drift away from `simplcore/sgc/config.py`.
+drift away from `simplcore/core/config.py`.
 """
 from __future__ import annotations
 
@@ -12,9 +12,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from simplcore.sgc.config import (  # noqa: E402
-    SGC_PRESETS,
-    SGCConfig,
+from simplcore.core.config import (  # noqa: E402
+    SIMPLCORE_PRESETS,
+    SimplCoreConfig,
     analytic_params,
 )
 
@@ -28,10 +28,10 @@ def main() -> int:
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
 
-    names = args.only or [n for n in SGC_PRESETS if not n.startswith(("debug", "toy"))]
+    names = args.only or [n for n in SIMPLCORE_PRESETS if not n.startswith(("debug", "toy"))]
     rows = []
     for name in names:
-        cfg = SGCConfig.from_dict(SGC_PRESETS[name].to_dict())
+        cfg = SimplCoreConfig.from_dict(SIMPLCORE_PRESETS[name].to_dict())
         if args.vocab_size:
             cfg.vocab_size = args.vocab_size
         path = os.path.join(args.out, name.replace(".", "_") + ".json")
