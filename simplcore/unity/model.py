@@ -248,6 +248,35 @@ class UnityModel(nn.Module):
         h2, st = self.stream_step_hidden(token, state)
         return self.head(h2)[:, -1, :], st
 
+    @torch.no_grad()
+    def generate(self, idx: torch.Tensor, max_new_tokens: int = 32,
+                 temperature: float = 1.0, top_k: Optional[int] = None,
+                 top_p: Optional[float] = None,
+                 eos_token_id: Optional[int] = None) -> torch.Tensor:
+        """UnityMoE 条件下的自回归采样（O(1) 流式：prefill + 逐步路由）.
+
+        与 ``SimplCoreModel.generate`` 的流式路径同约定；采样器复用基座的
+        ``_sample``（温度/top-k/top-p 口径一致）。0.1-α 补齐——此前 Unity
+        只有训练前向与 stream_step，没有统一生成入口。
+        """
+        was_training = self.training
+        self.eval()
+        state = self.init_stream(idx.shape[0], device=idx.device,
+                                 dtype=next(self.parameters()).dtype)
+        logits = None
+        for t in range(idx.shape[1]):
+            logits, state = self.stream_step(idx[:, t], state)
+        out = idx
+        for _ in range(max_new_tokens):
+            nxt = self.base._sample(logits, temperature, top_k, top_p)
+            out = torch.cat([out, nxt], dim=1)
+            if eos_token_id is not None and bool((nxt == eos_token_id).all()):
+                break
+            logits, state = self.stream_step(nxt, state)
+        if was_training:
+            self.train()
+        return out
+
     # -- 预算 / 参数接口 ----------------------------------------------------
     def param_filter(self) -> List[torch.Tensor]:
         """仅返回可学参数（路由 + 专家），供优化器 / DDP 使用。"""

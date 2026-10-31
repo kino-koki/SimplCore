@@ -70,7 +70,7 @@
   （配对 bootstrap 置信下界，失守即回滚权重与记忆）；**`default_consolidator`** ——
   内置的权重巩固器（标签错位一格、只对目标段计损失、样本权重生效、
   不对振荡基参数做 weight decay），让"写回权重"这条链路默认就是通的；
-  `DreamReport.wrote_weights` / `wrote_memory` 如实报告是否真的写了。
+  `ReflectionReport.wrote_weights` / `wrote_memory` 如实报告是否真的写了。
 - **`code_exec.py`** — 代码执行沙箱（`LocalPythonSandbox`）+ `pass@k` 验证器
   （`CodeExecutionVerifier`），为 Dreaming 循环提供独立的代码正确性判据。
 
@@ -113,8 +113,8 @@
   是三层聚合入口。TS 对照臂（`equal_budget.py` / `throughput_eval.py`）可在文件头用
   `purity: allow-attention-reference` 声明引用豁免，但**定义级检查仍然生效**。
 - **`theory.py`** — 理论优势的可执行验证：把 `docs/THEORETICAL_EDGE.md` 的每条
-  机制层主张变成断言（34 项），CLI `python -m simplcore.core.theory`；
-  由 `tests/test_theory.py` 守护（含"文档点名的模块必须都有检查"的断言）。
+  机制层主张变成断言（34 项），CLI `python -m simplcore.core.eval.claims_audit`；
+  由 `tests/test_claims_audit.py` 守护（含"文档点名的模块必须都有检查"的断言）。
 
 ## 训练 / 评测 / 数据
 
@@ -130,11 +130,11 @@
 Dreaming 巩固与不回归门、纯度守卫。三者互不耦合、可单独使用，也可串成
 "加速 → 深度推理 → 环境学习"一条链。
 
-- **`accel.py`** — 思考加速：`ThinkAccelerator` 包裹 `SimplCoreModel`，逐 token 按
+- **`accel.py`** — 思考加速：`AdaptiveDepth` 包裹 `SimplCoreModel`，逐 token 按
   "必要性分数"（熵/置信度）决定跑 `min_depth` 还是 `max_depth` 层；
   `skip_threshold=-inf` 时**逐位退化**为恒全算力（须与 `model.stream_step` 一致），
   `ComputeLedger` 只做结构性加速比记账（blocks_budget/blocks_run），不依赖硬件计时。
-- **`reasoning.py`** — 深度推理：`DeepReasoner` 跑"提示 → 多步思考 → 答案"迭代循环；
+- **`reasoning.py`** — 深度推理：`IterativeRefiner` 跑"提示 → 多步思考 → 答案"迭代循环；
   `policy` 支持 `fixed_steps`（固定步数）与 `stabilize`（候选答案连续 `patience` 步
   不变即早停）；`tool` 钩子把外部观察（如 `envlearn.LocalCodeEnvironment`）流回状态，
   正是深度推理与环境学习的**接缝**；`ReasoningTrace` 记录结构化轨迹；
@@ -153,11 +153,11 @@ Dreaming 巩固与不回归门、纯度守卫。三者互不耦合、可单独�
   校验 + 预算守卫）；`ExperienceLoader` 把域经验文本转 next-token batch；
   `UNITY_PRESETS` 给 `tuan-2b` 4×~50M 专家的预算口径。三个月路线见
   `docs/SIMPLUNITY_3MONTH_PLAN.md`，入口 `scripts/unity_evolve_2b.py`。
-- **`nonlinear.py`** — 非线性思考：`NonlinearThinker` 包裹 `SimplCoreModel`，在
-  **latent 空间**做可微迭代精化（`NonlinearThinkCell` 门控非线性残差单元，
+- **`nonlinear.py`** — 非线性思考：`LatentRefiner` 包裹 `SimplCoreModel`，在
+  **latent 空间**做可微迭代精化（`LatentRefineCell` 门控非线性残差单元，
   down 零初始化 = 初始恒等），ACT 式 `HaltingHead` 按停止概率自适应收手；
   `max_iters=0`/`enabled=False` 时与 `model.stream_step` **逐位一致**；
-  思考不新增流式状态（`stream_bytes` 与原模型相同）；`ThinkLedger` 记
+  思考不新增流式状态（`stream_bytes` 与原模型相同）；`RefineLedger` 记
   iters_budget/iters_run 与 ponder cost；训练路径 CE + ponder 正则（鼓励早停）。
   与 `reasoning.py` 互补：文本层思考可读可插工具，latent 层思考端到端可微。
 - **`smm.py`** — **Simpl Model Memory**：最大自主学习整合架构（接线板）。三层记忆 =
@@ -167,7 +167,7 @@ Dreaming 巩固与不回归门、纯度守卫。三者互不耦合、可单独�
   `answer()` 带记忆 O(1) 流式生成，`sleep()` 跑一轮 Dreaming 巩固闭环；
   `SMMLedger` 全生命周期记账，`stats()` 出三层记忆全量账目，`state_dict()`
   持久化情景层。`SMMConfig(think_max_iters>0)` 时 `answer()` 走
-  `nonlinear.NonlinearThinker` 的 latent 思考流式路径（记忆注入与思考在同一
+  `nonlinear.LatentRefiner` 的 latent 思考流式路径（记忆注入与思考在同一
   O(1) 状态上叠加；关闭时与基座逐位一致）。整合件不放松 dream.py 的任何硬约束。
 
 > **编排契约**：`training_integration.ENHANCEMENT_SPECS` 是增强挂载的单一事实源
@@ -324,7 +324,7 @@ Dreaming 巩固与不回归门、纯度守卫。三者互不耦合、可单独�
 无词表（`test_tokenization*`）、HF 桥（`test_hf_bridge`）、记忆与 Dreaming
 （`test_dream`、`test_dream_evolution`、`test_dream_code_integration`）、
 SRFN（`test_srf`）、规模账本（`test_scaling`）、外推（`test_extrapolation`）、
-架构纯洁性（`test_architecture_purity`）、理论守卫（`test_theory`）、
+架构纯洁性（`test_architecture_purity`）、理论守卫（`test_claims_audit`）、
 权重巩固（`test_consolidation`）、可复现（`test_reproducibility`）、
 对话（`test_chat`、`test_dialogue_*`）、代码沙箱（`test_code_exec`）、
 思考加速（`test_accel`）、深度推理（`test_reasoning`）、环境学习（`test_envlearn`）、

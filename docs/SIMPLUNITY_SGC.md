@@ -1,7 +1,7 @@
 # SimplUnity（SGC 栈重制版）· 模型粘合 / MoE 效果 设计文档
 
 > 状态：**已实现并接训练闭环（opt-in，默认关闭）**。本文件描述设计、与旧 Archive 的关系、4M 上下文定位、自进化闭环，以及运行方式。
-> 配套代码：`simplcore/unity/`（config / router / expert / model）+ `simplcore/core/training_integration.py` 的 `UnityEnhancer`。
+> 配套代码：`simplcore/unity/`（config / router / expert / model）+ `simplcore/core/training/training_integration.py` 的 `UnityEnhancer`。
 
 ---
 
@@ -114,7 +114,7 @@
 
 ## 5. 训练接入（opt-in，零回归）
 
-- `simplcore/core/train.py` 的 `--enhance` 新增 `unity`：
+- `simplcore/core/training/train/.py` 的 `--enhance` 新增 `unity`：
   - `--enhance unity`：基座冻结，只训路由 + 专家（MoE 模式，路由在共享流上自学）；
   - 可选 `--unity-experts N`（默认 4）与 `--unity-topk K`（默认 2）：控制初始专家数与每 token 激活数；
   - 空 `--enhance`（默认）：`UnityEnhancer` 不实例化，`train.py` 行为逐位不变。

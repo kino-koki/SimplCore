@@ -22,7 +22,7 @@
 | **缺失** | — | **SGC 架构层没有自进化循环**；记忆机制与 SGC 无关 |
 
 **本次交付**：把 Dreaming 循环与 CMT 记忆机制**实现为 SGC 的一等架构能力**
-（`simplcore/core/dream.py` + `simplcore/core/memory.py`），
+（`simplcore/core/memory/dream/.py` + `simplcore/core/memory/memory.py`），
 而不是再造第三套机制。
 
 ---
@@ -90,7 +90,7 @@ Dreaming 因此必须是**带护栏的离线系统**，而不是一个 prompt �
 1. **no-regression gate**：退化即回滚（`test_dreaming_regression_triggers_rollback`）
 2. **可恢复**：模型支持 `snapshot()`/`restore()` 即可回滚；不支持时权重模式自动降级为不安全并记录
 3. **有预算**：`batch_size` / `max_insights` / `max_examples` / `max_rounds` 均为硬上限
-4. **可观测**：每轮产出 `DreamReport`（各阶段产出计数、分数变化、耗时、notes）
+4. **可观测**：每轮产出 `ReflectionReport`（各阶段产出计数、分数变化、耗时、notes）
 5. **异常隔离**：反思/合成/巩固任一阶段抛异常 → 该轮标记 `FAILED` 并中止 run，不污染历史
 
 ---
@@ -152,7 +152,7 @@ x ← x + memory_in(retrieved_memory)     # 投影到模型宽度，逐层注入
 
 ### 3.5 记忆写入：键、值、以及"为什么写了却召回不到"
 
-`DreamingLoop._write_memory` 每轮写两类条目，键空间一致（都是"将来会出现的查询"），
+`ReflectionLoop._write_memory` 每轮写两类条目，键空间一致（都是"将来会出现的查询"），
 值一律是**证据原文**：
 
 | 类型 | 键 | 值 | 来源 |
@@ -177,7 +177,7 @@ x ← x + memory_in(retrieved_memory)     # 投影到模型宽度，逐层注入
 
 ## 4. 可观测性与生产指标
 
-Dreaming 是会自己改模型的系统，**必须能观测**。每轮 `DreamReport` 至少覆盖：
+Dreaming 是会自己改模型的系统，**必须能观测**。每轮 `ReflectionReport` 至少覆盖：
 
 | 指标 | 含义 | 告警阈值（建议） |
 |---|---|---|
@@ -202,7 +202,7 @@ Dreaming 是会自己改模型的系统，**必须能观测**。每轮 `DreamRep
 3. **任一**指标下界低于 `-|tolerance|` 即回滚 —— 总分涨了不能抵消某项崩掉；
 4. 只出现在一侧的指标写进 `notes`，不静默丢弃；
 5. 回滚**同时**恢复权重与记忆库（只回权重会把学错的东西留在库里，下一轮继续注入）；
-6. **没有独立评测器时拒绝写回权重**：`DreamingLoop` 记得调用方是否提供 verifier，
+6. **没有独立评测器时拒绝写回权重**：`ReflectionLoop` 记得调用方是否提供 verifier，
    `mode in ("weights", "both")` 且 verifier 为默认常量时直接回滚并说明原因 ——
    否则 gate 恒通过，等于没有 gate。
 
@@ -269,7 +269,7 @@ Dreaming 是会自己改模型的系统，**必须能观测**。每轮 `DreamRep
 
 ```python
 from simplcore.core import (
-    CompressedMemoryBank, DreamConfig, DreamingLoop, ExperienceBuffer, Trajectory,
+    CompressedMemoryBank, ReflectionConfig, ReflectionLoop, ExperienceBuffer, Trajectory,
 )
 
 # 在线：轨迹入流 + 记忆检索
@@ -280,9 +280,9 @@ bank.add(keys, values)                      # 压缩记忆入库
 memory, scores = bank.aggregate(query_vec)  # self-match + top-agg
 
 # 离线：跑一轮 Dreaming
-loop = DreamingLoop(
+loop = ReflectionLoop(
     model=model, buffer=buffer, memory_bank=bank,
-    config=DreamConfig(mode="memory"),       # 零遗忘风险的默认模式
+    config=ReflectionConfig(mode="memory"),       # 零遗忘风险的默认模式
     reflector=my_constitutional_critic,      # 真实批判模型
     synthesizer=my_synthesizer,
     verifier=my_heldout_eval,                # 独立评测，越高越好

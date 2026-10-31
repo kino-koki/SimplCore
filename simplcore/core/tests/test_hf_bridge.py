@@ -1,4 +1,4 @@
-﻿# Copyright 2026 (C) 六安市青奈科技有限责任公司
+# Copyright 2026 (C) 六安市青奈科技有限责任公司
 # -*- coding: utf-8 -*-
 """SimplCore ↔ 任意 HF / torch state_dict 互操作桥接守护测试.
 

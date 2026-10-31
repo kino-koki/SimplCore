@@ -1,11 +1,36 @@
 # SimplCore 总体架构设计
 
+> ⚠️ **实验阶段**：本架构（SimplCore-0.1-α）仅处于实验阶段，未经大规模训练验证；
+> 若非确实想尝试非注意力方案，建议直接使用 Mamba 等成熟架构进行开发与模型设计。
+
 本文档描述 `simplcore/core/` 主线架构的设计、模块划分与数据/控制流。所有结论以源码为
-准（`sgc.py` / `model.py` / `config.py` / `srf.py` / `ssm.py` / `selective.py` /
-`gates.py` 等），无"文字创新"。
+准（`arch/sgc.py` / `model/model.py` / `model/config.py` / `arch/srf.py` / `arch/ssm.py` /
+`arch/selective.py` / `arch/gates.py` 等），无"文字创新"。
+
+> **包结构（0.1-α 结构化拆分，2026-10）**：`core/` 曾是 60+ 文件的平铺包，现已按
+> 依赖方向拆为八个子包（依赖只能自上而下，个别受控跨界见下）：
+>
+> | 子包 | 内容 | 依赖 |
+> |------|------|------|
+> | `core/arch/` | mixer 数学核心：sgc / srf / ssm / selective / gates / registry / purity / accel / numerical_stability / abstain / grounding | （零 core 内依赖） |
+> | `core/model/` | 配置与模型：config / model / adapter_model / export / hf_bridge / nonlinear / tokenization / tokenizer / **multimodal（图像 patchify + 音频帧下采样 → 软 token 拼接，零模态时与纯文本逐位一致；流式走 stream_step 的 inputs_embeds 入口）** / **physics_world（物理世界模型：实验功能 opt-in 默认关，tuan-2b 等全部预设不使用；物理一致性判据与 L2/L3 闸门正交互补）** | → arch |
+> | `core/memory/` | 记忆与自进化：memory / dream/（子包）/ code_exec / smm / **sidecar（三层精确引用：L1 旁路档案 + L2 指针取回，O(1) 寻址器 + O(N) 精确档案在 Host RAM）** / sidecar_exact_attn（局部精确注意力实验件，purity 定义级白名单豁免） | → model |
+> | `core/dialogue/` | 对话域：chat / dialogue_data / dialogue_runtime / dialogue_eval / reasoning | → memory, model |
+> | `core/training/` | 训练域：data/（子包）/ train/（子包）/ trainer / phase1_train / training_integration / sft / ab / seqlen_curriculum / gate2 / envlearn | → model, memory, eval* |
+> | `core/eval/` | 评测与账本：eval / probes / bench / memprobe / scaling / equal_budget / longctx_eval / throughput_eval / extrapolation / code_passk_eval / claims_audit / mathproof / paper_audit / retrieval_bound / **world_probe（O(1) 状态的未来信息线性可读出探针：fp64 闭式岭回归 + 置换/多数类基线，测量而非宣称）** | → 各层 |
+> | `core/backend/` | 后端契约：backend_contract / backend_bridge / conformance_runner | → arch |
+> | `core/deploy/` | 战役与部署：campaign / deploy_budget / sprint30 | → backend, model, training, eval |
+>
+> 实验性模块（jitrl / pilot / conditions_ledger）隔离在 `simplcore/lab/`，
+> **core 不得 import lab**（`test_impl_isolation.py` 守护）。
+> 受控跨界（模块级无环，仅包级互引）：`training/gate2.py → eval/longctx_eval`、
+> `eval/equal_budget.py → training/data`、`eval/paper_audit·mathproof → deploy/campaign`。
+> 旧平铺路径（``simplcore.core.sgc`` 等）由 ``_compat_aliases.py`` 的 sys.modules
+> 别名继续兼容；同名子包（model/memory/eval）的 ``__init__`` 另有全量 re-export。
+> 新代码一律使用新路径。
 
 > **命名约定**：架构叫 **SimplCore**；`SGC` 只是 SimplCore 内部的一个 mixer 模块
-> （`simplcore/core/sgc.py`，`SpectralGlobalConv`）。类名一律 `SimplCore*`
+> （`simplcore/core/arch/sgc.py`，`SpectralGlobalConv`）。类名一律 `SimplCore*`
 > （`SimplCoreConfig` / `SimplCoreModel` / `SimplCoreBlock` / `SimplCoreForCausalLM`）。
 
 ---
@@ -118,7 +143,7 @@ SRFN（`mixer="srf"`）在 SGC 之上叠加 `SelectiveSpectralSSM`：复对角 S
 - `dream.py::default_consolidator`：**内置的权重巩固器** —— 把训练信号变成梯度步
   （标签错位一格、只对目标段计损失、样本权重生效、**不对振荡基参数做 weight decay**）。
   没有它时 `mode="weights"` 需要调用方自备 consolidator，链路默认是断的；
-  `DreamReport.wrote_weights` / `wrote_memory` 如实报告"到底写了没有"。
+  `ReflectionReport.wrote_weights` / `wrote_memory` 如实报告"到底写了没有"。
 - 诚实边界：记忆键是字面 n-gram 而非语义嵌入；"自进化会变强"**未证明**；
   代码沙箱是**进程级**，不是安全边界。
 - 目标函数层面的理论动机（为什么 O(1) 状态与世界模型互补、"越用越好"为何

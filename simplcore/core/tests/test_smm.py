@@ -7,7 +7,7 @@ import pytest
 import torch
 
 from simplcore.core.config import SimplCoreConfig
-from simplcore.core.dream import DreamConfig, DreamStage, TrainExample
+from simplcore.core.dream import ReflectionConfig, ReflectionStage, TrainExample
 from simplcore.core.memory import TextKeyEncoder
 from simplcore.core.model import SimplCoreModel
 from simplcore.core.smm import SMMConfig, SimplModelMemory
@@ -22,7 +22,7 @@ def _build(mode: str = "memory"):
         local_kernel=3, num_heads=4, ffn_ratio=2.0, mixer="sgc",
         use_memory=True)
     model = SimplCoreModel(cfg).eval()
-    dcfg = DreamConfig(mode=mode, require_regression_check=False)
+    dcfg = ReflectionConfig(mode=mode, require_regression_check=False)
     smm = SimplModelMemory(model, codec, SMMConfig(dream=dcfg))
     return smm, codec
 
@@ -134,14 +134,14 @@ def test_sleep_memory_mode_writes_nothing_extra_but_runs():
 def test_sleep_empty_buffer_is_idle():
     smm, _ = _build()
     rep = smm.sleep()
-    assert rep.stage in (DreamStage.IDLE,)
+    assert rep.stage in (ReflectionStage.IDLE,)
     assert rep.harvested == 0
 
 
 def test_weights_mode_requires_verifier_and_gate():
     """mode=weights + 无有效 verifier → 巩固被拒绝，不写权重（硬约束）。"""
     smm, codec = _build(mode="weights")
-    # DreamingLoop 的默认 verifier 是 default_verifier（返回常量），且
+    # ReflectionLoop 的默认 verifier 是 default_verifier（返回常量），且
     # require_regression_check=False 时 gate 不跑 —— 这里验证"无样本时不炸"：
     smm.experience("abcd", "efgh", grounded=False)   # 无证据 → 不合成样本
     rep = smm.sleep()
@@ -208,7 +208,7 @@ def test_purity_no_attention():
 
 
 # ---------------------------------------------------------------------------
-# 思考层接线（SMM × NonlinearThinker）
+# 思考层接线（SMM × LatentRefiner）
 # ---------------------------------------------------------------------------
 def _build_thinking(iters: int = 2):
     torch.manual_seed(0)

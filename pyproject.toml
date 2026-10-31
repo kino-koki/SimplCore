@@ -7,21 +7,27 @@ build-backend = "setuptools.build_meta"
 #
 # 架构名是 **SimplCore**，不是 SGC。
 # SGC（内容门控因果谱全局卷积）只是 SimplCore 内部的一个 mixer 模块
-# （simplcore.core.sgc）；SimplCore 还提供 SRFN（simplcore.core.srf）与
-# GatedSpectralConv2（simplcore.core.selective）等其它非注意力 mixer。
+# （simplcore.core.arch.sgc）；SimplCore 还提供 SRFN（simplcore.core.arch.srf）与
+# GatedSpectralConv2（simplcore.core.arch.selective）等其它非注意力 mixer。
 #
 # 打包只发布唯一一条产品线：
 #   simplcore            —— 包根（缓存环境引导）
-#   simplcore.core       —— SimplCore 架构本体（模型 / mixer / 训练 / 评测 /
-#                            记忆 / 对话 / 拒答 / Dreaming / 代码执行）
+#   simplcore.core       —— SimplCore 架构本体，按依赖方向拆八个子包：
+#                            arch（mixer 数学）/ model（配置与模型）/
+#                            memory（记忆与自进化）/ dialogue（对话）/
+#                            training（训练）/ eval（评测与账本）/
+#                            backend（后端契约）/ deploy（战役与部署）
+#   simplcore.lab        —— 实验性模块（jitrl / pilot / conditions_ledger），
+#                            不承诺 API 稳定，core 不得反向依赖
 #   simplcore.safety     —— 内容安全与权限子系统
 #
 # 早期路线的原型（research/：自研张量引擎、attention_res、共振场、数值引擎
-# 第二版等）**刻意不发布**，也不参与 CI。
+# 第二版等）与已退役的 Java 平行原型（.archive/java-high-performance）
+# **刻意不发布**，也不参与 CI。
 # ---------------------------------------------------------------------------
 [project]
 name = "simplcore"
-version = "3.0.0"
+version = "0.1a0"  # 显示版本 SimplCore-0.1-α（PEP 440 规范化）
 description = "SimplCore: an attention-free sequence architecture (O(L log L) training via FFT / O(1)-state streaming via IIR, no KV cache, no positional table)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -63,34 +69,46 @@ all = [
 ]
 
 [project.scripts]
-simplcore-train = "simplcore.core.train:main"
-simplcore-eval = "simplcore.core.eval:main"
-simplcore-corpus = "simplcore.core.data:main"
-simplcore-tokenizer = "simplcore.core.tokenizer:main"
-simplcore-presets = "simplcore.core.config:report_presets"
-simplcore-export = "simplcore.core.export:main"
-simplcore-theory = "simplcore.core.theory:main"
-simplcore-reason = "simplcore.core.reasoning:main"
-simplcore-envlearn = "simplcore.core.envlearn:main"
-simplcore-campaign = "simplcore.core.campaign:main"
-simplcore-backend-contract = "simplcore.core.backend_contract:main"
-simplcore-conformance = "simplcore.core.conformance_runner:main"
-simplcore-trainer = "simplcore.core.trainer:main"
-simplcore-equal-budget = "simplcore.core.equal_budget:main"
-simplcore-longctx = "simplcore.core.longctx_eval:main"
-simplcore-passk = "simplcore.core.code_passk_eval:main"
-simplcore-throughput = "simplcore.core.throughput_eval:main"
-simplcore-phase1 = "simplcore.core.phase1_train:main"
-simplcore-deploy-budget = "simplcore.core.deploy_budget:main"
-simplcore-mathproof = "simplcore.core.mathproof:main"
-simplcore-audit = "simplcore.core.paper_audit:main"
+simplcore-train = "simplcore.core.training.train:main"
+simplcore-eval = "simplcore.core.eval.eval:main"
+simplcore-corpus = "simplcore.core.training.data:main"
+simplcore-tokenizer = "simplcore.core.model.tokenizer:main"
+simplcore-presets = "simplcore.core.model.config:report_presets"
+simplcore-export = "simplcore.core.model.export:main"
+# 曾名 simplcore-theory，0.1-α 命名降调后更名
+simplcore-claims-audit = "simplcore.core.eval.claims_audit:main"
+simplcore-reason = "simplcore.core.dialogue.reasoning:main"
+simplcore-envlearn = "simplcore.core.training.envlearn:main"
+simplcore-campaign = "simplcore.core.deploy.campaign:main"
+simplcore-backend-contract = "simplcore.core.backend.backend_contract:main"
+simplcore-conformance = "simplcore.core.backend.conformance_runner:main"
+simplcore-trainer = "simplcore.core.training.trainer:main"
+simplcore-equal-budget = "simplcore.core.eval.equal_budget:main"
+simplcore-longctx = "simplcore.core.eval.longctx_eval:main"
+simplcore-passk = "simplcore.core.eval.code_passk_eval:main"
+simplcore-throughput = "simplcore.core.eval.throughput_eval:main"
+simplcore-phase1 = "simplcore.core.training.phase1_train:main"
+simplcore-deploy-budget = "simplcore.core.deploy.deploy_budget:main"
+simplcore-mathproof = "simplcore.core.eval.mathproof:main"
+simplcore-audit = "simplcore.core.eval.paper_audit:main"
 
 # Explicit package list: the research archive (`research.*`) deliberately does NOT ship.
+# 实验性模块 simplcore.lab（jitrl/pilot/conditions_ledger）随包发布但独立成包，
+# 不承诺 API 稳定；core 产品线不得反向 import lab。
 [tool.setuptools]
 packages = [
     "simplcore",
     "simplcore.core",
+    "simplcore.core.arch",
+    "simplcore.core.model",
+    "simplcore.core.memory",
+    "simplcore.core.dialogue",
+    "simplcore.core.training",
+    "simplcore.core.eval",
+    "simplcore.core.backend",
+    "simplcore.core.deploy",
     "simplcore.core.tests",
+    "simplcore.lab",
     "simplcore.safety",
     "simplcore.ops",
 ]

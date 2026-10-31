@@ -1,4 +1,9 @@
-# SimplCore — 无注意力序列架构（v3.0）
+# SimplCore-0.1-α — 无注意力序列架构（实验阶段）
+
+> ⚠️ **实验阶段警告**：目前该架构仅仅处于实验阶段，如果不是真的想试试，
+> 建议还是去用 **Mamba** 进行开发、设计模型。本仓库没有经过大规模训练验证，
+> 所有"优于 Transformer"的主张都是**机制层结构性质**（可运行断言），
+> **不是**实测的质量结论。
 
 **可训练、彻底非注意力**的序列建模仓库。架构叫 **SimplCore**，
 主推实现位于 `simplcore/core/`：用**因果谱全局卷积**替代自注意力，
@@ -6,16 +11,16 @@
 无 KV 缓存**。
 
 > **运行时**：训练/推理部署走**自研 CUDA·HIP/C++ 后端**（算子契约见
-> `simplcore/core/backend_contract.py`，`python -m simplcore.core.backend_contract`）；
+> `simplcore/core/backend/backend_contract.py`，`python -m simplcore.core.backend_contract`）；
 > 仓库内 PyTorch 实现退役为**冻结数值规格（oracle）**——它是后端逐位对齐的数学定义，
 > 不参与部署。目标硬件为 **AMD Instinct MI250（ROCm）**：融合流式核以 CUDA 写法
 > 交付、经 PyTorch 以 hipcc 编译为 HIP（仅用 HIP 兼容原语），训练主路径走
 > `torch.compile`→ROCm CK（见 `scripts/train_tuan_mi250.sh`）。16-op 契约已有
 > **fp32 CPU 参考后端**（`csrc/sc_ref_backend.c`，验收见 `docs/REF_BACKEND.md`），
 > 生产 HIP 后端待移植。战役计划（1B→3B，硬停闸门 + HBM 账本）见
-> `simplcore/core/campaign.py`（`python -m simplcore.core.campaign`）。
+> `simplcore/core/deploy/campaign.py`（`python -m simplcore.core.campaign`）。
 
-> **SGC 是 SimplCore 内部的一个 mixer 模块**（`simplcore/core/sgc.py`），
+> **SGC 是 SimplCore 内部的一个 mixer 模块**（`simplcore/core/arch/sgc.py`），
 > 不是架构的名字。SimplCore 下面有多个可切换的非注意力 mixer：
 > SGC / SRFN / GatedSpectralConv2。架构层面的类名一律是 `SimplCore*`。
 
@@ -35,8 +40,21 @@
 RoPE、KV 缓存、位置嵌入表。注意力族（`CausalAttention` / `ReasoningAttention` /
 `SlidingWindowAttention` / GQA-YaRN / RoPE）已从产品线**整体删除**，
 仅作为历史归档保留在 `.trash/attn_removed/`，早期路线原型归档在 `research/`。
-两道防线守护这一点：`simplcore/core/purity.py`（配置 + 实例双重断言）与
+两道防线守护这一点：`simplcore/core/arch/purity.py`（配置 + 实例双重断言）与
 `SimplCoreConfig.validate()`（只允许非注意力 mixer）。
+
+> ⚖️ **0.1-α 独立复现的实测定位（2026-10-31，合成小任务前哨）**：
+> 逐字**精确指向**是 O(1) 状态的**结构性劣势**（2 层探针 SGC 0.398 vs
+> attention 1.000 vs chance 0.125，甚至低于局部卷积 0.427）——信息论上限，
+> 不是调参问题；聚合任务**未复现出通过率优势**（0.875 vs 0.938），SGC 的
+> 赢面在效率轴（常驻状态 36,868 B 恒定 vs 1M KV ~120 GiB；训练缩放斜率
+> 1.09 vs 2.35；流式零泄漏）。**engineering trade-off，不是"更好的模型"**。
+> 架构响应已落地：精确引用走 `memory/sidecar.py` 三层旁路（见 §3），
+> O(1) 状态定位为**选择性寻址器**。完整表与局限见
+> `docs/THEORETICAL_EDGE.md` 实测对照节、`SimplCore_Paper.md` §7.2 轴注记、
+> 复现协议 `eval/axis_probe.py`；MQAR 绑定缺陷的修复路线分级
+> （A/B/C 一致性判据 + R1 定容绑定记忆已落地）见
+> `docs/REPRODUCTION_REPORT.md` 与 `docs/THEORETICAL_EDGE.md` 路线分级节。
 
 ---
 
@@ -55,7 +73,7 @@ python -m pytest simplcore/core/tests/test_mixer_math.py -q
 # 主线因果性守护（扰动末位 token，断言前文逐位不变）
 python -m pytest simplcore/core/tests/test_architecture_purity.py -q
 
-# 生物计算主义：三支柱 + 生成期混合计算 + 自适应课程
+# 生物启发增强：三支柱 + 生成期混合计算 + 自适应课程
 python -m pytest simplcore/core/tests/test_bio.py simplcore/core/tests/test_bio_stream.py \
                  simplcore/core/tests/test_adaptive_curriculum.py -q
 
@@ -74,18 +92,49 @@ print('stream bytes:', m.stream_bytes(1))
 "
 
 # 理论优势的可执行验证（34 项机制层断言，全过才退出 0）
-python -m simplcore.core.theory
+python -m simplcore.core.eval.claims_audit
 
 # A1/A2 最小证伪实验：自主学习闭环（真实代码沙箱判分，CPU 可跑）
 python -m simplcore.core.pilot --rounds 2 --out runs/pilot
 ```
 
+### ⚠️ 常见陷阱（第三方使用者必读）
+
+**1. `model(x, x)` 是恒等陷阱——loss 会静默收敛到垃圾。**
+`forward(idx, targets)` 的 `targets` 与 `logits` **同位置对齐，不做任何自动
+shift**。位置 t 的输入包含 `x[t]` 本身，若 `targets is x`，模型只需学会
+"复制当前 token" 即可把 loss 压到 1e-4 量级——**不报错、loss 照常下降，
+只有看生成文本才会暴露**。正确写法是标签右移一位：
+
+```python
+x, y = batch[:, :-1], batch[:, 1:]   # y[t] 是 x[t] 的下一个 token
+logits, loss = model(x, y)
+```
+
+本 README 快速开始与仓库测试里出现的 `model(x, x)` 全部是 **API 冒烟**
+（只验证前向/反传能跑通），不构成训练语义示范。数据链路（`ShardedTokenDataset`/
+`SFTDataset`）内部已做正确偏移。
+
+**2. 内置 5 题的 pass_rate 上升只能证明记忆。**
+`pilot` 的内置题目**同时**是闭环的训练经验来源——闭环前后在同一组题上的
+pass_rate 上升只能证明**记忆（同题重放）**，不证明泛化。要主张「越用越好」，
+必须给 `PilotConfig(heldout_problems=...)` 提供与经验**不重叠**的 held-out
+题集，报告会以 `a1.heldout` 为准记账；未提供时 `verdict` 只会给出
+`memory-evidence-only`，不给 pass。
+
+**3. 「不退步」≠「越用越好」。**
+`regression_gate` 证明的是写回权重**没有退化**（必要条件），不是能力提升。
+泛化提升的判据只能是 held-out 评测——`ReflectionConfig.heldout_eval`
+提供后在旧/新权重上各跑一次并记入 `ReflectionReport.heldout_delta`；
+未提供时报告明确标注「泛化主张无判据」。
+
 > ⚠️ **WorkBuddy 沙箱里跑全量测试**：沙箱的 `sitecustomize` 装了「批量删除守卫」，
 > 测试清理临时目录（≥50 个文件）时会被拦下并抛 `SystemExit(1)`，表现为
-> `test_data / test_tokenization / test_theory / test_paper_audit` 等
+> `test_data / test_tokenization / test_claims_audit / test_paper_audit` 等
 > **单独跑全过、随全量套件一起跑必挂**的假失败。关掉守卫即可：
-> `CODEBUDDY_SAFE_DELETE_ENABLED=0 python -m pytest simplcore/core/tests/ -q`
-> （关掉后全量 **0 失败**。）
+> `CODEBUDDY_SAFE_DELETE_ENABLED=0 python -m pytest simplcore/core/tests/ -q`。
+> **0.1-α 复核（2026-10-31）**：非沙箱环境默认全绿——**1110 通过 / 6 环境跳过
+> / 0 失败**（504 s；跳过项 = 融合热路径扩展未编译 + 慢探针环境开关）。
 
 ---
 
@@ -107,6 +156,31 @@ python -m simplcore.core.pilot --rounds 2 --out runs/pilot
 
 数据流的每一层都是 `mixer → FFN`，外加可选 CMT 记忆注入（残差流加性项）
 与 L4 拒答头。详见 `docs/ARCHITECTURE.md`。
+
+### 三层精确引用（L0/L1/L2）——「第几个字、哪一句话」怎么做到
+
+要回答「第几个字」，物理上必然需要 O(N) 存储（香农，没有例外）。所以架构
+**不让 O(1) 做精确检索**——分工如下（`memory/sidecar.py`）：
+
+| 层 | 内容 | 存储 | 状态 |
+|----|------|------|------|
+| **L0 常驻** | gist 匹配 + 指针头（**不是原文**） | O(1)，HBM（PointerHead ≈ 2·dim² 参数，与 N 无关） | ✅（流式状态 + `PointerHead`） |
+| **L1 旁路** | 原文/token **精确副本**，可寻址 | O(N)，Host RAM/SSD（4M tokens：int32 原文 16 MiB，uint16 可压至 8 MiB；块 gist 索引 256 MiB @ dim=1024） | ✅（`SidecarArchive` + `BlockGistIndex`） |
+| **L2 取回** | O(1) 状态每步输出**指针分布** → top-k → 精确读取 → 注入 | 取回 O(k·B·dim)，**与 L 无关** | ✅（`PointerHead` → `read_topk` → 零初始化注入；局部精确注意力实验件在 `sidecar_exact_attn.py`） |
+
+**定位改口（诚实成本）**：加了 L1 之后「O(1)」必须说全——
+
+> **O(1) 常驻状态（HBM），O(N) 精确档案（主机内存/SSD）。**
+
+§5.12 的「1M ≤ 2 GiB」讲的是 **HBM 峰值**，仍然成立：档案在主机内存，
+不进 GCD。**O(1) 状态的价值不是"存储器"，是"选择性寻址器"**——它不存
+原文，它决定去几百万字里的哪几处取。这个定位比"O(1) 通吃"更准确，也更
+经得起审稿人问。保留的架构优势只有两条：避免 O(L²) 全量注意力（取回
+O(k·B·dim) 与 L 无关）、HBM 常驻仍 O(1)；总存储不再是 O(1)，如实记账。
+
+诚实边界：块 gist 是**无参数池化**，指针头**零初始化 → 初始均匀分布**
+（未训练时检索无判别力）；"检索质量提升"未经训练验证——本模块先把
+**通路与账本**立起来（可测、可审计），gist 学习是后续工作。
 
 ---
 
@@ -143,22 +217,63 @@ JitRL arXiv:2601.18510）。`SimplCoreModel.generate(logit_bias_fn=...)` 为一�
 
 ---
 
-## 5. 文档索引
+## 5. 包结构（0.1-α 结构化拆分）
+
+`core/` 按依赖方向拆为八个子包（详细表见 `docs/ARCHITECTURE.md`）：
+
+```
+simplcore/core/
+├── arch/       mixer 数学核心（sgc / srf / ssm / selective / gates / purity / abstain / grounding）
+├── model/      配置与模型（config / model / hf_bridge / tokenization / tokenizer）
+├── memory/     记忆与反思巩固（memory / dream/ / code_exec / smm）
+├── dialogue/   对话域（chat / dialogue_runtime / dialogue_eval / reasoning）
+├── training/   训练域（data/ / train/ / trainer / phase1_train / sft / gate2 / envlearn）
+├── eval/       评测与账本（eval / probes / scaling / longctx_eval / theory / mathproof / paper_audit）
+├── backend/    后端契约（backend_contract / backend_bridge / conformance_runner）
+└── deploy/     战役与部署（campaign / deploy_budget / sprint30）
+simplcore/lab/  实验性模块（jitrl / pilot / conditions_ledger），core 不得反向依赖
+```
+
+历史脚本与老 checkpoint 的旧平铺路径（`simplcore.core.sgc` 等）由
+`core/_compat_aliases.py` 的 sys.modules 别名继续兼容；新代码一律用新路径。
+
+### 命名纪律（0.1-α 命名降调）
+
+为避免"伪科学式命名"，0.1-α 起对模块与公共类名做了降调，旧名全部保留为兼容别名
+（pickle / 历史脚本不受影响）：
+
+| 旧名（已弃用） | 新名 | 降调理由 |
+|----------------|------|----------|
+| `native_intelligence.py` / lab | `conditions_ledger.py` | "原生智能"是口号；模块实际是**五项智能条件的可执行断言 + 规模阈值账本** |
+| `bio_computation.py` | `bio_enhance.py` | "生物计算主义"神秘化；模块实际是**生物启发的训练增强**（混合计算耦合 + 代谢预算） |
+| `eval/theory.py` | `eval/claims_audit.py` | "理论"言过其实；模块实际是**把文档主张变成可运行断言的主张审计器** |
+| `DeepReasoner` | `IterativeRefiner` | 不"深度"也不"推理"；实际是**迭代式文本精化循环 + 早停** |
+| `NonlinearThinker` / `NonlinearThinkCell` / `ThinkLedger` | `LatentRefiner` / `LatentRefineCell` / `RefineLedger` | "思考者"拟人化；实际是 **latent 迭代精化 + ACT 停止头** |
+| `ThinkAccelerator` | `AdaptiveDepth` | "思考加速"拟人化；实际是**逐 token 自适应计算深度** |
+| `DreamingLoop` / `DreamConfig` / `DreamReport` / `DreamStage` | `ReflectionLoop` / `ReflectionConfig` / `ReflectionReport` / `ReflectionStage` | "做梦"隐喻神秘化；实际是**离线反思巩固循环**（HARVEST→REFLECT→SYNTHESIZE→CONSOLIDATE→VERIFY） |
+
+保留项及理由：`dream/` 目录名与"Dreaming"概念词保留——它对应持续学习文献中的
+offline consolidation 术语，且模块内已用**诚实边界**声明"自进化未证明"；`mathproof.py`
+（13 项符号+fp64 数值证明）、`purity.py`（纯洁性守卫）命名与实际能力一致，不动。
+
+---
+
+## 6. 文档索引
 
 | 文档 | 内容 |
 |------|------|
 | `SimplCore_Paper.md` | **架构白皮书（v1.1.2，含 v1.2 扩展）**：定理 1–4 / 命题 5–7（命题 5 误差界 v1.1.2 含 1/\|sinθ\| 修正）、§3.5 世界模型理论动机、SGC-R 谱专家路由、负面结果与撤回、13 项数学证明、部署/战役账本、§7 等效参数推测（明确标注为可证伪理论推测） |
-| `docs/THEORETICAL_EDGE.md` | **逐模块的理论优势论证**：每个模块相对传统 Transformer 的复杂度/状态/机制优势与边界 |
+| `docs/THEORETICAL_EDGE.md` | **逐模块的机制层主张与边界论证**：每个模块相对传统 Transformer 的复杂度/状态/机制主张与边界（可执行断言在 `eval/claims_audit.py`） |
 | `docs/ARCHITECTURE.md` | **总体架构设计**：数据流、mixer 分类、流式、记忆、编解码、训练/评测 |
 | `docs/SGC_CORE.md` | **SGC mixer 深度解析**：振荡基字典、FFT↔IIR 对偶、内容门控、局部路径、四层闸门、流式状态 |
 | `docs/SPRINT30.md` | **30 天冲刺计划**：测后锁预算 + MFU 下限闭合 + 降档阶梯——"1 月必须完全做好训练"的硬保证（`python -m simplcore.core.sprint30`） |
-| `docs/NATIVE_INTELLIGENCE.md` | **原生智能条件账本**：五项条件可执行断言 + 120B 主干/2B token 视野阈值账本（`python -m simplcore.core.native_intelligence`） |
+| `docs/CONDITIONS_LEDGER.md` | **智能条件账本**：五项条件可执行断言 + 120B 主干/2B token 视野阈值账本（`python -m simplcore.core.conditions_ledger`） |
 | `docs/MODULES.md` | 逐模块索引（每个模块一段职责说明） |
 | `research/` | 早期路线原型归档（**不发布、不参与 CI**），仅供考古与对照 |
 
 ---
 
-## 6. 当前真实能力边界
+## 7. 当前真实能力边界
 
 - ✅ mixer 核心：数学正确、严格因果、FFT↔IIR 双形式等价（fp32 `max|Δ|<4e-5`）、梯度可达
 - ✅ 四层抗幻觉闸门（L1 选择门 / L2 证据门 / L3 不确定门 / L4 拒答头）结构完整、可消融、流式==整段
@@ -175,33 +290,66 @@ JitRL arXiv:2601.18510）。`SimplCoreModel.generate(logit_bias_fn=...)` 为一�
   容量比 ≈6.1×，读出 SNR≈2.8）。长序列 fp32 误差实测补入
   `docs/SGC_CORE.md §3.2`（`<4e-5` 只适用于 `L≲512`）；详见
   `docs/NUMERICAL_STABILITY.md`、`docs/RETRIEVAL_BOUND.md`。
-- ✅ **理论优势可执行化**：34 项机制层断言（`simplcore/core/theory.py`），
-  `docs/THEORETICAL_EDGE.md` 的每条主张都有对应检查，由 `test_theory.py` 守护
+- ✅ **理论优势可执行化**：34 项机制层断言（`simplcore.core.eval.claims_audit.py`），
+  `docs/THEORETICAL_EDGE.md` 的每条主张都有对应检查，由 `test_claims_audit.py` 守护
 - ✅ **支柱 C 闭环**：代码沙箱（`code_exec.py`）+ 独立 verifier + no-regression gate +
   **内置权重巩固器**（`default_consolidator`）→ "真实环境写代码 → 验证 → 写回权重"
   默认就是通的，且退化时逐位回滚
-- ✅ **思考加速**（`accel.py`）：`ThinkAccelerator` 逐 token 按必要性选深度，
+- ✅ **「越用越好」的判定口径已收紧（0.1-α）**：gate 的基线评测移到**巩固前**
+  （旧权重）——此前 base/new 同在巩固后权重上评测，配对 delta 恒为噪声；
+  「不退步」（`regression_gate`）与「泛化提升」（`ReflectionConfig.heldout_eval`
+  → `heldout_delta`）分开记账，后者是与经验不重叠的 held-out 判据，
+  未提供时报告明确标注"泛化主张无判据"
+- ✅ **思考加速**（`accel.py`）：`AdaptiveDepth` 逐 token 按必要性选深度，
   `skip_threshold=-inf` 逐位退化全算力，`ComputeLedger` 记结构性加速比；不引入注意力
-- ✅ **非线性思考**（`nonlinear.py`）：`NonlinearThinker` 在 latent 空间做**可微迭代精化**
+- ✅ **非线性思考**（`nonlinear.py`）：`LatentRefiner` 在 latent 空间做**可微迭代精化**
   （门控非线性残差单元 + ACT 式停止头自适应步数）；`max_iters=0` 逐位直通，
   思考零新增流式状态，CE + ponder 正则可训练；不引入注意力
 - ✅ **Simpl Model Memory**（`smm.py`）：三层记忆整合架构——工作记忆（O(1) 流式状态）
   → 情景记忆（CMT 库检索注入）→ 语义记忆（蒸馏写权 + no-regression gate 回滚）；
   `experience/recall/answer/sleep` 四入口闭环，`SMMLedger` 全周期记账
-- ✅ **深度推理**（`reasoning.py`）：`DeepReasoner` 迭代式"提示→思考→答案"循环，
+- ✅ **深度推理**（`reasoning.py`）：`IterativeRefiner` 迭代式"提示→思考→答案"循环，
   `fixed_steps`/`stabilize` 早停 + `tool` 钩子，复用 O(1) 流式状态；不引入注意力
 - ✅ **环境学习**（`envlearn.py`）：`WeightBudget`（1B 冻结 + ≤2B 可学、总上限 3B，
   显存只随可学权重增长）+ 分阶段蒸馏（交互→总结→蒸馏→验证→回滚），复用 Dreaming 链路
 - ✅ **SimplUnity 模块化**（`simplcore/unity/`）：冻结主干 + 路由 + 多专家；
   `ModuleBundle` 支持专家级拆分/跨主干拼接（`base_fingerprint` + 预算守卫），
   `UnitySelfEvolution(num_workers=N)` 后台并行训练候选专家，`register_domain(..., eval_loader)`
-  的 **GATE-3 无回归门**拒绝退化候选，`ExperienceLoader` 把域经验转 next-token batch。
+  的 **GATE-3 无回归门**拒绝退化候选，`ExperienceLoader` 把域经验转 next-token batch；
+  0.1-α 补齐统一生成入口 `UnityModel.generate()`（O(1) 流式 prefill + MoE 路由采样，
+  与基座同温度/top-k/top-p 口径）。
   三个月路线（2B 1 月 + 自进化/模块 2 月，GCD 分工）见 `docs/SIMPLUNITY_3MONTH_PLAN.md`。
+- ✅ **多模态入口（0.1-α，从 0 到 1）**（`model/multimodal.py`）：图像 patchify /
+  音频帧下采样 → **软 token 拼接**进无位置表序列（模态前缀因果在前）——
+  无词表/无位置编码架构对多模态天然友好，不引入注意力；`generate` 走
+  `stream_step(inputs_embeds=…)` 真 O(1) 模态前缀 prefill；无模态时与纯文本
+  路径**逐位一致**（测试锁定）。诚实边界：adapter 未在真实多模态数据训练验证，
+  只锁接口/形状/梯度/一致性。
+- ✅ **世界模型容量探针**（`eval/world_probe.py`，0.1-α）：白皮书 §3.5 的
+  世界模型主张第一次变成**可证伪测量**——线性读出头（fp64 闭式岭回归）从
+  O(1) 递推状态读出 t+Δ 未来 token 桶；三基线对照（行置换/多数类/样本账本），
+  `lift>0` 才支持「状态携带可预测未来」的弱主张，`lift≤0` 照实记账负结果。
+  **不构成「世界模型已实现」宣称**（模块头与账本 claim 字段均已声明）。
+- ✅ **训练吞吐基准**（`scripts/bench_train_throughput.py`，0.1-α）：
+  tokens/s 稳态记账（中位数 + p90）、fp32/bf16 对照、序列长度缩放健康检查
+  （超线性即有 O(L²) 隐患混入）、显存峰值单列；同轮修复 Unity 域隔离
+  warm-up 的 DataLoader 硬编码 `num_workers=0`（MI250 上实测拖低 GPU 利用率
+  的 IO 瓶颈）——多域隔离训练吞吐提升。
+- 🧪 **物理世界模型**（`model/physics_world.py`，0.1-α，**实验功能，opt-in
+  默认关闭**）：文本/多模态抗幻觉的**第三正交信号源**——L2 证据门管
+  「有没有证据」、L3 不确定门管「模型确不确定」，物理门管「说的和物理
+  规律矛不矛盾」（连续性/守恒/运动学三类手工约束 + 可学习预测头，
+  `hallucination_signal` 供 L4 拒答头联用，`bias_fn` 适配生成钩子——
+  物理不一致时给 EOS 正偏置，零侵入）。**tuan-2b 等全部预设完全不使用，
+  训练主路径零引用**（守护测试锁定）；只有显式
+  `use_physics_world_model=True` 才接线，未开时零行为差异。
+  诚实边界：轨迹抽取器为结构化占位（阿拉伯数字）、约束为手工先验、
+  预测头未训练——不构成「模型理解物理」宣称。
 - ✅ **部署账本达标**：1M 上下文完整推理 **1.948 GiB ≤ 2 GB**（bf16 权重 1.888 +
   O(1) 流式状态 **30.36 MiB**（tuan-1b，batch=1，fp32，15 层）+ 融合单缓冲 workspace；削减来自融合单遍+缓冲复用，
   非 chunk/层数/精度），1M→8M 翻倍增量**恒为 0**（≤1 GB 主张成立）
 - ✅ **超长上下文：课程 + 分块训练（截断 BPTT）**：
-  `simplcore/core/seqlen_curriculum.py` + `train.py --seq-len-curriculum`
+  `simplcore/core/training/seqlen_curriculum.py` + `train.py --seq-len-curriculum`
   （或预设 `context`）可把 seq_len 从 4K 阶梯爬升到 **4M**；课程切换**不改模型权重**
   （SGC 长度无关），仅拉长数据窗口并按比例重算梯度累积；无课程时退化为固定
   `--seq-len`（零回归）。
@@ -228,10 +376,10 @@ JitRL arXiv:2601.18510）。`SimplCoreModel.generate(logit_bias_fn=...)` 为一�
   `simplcore.core.training_integration` + `train.py --enhance` **接入训练闭环**
   （opt-in、默认关闭、不开任何增强时训练逐位不变、零回归），但它们**仍未训出对应的
   加速比、推理质量、代码能力**——机制已接线 ≠ 质量达标，与 `theory.py` 诚实边界一致
-- 🧪 **生物计算主义增强 `bio`**（第七个、研究型）：把 Milinković & Aru (2026) 的
+- 🧪 **生物启发增强增强 `bio`**（第七个、研究型）：把 Milinković & Aru (2026) 的
   三条计算原则（混合计算 / 尺度不可分 / 代谢约束）做成可训练机制，同样 opt-in、零回归；
   **这是机制实验件，绝非声称模型「有意识」**——论文本身也只是论证这些是意识的*可能*
-  必要条件，且明确可被非生物系统复现。详见 `docs/BIO_COMPUTATIONALISM.md`
+  必要条件，且明确可被非生物系统复现。详见 `docs/BIO_ENHANCE.md`
 - ⚠️ **1B 以上规模从未实际训练**；配置与链路已打通，曲线待测（目标硬件：1× AMD Instinct MI250）
 - ⚠️ 未与 S4 / Mamba / Hyena / GLA 在 LRA 等公认基准做公平对比
 - ⚠️ 长上下文外推只有"输出有限"证据，无质量证据
@@ -248,10 +396,10 @@ JitRL arXiv:2601.18510）。`SimplCoreModel.generate(logit_bias_fn=...)` 为一�
 | `envlearn` | 冻结基座、只训 ``LearnedAdapter``（``WeightBudget`` 守 3B 上限） | 替换训练前向 + 仅适配器进优化器（``nn.Module``） |
 | `accel` | 评估期跑自适应深度，``ComputeLedger`` 报结构性加速比 | 评估 hook（不改主 val_loss） |
 | `smm` | 评估期把采样窗口解码成文本、写入情景记忆库（经验采集） | 评估 hook |
-| `dream` | 训练后跑 ``DreamingLoop`` 自进化巩固（no-regression gate 逐位回滚） | 训练后 post-hook |
-| `reasoning` | 评估期跑 ``DeepReasoner`` 迭代式思考 | 评估 hook |
+| `dream` | 训练后跑 ``ReflectionLoop`` 自进化巩固（no-regression gate 逐位回滚） | 训练后 post-hook |
+| `reasoning` | 评估期跑 ``IterativeRefiner`` 迭代式思考 | 评估 hook |
 | `unity` | 冻结基座 + 路由门 + 多个域专属小专家（MoE 效果，训练数据按专家分域）；``--unity-domains`` 强制按域隔离 warm-up；``spawn_expert`` + ``UnitySelfEvolution`` 后台线程长新专家；专家可持久化 | 替换训练前向（``nn.Module``，仅路由+专家进优化器）；详见 ``docs/SIMPLUNITY_SGC.md`` |
-| `bio` | **生物计算主义**（Milinković & Aru 2026, Neurosci. Biobehav. Rev. 181, 106524）：把论文三条核心计算原则做成可训练增强——①混合计算（常驻 O(1) 连续场 × 离散 token 脉冲相互构成）②尺度不可分（micro 路由 / meso 连续场 / macro seq-len 课程三尺度可训双向耦合）③代谢约束（能量预算 + 代谢效率损失塑形学习/稳定性/信息流）；可叠加 ``unity``（meso/macro 调节路由温度）；**生成期也跑混合计算**（``stream_step``/``generate`` 走连续场，与整段前向逐位一致）；**meso→macro 反馈**（连续场就绪度门控序列长度课程推进） | 替换训练前向（``nn.Module``）并自带流式/生成接口；旋钮：``--bio-energy-weight / --bio-metabolic-budget / --bio-field-dt / --bio-field-scale / --bio-adaptive-curriculum / --bio-readiness-gate / --bio-readiness-grace``；详见 ``docs/BIO_COMPUTATIONALISM.md`` |
+| `bio` | **生物启发增强**（Milinković & Aru 2026, Neurosci. Biobehav. Rev. 181, 106524）：把论文三条核心计算原则做成可训练增强——①混合计算（常驻 O(1) 连续场 × 离散 token 脉冲相互构成）②尺度不可分（micro 路由 / meso 连续场 / macro seq-len 课程三尺度可训双向耦合）③代谢约束（能量预算 + 代谢效率损失塑形学习/稳定性/信息流）；可叠加 ``unity``（meso/macro 调节路由温度）；**生成期也跑混合计算**（``stream_step``/``generate`` 走连续场，与整段前向逐位一致）；**meso→macro 反馈**（连续场就绪度门控序列长度课程推进） | 替换训练前向（``nn.Module``）并自带流式/生成接口；旋钮：``--bio-energy-weight / --bio-metabolic-budget / --bio-field-dt / --bio-field-scale / --bio-adaptive-curriculum / --bio-readiness-gate / --bio-readiness-grace``；详见 ``docs/BIO_ENHANCE.md`` |
 
 使用：
 
@@ -273,15 +421,15 @@ python -m simplcore.core.train --preset tuan-1b --enhance unity \
 #   accel/smm/dream/reasoning 可叠加；未知增强名直接报错）
 python -m simplcore.core.train --preset tuan-1b --enhance accel,smm,reasoning
 
-# 生物计算主义：混合计算 + 尺度不可分 + 代谢约束（可叠加 unity）
+# 生物启发增强：混合计算 + 尺度不可分 + 代谢约束（可叠加 unity）
 python -m simplcore.core.train --preset tuan-1b --enhance bio \
   --bio-metabolic-budget 1.5 --bio-field-dt 0.5
 
-# 生物计算主义 + SimplUnity：中/高尺度连续约束离散路由
+# 生物启发增强 + SimplUnity：中/高尺度连续约束离散路由
 python -m simplcore.core.train --preset tuan-1b --enhance unity,bio \
   --unity-experts 4 --unity-topk 2
 
-# 生物计算主义 + 自适应长上下文课程：连续场就绪度不足时推迟拉长 seq_len
+# 生物启发增强 + 自适应长上下文课程：连续场就绪度不足时推迟拉长 seq_len
 python -m simplcore.core.train --preset tuan-1b --enhance bio \
   --seq-len-curriculum 4096:0.1,16384:0.25,65536:0.45,262144:0.65,1048576:0.85,4000000 \
   --bio-adaptive-curriculum --bio-readiness-gate 0.5 --bio-readiness-grace 200
@@ -294,55 +442,63 @@ python -m simplcore.core.train --preset tuan-1b --enhance bio \
 
 ---
 
-## 7. 目录结构
+## 8. 目录结构
 
 ```
 simplcore/                       # 发布的产品线（唯一一条）
-  core/                          # ★ SimplCore 架构本体
-    sgc.py                       #   SGC mixer：谱全局卷积 + FFT/深度卷积 + O(1) 流式状态
-    srf.py / ssm.py              #   SRFN mixer / selective 谱状态空间
-    selective.py                 #   GatedSpectralConv2（GLA/Mamba2 式通道门，非注意力）
-    model.py                     #   SimplCoreModel / SimplCoreBlock / SimplCoreForCausalLM
-    config.py                    #   SimplCoreConfig + 规模预设（SIMPLCORE_PRESETS）
-    gates.py                     #   L2 证据门 / L3 不确定门（共享数学）
-    abstain.py / grounding.py    #   L4 拒答头 + 证据绑定层
-    memory.py / dream.py         #   CMT 压缩记忆库 + 自进化 Dreaming 循环
-    code_exec.py                 #   代码执行沙箱 + pass@k 验证器
-    accel.py                     #   思考加速（逐 token 自适应深度）+ ComputeLedger
-    nonlinear.py                 #   非线性思考（latent 可微迭代精化 + ACT 停止头）
-    smm.py                       #   Simpl Model Memory（三层记忆自主学习整合）
-    reasoning.py                 #   深度推理（迭代式思考循环 + 早停 + tool 钩子）
-    envlearn.py                  #   环境学习（1B 冻结 + ≤2B 可学、分阶段蒸馏进权重）
-    bio_computation.py            #   生物计算主义（连续场×脉冲混合 / 三尺度耦合 / 代谢预算）— Milinković & Aru 2026
-    backend_contract.py          #   自研 CUDA·HIP/C++ 后端算子契约（16 内核 + 逐位一致性）
-    conformance_runner.py        #   后端一致性跑批器（Phase 0 可执行验收：9 项检查）
-    adapter_model.py             #   纯算子重组模型（契约完备性证明 + 原生等价）
-    trainer.py                   #   Phase 1/2 训练驱动（分块 BPTT + 课程 + 回滚闸门）
-    equal_budget.py              #   等预算对照 harness（协议 X-equal-budget：vs 标准 TS、逐窗配对）
-    longctx_eval.py              #   长上下文检索评测（X-longctx-retrieval + X-stream-consistency + S7 诚实账）
-    code_passk_eval.py           #   代码 pass@k 对照（X-code-passk：无偏估计 + 真实执行判分）
-    throughput_eval.py           #   解码吞吐对照（X-throughput：O(1) 流式 vs KV cache）
-    phase1_train.py              #   Phase 1 训练执行器（packed 语料 → 课程 → 报告 + 语料指纹）
-    backend_bridge.py            #   后端 C-ABI 桥接（真实 CUDA 后端 drop-in 接口）
-    paper_audit.py               #   论文/战役账目交叉审计（文档数字 vs 代码事实源）    campaign.py                  #   1B→3B 战役计划（HBM 账本 + 硬停闸门 + 验收协议）
-    deploy_budget.py             #   部署 HBM 账本（1M≤2GB、翻倍增量≤1GB，结构性为 0）
-    mathproof.py                 #   数学证明 13 项（symbolic + fp64，无硬件依赖）
-    chat.py / dialogue_*.py / sft.py       # 对话 SFT 与评测
-    tokenization.py / tokenizer.py         # 无词表编解码器（char/byte/bpe）
-    scaling.py / extrapolation.py / hf_bridge.py / eval.py / train.py / data.py
-    purity.py                    #   架构纯洁性守卫（无注意力硬约束）
-    unity/                       #   SimplUnity：冻结基座 + 路由门 + 多域小专家（MoE 效果，spawn_expert 自进化）
+  core/                          # ★ SimplCore 架构本体（0.1-α 八子包，依赖自上而下）
+    arch/                        #   mixer 数学核心
+      sgc.py                     #     SGC mixer：谱全局卷积 + FFT/深度卷积 + O(1) 流式状态
+      srf.py / ssm.py            #     SRFN mixer / selective 谱状态空间
+      selective.py               #     GatedSpectralConv2（GLA/Mamba2 式通道门，非注意力）
+      gates.py                   #     L2 证据门 / L3 不确定门（共享数学）
+      registry.py / purity.py    #     mixer 注册表 + 架构纯洁性守卫（无注意力硬约束）
+      abstain.py / grounding.py  #     L4 拒答头 + 证据绑定层
+      accel.py / nonlinear 位于 model/
+    model/                       #   配置与模型
+      config.py                  #     SimplCoreConfig + 规模预设（SIMPLCORE_PRESETS）
+      model.py                   #     SimplCoreModel / SimplCoreBlock / SimplCoreForCausalLM
+      nonlinear.py               #     非线性思考（latent 可微迭代精化 + ACT 停止头）
+      tokenization.py / tokenizer.py       # 无词表编解码器（char/byte/bpe）
+      hf_bridge.py / export.py / adapter_model.py
+    memory/
+      memory.py                  #     CMT 压缩记忆库
+      dream/                     #     自进化 Dreaming 循环（types/buffer/evaluation/hooks/loop）
+      code_exec.py               #     代码执行沙箱 + pass@k 验证器
+      smm.py                     #     Simpl Model Memory（三层记忆自主学习整合）
+    dialogue/
+      chat.py / dialogue_data.py / dialogue_runtime.py / dialogue_eval.py
+      reasoning.py               #     深度推理（迭代式思考循环 + 早停 + tool 钩子）
+    training/
+      data/                      #     真实数据管道（clean/sources/pack/dataset/cli）
+      train/                     #     训练主循环（distributed/optim/checkpoint/evaluate/cli/main）
+      trainer.py                 #     Phase 1/2 训练驱动（分块 BPTT + 课程 + 回滚闸门）
+      phase1_train.py / sft.py / ab.py / seqlen_curriculum.py / gate2.py
+      training_integration.py    #     增强整合（nonlinear/smm/dream/envlearn/bio/unity 接线）
+      envlearn.py                #     环境学习（1B 冻结 + ≤2B 可学、分阶段蒸馏进权重）
+    eval/
+      eval.py / probes.py / bench.py / memprobe.py / scaling.py / extrapolation.py
+      equal_budget.py            #     等预算对照 harness（协议 X-equal-budget）
+      longctx_eval.py            #     长上下文检索评测（X-longctx-retrieval + X-stream-consistency）
+      code_passk_eval.py / throughput_eval.py / theory.py / mathproof.py
+      paper_audit.py             #     论文/战役账目交叉审计（文档数字 vs 代码事实源）
+    backend/
+      backend_contract.py        #     自研 CUDA·HIP/C++ 后端算子契约（16 内核 + 逐位一致性）
+      backend_bridge.py / conformance_runner.py
+    deploy/
+      campaign.py                #     1B→3B 战役计划（HBM 账本 + 硬停闸门 + 验收协议）
+      deploy_budget.py / sprint30.py
+    common.py / bio_enhance.py   # 共享工具 / 生物启发增强（三支柱 + 代谢预算）
     tests/                       #   守护测试（以 pytest 统计为准；可选依赖项自动跳过）
+  lab/                           # 实验性模块（jitrl / pilot / conditions_ledger），不承诺稳定
+  unity/                         # SimplUnity：冻结基座 + 路由门 + 多域小专家
   safety/                        # 内容安全 / 越狱检测 / RBAC / 加密
   rag/ search/                   # 外围子系统（联网检索 / RAG，可选依赖，未与 core 强耦合）
 research/                        # ★ 早期路线原型归档（不发布、不进 CI、不入库）
-  subsystems/                    #   自研数值引擎 + 第一代架构 + 认知/AGI/对话/NLU 等子系统
-  mix/  pg/                      #   第一代数据流水线 / 第二版 SimplCore 原型
-  training/  unity/              #   （遗留）独立训练基础设施 / 多专家编排原型；现重制版在 simplcore/unity/
-  verify_sgc/  legacy_scripts/   #   最早的 SGC 实验脚本 / 遗留脚本
-java-high-performance/           # 并行 Java 实现
+.archive/                        # 已退役材料（含 java-high-performance Java 平行原型、QXT 遗留代码）
 third_party/                     # 第三方子仓
 ```
 
-> 打包只发布 `simplcore` / `simplcore.core` / `simplcore.safety`（见 `pyproject.toml`）；
-> `research/` 与 `.trash/` 均不入库、不进 CI。
+> 打包发布 `simplcore` / `simplcore.core`（八子包）/ `simplcore.lab` / `simplcore.safety`
+> / `simplcore.ops`（见 `pyproject.toml`）；`research/`、`.archive/` 与 `.trash/`
+> 均不参与 CI，Java 平行原型已冻结于 `.archive/`，不得作为架构证据引用。

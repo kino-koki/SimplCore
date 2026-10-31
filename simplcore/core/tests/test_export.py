@@ -1,4 +1,4 @@
-﻿# Copyright 2026 (C) 六安市青奈科技有限责任公司
+# Copyright 2026 (C) 六安市青奈科技有限责任公司
 # -*- coding: utf-8 -*-
 """Round-trip tests for the safetensors export path (`simplcore.core.export`)."""
 from __future__ import annotations

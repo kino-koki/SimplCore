@@ -8,9 +8,9 @@ import torch
 
 from simplcore.core.config import SimplCoreConfig, analytic_params
 from simplcore.core.dream import (
-    DreamConfig,
-    DreamingLoop,
-    DreamStage,
+    ReflectionConfig,
+    ReflectionLoop,
+    ReflectionStage,
     ExperienceBuffer,
     Insight,
     TrainExample,
@@ -167,21 +167,21 @@ def test_default_synthesizer_needs_corrected_response() -> None:
 
 
 def test_dreaming_empty_buffer_is_idle() -> None:
-    loop = DreamingLoop(model=None, buffer=ExperienceBuffer())
+    loop = ReflectionLoop(model=None, buffer=ExperienceBuffer())
     rep = loop.step()
-    assert rep.stage is DreamStage.IDLE
+    assert rep.stage is ReflectionStage.IDLE
     assert rep.harvested == 0
 
 
 def test_dreaming_full_cycle_commits() -> None:
     buf = ExperienceBuffer()
     buf.add(_traj("a", grounded=False, corrected="fixed"))
-    loop = DreamingLoop(
+    loop = ReflectionLoop(
         model=None, buffer=buf,
-        config=DreamConfig(mode="memory", require_regression_check=False),
+        config=ReflectionConfig(mode="memory", require_regression_check=False),
     )
     rep = loop.step()
-    assert rep.stage is DreamStage.COMMIT
+    assert rep.stage is ReflectionStage.COMMIT
     assert rep.harvested == 1
     assert rep.insights >= 1
     assert rep.synthesized == 1
@@ -192,9 +192,9 @@ def test_dreaming_writes_to_memory_bank() -> None:
     buf = ExperienceBuffer()
     buf.add(_traj("a", grounded=False, corrected="fixed"))
     bank = CompressedMemoryBank(dim=DIM)
-    loop = DreamingLoop(
+    loop = ReflectionLoop(
         model=None, buffer=buf,
-        config=DreamConfig(mode="memory", require_regression_check=False),
+        config=ReflectionConfig(mode="memory", require_regression_check=False),
         memory_bank=bank,
     )
     loop.step()
@@ -204,22 +204,22 @@ def test_dreaming_writes_to_memory_bank() -> None:
 def test_dreaming_mode_none_does_not_consolidate() -> None:
     buf = ExperienceBuffer()
     buf.add(_traj("a", grounded=False, corrected="fixed"))
-    loop = DreamingLoop(
+    loop = ReflectionLoop(
         model=None, buffer=buf,
-        config=DreamConfig(mode="none", require_regression_check=False),
+        config=ReflectionConfig(mode="none", require_regression_check=False),
     )
     rep = loop.step()
     assert rep.consolidated is False
-    assert rep.stage is DreamStage.IDLE
+    assert rep.stage is ReflectionStage.IDLE
 
 
 def test_dreaming_budget_caps_insights_and_examples() -> None:
     buf = ExperienceBuffer()
     for i in range(10):
         buf.add(_traj(f"p{i}", grounded=False, corrected="fixed"))
-    loop = DreamingLoop(
+    loop = ReflectionLoop(
         model=None, buffer=buf,
-        config=DreamConfig(mode="memory", max_insights=2, max_examples=1,
+        config=ReflectionConfig(mode="memory", max_insights=2, max_examples=1,
                             require_regression_check=False),
     )
     rep = loop.step()
@@ -249,14 +249,14 @@ def test_dreaming_regression_triggers_rollback() -> None:
     buf.add(_traj("a", grounded=False, corrected="fixed"))
     model = Model()
     scores = iter([1.0, 0.5])          # 基线 1.0，巩固后 0.5 → 退化
-    loop = DreamingLoop(
+    loop = ReflectionLoop(
         model=model, buffer=buf,
-        config=DreamConfig(mode="weights", regression_tolerance=0.0),
+        config=ReflectionConfig(mode="weights", regression_tolerance=0.0),
         consolidator=BadConsolidator(),
         verifier=lambda m: next(scores),
     )
     rep = loop.step()
-    assert rep.stage is DreamStage.ROLLBACK
+    assert rep.stage is ReflectionStage.ROLLBACK
     assert rep.rolled_back is True
     assert rep.score_delta < 0
     assert model.restores == 1
@@ -273,14 +273,14 @@ def test_dreaming_no_regression_commits() -> None:
     buf = ExperienceBuffer()
     buf.add(_traj("a", grounded=False, corrected="fixed"))
     scores = iter([1.0, 1.2])
-    loop = DreamingLoop(
+    loop = ReflectionLoop(
         model=Model(), buffer=buf,
-        config=DreamConfig(mode="weights", regression_tolerance=0.0),
+        config=ReflectionConfig(mode="weights", regression_tolerance=0.0),
         consolidator=lambda m, ex: None,
         verifier=lambda m: next(scores),
     )
     rep = loop.step()
-    assert rep.stage is DreamStage.COMMIT
+    assert rep.stage is ReflectionStage.COMMIT
     assert rep.score_delta > 0
 
 
@@ -290,9 +290,9 @@ def test_dreaming_reflector_exception_is_contained() -> None:
 
     buf = ExperienceBuffer()
     buf.add(_traj("a"))
-    loop = DreamingLoop(model=None, buffer=buf, reflector=boom)
+    loop = ReflectionLoop(model=None, buffer=buf, reflector=boom)
     rep = loop.step()
-    assert rep.stage is DreamStage.FAILED
+    assert rep.stage is ReflectionStage.FAILED
     assert any("critic down" in n for n in rep.notes)
 
 
@@ -302,7 +302,7 @@ def test_dreaming_run_stops_on_failure() -> None:
 
     buf = ExperienceBuffer()
     buf.add(_traj("a"))
-    loop = DreamingLoop(model=None, buffer=buf, reflector=boom)
+    loop = ReflectionLoop(model=None, buffer=buf, reflector=boom)
     reps = loop.run(max_rounds=5)
     assert len(reps) == 1
 

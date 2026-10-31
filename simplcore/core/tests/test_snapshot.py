@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""SimplCoreModel.snapshot / restore 的测试（DreamingLoop 权重回滚依赖它）。"""
+"""SimplCoreModel.snapshot / restore 的测试（ReflectionLoop 权重回滚依赖它）。"""
 from __future__ import annotations
 
 import pytest

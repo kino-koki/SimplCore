@@ -26,7 +26,7 @@
 
 若 `False`，先解决驱动，**不要**继续往下走 —— 后面每一步都在 GPU 上。
 
-> 注：训练路径是 `simplcore/core/` 的 **PyTorch** 实现（`simplcore/core/train.py`），
+> 注：训练路径是 `simplcore/core/` 的 **PyTorch** 实现（`simplcore/core/training/train/.py`），
 > 不依赖自研 `simplcore/tensor` 引擎 —— 该引擎仍缺可微 `rfft/irfft`，
 > 只在 `research/` 里作为历史原型保留。
 
@@ -49,7 +49,7 @@ python scripts/build_corpus.py --parquet-dir data/raw/fineweb_zh --out data/proc
 且 `train-00000.bin` 等分片带 SHA-256。分片哈希用于训练启动时的完整性校验，
 **不要手工删改**（否则用 `--skip-hash-check` 启动，但那就失去了防损坏能力）。
 
-`simplcore/core/train.py` 会按顺序找 `data/processed/tuan_zh` → `data/processed/tuan_zh_smoke`，
+`simplcore/core/training/train/.py` 会按顺序找 `data/processed/tuan_zh` → `data/processed/tuan_zh_smoke`，
 所以默认路径建好即可省掉 `--data-dir`。
 
 ---
@@ -119,7 +119,7 @@ python -m simplcore.core.train --preset tuan-1b --enhance reasoning `
   训进模型；后者冻结基座、只训 `LearnedAdapter`，`WeightBudget` 守 3B 上限）。
 - `accel` / `smm` / `reasoning`：评估 hook，分别报结构性加速比、把采样窗口写入情景记忆库、
   跑迭代式深度思考——不改变主 val_loss。
-- `dream`：训练后 post-hook，跑 `DreamingLoop` 自进化巩固（no-regression gate 逐位回滚；
+- `dream`：训练后 post-hook，跑 `ReflectionLoop` 自进化巩固（no-regression gate 逐位回滚；
   权重写回需独立 held-out 评测器，否则 gate 默认拒绝写回）。
 - `smm`/`dream`/`reasoning` 需要编解码器：未显式传入时自动用 `CharTokenizer(limit=vocab_size)`
   兜底。单元验证见 `simplcore/core/tests/test_training_integration.py`（CPU 可跑）。
@@ -211,7 +211,7 @@ python -m simplcore.core.eval streaming --preset tuan-150m
 | 启动即报分片 SHA-256 不匹配 | 分片被改/传输损坏 | 重建语料；临时用 `--skip-hash-check` 定位哪片坏了 |
 | step 3000 左右 OOM | micro-batch 按算术估的，没实测 | 回到 §2 重新测；降 micro-batch 或开 `--grad-checkpoint` |
 | loss 抖动后发散 | 未裁梯度 / lr 过高 | 确认 `--grad-clip 1.0`；降 lr 到 1e-4 重跑 |
-| loss 长期平坦不降 | 闸门退化（历史 bug：`evidence_proj` 零初始化被覆盖） | 检查 `simplcore/core/abstain.py` 的闸门参数是否可学习；跑 `test_gates.py` |
+| loss 长期平坦不降 | 闸门退化（历史 bug：`evidence_proj` 零初始化被覆盖） | 检查 `simplcore/core/arch/abstain.py` 的闸门参数是否可学习；跑 `test_gates.py` |
 | tokens/s 只有预期一半 | `--num-workers 2` 供不上 | 提到 8；确认语料在本地 SSD 不在网络盘 |
 | ROCm 上 `torch.compile` 报 unicode 错 | Windows 临时目录中文用户名 | 属已知问题，`--compile` 关掉即可（eager 结果一致） |
 | ROCm 上 FFT 明显慢于 NVIDIA | cuFFT / rocFFT 实现差异 | 以 `eval throughput` 的实测 MFU 为准，按 `TRAINING_BUDGET_MI250.md` 下调 token 预算 |

@@ -7,7 +7,7 @@ import torch
 
 from simplcore.core.config import SimplCoreConfig
 from simplcore.core.model import SimplCoreModel
-from simplcore.core.accel import ThinkAccelerator, ComputeLedger
+from simplcore.core.accel import AdaptiveDepth, ComputeLedger
 
 
 def _tiny():
@@ -21,7 +21,7 @@ def _tiny():
 def test_noop_is_bit_identical_to_model():
     """skip_threshold=-inf、min_depth=层数 时退化为恒全算力，与模型逐位一致。"""
     m = _tiny()
-    acc = ThinkAccelerator(m, skip_threshold=float("-inf"), min_depth=m.config.num_layers)
+    acc = AdaptiveDepth(m, skip_threshold=float("-inf"), min_depth=m.config.num_layers)
     idx = torch.randint(0, 64, (2, 12))
     with torch.no_grad():
         g1 = m.generate(idx, max_new_tokens=6, temperature=0, top_k=1)
@@ -31,7 +31,7 @@ def test_noop_is_bit_identical_to_model():
 
 def test_noop_ledger_speedup_is_one():
     m = _tiny()
-    acc = ThinkAccelerator(m, skip_threshold=float("-inf"), min_depth=m.config.num_layers)
+    acc = AdaptiveDepth(m, skip_threshold=float("-inf"), min_depth=m.config.num_layers)
     idx = torch.randint(0, 64, (1, 12))
     with torch.no_grad():
         acc.generate(idx, max_new_tokens=6, temperature=0, top_k=1)
@@ -41,7 +41,7 @@ def test_noop_ledger_speedup_is_one():
 
 def test_aggressive_skip_gives_speedup_and_finite():
     m = _tiny()
-    acc = ThinkAccelerator(m, skip_threshold=1e9, min_depth=1)
+    acc = AdaptiveDepth(m, skip_threshold=1e9, min_depth=1)
     idx = torch.randint(0, 64, (2, 24))
     with torch.no_grad():
         g = acc.generate(idx, max_new_tokens=8, temperature=0, top_k=1)
@@ -51,19 +51,19 @@ def test_aggressive_skip_gives_speedup_and_finite():
 
 def test_accelerator_has_no_attention():
     m = _tiny()
-    acc = ThinkAccelerator(m, skip_threshold=1e9, min_depth=1)
+    acc = AdaptiveDepth(m, skip_threshold=1e9, min_depth=1)
     assert acc.attention_like_modules() == []
 
 
 def test_invalid_depths_rejected():
     m = _tiny()
     try:
-        ThinkAccelerator(m, min_depth=0)
+        AdaptiveDepth(m, min_depth=0)
         assert False, "min_depth<1 应被拒绝"
     except ValueError:
         pass
     try:
-        ThinkAccelerator(m, min_depth=10, max_depth=4)
+        AdaptiveDepth(m, min_depth=10, max_depth=4)
         assert False, "min_depth>max_depth 应被拒绝"
     except ValueError:
         pass

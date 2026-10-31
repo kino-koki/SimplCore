@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from simplcore.core.config import SimplCoreConfig
 from simplcore.core.model import SimplCoreModel
 from simplcore.core.seqlen_curriculum import SeqLenCurriculum, build_curriculum
-from simplcore.core.bio_computation import BioEnhancer
+from simplcore.core.bio_enhance import BioEnhancer
 
 
 @pytest.fixture(autouse=True)

@@ -200,6 +200,26 @@ def test_warmup_domains_specialize():
     print(f"[ok] warmup specialize: E0(A)={float(la):.3f} E0(B)={float(lb):.3f}")
 
 
+def test_generate_o1_streaming():
+    """0.1-α 补齐：UnityMoE 的统一生成入口（O(1) 流式 prefill + 采样）。
+
+    此前 Unity 只有训练前向与 stream_step，没有 generate——自进化专家
+    训练后无法用统一接口出文本。锁定：输出形状、路由在生成路径上被消费
+    （MoE 权重参与了递推）、确定性（eval + 无采样随机性时两次一致）。
+    """
+    torch.manual_seed(0)
+    unity = UnityModel(SimplCoreModel(_tiny_cfg()),
+                       UnityConfig(num_experts=2, top_k=1))
+    unity.eval()
+    idx = torch.randint(0, 64, (1, 6))
+    out = unity.generate(idx, max_new_tokens=5, temperature=1.0, top_k=1)
+    assert out.shape == (1, 6 + 5)
+    assert (out[:, :6] == idx).all()          # 前缀原样保留
+    # 确定性：同参两次生成一致（top_k=1 贪心，eval 模式）
+    out2 = unity.generate(idx, max_new_tokens=5, temperature=1.0, top_k=1)
+    assert torch.equal(out, out2)
+
+
 if __name__ == "__main__":
     test_base_frozen_excluded()
     test_experts_different_data_specialize()
@@ -209,4 +229,5 @@ if __name__ == "__main__":
     test_expert_persistence()
     test_self_evolution_manager()
     test_warmup_domains_specialize()
+    test_generate_o1_streaming()
     print("\nALL UNITY TESTS PASSED")

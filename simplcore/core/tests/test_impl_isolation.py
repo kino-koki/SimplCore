@@ -17,14 +17,17 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[3]
-JAVA = ROOT / "java-high-performance"
+JAVA = ROOT / ".archive" / "java-high-performance"
 CORE = ROOT / "simplcore" / "core"
+MEM = CORE / "memory"
 
 
 # ---------------------------------------------------------------------------
 # 1. Java 平行实现的隔离
 # ---------------------------------------------------------------------------
 def test_java_tree_is_marked_non_normative() -> None:
+    # 2026-10 架构整改：Java 平行实现整体归档到 .archive/，物理移出工作主线。
+    assert JAVA.parent == ROOT / ".archive", "Java 原型不得回到仓库工作主线"
     text = (JAVA / "README.md").read_text(encoding="utf-8")
     assert "NON-NORMATIVE" in text
     assert "不参与 CI" in text
@@ -61,53 +64,56 @@ def test_java_attention_remains_outside_python_product_line() -> None:
 # 2. 记忆分层：memory → dream → smm 单向
 # ---------------------------------------------------------------------------
 def _module_imports(path: Path) -> set[str]:
-    tree = ast.parse(path.read_text(encoding="utf-8"))
+    tree = ast.parse(path.read_text(encoding="utf-8-sig"))
     found: set[str] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.ImportFrom) and node.module:
-            mod = node.module
+            mod = node.module.lstrip(".")
             if mod.startswith("simplcore.core."):
-                found.add(mod.rsplit(".", 1)[-1])
-            elif mod.startswith("."):
-                found.add(mod.lstrip(".").split(".")[0])
+                found.add(mod.split(".")[2])
+            elif node.level >= 1 or mod.startswith("simplcore"):
+                # 相对导入：level=1 同包子模块，level=2 跨包（``..memory.dream``）
+                found.add(mod.split(".")[0])
             elif "." not in mod:
                 # Python 3.11 的相对导入在 AST 里已去掉前导点（``.dream`` → ``dream``）。
                 found.add(mod)
         elif isinstance(node, ast.Import):
             for alias in node.names:
                 if alias.name.startswith("simplcore.core."):
-                    found.add(alias.name.rsplit(".", 1)[-1])
+                    found.add(alias.name.split(".")[2])
     return found
 
 
 def _class_names(path: Path) -> set[str]:
-    tree = ast.parse(path.read_text(encoding="utf-8"))
+    tree = ast.parse(path.read_text(encoding="utf-8-sig"))
     return {n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)}
 
 
 def test_memory_does_not_depend_on_higher_layers() -> None:
-    imports = _module_imports(CORE / "memory.py")
+    imports = _module_imports(MEM / "memory.py")
     assert not (imports & {"dream", "smm"}), f"memory 反向依赖: {imports}"
 
 
 def test_dream_does_not_depend_on_smm() -> None:
-    imports = _module_imports(CORE / "dream.py")
+    imports = _module_imports(MEM / "dream" / "loop.py")
     assert "smm" not in imports, f"dream 反向依赖 smm: {imports}"
 
 
 def test_smm_reuses_instead_of_reimplementing() -> None:
     """SMM 只能编排 memory/dream，不得复制它们的核心类。"""
-    imports = _module_imports(CORE / "smm.py")
+    imports = _module_imports(MEM / "smm.py")
     assert {"memory", "dream"} <= imports, f"SMM 未复用底层实现: {imports}"
-    own = _class_names(CORE / "smm.py")
+    own = _class_names(MEM / "smm.py")
     forbidden = {"CompressedMemoryBank", "TextKeyEncoder", "ExperienceBuffer",
-                 "DreamingLoop", "NoRegressionGate"}
+                 "ReflectionLoop", "NoRegressionGate"}
     assert own & forbidden == set(), f"SMM 重复定义了底层类: {own & forbidden}"
 
 
 def test_memory_and_dream_own_the_primitives() -> None:
-    assert {"CompressedMemoryBank", "TextKeyEncoder"} <= _class_names(CORE / "memory.py")
-    assert {"ExperienceBuffer", "DreamingLoop"} <= _class_names(CORE / "dream.py")
+    assert {"CompressedMemoryBank", "TextKeyEncoder"} <= _class_names(MEM / "memory.py")
+    # dream/ 拆为子包：ExperienceBuffer 在 buffer.py，ReflectionLoop 在 loop.py
+    assert {"ExperienceBuffer"} <= _class_names(MEM / "dream" / "buffer.py")
+    assert {"ReflectionLoop"} <= _class_names(MEM / "dream" / "loop.py")
 
 
 if __name__ == "__main__":

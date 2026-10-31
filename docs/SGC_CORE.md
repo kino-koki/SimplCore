@@ -1,6 +1,6 @@
 # SGC 核心深度解析（SpectralGlobalConv）
 
-本文档逐层拆解 `simplcore/core/sgc.py::SpectralGlobalConv` 的实现。所有公式与代码对应，
+本文档逐层拆解 `simplcore/core/arch/sgc.py::SpectralGlobalConv` 的实现。所有公式与代码对应，
 无"文字创新"。
 
 ---

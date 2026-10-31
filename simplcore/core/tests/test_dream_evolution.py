@@ -20,9 +20,9 @@ import torch
 import torch.nn.functional as F
 
 from simplcore.core.dream import (
-    DreamConfig,
-    DreamingLoop,
-    DreamStage,
+    ReflectionConfig,
+    ReflectionLoop,
+    ReflectionStage,
     EvalScores,
     ExperienceBuffer,
     Insight,
@@ -149,15 +149,15 @@ def test_loop_synthesizes_from_evidence_end_to_end() -> None:
     """端到端：``synthesized > 0``（旧实现此处恒为 0）。"""
     buf = ExperienceBuffer()
     buf.add(_traj())
-    loop = DreamingLoop(
+    loop = ReflectionLoop(
         model=None, buffer=buf,
-        config=DreamConfig(mode="memory", require_regression_check=False),
+        config=ReflectionConfig(mode="memory", require_regression_check=False),
     )
     rep = loop.step()
     assert rep.harvested == 1
     assert rep.insights >= 1
     assert rep.synthesized == 1
-    assert rep.stage is DreamStage.COMMIT
+    assert rep.stage is ReflectionStage.COMMIT
 
 
 # ===========================================================================
@@ -185,9 +185,9 @@ def _build_bank(n_filler: int, dim: int = 64) -> tuple:
     ]
     buf = ExperienceBuffer(capacity=4096)
     bank = CompressedMemoryBank(dim=dim, capacity=8192)
-    loop = DreamingLoop(
+    loop = ReflectionLoop(
         model=None, buffer=buf, memory_bank=bank,
-        config=DreamConfig(mode="memory", batch_size=4096,
+        config=ReflectionConfig(mode="memory", batch_size=4096,
                            max_memory_writes=8192, require_regression_check=False),
     )
     for q, ev in docs:
@@ -336,9 +336,9 @@ class _Model:
 def _weights_loop(verifier, bank=None, mode="weights"):
     buf = ExperienceBuffer()
     buf.add(_traj())
-    return DreamingLoop(
+    return ReflectionLoop(
         model=_Model(), buffer=buf, memory_bank=bank,
-        config=DreamConfig(mode=mode, regression_tolerance=0.0,
+        config=ReflectionConfig(mode=mode, regression_tolerance=0.0,
                            bootstrap_samples=400),
         consolidator=lambda m, ex: None,
         verifier=verifier,
@@ -349,7 +349,7 @@ def test_loop_refuses_weight_writeback_without_verifier() -> None:
     """默认验证器恒返回常量 → gate 恒通过 → 必须拒绝写回权重。"""
     loop = _weights_loop(verifier=None)
     rep = loop.step()
-    assert rep.stage is DreamStage.ROLLBACK
+    assert rep.stage is ReflectionStage.ROLLBACK
     assert rep.rolled_back is True
     assert loop.model.restores == 1
     assert any("拒绝写回权重" in n for n in rep.notes)
@@ -360,7 +360,7 @@ def test_loop_rolls_back_on_high_variance_improvement() -> None:
     new = [2.0, 2.0, 2.0, 0.5, 0.5]
     scores = iter([base, new])
     rep = _weights_loop(verifier=lambda m: {"grounding": next(scores)}).step()
-    assert rep.stage is DreamStage.ROLLBACK
+    assert rep.stage is ReflectionStage.ROLLBACK
     assert rep.failed_metrics == ["grounding"]
     assert rep.ci_lower["grounding"] < 0.0
 
@@ -368,7 +368,7 @@ def test_loop_rolls_back_on_high_variance_improvement() -> None:
 def test_loop_commits_on_confident_improvement() -> None:
     scores = iter([[1.0] * 5, [1.2] * 5])
     rep = _weights_loop(verifier=lambda m: {"grounding": next(scores)}).step()
-    assert rep.stage is DreamStage.COMMIT
+    assert rep.stage is ReflectionStage.COMMIT
     assert rep.rolled_back is False
     assert rep.ci_lower["grounding"] > 0
 
@@ -380,7 +380,7 @@ def test_loop_rolls_back_when_evaluator_raises() -> None:
 
     loop = _weights_loop(verifier=boom)
     rep = loop.step()
-    assert rep.stage is DreamStage.ROLLBACK
+    assert rep.stage is ReflectionStage.ROLLBACK
     assert any("评测失败" in n for n in rep.notes)
 
 
@@ -391,7 +391,7 @@ def test_rollback_also_restores_memory() -> None:
     scores = iter([[1.0] * 5, [0.1] * 5])
     loop = _weights_loop(verifier=lambda m: {"g": next(scores)}, bank=bank, mode="both")
     rep = loop.step()
-    assert rep.stage is DreamStage.ROLLBACK
+    assert rep.stage is ReflectionStage.ROLLBACK
     assert len(bank) == 1
     assert bank.metas()[0]["prompt"] == "旧"
 

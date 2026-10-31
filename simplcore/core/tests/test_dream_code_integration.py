@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""端到端：DreamingLoop + 代码执行 verifier 应当真正走到 COMMIT。
+"""端到端：ReflectionLoop + 代码执行 verifier 应当真正走到 COMMIT。
 
 这是支柱 C 的"解锁证明"：``mode="weights"`` 在旧实现里因为没有独立 verifier
 会被直接 ROLLBACK；现在用真实执行结果作 verifier，gate 能判定并提交。
@@ -9,8 +9,8 @@ from __future__ import annotations
 from simplcore.core.code_exec import CodeExecutionVerifier, make_smoke_problems
 from simplcore.core.config import SimplCoreConfig
 from simplcore.core.dream import (
-    DreamConfig,
-    DreamingLoop,
+    ReflectionConfig,
+    ReflectionLoop,
     ExperienceBuffer,
     Insight,
     Trajectory,
@@ -44,10 +44,10 @@ def test_weights_mode_commits_with_code_verifier() -> None:
     def synthesizer(model, insights):
         return [TrainExample(prompt="demo", target="return 1")]
 
-    loop = DreamingLoop(
+    loop = ReflectionLoop(
         model=_model(),
         buffer=buf,
-        config=DreamConfig(mode="weights", require_regression_check=True,
+        config=ReflectionConfig(mode="weights", require_regression_check=True,
                            max_rounds=1, bootstrap_samples=50),
         reflector=reflector,
         synthesizer=synthesizer,

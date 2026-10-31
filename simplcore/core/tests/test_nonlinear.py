@@ -10,8 +10,8 @@ from simplcore.core.config import SimplCoreConfig
 from simplcore.core.model import SimplCoreModel
 from simplcore.core.nonlinear import (
     HaltingHead,
-    NonlinearThinkCell,
-    NonlinearThinker,
+    LatentRefineCell,
+    LatentRefiner,
 )
 
 
@@ -34,7 +34,7 @@ def _run_stream(step_fn, model, idx, B=1):
 def test_passthrough_bit_identical_to_model():
     """max_iters=0 时与 SimplCoreModel.stream_step 逐位一致（theory 守卫）。"""
     m = _tiny()
-    th = NonlinearThinker(m, max_iters=0).eval()
+    th = LatentRefiner(m, max_iters=0).eval()
     idx = torch.randint(0, 64, (1, 16))
     with torch.no_grad():
         lg_th, _ = _run_stream(th.stream_step, m, idx)
@@ -45,7 +45,7 @@ def test_passthrough_bit_identical_to_model():
 
 def test_disabled_flag_is_passthrough():
     m = _tiny()
-    th = NonlinearThinker(m, max_iters=3, enabled=False).eval()
+    th = LatentRefiner(m, max_iters=3, enabled=False).eval()
     idx = torch.randint(0, 64, (1, 16))
     with torch.no_grad():
         lg_th, _ = _run_stream(th.stream_step, m, idx)
@@ -61,7 +61,7 @@ def test_thinking_changes_logits_and_is_finite():
     cell.down 一个非零扰动，验证"思考确实改变 logits"的机制路径。
     """
     m = _tiny()
-    th = NonlinearThinker(m, max_iters=2, halt_threshold=0.6).eval()
+    th = LatentRefiner(m, max_iters=2, halt_threshold=0.6).eval()
     with torch.no_grad():
         th.cell.down.weight.add_(0.01)          # 打破恒等（模拟已训练）
     idx = torch.randint(0, 64, (1, 12))
@@ -77,14 +77,14 @@ def test_thinking_changes_logits_and_is_finite():
 def test_stream_bytes_unchanged():
     """思考不新增流式状态。"""
     m = _tiny()
-    th = NonlinearThinker(m, max_iters=2)
+    th = LatentRefiner(m, max_iters=2)
     assert th.stream_bytes(1) == m.stream_bytes(1)
 
 
 def test_training_loss_backward_and_ponder():
     """并行训练路径：CE + ponder 可反传，梯度穿过 cell 与 halting。"""
     m = _tiny()
-    th = NonlinearThinker(m, max_iters=3, ponder_weight=0.1).train()
+    th = LatentRefiner(m, max_iters=3, ponder_weight=0.1).train()
     idx = torch.randint(0, 64, (2, 12))
     targets = torch.randint(0, 64, (2, 12))
     logits, loss = th(idx, targets)
@@ -99,7 +99,7 @@ def test_training_loss_backward_and_ponder():
 def test_cell_zero_init_is_identity():
     """down 零初始化 → 单步 cell 输出等于输入（恒等）。"""
     torch.manual_seed(1)
-    cell = NonlinearThinkCell(dim=16)
+    cell = LatentRefineCell(dim=16)
     z = torch.randn(2, 5, 16)
     with torch.no_grad():
         assert torch.equal(cell(z), z)
@@ -114,21 +114,21 @@ def test_halting_head_init_is_half():
 
 def test_purity_no_attention():
     m = _tiny()
-    th = NonlinearThinker(m, max_iters=2)
+    th = LatentRefiner(m, max_iters=2)
     assert th.attention_like_modules() == []
 
 
 def test_invalid_args():
     m = _tiny()
     with pytest.raises(ValueError):
-        NonlinearThinker(m, max_iters=-1)
+        LatentRefiner(m, max_iters=-1)
     with pytest.raises(ValueError):
-        NonlinearThinker(m, halt_threshold=0.0)
+        LatentRefiner(m, halt_threshold=0.0)
 
 
 def test_generate_matches_passthrough_when_disabled():
     m = _tiny()
-    th = NonlinearThinker(m, max_iters=0).eval()
+    th = LatentRefiner(m, max_iters=0).eval()
     idx = torch.randint(0, 64, (2, 8))
     torch.manual_seed(7)
     g1 = th.generate(idx.clone(), max_new_tokens=6, temperature=0, top_k=1)

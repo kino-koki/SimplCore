@@ -36,18 +36,21 @@ FFT O(L log L) 训练 / IIR O(1) 推理双形态、对偶形式 bit-exact 等价
 """
 from __future__ import annotations
 
-from .config import (
+from ._compat_aliases import install as _install_compat_aliases
+_install_compat_aliases()
+
+from .model.config import (
     SimplCoreConfig,
     SIMPLCORE_PRESETS,
     get_preset,
     MODEL_NAME,
     MODEL_CODENAME,
 )
-from .sgc import SpectralGlobalConv, SGCStreamState
+from .arch.sgc import SpectralGlobalConv, SGCStreamState
 # SRFN（谱振流网络）：SGC 的 SSM 化版本。mixer="srf" 时启用。
-from .srf import SpectralResonanceFlow
-from .ssm import SelectiveSpectralSSM, SSMState
-from .memory import (
+from .arch.srf import SpectralResonanceFlow
+from .arch.ssm import SelectiveSpectralSSM, SSMState
+from .memory.memory import (
     CompressedMemoryBank,
     MemoryAwareObjective,
     MemoryCompressor,
@@ -59,7 +62,7 @@ from .memory import (
     top_aggregate,
     train_compressor_step,
 )
-from .chat import (
+from .dialogue.chat import (
     SPECIAL_TOKENS,
     ChatTemplate,
     SFTDataset,
@@ -70,13 +73,13 @@ from .chat import (
     load_memory_encoder,
     pack_sequences,
 )
-from .dialogue_runtime import (
+from .dialogue.dialogue_runtime import (
     ChatSession,
     DialogMemory,
     MemoryHit,
     Reply,
 )
-from .sft import (
+from .training.sft import (
     SFTConfig,
     SFTResult,
     build_optimizer,
@@ -84,14 +87,14 @@ from .sft import (
     fairness_report,
     train_sft,
 )
-from .ab import (
+from .training.ab import (
     PairedOutcome,
     ab_report,
     bootstrap_diff_ci,
     mcnemar,
     param_efficiency,
 )
-from .dialogue_eval import (
+from .dialogue.dialogue_eval import (
     BASIC_DIALOGUE_SUITE,
     MEMORY_DIALOGUE_SUITE,
     Check,
@@ -102,7 +105,7 @@ from .dialogue_eval import (
     memory_ablation,
     memory_projection_report,
 )
-from .scaling import (
+from .eval.scaling import (
     CostLedger,
     budget_table,
     cost_ledger,
@@ -113,11 +116,11 @@ from .scaling import (
     tokens_for_budget,
     train_flops_per_token,
 )
-from .dream import (
-    DreamConfig,
-    DreamingLoop,
-    DreamReport,
-    DreamStage,
+from .memory.dream import (
+    ReflectionConfig,
+    ReflectionLoop,
+    ReflectionReport,
+    ReflectionStage,
     EvalScores,
     ExperienceBuffer,
     GateVerdict,
@@ -130,7 +133,7 @@ from .dream import (
     paired_bootstrap_ci,
     regression_gate,
 )
-from .abstain import (
+from .arch.abstain import (
     AbstentionHead,
     AbstentionState,
     AbstentionDecision,
@@ -146,7 +149,7 @@ from .abstain import (
     select_threshold,
     expected_calibration_error,
 )
-from .grounding import (
+from .arch.grounding import (
     Claim,
     Binding,
     EvidenceIndex,
@@ -162,38 +165,45 @@ from .grounding import (
     split_claims,
     unsupported_claims,
 )
-from .model import SimplCoreBlock, SimplCoreModel, SimplCoreForCausalLM
-from .selective import GatedSpectralConv2, analytic_gated_spectral_params
-from .theory import Check, format_table, run_all
-from .hf_bridge import (
+from .model.model import SimplCoreBlock, SimplCoreModel, SimplCoreForCausalLM
+from .memory.sidecar import (BlockGistIndex, PointerHead, SidecarArchive,
+                             SidecarRetriever, sidecar_ledger)
+from .model.multimodal import (AudioAdapter, ImageAdapter,
+                               SimplCoreMultimodal)
+from .model.physics_world import (PhysicsConstraints, PhysicsEvent,
+                                  PhysicsWorldModel)
+from .eval.world_probe import WorldModelProbe, WorldProbeReport
+from .arch.selective import GatedSpectralConv2, analytic_gated_spectral_params
+from .eval.claims_audit import Check, format_table, run_all
+from .model.hf_bridge import (
     MigrationReport,
     init_simplcore_from_hf,
     migrate_embeddings_and_ffn,
     sgc_to_hf_eval_bridge,
     simplcore_stream_state_for_eval,
 )
-from .tokenization import (
+from .model.tokenization import (
     Tokenizer,
     CharTokenizer,
     ByteTokenizer,
     BPETokenizer,
     make_codec,
 )
-from .accel import ThinkAccelerator, ComputeLedger
-from .reasoning import DeepReasoner, ReasoningTrace, stabilized
-from .nonlinear import (
-    NonlinearThinker,
-    NonlinearThinkCell,
+from .arch.accel import AdaptiveDepth, ComputeLedger
+from .dialogue.reasoning import IterativeRefiner, ReasoningTrace, stabilized
+from .model.nonlinear import (
+    LatentRefiner,
+    LatentRefineCell,
     HaltingHead,
-    ThinkLedger,
+    RefineLedger,
 )
-from .smm import (
+from .memory.smm import (
     SimplModelMemory,
     SMMConfig,
     SMMLedger,
     MemoryTier,
 )
-from .envlearn import (
+from .training.envlearn import (
     WeightBudget,
     AdapterBlock,
     LearnedAdapter,
@@ -206,7 +216,7 @@ from .envlearn import (
     EnvironmentLearner,
     summarize_failures,
 )
-from .jitrl import (
+from ..lab.jitrl import (
     TrajectoryMemory,
     Transition,
     AdvantageEstimator,
@@ -214,14 +224,14 @@ from .jitrl import (
     apply_logit_bias,
     JitRLController,
 )
-from .extrapolation import (
+from .eval.extrapolation import (
     extrapolation_probe,
     decay_ablation,
     sgc_model_factory,
     ExtrapolationResult,
     DecayPoint,
 )
-from .backend_contract import (
+from .backend.backend_contract import (
     BackendContract,
     BackendOp,
     ConformanceCheck,
@@ -229,24 +239,24 @@ from .backend_contract import (
     SIMPLCORE_BACKEND_OPS,
     conformance_checks,
 )
-from .conformance_runner import (
+from .backend.conformance_runner import (
     BackendAdapter,
     ConformanceReport,
     ConformanceResult,
     TorchReferenceAdapter,
     run_conformance,
 )
-from .adapter_model import (
+from .model.adapter_model import (
     AdapterModel,
     RecordingAdapter,
 )
-from .trainer import (
+from .training.trainer import (
     ContextCurriculum,
     CurriculumStage,
     StreamingTrainer,
     TrainLedger,
 )
-from .equal_budget import (
+from .eval.equal_budget import (
     SyntheticWindowSource,
     TSConfig,
     TransformerBaseline,
@@ -256,40 +266,40 @@ from .equal_budget import (
     run_comparison,
     ts_train_flops_per_token,
 )
-from .longctx_eval import (
+from .eval.longctx_eval import (
     NeedleCorpus,
     NeedleTrial,
     run_longctx_eval,
     score_trial,
 )
-from .code_passk_eval import (
+from .eval.code_passk_eval import (
     GeneratorSpec,
     make_problems_small,
     pass_at_k,
     run_code_passk,
 )
-from .throughput_eval import (
+from .eval.throughput_eval import (
     TSDecoder,
     analytic_decode_ledger,
     fit_slope,
     run_throughput_eval,
     summarize_latency,
 )
-from .phase1_train import (
+from .training.phase1_train import (
     CorpusBatches,
     SyntheticCorpusSpec,
     make_synthetic_corpus,
     run_phase1,
 )
-from .backend_bridge import (
+from .backend.backend_bridge import (
     ABI_SPEC,
     CtypesBackendAdapter,
     FakeCLib,
     load_backend,
     symbol_report,
 )
-from .paper_audit import run_audit
-from .deploy_budget import (
+from .eval.paper_audit import run_audit
+from .deploy.deploy_budget import (
     DeployRow,
     DEPLOY_LADDER,
     DEPLOY_HBM_CAP_1M,
@@ -298,7 +308,7 @@ from .deploy_budget import (
     deployment_report,
     deploy_verdict,
 )
-from .campaign import (
+from .deploy.campaign import (
     CampaignPlan,
     DoublingRow,
     Gate,
@@ -315,13 +325,26 @@ from .campaign import (
     claim_verdict,
     doubling_report,
 )
-from .mathproof import (
+from .eval.mathproof import (
     ProofResult,
     run_all as run_math_proofs,
 )
 
 __all__ = [
     "SimplCoreConfig",
+    "SidecarArchive",
+    "SidecarRetriever",
+    "BlockGistIndex",
+    "PointerHead",
+    "sidecar_ledger",
+    "SimplCoreMultimodal",
+    "ImageAdapter",
+    "AudioAdapter",
+    "WorldModelProbe",
+    "WorldProbeReport",
+    "PhysicsWorldModel",
+    "PhysicsEvent",
+    "PhysicsConstraints",
     "SIMPLCORE_PRESETS",
     "get_preset",
     "MODEL_NAME",
@@ -374,10 +397,10 @@ __all__ = [
     "self_match_scores",
     "top_aggregate",
     # Dreaming 自进化循环
-    "DreamConfig",
-    "DreamingLoop",
-    "DreamReport",
-    "DreamStage",
+    "ReflectionConfig",
+    "ReflectionLoop",
+    "ReflectionReport",
+    "ReflectionStage",
     # Dreaming 的默认钩子（自进化链的"真的会做事"的那一环）
     "default_consolidator",
     "default_synthesizer",
@@ -467,12 +490,12 @@ __all__ = [
     "ExtrapolationResult",
     "DecayPoint",
     # 思考加速（逐 token 自适应深度）
-    "ThinkAccelerator",
+    "AdaptiveDepth",
     # 非线性思考（latent 迭代精化 + ACT 式停止头）
-    "NonlinearThinker",
-    "NonlinearThinkCell",
+    "LatentRefiner",
+    "LatentRefineCell",
     "HaltingHead",
-    "ThinkLedger",
+    "RefineLedger",
     # Simpl Model Memory（最大自主学习整合架构）
     "SimplModelMemory",
     "SMMConfig",
@@ -480,7 +503,7 @@ __all__ = [
     "MemoryTier",
     "ComputeLedger",
     # 深度推理（迭代式思考控制器）
-    "DeepReasoner",
+    "IterativeRefiner",
     "ReasoningTrace",
     "stabilized",
     # 环境学习（权重预算 + 分阶段蒸馏）
@@ -577,4 +600,23 @@ __all__ = [
     "run_math_proofs",
 ]
 
-__version__ = "3.0.0"
+
+
+# ---------------------------------------------------------------------------
+# 0.1-α 命名降调前的旧公共名（pickle / 历史脚本兼容；新代码用新名）
+# ---------------------------------------------------------------------------
+DeepReasoner = IterativeRefiner
+NonlinearThinker = LatentRefiner
+NonlinearThinkCell = LatentRefineCell
+ThinkLedger = RefineLedger
+ThinkAccelerator = AdaptiveDepth
+DreamingLoop = ReflectionLoop
+DreamConfig = ReflectionConfig
+DreamReport = ReflectionReport
+DreamStage = ReflectionStage
+
+__all__ += ["DeepReasoner", "NonlinearThinker", "NonlinearThinkCell",
+            "ThinkLedger", "ThinkAccelerator", "DreamingLoop",
+            "DreamConfig", "DreamReport", "DreamStage"]
+
+__version__ = "0.1-α"

@@ -272,8 +272,9 @@ def test_two_char_tokenizers_have_distinct_names():
     from simplcore.core.tokenizer import FittedCharTokenizer
 
     assert sc.CharTokenizer is not FittedCharTokenizer
-    assert sc.CharTokenizer.__module__ == "simplcore.core.tokenization"
-    assert FittedCharTokenizer.__module__ == "simplcore.core.tokenizer"
+    # 0.1-α 结构化拆分后接口层在 model/ 子包；断言后缀避免与布局耦合死。
+    assert sc.CharTokenizer.__module__.endswith(".tokenization")
+    assert FittedCharTokenizer.__module__.endswith(".tokenizer")
 
 
 if __name__ == "__main__":

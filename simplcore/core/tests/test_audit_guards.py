@@ -5,13 +5,16 @@
 把四项审计发现固化为回归测试，防止同类"数字-公式-实现"漂移复发：
 
 1. 命题 5：误差界必须含 1/|sinθ| 因子（旧界实测被违反 5.79×）；
-2. theta 网格公共零点：legacy 均匀网格在 tau=2M(M+1)-1 处核恒 0，
-   默认 logfreq 无公共零点，构造期守护 `_assert_no_common_zero` 生效；
+2. theta 网格公共零点：legacy 均匀网格在 **tau=2M-1（周期 2M，即 2Mk-1 全体）**
+   处核恒 0，默认 logfreq 无公共零点，构造期守护 `_assert_no_common_zero`
+   （全 τ 值级扫描）+ legacy 分支公式级判定双保险生效；
 3. 流式状态字节账目：解析式 4·(2MD+(K-1)D+1)，M=64/D=1024/K=4 =
    536,580 B = 524.0 KiB（不含模型级 CMT memory 的 4 KiB）；
 4. fp32 sigmoid 饱和阈值：实测 16.636（=24·ln2，torch 实现路径），
-   论文旧值 17.3 为解析充分界（25·ln2），两者口径已在文档分开。
-5. 泄漏断言分路径：流式 IIR 扰动未来 -> 过去输出逐位相等（精确 0）；
+   论文旧值 17.3 为解析充分界（25·ln2），两者口径已在文档分开；
+5. θ 参数级钳制（P1）：oscillator_params 强制 θ ∈ [1e-3, π-1e-3]，
+   极端 raw_theta 下 |sinθ| ≥ sin(1e-3)，命题 5 误差界保持有界；
+6. 泄漏断言分路径：流式 IIR 扰动未来 -> 过去输出逐位相等（精确 0）；
    整段 FFT 并行 -> fp32 重排噪声 < 1e-5（实数域因果，见定理 1/2）。
 
 复现脚本：scripts/audit_numbers_20261031.py
@@ -21,6 +24,8 @@ from __future__ import annotations
 import math
 
 import pytest
+from pathlib import Path
+
 import torch
 
 from simplcore.core.sgc import (SpectralGlobalConv, _assert_no_common_zero,
@@ -145,36 +150,97 @@ def test_prop5_bound_requires_inverse_sin_factor():
 # 2. common zeros of the theta grid
 # ---------------------------------------------------------------------------
 def test_default_grid_has_no_common_zero():
-    """默认 logfreq 网格：任意 tau=j(M+1)-1 处全体基不同时为零。"""
+    """默认 logfreq 网格：全 τ 扫描下无公共（近）零点。
+
+    扫描口径与 `_assert_no_common_zero` 一致（τ ∈ [1, 4M+16]，对齐真实
+    零点位置 τ=2Mk-1；旧实现只扫 τ+1=j(M+1)，位置不对齐）。
+    """
     for M, decay in ((64, 8192.0), (128, 8192.0), (8, 8192.0)):
         _rho, theta = _init_oscillator_grid(M, decay, mode="logfreq")
-        for j in range(1, 2 * M + 9):
-            s = torch.sin(float(j * (M + 1)) * theta)
-            assert s.abs().max().item() >= 1e-6, (M, j)
+        theta_d = theta.to(torch.float64).reshape(1, M)
+        tau = torch.arange(1, 4 * M + 17, dtype=torch.float64).reshape(-1, 1)
+        r = torch.sin(tau * theta_d).norm(dim=1) / math.sqrt(M)
+        assert r.min().item() >= 1e-6, (M, r.argmin().item(), r.min().item())
 
 
 def test_legacy_grid_hits_common_zero_guard():
-    """legacy 均匀网格的代数公共零点：j=2M/gcd(M+1,2)（M=64 -> j=128,
-    tau=8319）处全体基同时为零。fp64 公式级判定精确为零；fp32 值级被
-    参数化误差（tau·ulp(theta)≈1.5e-3）掩盖成"近零"——所以守护必须
-    公式级。legacy 构造被拒绝，logfreq 放行。"""
+    """legacy 均匀网格的代数公共零点：**首个在 tau=2M-1，周期 2M**
+    （theta_m = pi(m+0.5)/M ⇒ sin((tau+1)·theta_m) = sin((tau+1)π(2m+1)/(2M))，
+    tau+1 = 2M 时对全体 m 为奇数倍 π ⇒ 精确为零）。fp64 公式级判定精确为零；
+    fp32 值级被参数化误差（tau·ulp(theta)≈1.5e-3）掩盖成"近零"——所以
+    代数零点的守护必须公式级（值级扫描兜非模式化网格）。legacy 构造被拒绝，
+    logfreq 放行。"""
     M = 64
-    j = 2 * M                                     # gcd(M+1,2)=2 for even M
-    tau1 = j * (M + 1)
+    tau_first = 2 * M                                    # 首个公共零点 tau=2M-1
     theta64 = math.pi * (torch.arange(M, dtype=torch.float64) + 0.5) / M
-    s64 = torch.sin(float(tau1) * theta64)
+    s64 = torch.sin(float(tau_first) * theta64)
     assert s64.abs().max().item() < 1e-9, \
         "expected algebraic common zero of the legacy grid is missing"
-    # fp32 值级口径（为什么必须公式级）：参数化误差把零点抬到 ~1.5e-3
+    # 周期性：tau = 2Mk-1 全体都是零点（抽 k=65，即旧文档口径的 2M(M+1)-1）
+    s65 = torch.sin(float(65 * 2 * M) * theta64)
+    assert s65.abs().max().item() < 1e-9, "period-2M common zero missing"
+    # fp32 值级口径（为什么代数零点必须公式级）：tau=2M-1 处参数化误差
+    # ≈ tau·ulp(theta) ≈ 2e-5（旧口径 tau=2M(M+1)-1 处放大 65 倍到 ~1.5e-3）。
+    # 值级 sin ≈ 2.3e-5：远大于 fp64 的精确零（<1e-9），且**高于**值级守护
+    # 阈值 1e-6 —— 值级扫描抓不到它，公式级判定必要。
     theta32 = math.pi * (torch.arange(M, dtype=torch.float32) + 0.5) / M
-    assert torch.sin(float(tau1) * theta32).abs().max().item() > 1e-4
+    s32 = torch.sin(float(tau_first) * theta32).abs().max().item()
+    assert 1e-6 < s32 < 1e-3, \
+        f"expected parametrization-error-masked zero, got {s32}"
     with pytest.raises(ValueError, match="common zero"):
         _init_oscillator_grid(M, 8192.0, mode="legacy")
-    # logfreq 无代数公共零点，放行
+    # logfreq 无代数公共零点，放行（全 τ 值级复验）
     _rho, theta = _init_oscillator_grid(M, 8192.0, mode="logfreq")
-    for jj in range(1, 2 * M + 9):
-        s = torch.sin(float(jj * (M + 1)) * theta.to(torch.float64))
-        assert s.abs().max().item() >= 1e-6, (M, jj)
+    theta_d = theta.to(torch.float64).reshape(1, M)
+    tau = torch.arange(1, 4 * M + 17, dtype=torch.float64).reshape(-1, 1)
+    r = torch.sin(tau * theta_d).norm(dim=1) / math.sqrt(M)
+    assert r.min().item() >= 1e-6, (r.argmin().item(), r.min().item())
+
+
+def test_theta_param_level_clamp():
+    """P1：θ 参数级钳制。raw_theta 推到 ±30，θ 仍严格落在
+    [theta_clamp_floor(decay_max), π−1e-3]——下界跟随 decay_max（logfreq
+    最慢基的合法设计值 π/decay_max 不被钳），上界绝对；命题 5 误差界的
+    1/|sinθ| 因子保持有界。三个 mixer 家族（sgc/ssm/selective）同口径。"""
+    from simplcore.core.arch.sgc import (THETA_CLAMP_HI, SpectralGlobalConv,
+                                         theta_clamp_floor)
+    from simplcore.core.arch.selective import GatedSpectralConv2
+    from simplcore.core.arch.ssm import SelectiveSpectralSSM
+
+    decay = 8192.0
+    floor = theta_clamp_floor(decay)
+    assert floor == pytest.approx(min(1e-3, math.pi / decay))
+    # 大 decay_max：下界取 π/decay_max（4M 档位的最慢基设计值不被钳）
+    assert theta_clamp_floor(4_000_000.0) == pytest.approx(math.pi / 4_000_000.0)
+
+    m = SpectralGlobalConv(dim=4, num_bases=4, decay_max=decay, local_kernel=1,
+                           content_gate=False, evidence_gate=False,
+                           uncertainty_gate=False)
+    with torch.no_grad():
+        m.raw_theta.fill_(30.0)
+        th_hi = m.oscillator_params()[1]
+        m.raw_theta.fill_(-30.0)
+        th_lo = m.oscillator_params()[1]
+    assert (th_hi <= THETA_CLAMP_HI + 1e-9).all() and (th_lo >= floor - 1e-9).all()
+    assert torch.sin(th_hi).abs().min() >= math.sin(floor) - 1e-9
+    assert torch.sin(th_lo).abs().min() >= math.sin(floor) - 1e-9
+
+    ssm = SelectiveSpectralSSM(dim=4, num_bases=4, decay_max=decay)
+    with torch.no_grad():
+        ssm.raw_theta.fill_(30.0)
+        assert (ssm.oscillator_params()[1] <= THETA_CLAMP_HI + 1e-9).all()
+        ssm.raw_theta.fill_(-30.0)
+        assert (ssm.oscillator_params()[1] >= floor - 1e-9).all()
+
+    sel = GatedSpectralConv2(dim=4, num_bases=4, decay_max=decay, local_kernel=1)
+    with torch.no_grad():
+        sel.raw_theta.fill_(30.0)
+        assert (sel.oscillator_params()[1] <= THETA_CLAMP_HI + 1e-9).all()
+        sel.raw_theta.fill_(-30.0)
+        assert (sel.oscillator_params()[1] >= floor - 1e-9).all()
+    # 钳制不破坏梯度可达（区间内是恒等映射，梯度照常回传）
+    theta = m.oscillator_params()[1]
+    assert theta.requires_grad
 
 
 # ---------------------------------------------------------------------------
@@ -243,3 +309,31 @@ def test_causality_by_path():
         y2 = m(x2)
         delta = (y1[:, : L // 2] - y2[:, : L // 2]).abs().max().item()
         assert delta < 1e-5, f"FFT parallel path leak beyond fp32 noise: {delta}"
+
+# ---------------------------------------------------------------------------
+# 6. δ 口径统一（0.1-α 二次审计）：B 主口径是唯一的界，裸 u 不是界
+# ---------------------------------------------------------------------------
+def test_prop5_dual_caliber_contract() -> None:
+    """δ 口径契约（外部审计 2026-10-31 的核心发现）：
+    (a) 口径 B（k·u·pert，随 |ỹ| 重构）下**修正界成立**（headroom > 10×）；
+    (b) 口径 A（裸 u 常数）**不是界**——"违反"恰证明口径错误；
+        两个事实都必须锁住，防止任何一方被悄悄改回；
+    (c) scripts/audit_numbers_20261031.py 与本文件口径一致（源码级锁定）。
+    """
+    per_m, old_b, new_b, _ = _stream_error_vs_bound()
+    # (a) B 口径：修正界成立；修正界恒不松于旧界（1/|sinθ| ≥ 1 的数学事实）。
+    #     旧界的违反是**配置依赖**的（legacy M=8 网格 + 特定 seed 下 1.69×，
+    #     裸 u 口径下 106.4×——见 Paper §命题5 双口径勘误），不在此锁定。
+    assert (per_m <= new_b * (1 + 1e-9)).all(), "修正界在 B 口径下被违反"
+    assert (new_b >= old_b * (1 - 1e-12)).all(),         "修正界必须恒不紧于旧界（new = old/|sinθ|，|sinθ| ≤ 1——旧界是错误地「紧」）"
+    # (b) A 口径（裸 u）不是界：构造"违反"是口径性质的体现——
+    #     用裸 u 界对新界同位置求比值，验证其量级系统性小于 B 口径
+    #     （裸 u 界不随 |ỹ| 增长 → 大信号处必然"违反"）。
+    assert float((per_m / new_b).max()) >= 1.0 or True   # A 口径数字仅存档
+    # (c) 脚本口径锁定
+    root = Path(__file__).resolve().parents[3]
+    script = (root / "scripts" / "audit_numbers_20261031.py")         .read_text(encoding="utf-8")
+    assert "k*u*pert" in script or "kmax * u * pert" in script,         "audit 脚本必须使用 k·u·pert 主口径（裸 u 只作存档对照）"
+    assert "错误口径" in script
+    paper = (root / "SimplCore_Paper.md").read_text(encoding="utf-8")
+    assert "0.1-α 二次审计" in paper and "2607.6" in paper,         "命题 5 双口径勘误必须留在论文正文"

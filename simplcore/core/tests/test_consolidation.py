@@ -5,7 +5,7 @@
 这组测试堵的是"报告说成功、实际没做事"这一类缺陷：
 
 1. ``default_consolidator`` 必须真的改动权重张量（不是"跑了个空循环"）；
-2. ``DreamingLoop`` 在 ``mode="weights"`` 下若没给 consolidator，必须**报错**，
+2. ``ReflectionLoop`` 在 ``mode="weights"`` 下若没给 consolidator，必须**报错**，
    而不是写一份 ``consolidated=True`` 的假报告；
 3. no-regression gate 判定退化时，权重必须被**逐位还原**（回滚是真的）；
 4. 巩固不得对振荡基参数做 weight decay —— 那会掐死长程记忆。
@@ -24,8 +24,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 from simplcore.core.config import SimplCoreConfig                     # noqa: E402
 from simplcore.core.dream import (                                     # noqa: E402
-    DreamConfig,
-    DreamingLoop,
+    ReflectionConfig,
+    ReflectionLoop,
     ExperienceBuffer,
     Insight,
     TrainExample,
@@ -119,9 +119,9 @@ def test_consolidator_does_not_decay_oscillator_parameters() -> None:
 
 
 # ---------------------------------------------------------------------------
-# 2. DreamingLoop 的"没做事"必须被拒
+# 2. ReflectionLoop 的"没做事"必须被拒
 # ---------------------------------------------------------------------------
-def _loop(**kw) -> DreamingLoop:
+def _loop(**kw) -> ReflectionLoop:
     buf = ExperienceBuffer()
     buf.add(Trajectory(prompt="demo", response="demo", grounded=False, score=1.0))
 
@@ -132,7 +132,7 @@ def _loop(**kw) -> DreamingLoop:
     def synthesizer(model, insights):
         return [TrainExample(prompt="demo", target="cd")]
 
-    return DreamingLoop(
+    return ReflectionLoop(
         model=_model(), buffer=buf,
         reflector=reflector, synthesizer=synthesizer,
         **kw,
@@ -141,7 +141,7 @@ def _loop(**kw) -> DreamingLoop:
 
 def test_weights_mode_without_codec_or_consolidator_fails_loudly() -> None:
     """mode=weights 但没有 codec 也没有 consolidator 时必须失败，不能假成功。"""
-    loop = _loop(config=DreamConfig(mode="weights", require_regression_check=False,
+    loop = _loop(config=ReflectionConfig(mode="weights", require_regression_check=False,
                                      max_rounds=1))
     rep = loop.step()
     assert rep.stage.value == "failed", f"notes={rep.notes}"
@@ -150,7 +150,7 @@ def test_weights_mode_without_codec_or_consolidator_fails_loudly() -> None:
 
 def test_weights_mode_with_codec_really_writes_and_reports() -> None:
     """给了 codec 时，内置 consolidator 会真的写权重，并如实报告。"""
-    loop = _loop(config=DreamConfig(mode="weights", require_regression_check=False,
+    loop = _loop(config=ReflectionConfig(mode="weights", require_regression_check=False,
                                      max_rounds=1, consolidate_lr=1e-2),
                  codec=CharTokenizer(limit="abcdefgh"))
     before = {k: v.detach().clone() for k, v in loop.model.state_dict().items()}
@@ -182,9 +182,9 @@ def test_rollback_restores_weights_byte_exact() -> None:
         scores = [1.0, 1.0, 1.0, 1.0] if calls["n"] == 1 else [0.0, 0.0, 0.0, 0.0]
         return EvalScores.from_any({"pass_rate": scores})
 
-    loop = DreamingLoop(
+    loop = ReflectionLoop(
         model=_model(), buffer=buf,
-        config=DreamConfig(mode="weights", require_regression_check=True,
+        config=ReflectionConfig(mode="weights", require_regression_check=True,
                             max_rounds=1, bootstrap_samples=50),
         reflector=reflector, synthesizer=synthesizer,
         codec=CharTokenizer(limit="abcdefgh"),

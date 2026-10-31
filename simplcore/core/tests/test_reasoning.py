@@ -8,7 +8,7 @@ import torch
 from simplcore.core.config import SimplCoreConfig
 from simplcore.core.model import SimplCoreModel
 from simplcore.core.tokenization import CharTokenizer
-from simplcore.core.reasoning import DeepReasoner, ReasoningTrace, stabilized
+from simplcore.core.reasoning import IterativeRefiner, ReasoningTrace, stabilized
 
 
 def _tiny():
@@ -23,7 +23,7 @@ def _tiny():
 def test_fixed_steps_trace_structure():
     """fixed_steps 下轨迹结构正确：步数<=上限，思考数==步数。"""
     m, codec = _tiny()
-    r = DeepReasoner(m, codec, max_steps=3, max_thought_tokens=8,
+    r = IterativeRefiner(m, codec, max_steps=3, max_thought_tokens=8,
                      max_answer_tokens=8, policy="fixed_steps", temperature=0)
     tr = r.reason("ab")
     assert isinstance(tr, ReasoningTrace)
@@ -35,7 +35,7 @@ def test_fixed_steps_trace_structure():
 
 def test_stabilize_policy_runs_within_bounds():
     m, codec = _tiny()
-    r = DeepReasoner(m, codec, max_steps=4, max_thought_tokens=6,
+    r = IterativeRefiner(m, codec, max_steps=4, max_thought_tokens=6,
                      max_answer_tokens=6, policy="stabilize", patience=2,
                      temperature=0)
     tr = r.reason("ab")
@@ -55,7 +55,7 @@ def test_stabilized_helper():
 def test_invalid_policy_rejected():
     m, codec = _tiny()
     try:
-        DeepReasoner(m, codec, policy="nonsense")
+        IterativeRefiner(m, codec, policy="nonsense")
         assert False
     except ValueError:
         pass
@@ -80,7 +80,7 @@ def test_tool_hook_appends_observation():
         calls.append(thought)
         return "OBS"
 
-    r = DeepReasoner(m, codec, max_steps=2, max_thought_tokens=4,
+    r = IterativeRefiner(m, codec, max_steps=2, max_thought_tokens=4,
                      max_answer_tokens=4, policy="fixed_steps", temperature=0,
                      tool=tool)
     tr = r.reason("ab")

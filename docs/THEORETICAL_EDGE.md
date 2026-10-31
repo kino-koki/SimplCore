@@ -2,7 +2,7 @@
 
 > 本文逐模块论证 **SimplCore**（`simplcore/core/`）在**机制层面**相对传统
 > Transformer 架构的优势，并明确列出每条优势对应的**守护测试**与**适用边界**。
-> 所有数字均由 `simplcore/core/scaling.py` 的账本函数实算得出（脚本见 §6），
+> 所有数字均由 `simplcore/core/eval/scaling.py` 的账本函数实算得出（脚本见 §6），
 > 不是估算。
 
 ---
@@ -28,7 +28,7 @@ SimplCore 四条**全部不满足**。
 
 ## 1. 逐模块论证
 
-### 1.1 SGC mixer —— `simplcore/core/sgc.py`
+### 1.1 SGC mixer —— `simplcore/core/arch/sgc.py`
 
 **Transformer 对应**：`softmax(QKᵀ)V` 的全局 token 交互。
 
@@ -74,7 +74,7 @@ routing 分支——M 个振荡基按频率分 G 组"谱专家"，逐 token top-
 
 ---
 
-### 1.2 SRFN mixer —— `simplcore/core/srf.py` + `simplcore/core/ssm.py`
+### 1.2 SRFN mixer —— `simplcore/core/arch/srf.py` + `simplcore/core/arch/ssm.py`
 
 **Transformer 对应**：注意力只能"读"历史，不能决定"记多久"。
 
@@ -102,7 +102,7 @@ Delta 输入依赖性、无未来泄漏、状态字节数与 L 无关）。
 
 ---
 
-### 1.3 GatedSpectralConv2 —— `simplcore/core/selective.py`
+### 1.3 GatedSpectralConv2 —— `simplcore/core/arch/selective.py`
 
 **Transformer 对应**：GQA/MQA 通过**头维度**共享 KV 来省状态。
 
@@ -154,7 +154,7 @@ L4 拒答门   abstention   输出头        没有外部证据支撑时拒绝�
 
 ---
 
-### 1.5 CMT 压缩记忆库 —— `simplcore/core/memory.py`
+### 1.5 CMT 压缩记忆库 —— `simplcore/core/memory/memory.py`
 
 **Transformer 对应**：CMT 原文在**注意力层**注入 KV。
 
@@ -174,7 +174,7 @@ O(1) 振荡器态），因此把注入点改为 **残差流上的加性记忆项
 
 ---
 
-### 1.6 Dreaming 自进化循环 —— `simplcore/core/dream.py`
+### 1.6 Dreaming 自进化循环 —— `simplcore/core/memory/dream/`（0.1-α 命名降调：`ReflectionLoop`）
 
 **Transformer 对应**：无。Agent 的反思是**推理期**的（本次回答里多想一步），
 Dreaming 的反思是**离线**的。
@@ -204,17 +204,17 @@ CMT 压缩记忆库                    SYNTHESIZE 洞见 → 训练信号
    样本权重生效、**不对振荡基参数做 weight decay**（那会掐死长程记忆）。
    此前这条链路在默认配置下是**断的** —— 只有调用方自备 `consolidator` 才写得进去，
    而现成的测试用的是空 consolidator，等于"报告说成功、权重一个字节没变"。
-   现在：内置实现 + `DreamReport.wrote_weights` 如实报告是否真的写了。
+   现在：内置实现 + `ReflectionReport.wrote_weights` 如实报告是否真的写了。
 
 ---
 
-### 1.7 代码执行沙箱 + pass@k 验证器 —— `simplcore/core/code_exec.py`
+### 1.7 代码执行沙箱 + pass@k 验证器 —— `simplcore/core/memory/code_exec.py`
 
 **Transformer 对应**：无。
 
 **问题**：支柱 C（"去真实环境写代码 → 写回权重"）缺的不是训练代码，
 而是**能判定代码对错的独立评测器**。没有独立 verifier 时，
-`DreamingLoop` 在 `mode="weights"` 下必须直接 ROLLBACK ——
+`ReflectionLoop` 在 `mode="weights"` 下必须直接 ROLLBACK ——
 因为"让 gate 恒通过"等于没有 gate。
 
 **SimplCore 机制**：
@@ -233,7 +233,7 @@ CMT 压缩记忆库                    SYNTHESIZE 洞见 → 训练信号
 
 ---
 
-### 1.8 长上下文外推工具 —— `simplcore/core/extrapolation.py`
+### 1.8 长上下文外推工具 —— `simplcore/core/eval/extrapolation.py`
 
 **Transformer 对应**：RoPE / ALiBi / NTK 缩放 / YaRN —— 都是**外推补丁**，
 因为位置编码表或旋转频率在训练长度外"没有定义"。
@@ -251,7 +251,7 @@ CMT 压缩记忆库                    SYNTHESIZE 洞见 → 训练信号
 
 ---
 
-### 1.9 算力账本 —— `simplcore/core/scaling.py`
+### 1.9 算力账本 —— `simplcore/core/eval/scaling.py`
 
 **Transformer 对应**：`6·N·D` 这个粗略近似 + KV cache 估算。
 
@@ -272,7 +272,7 @@ CMT 压缩记忆库                    SYNTHESIZE 洞见 → 训练信号
 
 ---
 
-### 1.10 架构纯洁性守卫 —— `simplcore/core/purity.py`
+### 1.10 架构纯洁性守卫 —— `simplcore/core/arch/purity.py`
 
 **Transformer 对应**：无。
 
@@ -290,11 +290,11 @@ CMT 压缩记忆库                    SYNTHESIZE 洞见 → 训练信号
 
 ---
 
-### 1.11 思考加速 —— `simplcore/core/accel.py`
+### 1.11 思考加速 —— `simplcore/core/arch/accel.py`
 
 **Transformer 对应**：对整条序列/所有 token 跑满全部层数是固定成本；没有"简单 token 少算、难 token 多算"的机制。
 
-**SimplCore 机制**：`ThinkAccelerator` 包裹 `SimplCoreModel`，对每个 token：
+**SimplCore 机制**：`AdaptiveDepth` 包裹 `SimplCoreModel`，对每个 token：
 
 * 先跑第 0 层（锚点）算"必要性分数"（熵 / 置信度）；
 * 若分数超过 `skip_threshold` 则只跑 `min_depth` 层，否则跑 `max_depth` 层；
@@ -315,12 +315,12 @@ CMT 压缩记忆库                    SYNTHESIZE 洞见 → 训练信号
 
 ---
 
-### 1.12 深度推理 —— `simplcore/core/reasoning.py`
+### 1.12 深度推理 —— `simplcore/core/dialogue/reasoning.py`
 
 **Transformer 对应**：o1 / R1 式"先想后答"靠注意力 KV cache 累积思考步，
 思考越多、KV 越长、显存越炸。
 
-**SimplCore 机制**：`DeepReasoner` 跑"提示 → 多步思考 → 答案"循环，`policy`：
+**SimplCore 机制**：`IterativeRefiner` 跑"提示 → 多步思考 → 答案"循环，`policy`：
 
 * `fixed_steps` —— 固定走 `max_steps` 步；
 * `stabilize` —— 候选答案连续 `patience` 步不变即早停（**最大的加速器**：
@@ -335,7 +335,7 @@ CMT 压缩记忆库                    SYNTHESIZE 洞见 → 训练信号
 1. **O(1) 流式状态天然适合多步思考**。思考步只是不断往状态里喂 token，状态始终常驻大小，
    不会因"想了 N 步"而爆显存（对比注意力 KV cache 随步数线性膨胀）。
 2. **`stabilize` 早停由"候选答案稳定"驱动**，缩短的是思考步数，与单步算力解耦
-   （单步算力由 `ThinkAccelerator` 负责）。
+   （单步算力由 `AdaptiveDepth` 负责）。
 3. **不引入注意力**。
 
 **诚实边界**：本模块是**控制流骨架**，不是"已训好的推理模型"。它保证循环正确、步数可控、
@@ -344,7 +344,7 @@ CMT 压缩记忆库                    SYNTHESIZE 洞见 → 训练信号
 
 ---
 
-### 1.13 环境学习 —— `simplcore/core/envlearn.py`
+### 1.13 环境学习 —— `simplcore/core/training/envlearn.py`
 
 **Transformer 对应**：传统全量训练把整份权重都放进优化器状态（Adam 的 m/v 是参数的 2 倍），
 显存随**总权重**增长；且"一次性把数据灌进去"容易过拟合/灾难性遗忘。
@@ -434,10 +434,10 @@ SimplCore 的长程项随 `log L` 增长，Transformer 随 `L` 线性增长 —�
 | `accel.py` | 无（Transformer 对所有 token 跑满层数） | 逐 token 按必要性分数选 `min_depth`/`max_depth`；`skip_threshold=-inf` 逐位退化 | 逐 token 自适应深度 / 结构性加速比可记账 / 退化点可验证 | `test_accel.py` |
 | `reasoning.py` | KV cache 随思考步线性膨胀 | 迭代式思考循环 + `fixed_steps`/`stabilize` 早停 + `tool` 钩子 | O(1) 流式状态天然适合多步思考 / 早停缩短思考步数 | `test_reasoning.py` |
 | `envlearn.py` | 全量训练显存随总权重增长、易背数据 | 1B 冻结 + ≤2B 可学适配器（总上限 3B）+ 分阶段蒸馏 + no-regression gate | 显存只随可学权重增长 / 分阶段真正学习 / 退化回滚 | `test_envlearn.py` |
-| `theory.py` | 无 | 把上表每条主张变成可执行断言 | 主张不再只是文档，改代码会被 CI 抓住 | `test_theory.py` |
+| `eval/claims_audit.py` | 无 | 把上表每条主张变成可执行断言 | 主张不再只是文档，改代码会被 CI 抓住 | `test_claims_audit.py` |
 
-> 上表每一行都有对应的**可执行检查**（`simplcore/core/theory.py`），
-> 共 34 项，见 §6。`test_theory.py` 还会断言本表点名的 15 个模块
+> 上表每一行都有对应的**可执行检查**（`simplcore.core.eval.claims_audit.py`），
+> 共 34 项，见 §6。`test_claims_audit.py` 还会断言本表点名的 15 个模块
 > （`theory.py` 自身除外 —— 它就是那个验证器）每一个都被自动验证过 ——
 > 文档与代码不会各说各话。
 
@@ -475,17 +475,17 @@ SimplCore 的长程项随 `log L` 增长，Transformer 随 `L` 线性增长 —�
 
 ## 6. 复现本文数字
 
-本文的每条主张都有一个**可执行**的对应项，在 `simplcore/core/theory.py` 里：
+本文的每条主张都有一个**可执行**的对应项，在 `simplcore.core.eval.claims_audit.py` 里：
 
 ```bash
 # 跑完全部机制层检查（34 项），打印对齐表格；有失败项时退出码为 1
-python -m simplcore.core.theory
+python -m simplcore.core.eval.claims_audit
 
 # 机器可读
-python -m simplcore.core.theory --json
+python -m simplcore.core.eval.claims_audit --json
 
 # 逐条打印
-python -m simplcore.core.theory --verbose
+python -m simplcore.core.eval.claims_audit --verbose
 ```
 
 它由 `tests/test_theory.py` 守护，并额外断言：**文档 §3 点名的 15 个模块
@@ -503,3 +503,76 @@ python -m simplcore.core.mathproof                            # 数学证明 CLI
 §2 的数字由 `simplcore.core.scaling` 的 `train_flops_per_token` /
 `infer_flops_per_token` / `stream_state_bytes` / `kv_cache_bytes_per_token`
 对 `dim=4096, num_layers=32, num_bases=64, local_kernel=4` 的配置实算得出。
+
+---
+
+## 实测对照（0.1-α 独立复现，2026-10-31）—— 负面结果照账
+
+> 口径：D=64、1–2 层、600–3000 步、1–3 seeds、合成任务、**无显著性检验**。
+> 足以区分结构性强弱（1.000 vs 0.398 是数量级差异），不足以支撑任何定量的
+> 「谁更好」。真实答案等 §5.13 战役运行。协议固化于 `eval/axis_probe.py`
+> （X-axis-probe，`purity: allow-attention-reference` 对照臂）。
+
+| 任务 | 能力类型 | attention | SGC | chance | 判定 |
+|------|----------|-----------|-----|--------|------|
+| 精确指向（2 层） | 指向某一位置 | 1.000 | 0.398 | 0.125 | **SGC 明确劣**（且低于局部卷积 0.427） |
+| 聚合 L=129 | 前缀统计 | 0.938 | 0.875 | 0.5 | attention 略优 |
+| 聚合 L=65（长跑） | 前缀统计 | 1.000 | 1.000 | 0.5 | 打平 |
+| 精确计数（一票之差） | 近精确 | 0.812 / 0.938 | 0.812 / 0.938 | 0.5 | 逐位打平 |
+| 短程 LM（Markov） | 语言建模 | ppl 14.63 | 15.71 | V=32 | attention 优 7% |
+
+参数量口径：SGC 14,881 vs attention 30,209（同 D，SGC 少一个 D² 投影）——
+对照对 SGC 有利，即便如此也没赢。
+
+三条结论（与 §7.2 轴注记、`paper_audit` 交叉引用）：
+
+1. **精确指向是 SGC 当前谱压缩状态的结构性劣势**，不是调参问题
+   （0.398 vs 1.000，甚至低于局部卷积 0.427）。**后续 MQAR 实验把缺陷
+   定位得更准：不是感受野，是 key→value 绑定**（MQAR G=4：attention
+   0.500 vs SGC 0.3125 vs chance 0.125，聚合捷径被阻断后差距依旧）。
+   **架构响应已落地两路**：`memory/sidecar.py` 三层精确引用（O(N) 旁路）
+   与 `memory/binding_memory.py` 定容绑定记忆（R1，O(1) 内修绑定——
+   见下方路线分级）。注意"常数状态建模必输"的原表述已被修正：
+   O(1) 只意味着不随 L 增长，定容绑定副本同样是 O(1)——轴 D 论证的
+   修正见 `SimplCore_Paper.md` §7.2 注记。
+2. **轴 C"等效 4–7B"的通过率优势未复现**：聚合任务 attention 0.938 vs
+   SGC 0.875；SGC 仅 loss 更低、训练快 32%。降级为「约一半参数同等质量 +
+   成本优势」。§7.4 判据（4M 检索+摘要 vs YaRN TS-5B）仍未运行——本节是
+   前哨信号，不是判据结果。
+3. **"优于"是错的维度**。SGC 拿到的是效率轴，且是可证明的结构性质：
+   常驻状态 36,868 B 四长度逐字节相同 vs attention 1M 上下文 ~120 GiB KV；
+   训练缩放实测斜率 1.09 vs 2.35；流式路径未来泄漏逐位为 0。代价就是
+   第 1 行。**engineering trade-off，不是"更好的模型"**——与 §7.2 轴 D
+   自认"该轴必输"一致。
+
+本文其余各节的主张不变：它们全部是**可运行断言**（结构性质），与本节的
+**能力对照实测**（有输有赢）分属两个口径，不得互相混用。
+
+---
+
+## 修复路线分级（0.1-α，2026-10-31 复现报告）—— 一致性判据先行
+
+**架构忠诚度的一致性判据**（取代"有没有 softmax"的表面口径）：
+**状态是否与 L 无关？是否存在 O(L²) 两两交互？** 反 attention 的实质是反
+「状态随 L 增长 + O(L²) 交互」，不是反 softmax 算子本身——定容检索是
+softmax over S 个槽、O(S·D)、无 L 依赖，**不背叛架构**。
+
+| 级别 | 路线 | 状态 |
+|------|------|------|
+| **A（完全一致，优先）** | **R1 定容绑定记忆**：写入单元从单 token 改为局部窗口绑定（depthwise 局部卷积天然覆盖相邻 k/v），槽内 key/value 分开存，FIFO 环形，状态严格 O(1)——修复轴 D 的正路 | ✅ 已落地 `memory/binding_memory.py` + **外部独立实现实测（二期）**：MQAR 两 seed 均提升 SGC（+27%）、72% 参数**在噪声内追平** attention（均值 0.2578 vs 0.2422，未超越——attention seed SD≈0.066）；3000 步退化（硬 argmin 不可微）的结构性修复已落地：`write_mode="soft"` 可微门控写入 |
+| **A（完全一致，低成本）** | **R2 修频率网格**：logfreq 实测秩缺失（M=16 rank 14/16、M=128 rank 63/128，cond 2e17，与命题 5 病态同源） | ✅ 已落地 `sgc_init_mode="hybrid"`（线性均匀+黄金比扰动，满秩 cond 1.4，含端点锚定；数值秩守护 `_assert_numerical_rank` + 负向变异验证）；logfreq 默认行为不变 |
+| **A（完全一致）** | **R3 分层多尺度 decay_max**：层 i 使用 decay_max·scale^i（深层更长记忆） | ✅ 已落地 `decay_scale`（opt-in；scale=1.0 逐位不变） |
+| **A（完全一致）** | **R4 记忆升一等公民**：CMT 从"接线"提为核心 + 可微写入门 | ⬜ 规划（大件，另立战役） |
+| **B（可用但须标注）** | **R5 滑窗注意力混合**：窗口固定 ⇒ 状态仍 O(1)，严格说不背叛，但削弱"纯 attention-free"叙事 | ⬜ 定位为务实 fallback，与 core 线**分开宣称**（Paper §3.4 混合路线既有框架内） |
+| **C（背叛，不做）** | 全局注意力 / 随 L 增长的 KV cache / RoPE-YaRN | ❌ 那就成了 TS，效率主张全部消失 |
+
+**价值定位（复现报告第五节，采纳为正式口径）**：正确的问题不是"质量上
+打赢"（§7 自述推测、§5.8 自承不显著），而是**长上下文可行性**——
+1M 上下文 SGC 1.948 GiB vs TS KV cache ~120 GiB 是**数量级差异**。
+正式宣称口径：**"在 X 长度以上唯一成本可行的选择"**，而非"更好的模型"。
+
+**诚实声明**：复现原型的定容记忆首版失败（SGC 0.3125 → 加记忆 0.1875，
+三种写入策略含 oracle 几乎相同）——卡点定位在**读取侧缺绑定**（非写入、
+非容量）；该原型另有未解决的梯度异常（mem_Wq 恒 0），故该失败是
+**未验证**而非**已证否**。R1 的绑定写入即对此卡点的修复假设，
+检索质量数值待训练验证。完整实验记录见 `docs/REPRODUCTION_REPORT.md`。

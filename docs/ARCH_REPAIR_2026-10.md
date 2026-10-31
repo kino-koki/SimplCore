@@ -183,7 +183,7 @@ test 只用于报告。落盘 JSON 同时给出 `threshold_from_dev` 与
 * 新增 `paired_bootstrap_ci` + `regression_gate`：每个共同指标算 delta 的
   配对 bootstrap 置信下界（默认 95% / 1000 次），**任一**指标下界低于 `-|tolerance|`
   即回滚；只在一侧出现的指标写进 `notes`，不静默丢弃；
-* `DreamingLoop` 记住调用方是否提供 verifier，`mode in ("weights","both")` 且
+* `ReflectionLoop` 记住调用方是否提供 verifier，`mode in ("weights","both")` 且
   verifier 为默认常量时**拒绝写回权重**并说明原因；
 * 评测异常 → 保守回滚（不能声称"没退化"）；
 * 回滚同时恢复权重与记忆（新增 `CompressedMemoryBank.state_dict/load_state_dict`，
@@ -283,7 +283,7 @@ token 区间与 claim 区间相交即继承该 claim 的 `supported` 标签，
    **代理分数**（最佳单句二元组命中率），不是 L4 头的性能，不可外推。
 3. **"自进化会变强"未证明。** 本轮只证明链路通了（能产出带证据原文的训练信号、
    能回滚、能拒绝无评测的权重写回）。没有独立 held-out 集上的提升证据。
-   默认配置下 `DreamingLoop` 会**拒绝**写回权重，这是故意的。
+   默认配置下 `ReflectionLoop` 会**拒绝**写回权重，这是故意的。
 4. **记忆键不是语义嵌入。** `TextKeyEncoder` 是字面 n-gram 哈希：
    不做同义归并，改写过的问法召回率会掉。要语义检索应换模型隐状态（接口一致）。
 5. **数字判据对中文数字无效**（"三倍"不会被 `extract_numbers` 捕获）。

@@ -1,614 +1,271 @@
-# SimplCore：以阻尼振荡基谱卷积替代注意力——具备 FFT/IIR 精确对偶的常数状态序列建模
+# SimplCore-0.1-α：以阻尼振荡基谱卷积替代注意力——具备 FFT/IIR 精确对偶的常数状态序列建模
 
-**SimplCore: Damped-Oscillator Spectral Convolution as Attention Replacement — Constant-State Sequence Modeling with Exact FFT/IIR Duality**
-
-六安市青奈科技有限责任公司（Qingnai Technology Co., Ltd.，中国安徽六安）  
-SimplCore 研究组 · 2026 年 10 月 29 日 · 对应代码 `SimplCore-v0.1-α` · 文档版本 v1.2（v1.2 新增 §3.6 扩展模块）
-
----
+> ⚠️ **实验阶段声明**：本架构仅处于实验阶段，未经大规模训练验证。如果不是
+> 真的想尝试非注意力方案，建议直接使用 Mamba 等成熟架构进行开发与模型设计。
+> 本文所有"优于/劣于"的对照结论都标注了口径与局限；**本文的价值主张不是
+> "更好的模型"，而是"在足够长的上下文上唯一成本可行的选择"**（§7）。
 
 ## 摘要
 
-自注意力的 $O(L^2)$ 计算与随长度线性增长的 KV 缓存，是长上下文序列建模的两个结构性瓶颈。本文提出 **SGC（Spectral Global Convolution，谱全局卷积）**，一种以 **M 个阻尼振荡基** 参数化因果全局卷积核的注意力替代机制：
+SimplCore 是一套**可训练、彻底非注意力**的序列建模架构。其核心算子 SGC
+（Spectral Global Convolution，谱全局卷积）用阻尼振荡基字典上的因果谱卷积
+替代 softmax 自注意力：训练走 FFT 整段形式（$O(D\log L)$），推理走二阶 IIR
+递推（$O(1)$ 常数状态），**无位置嵌入表、无 KV 缓存、无最大长度截断**。
+三条可机器验证的结构性质（全部有守护测试与 13 项数学证明支撑）：
 
-$\psi_m[\tau] = \rho_m^{\tau}\sin\big((\tau+1)\theta_m\big), \qquad K[\tau,d] = \sum_{m=1}^{M} C[m,d]\,\psi_m[\tau].$
+1. **双形式精确对偶**：FFT 整段与 IIR 流式在 fp32 下逐位一致（守护测试锁定）；
+2. **严格因果**：扰动未来 token，过去输出逐位不变（精确 0，非容差）；
+3. **常数状态**：流式状态字节数与序列长度无关，1M 上下文部署 1.948 GiB
+   （同规模 TS 的 KV cache ≈ 120 GiB，数量级差异）。
 
-由于 $\psi_m$ 恰是一个二阶线性递推系统的冲激响应，同一算子存在两个**在实数域上精确相等**（非近似）的实现：训练走零填充 FFT 卷积（$O(L\log L)$），推理走二阶 IIR 递推（每 token $O(MD)$ 计算、$O(1)$ 状态，状态大小 $2MD+(K{-}1)D+2$ 个浮点数，**与序列长度无关**）。本文给出该对偶的严格证明（定理 1）、严格因果性证明（定理 2）、常数充分状态刻画（定理 3）、复杂度界（定理 4）与 fp32 前向误差界（命题 5），并以阻尼复指数的线性无关性（引理 8）形式化解释了前身架构"时间基秩瓶颈"的结构性成因。
-
-实测方面（全部数字可由仓库脚本复现，来源索引见附录 A）：单层 CPU 对齐对比中，SGC 相对标准因果注意力在 $L=512/1024/2048$ 分别取得 **1.86×/3.53×/5.64×** 加速；端到端时延 log-log 斜率 **0.9973**（$R^2=0.9995$）；流式常驻状态在 $L\in\{64,256,1024,2048\}$ 上**逐字节相同**（36,868 B，单层 $M{=}16,D{=}256,K{=}4$，含 energy_sum 与跨层缓冲的现行 `stream_state_bytes` 口径）；FFT↔IIR 双形式 fp32 偏差 $<4\times10^{-5}$ **仅限短序列**（$L\in\{1,4,17,64,129\}$；长序列实测见 §5.4）；融合 C++ 流式核与独立参考实现在 12 步随机激励下**零偏差**。本文同时完整报告负面结果：前身 v2 的四项结构性缺陷、非因果算子的审计与修复（泄漏 $2.74\to 0$）、一组无来源数字的撤回，以及记忆写路线被实验推翻的过程。我们明确列出**五项尚未证明的主张**（含"优于 Mamba/Hyena/S4"——从未对比），并坚持基线仅为标准因果注意力。
-
-**v1.1 增补**：本文新增完整形态的战役计划与账本（§5.11–5.13：1B 主干 + ≤2B 自进化适配器、4M 上下文课程、单张 MI250 的 30+28 天双硬停）、13 项机器可验证数学证明（附录 C 索引），以及——**明确标注为理论推测**——完整形态（3B = 1B 冻结主干 + 2B 自进化，4M 上下文）在训练中等效标准 Transformer 参数量的分轴估计（§7）：原生 4M 轴上 TS 算力不可行（等效无上界）；通用短上下文轴 2–4B；长上下文任务轴 4–7B；精确检索轴 1–2B（诚实弱点）。每条推测附可证伪判据（§7.4）。
-
-**关键词**：序列建模；状态空间模型；谱卷积；注意力替代；流式推理；因果性；抗幻觉
-
----
+本文同时如实报告代价与负面结果：**逐字精确指向与联想召回（MQAR）是
+SGC 的结构性劣势**（attention 1.000 / 0.500 vs SGC 0.398 / 0.3125），
+根因是 key→value 绑定能力缺失而非感受野——已通过两条正交路线修复
+（三层精确引用旁路 + 定容绑定记忆），修复后 MQAR **在噪声内追平**
+attention（72% 参数，未超越）；聚合型任务上"等效 4–7B"的通过率优势
+**未复现**（0.875 vs 0.938），降级为"约一半参数同等质量 + 成本优势"。
+命题 5 的实测数字存在双口径勘误（§4.5）。**版本 0.1-α 是结构性质
+（可证）与能力对照（有输有赢）严格分账的版本。**
 
 ## Abstract
 
-Self-attention's $O(L^2)$ cost and length-linear KV cache are structural bottlenecks for long-context modeling. We present **SGC (Spectral Global Convolution)**, an attention replacement whose causal global convolution kernel is parameterized by $M$ damped-oscillator bases. Because each basis is exactly the impulse response of a second-order linear recurrence, the operator admits two implementations that are **exactly equal over the reals**: FFT-based parallel convolution for training ($O(L\log L)$) and a second-order IIR recursion for inference ($O(MD)$ compute and $O(1)$ state per token, state size independent of $L$). We prove this duality (Thm. 1), strict causality (Thm. 2), the constant sufficient state (Thm. 3), complexity bounds (Thm. 4), and an fp32 forward-error bound (Prop. 5); linear independence of damped complex exponentials (Lem. 8) formalizes the "temporal-rank bottleneck" of our predecessor architecture. All reported numbers are reproducible from the released code; we additionally report negative results, retracted claims, and five explicitly unproven assertions, and we emphasize that our only baseline is standard causal attention.
-
----
+SimplCore is a trainable, strictly attention-free sequence modeling stack.
+SGC replaces softmax self-attention with causal spectral convolution over a
+damped-oscillator basis dictionary: FFT parallel form for training
+($O(D\log L)$), second-order IIR recurrence for inference ($O(1)$ state),
+with no positional table, no KV cache, and no length cap. Three structural
+properties are machine-verified: bitwise dual-form equivalence, strict
+causality (future perturbation leaves the past bit-identical), and
+length-independent streaming state (1.948 GiB @ 1M context vs ≈120 GiB KV).
+We equally report the costs: exact pointing and MQAR association-recall are
+structural weaknesses of the spectral-compression state (fixed by two
+orthogonal routes: a three-tier exact-reference sidecar and bounded binding
+memory — post-fix MQAR **ties** attention at 72% parameters, not beyond);
+the aggregation-axis "equivalent 4–7B" pass-rate claim did not reproduce.
+The correct claim is feasibility ("the only cost-viable choice beyond X
+tokens"), not superiority. **This is an experimental release (0.1-α).**
 
 ## 1 引言
 
-### 1.1 动机
+**命名纪律**：架构叫 **SimplCore**；SGC 只是 SimplCore 内部的一个 mixer
+模块（`simplcore/core/arch/sgc.py`）。仓库另有 SRFN（selective SSM 谱卷积）
+与 GatedSpectralConv2（GLA/Mamba2 式通道门）两个非注意力 mixer，同一套
+config 切换。0.1-α 起对拟人化命名做了降调（`DeepReasoner→IterativeRefiner`、
+`DreamingLoop→ReflectionLoop` 等，旧名保留为兼容别名），并明确：
 
-因果语言建模要求位置 $t$ 的输出只依赖 $\{x_s\}_{s\le t}$。标准因果自注意力 [14] 以内容相关的两两交互实现全局感受野，代价是 $O(L^2H)$ 计算与随 $L$ 线性增长的 KV 缓存。线性状态空间与长卷积家族（S4/S5 [1,2]、Hyena [3]、Mamba [4]、GLA [5]）以结构化的内容无关或弱内容相关核替代之。SGC 属于这一谱系，但本文**不声称**优于其中任何成员（见 §6 第 2 条）——本文的贡献是把"全局感受野、$O(1)$ 流式状态、严格因果"从**隐式契约**变成**可证明的结构性质**。
+| 是 | 不是 |
+|----|------|
+| 一套可运行的 PyTorch 非注意力序列混合器 | 已证明 SOTA 的模型 |
+| 结构性质可机器验证（双形式/因果/常数状态） | 大规模训练验证过的系统 |
+| O(1) 常驻状态 + O(N) 精确档案（Host RAM）的**分层**架构 | "O(1) 通吃"的系统 |
+| engineering trade-off（效率轴赢、精确轴认输后修复） | "更好的模型" |
 
-### 1.2 从前身失败中得出的设计目标
-
-SGC 的前身 v2 用两个低秩矩阵的乘积 $K=\text{low}(L,r)\,\text{up}(r,D)$ 参数化 FFT 因果卷积核。独立审计（§5.5）确认其四项结构性缺陷：
-
-1. **感受野静默截断**：$\text{low}$ 的行数固定为 `max_len`；实测 `max_len=16, L=48` 时模型输出与 16 抽头固定窗卷积之差为 $1.9\times10^{-6}$——它**精确退化**为固定窗卷积，不报错、不警告；
-2. **时间基秩瓶颈**：$\operatorname{rank}(K)\le r$（默认 8），整条长核至多 8 个独立时间基（引理 8 给出其与阻尼指数无关性的对照）；
-3. **核谱每步重算**，占卷积耗时 14.6%；
-4. **无流式路径**——常数状态流式在 v2 中"代码不存在"。
-
-由此，SGC 的重写目标不是"更快"，而是三条结构保证：(i) 感受野由核的闭式定义覆盖任意前缀，无 `max_len`；(ii) 时间基为带衰减先验的 $M$ 维字典（默认 64/128）；(iii) 流式路径与并行路径**数学恒等**且由守护测试强制。
-
-### 1.3 贡献
-
-1. **算子**：以 $M$ 个阻尼振荡基参数化的因果全局卷积（§3.1–3.2），带内容门控（selective）、深度局部卷积与逐通道瞬时项的完整 mixer（§3.3），及可滑窗注意力混合路线（§3.4）。
-2. **理论**：双形式精确等价、严格因果、常数充分状态、复杂度界、fp32 误差界、时间尺度覆盖、无混叠条件、时间基字典无关性（§4，共 2 引理 + 4 定理 + 3 命题，均附证明）。
-3. **工程**：融合 C++/CUDA 流式核 `mixer_stream`（把 RMSNorm→投影→门控→振荡递推→局部卷积→两级门→投影→残差融合为单遍，$O(1)$ 状态原地更新），CPU 路径经**不同代码路径的独立参考实现**交叉验证为零偏差（§5.4）。
-4. **诚实报告**：全部实测数字附来源索引（附录 A）；负面结果、被撤回数字与未证明主张单独成节（§5.5、§6）。
-
----
+**仓库结构**（0.1-α 结构化拆分）：`core/` 按依赖方向分八个子包——
+`arch`（mixer 数学）/`model`（配置与模型、**multimodal** 多模态入口）/
+`memory`（记忆、**sidecar** 三层引用、**binding_memory** 定容绑定、
+**dream/** 反思巩固、smm）/`dialogue`/`training`（data、train 子包）/
+`eval`（评测与账本、**world_probe**）/`backend`/`deploy`；实验性模块
+（jitrl/pilot/conditions_ledger）隔离在 `simplcore/lab/`；已退役的 Java
+平行原型归档 `.archive/`。全量守护测试 **1127 通过 / 6 环境跳过 /
+0 失败**（2026-10-31）。
 
 ## 2 记号与问题设定
 
-输入序列 $x_1,\dots,x_L$，每层 mixer 的门控输入记 $u_t\in\mathbb{R}^D$（§3.3）。因果卷积定义为
-
-$\mathrm{long}_t[d] \;=\; \sum_{s=1}^{t} K[t-s,\,d]\; u_s[d], \qquad K[\tau,d]=\sum_{m=1}^{M}C[m,d]\,\psi_m[\tau],\quad \tau\ge 0 .$
-
-参数：$\rho_m\in(0,1)$（经 sigmoid 参数化可学习）、$\theta_m\in(0,\pi)$（同）、$C\in\mathbb{R}^{M\times D}$。核以**相对距离** $\tau$ 的闭式定义于任意长度——不存在 `max_len` 截断。
-
----
+与 v1.1 一致：因果语言建模，输入 token 流 $x_{1:L}$，模型每位置输出
+$\logits_t$；"状态"指推理时需要常驻的中间量。对照基线为标准 Transformer
+（TS）：KV cache 随 $L$ 线性增长，注意力为 $O(L^2)$ 两两交互。
 
 ## 3 方法
 
-### 3.1 阻尼振荡基字典
+### 3.1 mixer 家族（全部非注意力）
 
-初始化取 $\rho_m=\exp(-1/\lambda_m)$，$\lambda_m$ 在 $[1,\text{decay\_max}]$ 上**对数等距**（默认 `decay_max`=8192/16384），$\theta_m$ 在 $(0,\pi)$ 等距。三个可学习量仅为 $\{\rho_m\},\{\theta_m\},C$；$\rho_m$ 直接对应记忆半衰期（命题 6）。实现约束：$C$ **不得零初始化**——否则 $\partial K/\partial \rho_m = C[m,d]\,\partial\psi_m/\partial\rho_m \equiv 0$，振荡器参数梯度恒零（有专门守护测试 `test_oscillator_params_get_gradient_through_kernel`）。
+| `mixer=` | 混合器 | 流式状态 | 训练 FLOPs 长程项 |
+|---|---|---|---|
+| `sgc`（默认） | 谱全局卷积 + FFT/深度卷积 + 内容门控 | O(1) IIR | $O(D\log L)$ |
+| `sgc-r` | 谱专家路由（M 基分 G 组 + top-k 注入） | O(1)（与 sgc 逐字节同） | $O(G\cdot D\log L)$ |
+| `srf` | SGC + selective SSM（输入相关 Δ） | O(1) chunked scan | $O(D\cdot L/\text{chunk})$ |
 
-### 3.2 双形式：训练 FFT，推理 IIR
+`attn`/`hybrid*` 取值**已删除**：`SimplCoreConfig.validate()` 只接受非注意力
+mixer。四个参数级卫兵（全部 opt-in 默认关或默认安全）：
 
-**并行/训练形式**：将 $K$ 物化为 $(L,D)$ 矩阵，两侧零填充至 $N=2L$，频域相乘后逆变换，复杂度 $O(L\log L)$（命题 7 保证无混叠）。
+- **θ 钳制**（P1）：命题 5 误差界含 $1/|\sin\theta_m|$，θ 参数层钳制
+  $[\theta_{\text{floor}}, \pi-10^{-3}]$，下界跟随 decay_max（logfreq 配对
+  设计不被钳）；
+- **evidence/uncertainty 闸门**：默认 OFF（无监督信号时是静默衰减器）；
+- **物理世界模型**（`use_physics_world_model`，实验）：物理一致性判据，
+  与 L2/L3 闸门正交的第三抗幻觉信号源——**tuan-2b 等全部预设不使用**；
+- **decay_scale**（R3，实验）：分层多尺度衰减，层 $i$ 使用
+  $\text{decay\_max}\cdot s^i$。
 
-**流式/推理形式**：令
+### 3.2 三层精确引用（L0/L1/L2）——「第几个字」的架构答案
 
-$a_m=2\rho_m\cos\theta_m,\quad b_m=-\rho_m^2,\quad c_m=\sin\theta_m,$
+逐字精确引用物理上需要 O(N) 存储（香农，无例外）。架构**不让 O(1) 做精确
+检索**，分工为：
 
-$y_m[t] = a_m\,y_m[t-1] + b_m\,y_m[t-2] + c_m\,u_t[d],\qquad \mathrm{long}_t[d]=\sum_m C[m,d]\,y_m[t],$
+| 层 | 内容 | 存储 |
+|----|------|------|
+| **L0 常驻** | gist 匹配 + 指针头（`PointerHead`，$\approx2D^2$ 参数，与 N 无关） | O(1)，HBM |
+| **L1 旁路** | 原文逐 token 精确副本 + 块 gist 索引（O(N/B)） | O(N)，Host RAM/SSD（4M tokens：int32 16 MiB） |
+| **L2 取回** | O(1) 状态 → 指针分布 → top-k → 精确读取 → 零初始化注入 | 取回 O(k·B·D)，与 L 无关 |
 
-初始 $y_m[-1]=y_m[-2]=0$。每 token 时间 $O(MD)$，状态 $2MD$ 个浮点，与 $L$ 无关。
+**定位改口**：O(1) 状态的价值不是"存储器"，是**选择性寻址器**。
+正式口径：**O(1) 常驻状态（HBM），O(N) 精确档案（主机内存/SSD）**——
+档案不进 GCD，§5.12 的 HBM 账本不受影响。
 
-### 3.3 完整 mixer
+### 3.3 定容绑定记忆（R1）——修复 key→value 绑定缺陷
 
-$h=\mathrm{norm}(x);\quad u = W_{in}h \odot \sigma(W_g h) \qquad\text{（L1 内容门，selective）}$  
-$\mathrm{long}_t = \text{全局卷积}(u)\cdot e_t\cdot w_t;\qquad \mathrm{local}_t = \mathrm{DepthwiseCausalConv}_{K}(u)$  
-$y_t = \mathrm{long}_t + \mathrm{local}_t + f\odot u_t;\qquad \text{out}=W_{out}y_t\ (\odot\,\sigma(W_{og}h));\qquad \text{return } x + s\cdot\text{out}.$
+MQAR 对照（§7.2）定位：SGC 缺的不是感受野，是**绑定能力**。第一版定容
+记忆原型失败的真卡点在读取（槽内 $h_t$ 既当 key 又当 value）。R1 的修复：
+**槽内 key/value 分开投影** + **局部窗口绑定写入**（宽 W 的相邻窗口前半进
+key 侧、后半进 value 侧——"键 值"恰是相邻结构）+ FIFO 环形定容槽。
+0.1-α 二期新增 **soft 可微门控写入**（`write_mode="soft"`）：逐槽 sigmoid
+混合替代硬 argmin——修复 3000 步训练退化（不可微写入的槽位分配坍塌无
+梯度信号）。
 
-|                                                                                                                                                                                                                                                                                                                                      |   |   |   |   |   |   |   |   |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | - | - | - | - | - | - | - | - |
-| 其中 L2 证据门 $e_t=\sigma\big(g_1\log(1+c_t)+g_2\log(1+t)+g_0\big)$，$c_t=\frac1t\sum_{s\le t}\|u_s\|^2$ 为**因果前缀平均能量**（流式以运行和 $E_t$ 维护，定理 3 说明其必要性）；L3 不确定门 $w_t = 1-\sigma(\gamma)\,d_t$，$d_t=\|\mathrm{long}_t-\mathrm{local}_t\|_1/(\|\mathrm{long}_t\|_1+\|\mathrm{local}_t\|_1+\varepsilon)$ 为长/短两路独立估计的分歧。无位置嵌入表、无 Q/K/V、无 softmax。 |   |   |   |   |   |   |   |   |
+### 3.4 生态扩展（全部 opt-in 或独立入口）
 
-### 3.4 SGC-Hybrid 与四层闸门
-
-带限谱卷积不擅长"精确指向某一位置"的锐利 token 级路由（§5.6 实测），故提供 **SGC 层与 GQA 滑窗因果注意力交替堆叠**的混合路线（LongNet [7] / Jamba [8] 路线）：两组件的流式状态均与 $L$ 无关。抗幻觉闸门共四层：L1 选择门（mixer 输入）、L2 证据门（谱基，核级抑制）、L3 不确定门（mixer 输出）、L4 拒答头（输出侧，BCE 校准，偏置初始化 $-2.0$ 使未训练时几乎不拒答）。L1–L3 参数为标量而非 `Linear`，避免零初始化退化。**诚实声明**：四层闸门是降低幻觉倾向的**结构性约束**，不构成"消除幻觉"的保证；`grounded` 标签必须来自外部证据；带引用评测集实测前不得宣称抗幻觉有效。
-
-**闸门成本核算与两条路线的边界（v1.1.1，回应外部核对）**：(i) **复杂度开销**：L1–L3 均为标量参数 + 逐点运算（每 token 每层 $\le 6D$ FLOPs 量级，已计入 P11 审计的 $22D$ 逐点常数），相对 mixer 主项 $O(MD)$（$M{\ge}64$）是噪声；真实代价是**超参数与行为耦合**——四个门引入 8+ 个标量超参、默认开启改变模型行为（声明 (c)）、且 L2 证据门依赖外部证据源质量，闸门监督缺失时等于空转。(ii) **"纯 attention-free"的适用范围**：该卖点**只适用于 core 产品线**（`simplcore/core`，由 `purity.py` 配置+实例图双重断言与理论守卫硬性保证零注意力）；**SGC-Hybrid 是明示的务实路线，包含滑窗 GQA 注意力层，不参与纯度主张**。两条路线不得混同宣传：任何"彻底非注意力"的表述默认指 core 线；混合路线的存在恰恰说明我们不在没有质量证据时把"零注意力"当教条——它是一个可被混合路线取代的工程选项，而非意识形态。
-
-### 3.5 世界模型视角：O(1) 状态的语义正当性（理论动机，v1.2 新增）
-
-**定位与来源**：本节是**理论动机**，不是新实验主张——不引入任何新机制、不报告任何新实验，只重新解释 §4 已证明的定理（尤其定理 3 的常数充分状态）与 §7 已陈述的分轴结论在另一个目标函数下的含义。主张来源：外部核对分析（2026-10-31；其引用的世界模型论文分享链接在成稿时不可访问，主张以核对文本为准，引文待补）。其中"自进化越用越好"的部分**不因本节升级**：仍留在 §6 未证明清单（新增第 6 条）与 §3.6(c) 的诚实边界内。
-
-**(a) 修复目标错配**。纯 LM 的优化目标是 $P(\text{下一 token}\mid\text{前文})$；规划、因果推理、工具使用等能力的监督信号不在此目标里。世界模型的目标是 $P(\text{状态转移}\mid\text{状态},\text{行动})$，该目标在结构上强制三件事：
-
-| 性质 | 语言建模目标 | 世界模型目标 |
-|---|---|---|
-| 因果方向 | 文本里怎么说就怎么学 | 行动→结果，方向被结构钉死 |
-| 反事实 | 只能学"文本中出现的" | 可查询"若采取别的行动会怎样" |
-| 时间连贯 | 无约束（每步独立预测） | 状态必须连续演化 |
-
-语言建模学到的是"人们通常怎么描述世界"，世界模型学到的是"世界实际怎么运作"；前者是后者的有损投影，且投影掉了所有没有被写下来的部分。
-
-**(b) O(1) 状态与世界模型互相需要**——这是本节的核心，也是 O(1) 主线（已证明）与世界模型线（未验证）的互补点。在纯 LM 视角下，SGC 的常数状态是负债：§7.2 轴 D 已承认 1M 原文压入 30.36 MiB 意味着 ≥1:67 的有损压缩，精确检索必输给任何能精确注意的 TS，这是信息论上限（P10/定理 3）。但在世界模型视角下，同一性质立刻变成资产：**世界状态本来就应该是压缩的、丢弃细节保留结构的**——记住"棋局局势"不需要记住每一手的落子顺序。两种底架对"状态"的态度：
-
-| | KV cache | O(1) 状态（定理 3） |
-|---|---|---|
-| 本质 | 历史堆积（不是状态） | 被迫压缩的表征 |
-| 遗忘 | 没有，全留着 | 强制，必须选择记什么 |
-| 整合 | 没有，检索原始片段 | 有，压缩即整合 |
-
-所以是互相需要：世界模型给 O(1) 压缩提供**语义正当性**（压掉的是细节，保留的是结构）；O(1) 状态给世界模型提供**工程上可行的载体**（否则 4M 上下文的 KV 就是 ~129 GB，物理上走不通——§7.2 轴 C）。这也解释了 §7.2 轴 C/D 为什么是那条分界线：世界模型需要的从来不是逐字检索，而是"当前局势是什么"——聚合型任务（轴 C）上 O(1) 压缩最划算，精确检索（轴 D）必输，同一信息瓶颈在两个目标函数下价值相反。
-
-**(c) 两条需要打折的好处**。*幻觉约束*：多一个接地通道是真的，但只是**结构性约束而非消除**——§3.4 的立场（grounded 标签必须来自外部证据）不变，不加限定的抗幻觉宣称是自欺。*持续学习*：SMM 三层（工作→情景→语义）+ Dreaming 巩固 + no-regression gate + 回滚的架构设计是干净的，比批量 RLHF 多了"可回滚"与"有 verifier"两个属性；但 §3.6(c) 的声明不变——"越用越好"未在真实任务实测前不得宣称。
-
-**(d) 三条代价**（第一条是硬约束）。1. **verifier 依赖**：环境学习的核心假设是"存在可靠验证信号"。代码有 pass@k，是难得的真 verifier；开放域问答、写作、创意任务的 verifier 本身是未解决问题——适用范围被 verifier 可用性严格限定，这正是 §7.2 轴 E "域内 +1–2B，域外 ≈0" 的原因，不是保守，是准确。2. **优化冲突**：语言建模要求保留细节（预测下一个词），世界模型要求状态紧凑可预测，两个目标的梯度可能互相打架；多目标训练的调参成本不是线性的。3. **错误巩固**：verifier 有偏 → 偏见被固化；回滚防得住灾难性遗忘，防不住缓慢的质量漂移。
-
-**(e) 必须呈现的反面质疑**：纯 LM 可能已在隐式地学世界模型——Othello-GPT 从落子序列涌现棋盘表征、国际象棋模型从 PGN 恢复 board state，"语言序列→隐式世界表征"路径存在。那么显式加世界模型底架的**增量是多少**是开放问题，本文不能替实验回答；唯一回答方式是对照实验：同算力、有/无显式世界模型头，在状态追踪类任务上比较——接 §5.8 的 `ab_compare` 协议。**在该对照完成之前，"以世界模型为底架更优"是待验证主张，不是结论。**
-
-**(f) 可证伪判据**：三条，绑定 §7.4 验收协议（W1–W3），与战役账本同源；若失败的动作见 §7.4 表。
-
-原 §3.5 的记忆与自进化机制概述如下。
-
-**记忆与自进化（概述）**：压缩记忆（CMT [15] 适配）：检索聚合后的记忆以**残差流加性项** $x \leftarrow x + W_m\,\mathrm{mem}$ 注入（$W_m$ 零初始化 ⇒ 默认恒等），每层 $O(D)$，不引入 KV；记忆库定容 + LRU。自进化循环（HARVEST→REFLECT→SYNTHESIZE→CONSOLIDATE→VERIFY→ROLLBACK）以 no-regression gate 为唯一硬护栏，基座权重冻结为默认。机制部分不在本文理论范围内，仅作架构完整性陈述；其目标函数层面的动机见本节 (a)–(b)。
-
-### 3.6 扩展模块（v1.2 新增：latent 思考、SGC 自适应三路、SMM 整合）
-
-本节三个模块均为**机制级扩展**：不触碰 §3–§4 的理论结果，全部默认关闭、可逐位退化为既有行为，并有守护测试锁定（test_nonlinear / test_sgc_enhancements / test_smm，共 50 项）。
-
-**(a) latent 非线性思考（`nonlinear.py`）**：与 §DeepReasoner 的文本层思考互补，把思考搬进残差流空间——拿到隐状态后先用门控非线性递归单元迭代精化 $z_{i+1}=z_i+W_{\downarrow}\big(\sigma(W_g n)\odot W_{\uparrow} n\big)$（$n=\mathrm{LN}(z)$，$W_{\downarrow}$ 零初始化 ⇒ 初始恒等），再用 ACT 式停止头 $p_i=\sigma(h(z_i))$ 自适应收手。约束：迭代不触碰 mixer 递推态 ⇒ 流式常驻字节与 `stream_bytes` 逐位一致；训练路径端到端可微（梯度穿过全部迭代步）+ ponder 正则 $\sum_i(1-p_i)$；`max_iters=0` 时与 `model.stream_step` **逐位一致**（测试锁定）。**诚实边界**：停止头零初始化 ⇒ 未训练时是启发式行为；latent 精化无质量保证，须在真实任务上对照直通评估。
-
-**(b) SGC 三路自适应（`sgc.py` 增强，默认全关）**：(i) `path_gate`——长程谱卷积 / 局部卷积 / 瞬时项三路改 softmax 自适应混合，权重为当前 token 的因果函数 ⇒ 并行/流式逐位一致（与定理 1 的对偶性兼容）；(ii) `inst_nonlin`——瞬时项 `feed·SiLU(u)`（默认保持线性 `feed·u`）；(iii) `init_mode="logfreq"`——振荡频率对数网格初始化，使振荡周期与衰减时间常数尺度配对（修复均匀网格高频欠采样）。三项均不改变核的闭式定义与 IIR 递推结构；`analytic_params` 账目与实例参数量逐位一致（测试锁定）。
-
-**(c) Simpl Model Memory（`smm.py`）**：把 §3.5 的组件整合为**三层记忆门面**——工作记忆（O(1) 流式状态）→ 情景记忆（CMT 库：`experience()` 落两处、`recall()` 检索聚合、`answer()` 检索注入流式生成）→ 语义记忆（`sleep()` Dreaming 巩固 + no-regression gate + 回滚，回滚同步回滚记忆库）。`think_max_iters>0` 时 `answer()` 走 (a) 的 latent 思考流式路径——`_consume` 与 `stream_step` 同构且兼容 `state.memory` 注入，思考与记忆在同一 O(1) 状态上叠加。硬约束继承自 Dreaming：`mode="weights"` 无 verifier 拒绝写权、零初始化记忆注入恒等（训练后分叉，测试锁定）。**诚实边界**：SMM 是整合接线层而非已训好的自学习模型；"越用越好"未在真实任务实测前不得宣称；思考层参数不在巩固优化器范围内。其目标函数层面的理论动机（为什么 O(1) 状态与世界模型互补）见 §3.5——动机不改变本边界：该节同样是未实测的。
-
-**(d) JitRL 式测试时优势调制（`jitrl.py`，v1.2 新增：agent 域的免训练持续适应）**：部署后权重冻结是 LLM agent 持续适应的瓶颈；常规 RL 微调（WebRL [17]，ICLR 2025——自进化在线课程 + ORM + KL 约束迭代，WebArena-Lite 上把开源 8B 模型从 4.8% 提到 42.4%）算力昂贵且有灾难性遗忘风险。JitRL [18]（ICML 2026 Oral）证明**免梯度**的替代路线：非参数经验轨迹记忆 + 检索式即时动作优势估计 + 优势**加性调制输出 logits**，且该更新形式是 KL 约束策略优化的精确闭式解；在 WebArena 上超过 WebRL 而成本降低 30× 以上。
-
-本架构的三处结构同构与一处更优落点：(i) 经验记忆 ↔ SMM 情景层——CMT 存知识条目，`jitrl.TrajectoryMemory` 存 (状态, 动作, 结果) 三元组，优势估计需要**动作粒度**，压缩会丢失；(ii) 即时检索 ↔ O(1) 流式的成本结构——优势估计开销与上下文长度无关；(iii) **logits 调制的落点比原论文更干净**——JitRL 调制的是外部 LLM API 的 logits（受 logit-bias 接口限制），SimplCore 的 logits 出自自家 `head`，`generate(logit_bias_fn=...)` 把调制做成一等结构化通路（加性偏置、可广播、默认 None 逐位恒等，测试锁定）。与 Reflexion [19]（语言反思入 episodic memory，**提示端**）和 L2 证据门（前缀证据调制路径权重，**mixer 端**）构成"经验约束生成"的三位置实例化，正交叠加。评测环境为 WebArena [20]（真实网站 + 功能正确性自动判定）。
-
-**诚实边界**：本模块是机制接线 + 数值守护（`test_jitrl`，13 项：恒等性/优势数学/闭环/钩子等价），**无任何环境基准数字**——WebArena/Jericho 结果属于原论文的外部 API 模型（GPT-4 级 agent），SimplCore 主干在 30M–2B 量级的效果未验证（判据 W4，§7.4）。verifier 语义沿用 §3.6(c)：只信独立判定（ORM/pass@k/环境判定），不信自报。
-
----
+**多模态**（`model/multimodal.py`）：图像 patchify / 音频帧下采样 → 软 token
+拼接进无位置表序列（模态前缀因果在前）；`stream_step(inputs_embeds=…)`
+提供模态前缀的 O(1) prefill；无模态时与纯文本路径**逐位一致**。
+**世界模型容量探针**（`eval/world_probe.py`）：O(1) 递推状态的线性可读出
+测量（fp64 闭式岭回归 + 置换/多数类基线）——测量而非宣称。
+**SimplUnity**：冻结基座 + 路由门 + 多专家（负载均衡/z-loss），0.1-α 补齐
+统一生成入口 `UnityModel.generate()`（O(1) 流式 MoE 采样）。
+**物理世界模型**（实验）：物理一致性判据（连续性/守恒/运动学），
+`tuan-2b` 等全部预设不使用。
 
 ## 4 理论结果
 
-本节全部证明在实数域进行；有限精度单独处理（命题 5）。固定单个通道 $d$（各通道独立），$M$、$\{\rho_m,\theta_m,C[m,d]\}$ 任意。
+四条定理与七条命题的完整陈述见 `docs/SGC_CORE.md` 与
+`simplcore/core/eval/mathproof.py`（13 项机器可验证证明：符号 + fp64）。
+核心结论与 0.1-α 状态：
 
-**引理 1（振荡基的二阶齐次递推）** 设 $\psi_m[\tau]=\rho_m^\tau\sin((\tau{+}1)\theta_m)$，$\tau\ge0$，$a_m=2\rho_m\cos\theta_m$，$b_m=-\rho_m^2$。则对所有 $\tau\ge2$：  
-$\psi_m[\tau] = a_m\,\psi_m[\tau-1] + b_m\,\psi_m[\tau-2].$
-
-*证明.* 由三角恒等式 $\sin(A{+}B)+\sin(A{-}B)=2\sin A\cos B$（取 $A=\tau\theta,\ B=\theta$）得 $\sin((\tau{+}1)\theta)=2\cos\theta\sin(\tau\theta)-\sin((\tau{-}1)\theta)$。两侧乘 $\rho^\tau$：  
-$\rho^\tau\sin((\tau{+}1)\theta) = 2\rho\cos\theta\cdot\rho^{\tau-1}\sin(\tau\theta) - \rho^2\cdot\rho^{\tau-2}\sin((\tau{-}1)\theta)$，即原式。$\blacksquare$
-
-**推论 1.1（冲激响应恒等）** 递推 $y[t]=a_m y[t{-}1]+b_m y[t{-}2]+c_m\,\delta_0[t]$（$c_m=\sin\theta_m$，零初值）的解恰为 $y[t]=\psi_m[t]$。  
-*证明.* $t=0$：$y[0]=c_m=\sin\theta_m=\psi_m[0]$。$t=1$：$y[1]=a_m y[0]=2\rho\cos\theta\sin\theta=\rho\sin2\theta=\psi_m[1]$。$t\ge2$：由引理 1 归纳。$\blacksquare$
-
-**定理 1（双形式精确等价）** 对任意输入 $\{u_s\}_{s=1}^{L}$ 与任意长度 $L$：  
-$\underbrace{\sum_{s=1}^{t}K[t-s]u_s}_{\text{并行卷积形式}} \;=\; \underbrace{\sum_{m=1}^{M}C[m]\,y_m[t]}_{\text{流式 IIR 形式}}\qquad \forall\, t\in\{1,\dots,L\},$  
-且零填充 FFT 形式（$N=2L$）与之相等。等价在 $\mathbb{R}$ 上**精确成立**，非数值近似。
-
-*证明.* 先证 $y_m[t]=\sum_{s\le t}\psi_m[t-s]u_s$（对 $t$ 归纳）：$t=0$ 时 $y_m[0]=c_mu_0=\psi_m[0]u_0$；一般地 $y_m[t]=a_m y_m[t{-}1]+b_m y_m[t{-}2]+c_mu_t \overset{\text{IH}}{=} \sum_s\big(a_m\psi_m[t-1-s]+b_m\psi_m[t-2-s]\big)u_s + c_m\psi_m[0]u_t$。对 $s<t$ 的项由引理 1 合并为 $\psi_m[t-s]$；$s=t$ 项为 $c_mu_t=\psi_m[0]u_t$。故成立。于是  
-$\sum_m C[m]y_m[t] = \sum_s\Big(\sum_m C[m]\psi_m[t-s]\Big)u_s = \sum_s K[t-s]u_s,$  
-交换求和合法（有限和）。FFT 形式：由命题 7，$N=2L\ge 2L-1$ 时循环卷积无混叠，等于线性卷积；频域乘法由卷积定理给出同一结果。$\blacksquare$
-
-**定理 2（严格因果性）** 对任意 $t^\ast$，仅扰动 $s>t^\ast$ 的输入不改变任何 $t\le t^\ast$ 的输出（含全部闸门）。
-
-|                                                                                                                                                                                                                                                                                                                         |   |   |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | - | - |
-| *证明.* 并行形式中 $\mathrm{long}_t$、$\mathrm{local}_t$ 只含 $s\le t$ 的项（$K$ 与局部核的支撑均为 $\tau\ge0$，左填充）。L2 的统计量 $c_t=\frac1t\sum_{s\le t}\|u_s\|^2$ 与其流式实现（运行和）只依赖前缀；L3 的 $d_t$ 只依赖同位置的 $\mathrm{long}_t,\mathrm{local}_t$；L1、输出门只依赖 $x_{\le t}$；残差与投影逐位置。故输出是 $\{u_s\}_{s\le t}$ 的函数。实证对照（**分路径口径**，v1.1.2）：**流式 IIR 路径**（逐 token `step()` 递推）该差为精确 $0.0$——逐位比较，递推根本不触碰 $u_{>t}$；**整段 FFT 并行路径**在浮点下非逐位因果——FFT 的浮点结合序使 $u_{>t}$ 的扰动以 $\sim10^{-6}$（fp32）量级泄漏进 $\mathrm{long}_{\le t}$ 的最低位（实数域上仍精确因果，定理 1）。泄漏守护测试须指明路径：流式断言逐位相等（$\delta=0$），并行断言 $\delta<10^{-5}$。$\blacksquare$ |   |   |
-
-**定理 3（常数充分状态）** 记流式状态
-
-|                                                                                                                                      |     |                                                                           |
-| ------------------------------------------------------------------------------------------------------------------------------------ | --- | ------------------------------------------------------------------------- |
-| $S_t=\big(\{y_m[t],y_m[t-1]\}_{m=1}^{M},\ \{u_{t-K+2},\dots,u_t\}\ \text{(局部卷积缓冲)},\ E_t=\textstyle\sum_{s\le t}\|u_s\|^2,\ t\big).$ |     |                                                                           |
-| (i) 给定 $S_t$ 与未来输入，全部未来输出可被确定性地计算（充分性）；(ii) $                                                                                        | S_t | = 2MD+(K{-}1)D+2$个浮点，与$t$无关；(iii) 若省略$E_t$，则从检查点恢复后 L2 门的流式输出不再与整段形式逐位一致。 |
-
-*证明.* (i) 归纳：下一位置的 IIR 更新只需 $y_m[t],y_m[t-1]$；局部卷积只需最近 $K-1$ 个输入；L2 只需 $E_t$ 与 $t$；L1/L3/投影逐位置。各分量恰好覆盖所有被引用的历史。(ii) 直接计数；实现 `streaming_state_bytes()` 与断言测试一致（§5.3 实测四长度逐字节相同）。(iii) $E_t$ 是 $c_t$ 的充分统计量，恢复时若置零则 $c$ 的分母能量缺失，$e_t$ 偏离。$\blacksquare$
-
-**定理 4（复杂度）** 单层：训练/整段前向时间 $O(LMD + DL\log L)$（核构造 + FFT；核与输入无关时可缓存），空间 $O(DL)$；流式推理每 token 时间 $O(MD+KD)$，常驻状态 $O(MD)$，均与 $L$ 无关。
-
-*证明.* 核构造对每通道求 $M$ 项和得 $O(LMD)$；$D$ 通道各自做长度 $2L$ 的实 FFT 得 $O(DL\log L)$。流式按定理 3 的状态与 §3.2 递推直接计数。$\blacksquare$
-
-|                                                                                                                                         |             |                           |                      |                    |                            |             |        |                |             |                |
-| --------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------- | -------------------- | ------------------ | -------------------------- | ----------- | ------ | -------------- | ----------- | -------------- |
-| **命题 5（fp32 前向误差界）** 设浮点单位舍入 $u$（fp32：$u=2^{-24}$）。记计算值 $\tilde y_m[t]$，误差 $e_m[t]=y_m[t]-\tilde y_m[t]$。若每步舍入扰动为 $\delta_m[t]$（一次乘加链 $ | \delta_m[t] | \le k,u,(                 | a_m\tilde y_m[t{-}1] | +                  | b_m\tilde y_m[t{-}2]       | +c_m        | u_t[d] | )$，$k\le 5$），则 |             |                |
-|                                                                                                                                         |             |                           |                      |                    |                            |             |        |                |             |                |
-| ---                                                                                                                                     | ---         | ---                       | ---                  | ---                | ---                        | ---         | ---    | ---            | ---         | ---            |
-| $$                                                                                                                                      | e_m[t]      | ;\le;\frac{\max\_{s\le t} | \delta_m[s]          | }{(1-\rho_m)\,|\sin\theta_m|},\qquad | \Delta,\mathrm{long}\_t[d] | ;\le;\sum_m | C[m,d] | ,\frac{\max_s  | \delta_m[s] | }{(1-\rho_m)\,|\sin\theta_m|}.$$ |
-
-|                                                                                                                              |              |                     |        |           |             |                                         |             |                                                                                                  |
-| ---------------------------------------------------------------------------------------------------------------------------- | ------------ | ------------------- | ------ | --------- | ----------- | --------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------ |
-| *证明.* 误差满足与信号相同的线性递推 $e_m[t]=a_me_m[t{-}1]+b_me_m[t{-}2]+\delta_m[t]$（一阶舍入分析）。关键在注入系数：舍入误差 $\delta$ **直接加在 $y_m[t]$ 上，注入系数为 1**，而信号注入系数是 $c_m=\sin\theta_m$。因此误差的冲激响应不是 $\psi_m$（推论 1.1 是对信号而言），而是 $h_m[\tau]=\psi_m[\tau]/\sin\theta_m$——同一齐次模态、注入端归一。由 $ | \psi_m[\tau] | \le\rho_m^\tau$ 得 $ | h_m[\tau] | \le\rho_m^\tau/|\sin\theta_m|$，故 $ | e_m[t] | \le\max_s | \delta_m[s] | \cdot\sum\_{\tau\ge0}\rho_m^\tau/|\sin\theta_m|=\max_s | \delta_m[s] | /((1-\rho_m)|\sin\theta_m|)$。按通道线性聚合得第二式。特征根 $z=\rho e^{\pm i\theta}$的模$\rho<1$，齐次解几何衰减——递推是指数稳定；$|\sin\theta_m|\to0$（$\theta\to0$ 或 $\pi$）时界退化，对应特征根重合/翻转的病态极限（实现中 `_homogeneous` 对 $\sin\theta$ 有 `clamp(min=1e-3)` 工程下限）。$\blacksquare$ **外部核对（v1.1.2，2026-10-31）**：初版证明误把 $\psi_m$ 当作误差冲激响应，漏掉 $1/|\sin\theta_m|$ 因子，实测被违反（均匀 $M{=}8$ 网格最坏 $5.79\times$，同网格 $1/|\sin\theta_m|=5.13$；外部审计在另一配置测得 $1.40\times$）。修正后界实测成立（同配置 headroom $3.2\times$）。复现：`scripts/audit_numbers_20261031.py`。 |
-
-
-|  |  |  |
-| --- | --- | --- |
-*与实测的一致性*：fp32 下 $u\approx6\times10^{-8}$，实测双形式偏差 $\max|\Delta|<4\times10^{-5}$（$L\in\{1,4,17,64,129\}$）与该界量级一致（界是保守上界，非逐点预测）。外部核对（v1.1.2）确认修正后的 $1/|\sin\theta_m|$ 因子必要：不含该因子的旧界在均匀网格上被实测违反（见证明后注）。
-
-***保守性警告（v1.1.2，合并外部核对）***：该界在最坏参数下**急剧变保守**。两个退化方向：(a) $\rho_m\to1$——$1/(1-\rho_m)$ 在默认 `decay_max`=8192/16384 参数化下可达 $\approx1.6\times10^4$（$\rho=\exp(-1/16384)\approx0.999939$），`logspace`+`clamp` 下上限 $10^6$；(b) $|\sin\theta_m|\to0$——`logfreq` 网格 $\theta_{\min}=\pi/\text{decay\_max}$，$1/|\sin\theta_m|\approx\text{decay\_max}/\pi$（4M 配置下达 $\approx1.3\times10^6$）。联合最坏因子 $1/((1-\rho)|\sin\theta|)$ 在 4M/logspace/logfreq 配置下无实用约束力——界的作用是**结构稳定性陈述**（指数稳定 + 病态极限定位），长序列数值稳健性以 Phase 0 conformance 实测为准。三点说明：(i) 界的最坏情形假设每步舍入同号相干累积，而实际舍入近似零均值随机游走（$\sqrt{T}$ 量级而非 $T/(1{-}\rho)$ 量级）；(ii) **fp32 长序列（$L\ge10^5$）的真实累积漂移从未实测**——现有 4e-5 只测到 $L=129$；(iii) 因此"双形式逐位一致（$4\times10^{-5}$ @ 512K/4M）"已列入 Phase 0 后端 conformance 硬检查（§5.13、`backend_contract.py`），它测的是 FFT 与 IIR 两条路径的**相对偏差**，配合 P05 的 fp32 饱和卫兵（$\rho\le1-10^{-6}$ 硬钳制）与 `_homogeneous` 的 $\sin\theta$ 工程下限（`clamp(min=1e-3)`）共同兜底。在 conformance 通过之前，长序列 fp32 数值稳健性应视为**未验证**。
-**命题 6（时间尺度覆盖）** $\rho_m=e^{-1/\lambda_m}$ 时包络 $|\psi_m[\tau]|\le e^{-\tau/\lambda_m}$，半衰期 $\tau_{1/2}=\lambda_m\ln2$。若 $\lambda_m$ 在 $[1,\Lambda]$ 对数等距（$M$ 点），则任意 $\lambda\in[1,\Lambda]$ 与最近基的半衰期之比不超过 $\Lambda^{1/(2(M-1))}$。
-*证明.* 包络不等式由 $|\sin|\le1$；比值界由几何级数的相邻中点距离直接计算。$\blacksquare$
-
-**命题 7（零填充无混叠）** 长度 $L$ 的两序列零填充至 $N\ge 2L-1$ 后，其循环卷积等于线性卷积。实现取 $N=2L$，满足条件。
-
-*证明.* 标准结果（[13]，Ch. 8）：混叠项源于循环回绕，仅当卷积的非零支撑 $[0,2L-2]$ 超出 $[0,N-1]$ 时出现；$N\ge2L-1$ 时支撑完整落在窗内。$\blacksquare$
-
-**引理 8（字典的线性无关与可达维数）** 若 $z_m=\rho_me^{i\theta_m}$ 两两不同（且 $z_m\ne\bar z_{m'}$ 对所有 $m,m'$），则 $\{\psi_m\}_{m=1}^M$ 在 $\mathbb{Z}_{\ge0}$ 上线性无关；从而以 $M$ 个基参数化的时间基子空间**可达维数**为 $M$——这是**训练后的表示能力**（参数化允许的子空间维数上界，训练收敛后实际占据），不是初始化网格对时间尺度的**覆盖**（那是命题 6 的内容：初始网格半衰期的对数间距）。反之，前身 v2 的核 $K=\text{low}@up$ 满足 $\operatorname{rank}(K)\le r$，其时间基子空间**连可达维数**都 $\le r$（默认 8）——参数化本身封死，训练无法逃出。
-
-*证明.* $\psi_m[\tau]=\operatorname{Im}\big(e^{i\theta_m}z_m^\tau\big)$。设 $\sum_m \alpha_m\psi_m[\tau]\equiv0$，即 $\sum_m\big(\beta_mz_m^\tau+\bar\beta_m\bar z_m^\tau\big)=0$ 对所有 $\tau\ge0$（$\beta_m=\alpha_me^{i\theta_m}/2i$）。这是 $2M$ 个两两不同的复指数的线性组合；在 $\tau=0,\dots,2M-1$ 处取值得到以 $\{z_m,\bar z_m\}$ 为节点的 $2M\times 2M$ Vandermonde 系统，节点互异故矩阵非奇异，全部系数为零。秩断言由 $\operatorname{rank}(\text{low}@up)\le\min(\operatorname{rank}\text{low},\operatorname{rank}\text{up})\le r$ 平凡得出。$\blacksquare$
-
-*含义*：v2 的"全局"核被困在一个维数 $\le8$ 的时间基子空间中——这是其在真实语料上"训练深、泛化差"（train ppl 1.10 / test ppl 11.10）且无法按内容路由的**结构性**解释；SGC 把**可达维数**提升为 $M$（默认 64/128，引理 8），初始网格的时间尺度覆盖由命题 6 单独刻画（v1.1.2 默认改用 `logfreq` 网格：theta 对数分布，周期与衰减窗口尺度配对；legacy 均匀网格存在 $\tau=2M(M+1)-1$ 处的公共零点——核在固定间隔恒为 0 且 coef 修不了，已由 `_assert_no_common_zero` 守护拒绝）。两条性质（可达维数 / 初始覆盖）与两项缺陷（v2 秩瓶颈 / legacy 公共零点）互不替代，叙事上分开表述。
-
----
+- **定理 1（双形式对偶）**：FFT 整段 == IIR 流式（fp32 短序列逐位一致，
+  守护测试锁定；长序列偏差见 §5.4 勘误）。
+- **定理 2（严格因果）**：流式路径未来泄漏逐位为 0。
+- **定理 3（O(1) 状态）**：状态字节数 $4(2MD+(K{-}1)D+1)$ 与 $L$ 无关
+  （M=64, D=1024, K=4 → 524.0 KiB/层；`mathproof` P12 硬断言）。
+- **命题 5（误差界，0.1-α 双口径勘误后口径）**：舍入误差注入系数为 1
+  （非 $\sin\theta_m$），故误差冲激响应为 $\psi_m[\tau]/|\sin\theta_m|$，
+  界为 $\delta_{\max}/((1-\rho)|\sin\theta|)$。**口径纪律（外部二次审计
+  发现并修正）**：误差界必须用随 $|\tilde y|$ 重构的
+  $\delta\le k\cdot u\cdot\max_t(|a||\tilde y_1|+\cdots)$（口径 B）——
+  裸 $u$ 常数（口径 A）只在 $|\tilde y|\le1$ 成立，**不是界**。口径 B 实测：
+  旧界（无 $1/|\sin\theta|$ 因子）在 legacy M=8 网格被违反 1.69×、
+  修正界成立；论文旧数字 5.79×/5.13 来自 legacy M=8 + 未标口径（该网格
+  已被构造期守护拒绝）。
+- **P10（有损上限的适用范围修正）**：有限常驻状态对**无界** $L$ 的原文
+  必有损（信息论，仍真）；但**任务绑定对数有限时，定容槽位存绑定副本
+  同样是 O(1) 且无损**——"常数状态建模必输"不成立，"SGC 当前的谱压缩
+  状态必输"才是正确表述（可修的工程缺陷）。
 
 ## 5 实验
 
-> **基线声明**：本节效率基线**只有一个**——标准因果注意力。所有加速比仅意味着"比注意力快"，不意味着优于 Mamba/Hyena/GLA/S4（从未对比，见 §6）。全部数字可由仓库脚本复现；来源索引见附录 A。
-
-### 5.1 单层效率（CPU，dim=256）
-
-| $L$ | SGC (ms) | 标准因果注意力 (ms) | 加速比 |
-|---|---|---|---|
-| 512 | 3.41 | 6.36 | 1.86× |
-| 1024 | 6.18 | 21.83 | 3.53× |
-| 2048 | 12.82 | 72.26 | 5.64× |
-
-### 5.2 端到端复杂度拟合（dim 128 × 2 层，batch 8，单线程）
-
-| seq_len | 单步 ms | tokens/s | 峰值显存 MB | 瞬时 MB |
-|---|---|---|---|---|
-| 128 | 167.72 | 6,105 | 15.398 | 8.000 |
-| 256 | 444.77 | 4,605 | 27.898 | 16.000 |
-| 512 | 841.77 | 4,866 | 52.898 | 32.000 |
-| 1024 | 1822.49 | 4,495 | 102.898 | 64.000 |
-
-时延 log-log 斜率 **0.9973**（$R^2=0.9995$）；显存斜率 **0.9144**（$R^2=0.9994$）。瞬时显存字节随 $L$ 精确线性（8 MB / 128 token），与定理 4 的 $O(DL)$ 训练空间一致。**测量方法学**：多线程下同一配置的时延斜率在 **0.05–1.12** 间抖动，故本表全部为单线程 + 7 次取最小值；我们报告斜率（可复核事实）而非"线性"（主张）。
-
-### 5.3 流式常驻状态（定理 3 的实测）
-
-> **配置注记（v1.1 勘误；v1.2 口径统一）**：本表 36,868 B 对应**单层、M=16、D=256、K=4、fp32**（`(2·16·256 + 3·256 + 1)·4 + 4·256 = 36,868 B`，含 energy_sum 与跨层缓冲，与现行 `stream_state_bytes()` 逐字节一致）。旧值 35,840 B 是**不含** energy_sum（4 B）与跨层缓冲（1,024 B）的运行时计数；两者相差 2.8%，属于口径不同，不是同一配置的两种正确值。
-
-| $L$ | 常驻状态字节 | 每 token 字节 | 单步 ms |
-|---|---|---|---|
-| 64 | 36,868 | 373 | 14.1 |
-| 256 | 36,868 | 124 | 11.3 |
-| 1024 | 36,868 | 34 | 11.9 |
-| 2048 | 36,868 | 17 | 15.2 |
-
-状态字节在四个长度上**完全相同**，与解析式 `stream_bytes()` 断言一致；每 token 字节精确按 $1/L$ 下降；单步时延斜率 0.0133（近平坦）。此测量取代了旧报告中因 `GetProcessMemoryInfo` 失效而恒为 0 的"显存实测"。**按定理 3 的公式验算（v1.1.2 外部核对勘误）**：$M{=}64, D{=}1024, K{=}4$ 时每层 $(2{\cdot}64{\cdot}1024 + 3{\cdot}1024 + 1)\times 4\,\text{B} = 536{,}580\,\text{B} = \mathbf{524.0\ KiB}$（fp32；初版误算为"131,145 浮点 ≈ 512 KiB"——加法本身错误且把 $3{\cdot}1024{+}1$ 项漏在总数外）。24 层约 **12.29 MiB（12.88 MB）**（batch=1）；**模型级常驻**再加 CMT 压缩记忆 $(B,D)=1{,}024$ 浮点 $=4\,\text{KiB}$，即 $\mathbf{528.0\ KiB}$/层等效——外部审计口径与实现口径在此调和（`streaming_state_bytes()` 不含 memory，属模型级单份）。旧版本此处曾误写为"132 KB / 3.2 MB"（漏计 M 因子；132 KB 实为 $M{=}64, D{=}256$ 的量级）。错误源头 `docs/SGC_CORE.md` §3.2 与 `scaling.stream_state_bytes` 实现已同步修正，并由 mathproof P12 的 ≤2 GiB 硬断言守护（该断言在修正时暴露了实现中的同一错误——流式状态被低估 128 倍，见 §5.12 勘误）。**口径注（v1.1.2）**：定理 3 的数学状态 $2MD+(K{-}1)D+2$ 中 "+2" 为 $t$（位置计数）与 $E_t$；实现字节账只含 $E_t$ 一个 fp32 标量（$t$ 为 Python int，不计张量字节），故 `streaming_state_bytes()` 按 $4\,(2MD+(K{-}1)D+1)$ 计。
-
-### 5.4 双形式等价与融合流式核
-
-|  |  |  |
-| --- | --- | --- |
-**双形式**：FFT（训练）与 IIR（流式）在 fp32 下的 $\max|\Delta|<4\times10^{-5}$ **只在短序列守护集** $L\in\{1,4,17,64,129\}$ 成立（守护测试 `test_streaming_matches_parallel`；L2/L3 开启时同样成立，`test_gates_stream_matches_parallel`）。**该阈值不是全长度保证**：同为 fp32、$M{=}64,D{=}128$、含门控时，$L{=}2048/4096/8192$ 的实测绝对偏差约 $3.5\times10^{-4}/7.4\times10^{-4}/1.3\times10^{-3}$（`tests/test_long_sequence_error.py`，界与缓解见 `docs/NUMERICAL_STABILITY.md`）。
-
-**融合 C++/CUDA 流式核（`mixer_stream`）**：把 §3.3 全部十个子算子融合为单遍，$O(1)$ 状态原地更新。核验方法：以一条**与融合实现代码路径不同**的独立参考实现（先以步初状态算全部 long，再统一推进 IIR 状态）作交叉 oracle，12 步随机激励（B=2, D=64, M=16, K=4，四门全开）下逐张量比对：
-
-|  |  |  |
-| --- | --- | --- |
-$$\text{worst }|\Delta| = 0.000\times10^{+0}\quad(\text{阈值 } 10^{-4}\text{，仓库守护阈值 } 4\times10^{-5}).$$
-
-**诚实边界**：CPU 路径数学已如上证明；CUDA kernel 已交付但**尚未在含 nvcc 的目标机实测**；任何构建失败时运行时显式降级（`is_available()=False`）回退纯 PyTorch，不静默出错。
-
-### 5.5 负面结果、审计与撤回（完整报告）
-
-**独立性审计**（2026-10，只跑代码、不看文档，40 个文件逐条命令归档）推翻了此前七项结论，其中两项致命：
-
-|  |  |  |
-| --- | --- | --- |
-1. **旧主线 RFP 非因果**：`rfft→实值带通窗→irfft` 的零相位频响对应偶对称冲激响应，必然看到未来。实测只扰动末位 token 时前 511/511 位置全部改变，$\max|\Delta|=2.74$；关闭 RFP 后泄漏精确为 $0.0$。**后果**：旧 RFP 训练的全部语言建模结论（含 val_ppl 1.28 vs 2.05）作为证据**作废**。修复采用窗函数法将目标幅频响应转为因果 FIR，新增 12 项因果性守护。
-2. **`simplcore/mix` 三处非因果**：无掩码 softmax（泄漏 $1.83\times10^{-3}$）、全序列均值、Hebbian 全局均值；修复后均为 $0.0$。122+53 项测试当时全绿却漏掉致命缺陷——因为**没有一项在测因果性**；此后因果性成为独立守护项。
-3. **无来源数字撤回**：旧报告引用的"test_acc：SGC 2.67% / Gated-SGC 1.50% / Attention 12.89%"经全仓库检索，所注文档不存在、字符串不出现，已撤回。
-4. **机理主张被实验推翻**：旧报告称覆盖写记忆不随上下文衰退；修复脚本重跑（700 步，仅查询位置计损失，chance=0.0625）结果相反——精确召回率 G=64/128/512：注意力 1.000/1.000/1.000，内容自适应混合 1.000/1.000/1.000，覆盖写（SGC-HM）1.000/**0.000**/0.188。据此 SGC 层不采用覆盖写路线。
-
-### 5.6 路由局限与混合动机
-
-多跳全局路由复制任务实测：局部递归结构 0.73–0.76，带限谱卷积 0.24–0.27。带限谱卷积不擅长"精确指向某一位置"，这是 §3.4 混合路线（SGC + 滑窗注意力交替）的实证动机——承认局限，而非绕开。
-
-### 5.7 真实语料收敛验证
-
-**目的**：证明"真实语料 + 真实分词器 + 真实梯度更新"的训练链路可用，**不是**性能主张。语料 FineWeb-Edu-Chinese 5 分片，1.36 GB：train 1,264,508 文档 / 467,718,144 token；val 2,539 / 913,408；test 2,539 / 929,792（合计 469,561,344 token，114,639 个 4096 窗口）。压缩比 1.8106 chars/token（32k BPE，抽样 1.8371）；文档保留率 81.0%（丢弃：too_short 298,015 / too_noisy 159 / 其他 35）；**切分单位为整篇文档**（无窗口级泄漏）；分片 SHA-256 记入 `index.json` 并在加载时校验。
-
-训练（17,983,045 参数，dim 320 × 5 层，M=32，seq 256，CPU 8 核 16 线程）：
-
-| 已消费 token | train loss | val ppl |
-|---|---|---|
-| 8,192 | 10.4378 | — |
-| 409,600 | 9.3595 | 9,280.0 |
-| 655,360 | 8.5763 | — |
-| 737,280 | 8.3783 | — |
-
-随机初始化理论值 $\ln(32000)=10.37$，起点 10.4378 吻合；损失真实下降、梯度健康。吞吐中位数 1,626 tokens/s。**这证明了什么**：链路可用、无泄漏、数学正确。**这不证明什么**：17.98M 参数、不足 1M token 的运行是健全性检查，不是实验；本机吞吐上限（约 580 万 token/小时）比 1.3B 模型所需数据量低三个数量级，规模训练须在 A100 上按运行手册执行。
-
-### 5.8 受控 A/B（小规模，如实报告混合信号）
-
-按 `ab_compare` 协议（除 mixer 外一切钉死：同数据按行号切分、词表仅从训练段统计、同模板/掩码/超参、贪心解码、参数量对齐）的 5M-token 级运行（`runs/ab_compare_5m.json`）：
-
-| run | mixer | 参数量 | step | val_best | topic | chat | basic |
-|---|---|---|---|---|---|---|---|
-| ab_attn_5m | attn | 5,730,240 | 1300 | **0.18858** | 0.125 | 0.375 | 0.300 |
-| ab_sgc_5m | sgc | 5,763,294 | 1200 | 0.20250 | **1.000** | **0.875** | **0.900** |
-| srf_5m | srf | 5,765,028 | 1000 | 0.23362 | 1.000 | 0.750 | 0.700 |
-| talk2 | sgc | 5,732,382 | 1200 | 0.20754 | 0.875 | 0.750 | 0.900 |
-
-**如实解读**：(i) 规模极小、未做显著性检验，**不能**据此声称 SGC 优于注意力；(ii) **通过率与验证损失给出相反的排序**（attn 验证损失更低，SGC 通过率更高）——两个不同的量被单一数字掩盖的风险正是该协议要暴露的；(iii) 仓库自身的受控 A/B 文档明确写道："本轮 A/B 的差异不显著，不能据此声称 SGC 优于 attention"。我们保留这一结论。
-
-### 5.9 规模预设与解析参数量（非训练值）
-
-| 预设 | dim | layers | M | 参数量 | bf16 权重 |
-|---|---|---|---|---|---|
-| sgc-150m | 768 | 12 | 64 | 131.4 M | 0.26 GB |
-| sgc-350m | 1024 | 20 | 64 | 348.8 M | 0.70 GB |
-| sgc-1_3b | 2048 | 20 | 128 | 1.329 B | 2.66 GB |
-| sgc-3b | 2560 | 32 | 128 | 3.239 B | 6.48 GB |
-| attn-150m / 350m（对照） | 同宽同深 | — | — | 137.8 M / 368.4 M | — |
-
-参数量由 `scripts/export_configs.py` **解析计算**，非训练产物。注意同宽同深的注意力基线参数**更多**（137.8 M vs 131.4 M）——对照实验必须用该基线。1.3B/3.2B 仅完成参数解析、构建与前向反向冒烟；HBM ≈30 GB 是**预算目标**而非实测。
-
-### 5.10 守护测试体系
-
-截至 v1.1.1：**全量守护测试 848 项，844 通过 / 0 失败 / 4 环境跳过**（含 SGC 包、mixer 数学、闸门、Dreaming、Hybrid 路由，以及 core 侧 accel/reasoning/envlearn/campaign/deploy/backend_contract/mathproof/conformance_runner/equal_budget/longctx_eval/code_passk_eval/throughput_eval/phase1_train/backend_bridge/paper_audit 等新增模块）。守护的不仅是数值，还有**结构性质**：双形式等价、严格因果（未来扰动不改过去）、流式==整段逐位、梯度可达（防静默零梯度）、注册表纯度（禁止注意力实现混入）。`test_conformance_runner.py` 采用**负向变异方法论**：9 项后端验收检查逐一配对破坏性变异（丢分块状态、偷更新冻结位、bf16 累加、禁用算子名、有损序列化、回滚漂移等），断言对应检查翻红——跑批器自身因此也是被验证对象。此外 `python -m simplcore.core.theory` 将 `docs/THEORETICAL_EDGE.md` 的机制层主张变为 **34 项可执行断言**（全绿）。
-
-### 5.11 数学证明体系（v1.1 新增，13 项）
-
-工程断言（fp32 测试）证明"实现符合规格"；`mathproof.py` 证明**数学本身成立**——符号推导（sympy）+ fp64 数值验证，零硬件依赖，全部可由 `python -m simplcore.core.mathproof` 复验：
-
-| # | 命题 | 方法 |
-|---|---|---|
-| P01 | 闭式核 $\rho^\tau\sin((\tau{+}1)\theta)$ 精确满足二阶 IIR 递推与初条件（定理 1 的机器复验） | **sympy 符号** + fp64×T=4096 |
-| P02 | 伴随矩阵幂 = 闭式解；谱半径 $\|\mathrm{eig}(A)\|=\rho<1$ | fp64, n≤128 |
-| P03 | **分块携带律**：闭式分块 ≡ 逐步模拟；叠加原理；两块组合逐位一致 | fp64 |
-| P04 | FFT $N=2L$ 零填充 ≡ 直接卷积（无混叠，含素数长度；命题 7 的机器复验） | fp64 |
-| P05 | BIBO 稳定：$\|\psi\|\le\rho^\tau$、$\sum\|\psi\|\le 1/(1{-}\rho)$；**fp32 sigmoid 饱和卫兵**（torch fp32 路径实测 $\sigma(x)\ge16.636$（$=24\ln2$，`exp(x)/(1+exp(x))` 实现路径）即精确返回 1.0；解析舍入充分界 $25\ln2\approx17.33$ 仍真但偏保守——v1.1.2 按外部核对实测修正）极点落单位圆——已在 `sgc.py` 加 `clamp(max=1−1e-6)` 修复，阈值内为恒等映射 | fp64+实现 |
-| P06 | mixer 级流式(IIR) ≡ 并行(FFT)（门开/关两口径） | fp64 |
-| P07 | 证据门 cumsum ≡ 运行和 | fp64+fp32 |
-| P08 | 闸门有界性（三角不等式；数学层严格 $d<1$，fp64 证明；实现层 fp32 闭界 $[0,1]$，分层表述） | 分层口径 |
-| P09 | 门关时严格时移协变（位置由因果核编码）；门开有意非协变 | fp64 |
-| P10 | **O(1) 状态充分性**（定理 3 的机器复验）：同状态 ⇒ 未来输出逐位一致（马尔可夫性） | fp64 |
-| P11 | 复杂度公式逐项重推导审计（v1.1 修正：流式每 token 为 $\mathrm{层}\cdot D\cdot(5M{+}22)$，训练 FFT 项补核构建 $2DM$；旧式漏 M 因子，$M{=}128$ 时 mixer 常数差约 150×，相对 $2N$ 仍是噪声，结论不变） | 代数 |
-| P12 | HBM 账本代数（部署/战役逐字节重推一致） | 代数 |
-| P13 | 冻结基座梯度隔离（基座 `.grad` 全 None，适配器正常更新） | 数值 |
-
-### 5.12 部署显存账本（v1.1 新增；v1.1.1 勘误）
-
-`simplcore.core.deploy_budget`（`simplcore-deploy-budget` CLI）对 sgc-1b（D=2048/15 层/M=128）：
-
-| 项 | 字节 | 与 L 的关系 |
-|---|---|---|
-| bf16 权重 | 1.888 GiB | 常数 |
-| O(1) 流式状态（fp32，含 M 因子） | **31,088 KiB（30.36 MiB）** | 常数 |
-| 融合单缓冲 max(激活 workspace, logits)（chunk=512） | 0.031 GiB | 随 chunk/batch，**不随 L** |
-| **合计（1M 上下文完整推理）** | **1.948 GiB**（余量 53 MiB） | 1M=2M=4M=8M **逐字节相同** |
-
-> **勘误（v1.1.1，2026-10-28）**：上表初版（v1.1）曾把状态字节误报为 728.1 KiB——`stream_state_bytes` 实现漏计 M 因子（写成 `2·D` 而非 `2·M·D`/层），sgc-1b（M=128）下状态被低估 **128 倍**，且按 512 KiB/层的真实值旧 chunk=512 会使总量达 2.006 GiB、**突破 2 GiB 上限**。修正分两步：第一步公式补 M 因子（卷积缓冲同步改为定理 3 的 $(K{-}1)D$）， interim 曾把 chunk 512→384 以保住主张；**最终方案按"不削减任何基准性能"原则重做**——chunk 恢复 512 基线吞吐，改用两条纯工程手段：融合单遍（`mixer_stream` 十算子单遍融合，激活缓冲 2→1）+ logits 缓冲复用（只最后 chunk 需要，与激活缓冲取峰值较大者），总量降至 **1.948 GiB**（比 M 因子修正前还低 29 MiB）。mathproof **P12 的 ≤2 GiB 硬断言在修正时自动暴露了该 bug**——这正是证明体系存在的意义。此错误由外部核对发现，记入 §6。
-
-对照：同规模 TS 的 KV cache 在 1M 上下文 ≈ 129 GB（120 GiB；勘误 v1.1.2：初版 ≈60 GB 只计了 K/V 一半——2·L·layers·D·2B @ sgc-1b = 128,849,018,880 B，由 paper_audit C06/C07 逐字核对）。两项**防误读声明**：
-
-1. **"O(1) 显存"仅指流式/分块推理的常驻状态**。训练侧有两条路：FFT 整段前向的激活仍随 $L$ 线性（$O(DL)$，FFT 形式固有）；**分块 IIR 训练的激活为 $O(D\cdot\text{chunk})$**（战役采用后者，故 §5.13 的 HBM 峰值不随课程长度增长）。任何引用本文"O(1)"时必须带上这条路线上下文。
-2. 1M ≤ 2 GiB 的前提是**流式 prefill**（逐 chunk 喂入、随喂随丢、只留 O(1) 状态）——一次性整段前向 1M token 的激活 ~180 GiB，任何架构都放不下。该前提由 `deploy_bytes` 的函数签名**结构性强制**（它根本不接受长度参数）。
-
-### 5.13 战役账本：1B 主干 + 2B 自进化的完整训练计划（v1.1 新增；v1.1.1 加 90 天总预算）
-
-`simplcore.core.campaign`（`simplcore-campaign` CLI），单张 AMD Instinct MI250（128 GB HBM = 2×64 GB GCD，优化器 16 B/参数，30 天有效算力 $\approx 1.5\times10^{20}$ FLOPs @25% MFU）。
-
-**总时间预算（v1.1.1 硬指标）：全程 90 天必须完全搞定，含 Phase 0 后端验收**。分配 30+30+2+28 = 90，**零余量**：每个阶段都有硬停，任何超时触发降档预案（如 Phase 0 第 30 天未过 conformance → 砍 8M 档保 4M），不挪用训练期。
-
-| 阶段 | 内容 | 硬停 | HBM 峰值 | token 预算 |
-|---|---|---|---|---|
-| Phase 0 | 自研 CUDA·HIP/C++ 后端对齐 `backend_contract.py`（16 内核、bf16 计算/fp32 累加、三条逐位一致性、冻结掩码零更新）；`conformance_runner.py` 把验收做成**可执行**：后端包装成 `BackendAdapter` 即可跑 9 项检查（含 C-rollback / C-stream-serialize），每项检查均有破坏性变异负向测试证明其抓缺陷能力；全过才开训。**当前状态**：fp32 CPU 参考后端（`csrc/sc_ref_backend.c`）已可走 `load_backend` 真实验收；生产 HIP 后端（bf16/rocFFT，MI250）为 Phase 0 主体工作 | **30 天** | 18.7 GiB | — |
-| Phase 1 | 1B 主干（sgc-1b：非嵌入 9.479e8 + 词嵌入 ≈ 1.01B 总参数），上下文课程 1M→2M→4M，分块流式训练；**驱动已就绪**（`trainer.py`：分块 BPTT + 课程 + 冻结掩码优化器 + 回滚闸门，语义经与原生模型三重等价守护；内核全部经由 `BackendAdapter`——后端过 conformance 即换运行时开训） | **30 天** | 18.7 GiB | 26.6B |
-| 复盘 | 立即：失败轨迹 → 总结 → 训练样本 | **2 天** | — | — |
-| Phase 2 | ≤2B 适配器（基座全程冻结）：环境学习（真实沙箱写代码 → pass@k 验证 → 蒸馏 → no-regression gate → 提交/逐位回滚） | **28 天** | 65.2 GiB | 10.2B |
-
-**「无人可忽视」演示包（8 条，每条配可独立复验的命令）**：S1 部署 1M≤2 GiB / S2 翻倍增量恒 0 / S3 1M 解码 ≥10× / S4 等 token ppl ≤TS-2B×1.05 / S5 4M 检索 ≥YaRN TS-5B / S6 自进化 pass@k 前后对比含回滚记录 / **S7（诚实边界）1M needle 精确召回 < TS-2B 主动呈现** / S8 任何人 5 分钟复验全部数学与账本。轰动的前置投资是可复验性，不是形容词。
-
-「上下文翻倍 HBM 增量 ≤ 1 GiB」主张的解析裁决：**流式与分块路径增量恒为 0**（成立）；朴素整段 FFT 路径自 512K 起超 128 GB（不可行）——分块流式训练因此是**硬闸门而非建议**。Chinchilla 比率：1B 基座 26.6B tokens = 最优的 **1.33×**（充足）；3B 总形态 36.8B tokens = 最优的 **0.61×**（欠训练——其诚实含义见 §7.2）。
-
----
-
-## 6 诚实边界：尚未证明的六件事
-
-本节永久保留；任何对外主张必须先绕开它。
-
-| # | 未证明的主张 | 现有证据 | 缺口 |
-|---|---|---|---|
-| 1 | 1B 以上规模的训练有效 | 1.329B/3.239B 仅参数解析与冒烟 | A100 上的 loss 曲线、吞吐、显存待测 |
-| 2 | 优于 Mamba/Hyena/GLA/S4 | **无** | 未在 LRA [12] 等公认基准公平对比 |
-| 3 | 真实大规模语料上优于 Transformer | 本机规模只证明能收敛、梯度健康 | 不足以支撑任何 SOTA 主张 |
-| 4 | 长上下文外推的质量 | 仅"L=1024 前向有限" | 训 4K 推 32K 的困惑度未测（工具已就位：`extrapolation_probe`/`decay_ablation`，缺一次 A100 运行） |
-| 5 | `decay_max` 的必要性 | 默认 8192/16384 是先验 | 未消融 |
-| 6 | 显式世界模型底架的增量与"越用越好"（v1.2，§3.5） | §3.5 是理论动机（重解释定理 3 与轴 C/D 的含义），无任何实验；W1–W3 判据未运行 | 同算力有/无显式世界模型头的状态追踪对照（接 `ab_compare`）；真实任务上的自进化曲线 |
-| 7 | agent 域：JitRL 式测试时调制与环境基准表现（v1.2，§3.6(d)） | `jitrl` 机制接线 + 13 项数值守护；WebArena/WebRL 的数字属于原论文的外部 API 模型，SimplCore 主干未在 WebArena [20] 上运行 | W4：同模型有/无经验调制的 WebArena 对照（评测环境 [20]，基线 Reflexion [19] 免训练 / WebRL [17] 微调） |
-
-另附五项方法学声明：(a) "$O(1)$" **仅指流式/分块推理的常驻状态**——训练侧 FFT 整段前向激活仍随 $L$ 线性（$O(DL)$，FFT 形式固有），分块 IIR 训练激活为 $O(D\cdot\text{chunk})$（战役采用后者）；引用本文"$O(1)$"必须带上此上下文（v1.1.1 强化，防误读）；(b) 四层闸门是结构性约束，非幻觉消除保证；(c) 闸门默认开启改变了模型行为，复现旧实验须显式关闭 L2/L3；(d) **fp32 长序列（$L\ge10^5$）累积误差从未实测**，命题 5 的误差界在 $\rho_m\to1$ 时急剧保守（见命题 5 后的保守性警告），长序列数值稳健性以 Phase 0 conformance 实测为准；(e) **勘误记录**：v1.1.1 修正流式状态公式漏计 M 因子的实现与文档错误（§5.3/§5.12 勘误），该错误由外部核对发现、mathproof P12 硬断言在修复时暴露——同类"数字-公式-实现三方不一致"今后以 P12 式逐字节重推为标准防线。
-
----
-
-## 7 完整形态的标准 Transformer 等效参数量（理论推测，v1.1 新增）
-
-> **先立规矩**：本节全部是**推测**，不是实测——1B 训练尚未开始（§6 第 1 条）。推测的方法是：已证明的结构性质（定理 1–4、命题 5–7）+ 解析账本（§5.12–5.13）+ 公开 scaling-law 证据的外推，每条附可证伪判据（§7.4）。"等效参数量"必须**分轴**讨论，笼统的"打 X B"没有意义。
-
-**问题**：完整 SimplCore（3B = 1B 冻结主干 + ≤2B 自进化适配器，4M 上下文课程训练）在训练中等效多少参数的标准（softmax 注意力）Transformer？
-
-### 7.1 算力对照（解析，可复现）
-
-每 token 训练 FLOPs（TS 按标准 $12\,L\,D\cdot$层 注意力口径 + $6N$ 线性层）：
-
-| 上下文 | SimplCore-1B | TS-3B（D=2560/32 层） | 倍数 |
-|---|---|---|---|
-| 1K / 8K | 5.72e9 / 5.75e9 | 2.61e10 @8K | ~4.6× |
-| 128K | ≈5.8e9（分块 IIR，近常数） | 1.47e11（注意力占 87.7%） | ~25× |
-| 4M | **5.73e9**（1K→4M 仅 +0.19%） | **4.14e12**（注意力占 99.6%） | **~722×** |
-
-同一算力预算（$1.5\times10^{20}$ FLOPs ≈ 单张 MI250 × 30 天）可训练 token 数：
-
-| 模型/上下文 | 每 token FLOPs | 可训 tokens |
-|---|---|---|
-| **SimplCore-1B（4M 课程）** | 5.735e9 | **26.2B** |
-| TS-3B @ 8K | 2.605e10 | 5.8B |
-| TS-3B @ 128K | 1.468e11 | 1.0B |
-| TS-3B @ 4M | 4.141e12 | **0.04B（4 千万）** |
-
-### 7.2 五轴推测
-
-**轴 A · 原生长上下文训练（4M 原生，无扩展技巧）—— 等效参数：无上界（TS 算力不可行）**
-
-§7.1 的算术：TS-3B 要在 4M 原生上下文见到与 SimplCore 相同的 36.8B tokens，需要 $1.5\times10^{23}$ FLOPs ≈ **1000 张 MI250 × 一个月**。单卡预算下 TS 最多见到 0.04B tokens——欠数据约 1000 倍；欠训练损失由 token 数主导，任何参数量都无法补偿。**在此轴上，标准 TS 不存在可行的等效参数**；比较对象只能是"短上下文训练 + RoPE/NTK/YaRN 扩展"的 TS，而扩展本身有已知质量税与外推上限。
-
-**轴 B · 通用短上下文语言质量（held-out ppl / 常规基准）—— 等效 2–4B（中位 3B）**
-
-(i) SSM 家族公开证据（Mamba-2.8B ≈ 同规模 Transformer 的 ppl）表明纯递归架构在聚合语言建模上的质量税约 1.0–1.3×；(ii) SGC 的谱全局卷积自第 1 层即有全局感受野，但 $M{=}128$ 个基是有损压缩，短上下文下无优势；(iii) 1B 基座喂 1.33× Chinchilla 充足，但 2B 适配器仅 0.17×（10.2B tokens）——Phase 2 对通用 ppl 贡献有限（其价值在域内，轴 E）。综合：**等效 2–4B，中位 3B**。口号"1B 打 3B"在此轴**不成立**；成立的是轴 C/D。
-
-**轴 C · 长上下文任务（1M–4M：长文档摘要、跨文档聚合、repo 级代码理解）—— 等效 4–7B（中位 5B）**
-
-(i) 对照组 TS 必须用上下文扩展技巧，公开证据显示扩展后有效上下文与任务质量均有折损，且 KV cache 使推理成本随 $L$ 线性增长；(ii) SimplCore 原生 4M 训练 + 上下文课程直接优化该工作负载；(iii) 全局感受野 × 可学习频谱基在**聚合型**长程任务（需要主题/结构级整合而非逐字精确）上正是 O(1) 压缩最划算的情形——丢弃精确副本、保留低频结构。综合：**等效 4–7B**，且推理侧另有吞吐优势（每 token 1.92e9 FLOPs，与 $L$ 无关；1M 上下文部署 1.948 GiB vs TS KV cache ≈ 129 GB（120 GiB，含 K/V 双份））。
-
-**轴 D · 精确检索 / 逐字复制（needle-in-haystack 精确召回）—— 等效 1–2B（诚实弱点）**
-
-O(1) 状态 = 30.36 MiB（fp32，v1.1.1 勘误后含 M 因子的真实值）的信息瓶颈（§5.12）。1M token 的原文本身 ≥ 2 GB（bf16），压入 30.36 MiB 意味着压缩比 ≥ 1:67 且**有损**——逐字信息不可能保留，这是**信息论上限**而非实现问题（P10/定理 3：状态丢弃的细节不可恢复）。闸门 + 多基可保留"哪些位置值得记"的指针型信息，不能保留全部原文。**该轴上 SimplCore 必输给任何能精确注意的 TS，无论参数量**；§5.6 的路由实测（带限谱卷积 0.24–0.27 vs 递归 0.73–0.76）已在小规模印证此局限。
-
-**轴 E · 代码能力（自进化域内）—— 域内等效 +1–2B；域外 ≈ 0**
-
-Phase 2 的 2B 适配器由**独立 verifier 验证过的失败轨迹**蒸馏（pass@k，非自报）。PEFT 文献的域内增益类比 + 定向数据效率，使域内（代码）等效于 TS 增加 1–2B 参数；但这些 token 只见过代码分布，域外泛化贡献接近零。**自进化的价值在域内定向增强 + 可回滚，不是通用智能提升。**
-
-### 7.3 综合估计
-
-| 加权方式 | 等效标准 TS 参数 |
-|---|---|
-| 长上下文 + agent 工作负载（本项目目标场景） | **4–7B（中位 ≈5B）** |
-| 通用短上下文基准套件 | 2–4B（中位 ≈3B） |
-| 两场景等权 | **3–5B（中位 ≈4B）** |
-
-为什么不是更多：3B 形态欠训练（0.61× Chinchilla），2B 适配器是定向的。为什么不是更少：1B 基座充足训练 + 全局感受野 × 原生 4M 课程在目标轴上的结构性优势是已证明的机制，不是 wishful thinking。
-
-### 7.4 可证伪判据（与战役验收协议绑定）
-
-| 预测 | 判据 | 若失败则 |
-|---|---|---|
-| 轴 B 下界 2B | 1B 基座 held-out ppl ≤ 同 token 预算 TS-2B | 架构有聚合质量税，查 M/课程 |
-| 轴 C 中位 5B | 4M 检索+摘要综合分 ≥ YaRN 扩展 TS-5B | 长程优势降级为"纯成本优势" |
-| 轴 D 上界 2B | 1M needle 精确召回 < TS-2B | 若反而胜出 → 信息论论证有漏洞，重审 P10 |
-| 轴 E 域内 +1B | 代码 pass@k ≥ 同算力 TS-3B | 自进化叙事不成立，退回"可回滚 PEFT" |
-| 推理吞吐 | 1M 解码 ≥ 10× TS-3B（同卡） | O(1) 主张有实现瓶颈 |
-| W1 显式底架增量（§3.5(e)） | 加世界模型头后，状态追踪类任务（Othello/棋盘/多跳实体追踪）样本效率显著高于同算力纯 LM 基线 | 显式底架无增量，隐式学习已足够 |
-| W2 verifier 反馈无冲突（§3.5(d)-2） | 训练中加入 verifier 反馈后，域内 pass@k 提升且域外 held-out ppl 不劣化 | 存在优化冲突，需重新平衡两目标 |
-| W3 巩固/回滚必要性（§3.5(c)） | 移除巩固/回滚后质量显著下降 | 自进化叙事不成立，退回普通 PEFT |
-| W4 JitRL 免训练层增量（§3.6(d)） | WebArena 任务上，启用经验优势调制（`jitrl`）相对同模型无调制基线的成功率显著提升，且随经验轨迹增长单调 | 测试时调制无增量或负增益 → 检索优势在 30M–2B 主干上不成立，退回纯 Reflexion 提示层 |
-
-W1–W3 为 v1.2 新增（§3.5 世界模型动机的可证伪化），协议与上五行同源：同算力、除被测变量外一切钉死；在对应对照运行完成前，§3.5 的主张为**理论动机**而非结论。
-
----
-
-## 8 相关工作
-
-**结构化 SSM / 长卷积**：S4 [1] 以 HiPPO 先验与核迁移实现长程依赖；S5 [2] 简化为对角扫描；Hyena [3] 用隐式长卷积；Mamba [4] 引入输入相关选择；GLA [5] 门控线性注意力。SGC 的核参数化（阻尼振荡和）与 CKConv [6] 的连续核家族最接近，差异在于 SGC 以**二阶 IIR 精确可递推性**为设计约束（定理 1/3），并叠加因果前缀能量门与长短分歧门。**混合架构**：LongNet [7]、Jamba [8] 交替全局与局部层，SGC-Hybrid 沿此路线且两组件流式状态均与 $L$ 无关。**位置编码**：SGC 无 RoPE [11]/YaRN [10] 需求（核以相对距离闭式定义）；混合路线中的注意力层支持 GQA [9] + YaRN。**连续知识**：CMT [15] 的 KV 注入被适配为残差流加性注入以保持 attention-free。DSP 基础（卷积定理、混叠、稳定性）见 [13]。
-
----
-
-## 9 结论
-
-SGC 证明了同一注意力替代算子可以同时拥有：精确对偶的双形式（训练 $O(L\log L)$ / 推理 $O(1)$ 状态）、可证明的严格因果性、与长度无关的常数充分状态，以及一条已验证的融合 C++ 流式路径。审计驱动的开发流程（负面结果与撤回随正文发表）是该架构的方法学贡献之一。
-
-v1.1 的增补把这份清单延长为：13 项机器可验证的数学证明（含 fp32 饱和卫兵修复与复杂度公式修正）、1M 上下文 1.948 GiB / 翻倍增量恒 0 的部署账本、以及"1B 主干 + 2B 自进化、30+28 天双硬停"的可执行战役计划。§7 的等效参数推测（加权中位 ≈4B；原生 4M 轴上 TS 算力不可行）**目前只是推测**——把它变成事实需要的是 §5.13 战役的一次真实运行，而不是更多的文字。本工作明确不主张的事情——大规模训练有效性、与前沿线性架构的对比、长上下文外推质量——与它主张的事情同样清晰。
-
----
-
-## 参考文献
-
-1. A. Gu, K. Goel, C. Ré. Efficiently Modeling Long Sequences with Structured State Spaces. ICLR 2022.
-2. J. T. Smith, A. Warrington, S. W. Linderman. Simplified State Space Layers for Sequence Modeling (S5). ICLR 2023.
-3. M. Poli, S. Massaroli, et al. Hyena Hierarchy: Towards Larger Convolutional Language Models. ICML 2023.
-4. A. Gu, T. Dao. Mamba: Linear-Time Sequence Modeling with Selective State Spaces. COLM 2024.
-5. S. Yang, B. Wang, Y. Shen, R. Panda, Y. Kim. Gated Linear Attention Transformers with Hardware-Efficient Training. ICML 2024.
-6. D. W. Romero, E. J. Bekkers, J. M. Tomczak, M. Hoogendoorn. CKConv: Continuous Kernel Convolution for Sequential Data. ICLR 2022.
-7. J. Ding, S. Ma, L. Dong, X. Wei. LongNet: Scaling Transformers to 1,000,000,000 Tokens. arXiv:2307.02486, 2023.
-8. O. Lieber, et al. Jamba: A Hybrid Transformer-Mamba Language Model. AI21 Labs, 2024.
-9. J. Ainslie, et al. GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints. EMNLP 2023.
-10. B. Peng, J. Quesnelle, H. Fan, E. Shippole. YaRN: Efficient Context Window Extension of Large Language Models. ICLR 2024.
-11. J. Su, et al. RoFormer: Enhanced Transformer with Rotary Position Embedding. arXiv:2104.09864, 2021.
-12. Y. Tay, et al. Long Range Arena: A Benchmark for Efficient Transformers. ICLR 2021.
-13. A. V. Oppenheim, R. W. Schafer. Discrete-Time Signal Processing (3rd ed.). Pearson.
-14. A. Vaswani, et al. Attention Is All You Need. NeurIPS 2017.
-15. Compression Memory Training (CMT). AAAI 2025.（作者与题名以原文为准；本仓库依此引用并作残差流注入适配，见 §3.5 与官网模块 12 的差异声明表）
-16. Y. Bai, et al. Constitutional AI: Harmlessness from AI Feedback. arXiv:2212.08073, 2022.（Dreaming REFLECT 钩子的生产实现参考）
-17. Z. Qi, et al. WebRL: Training LLM Web Agents via Self-Evolving Online Curriculum Reinforcement Learning. ICLR 2025, arXiv:2411.02337.（最强微调基线；失败任务课程 + ORM 的 verifier 语义与 §3.6(d)/(envlearn) 对齐）
-18. Y. Li, et al. Just-In-Time Reinforcement Learning: Continual Learning in LLM Agents Without Gradient Updates. ICML 2026 Oral, arXiv:2601.18510.（免训练测试时策略优化；加性 logit 调制的闭式解结论由本仓库 `jitrl.py` 复用）
-19. N. Shinn, et al. Reflexion: Language Agents with Verbal Reinforcement Learning. NeurIPS 2023, arXiv:2303.11366.（免训练基线：提示端语言反思，与 §3.6(d) 的输出端调制正交）
-20. S. Zhou, et al. WebArena: A Realistic Web Environment for Building Autonomous Agents. ICLR 2024, arXiv:2307.13854.（agent 评测环境；功能正确性自动判定为 W4 的 verifier 来源）
-
----
-
-## 附录 A：数据来源索引（一切实测数字的可追溯性）
-
-| 正文数字 | 来源 |
-|---|---|
-| §5.1 单层效率表；§5.2 端到端表与斜率；§5.3 流式状态表；§5.4 双形式 4e-5 | 青奈科技官网 `simplcore.html` 模块 03（仓库 `docs/SGC_CORE.md` §7 同源） |
-| §1.2 / §5.5 v2 四缺陷、RFP 泄漏 2.74、mix 三处、撤回数字、HM 推翻表 | 官网 `simplcore.html` 模块 01–02；审计归档 `docs/audits/2026-10-sgc-audit/` |
-| §5.4 融合核 worst\|Δ\|=0（12 步，B=2/D=64/M=16/K=4） | 本仓库 `simplcore/csrc/test_mixer_stream.cpp`，g++ -O2 独立编译运行（2026-10-28） |
-| §5.6 路由 0.73–0.76 vs 0.24–0.27 | 官网 `simplcore.html` 模块 08 |
-| §5.7 语料与训练表、1,626 tok/s | 官网 `simplcore.html` 模块 17 |
-| §5.8 A/B 表 | 仓库真实运行记录 `runs/ab_compare_5m.json`；方法学声明引自 `docs/AB_COMPARE.md` |
-| §5.9 规模预设表 | 官网 `simplcore.html` 模块 15（`scripts/export_configs.py` 解析计算） |
-| 守护测试 536 项等 | 官网 `simplcore.html` 文档头与各模块（493/25/14/18/27/35） |
-| 五项未证明主张 | 官网 `simplcore.html` 模块 04 |
-
-> 官网页脚声明："全部实测数字均可用仓库内脚本复现。" 本论文未新增任何未经运行或未见于上述来源的数字。
+### 5.1–5.3 结构性质验证
+
+8 项数学核心全过（外部独立复现确认：双形式对偶、流式逐位零泄漏、
+状态字节数四长度逐字节相同、训练缩放斜率 1.09 vs TS 2.35）。
+
+### 5.4 双形式偏差（两代网格勘误后口径）
+
+fp32 下 $L\ge2048$ 的双形式偏差随长度增长且**实测为重尾**
+（`test_long_sequence_error.py`，**D=64**）：legacy 均匀网格（已弃用、
+被构造期守护拒绝）在 $L=2048/4096/8192$ 为
+$3.5/7.4/13\times10^{-4}$；现行 logfreq 默认网格 $L=2048$ 仅 $4.7\times10^{-5}$。
+独立复现补测：L=64K 相对误差最坏 $\sim10^{-3}$、中位数 $10^{-5}$——
+重尾印证"长序列 fp32 数值稳健性**未验证**"，4M 逐位一致主张以 Phase 0
+conformance 实测为准，不得由短序列外推。
+
+### 5.5 能力对照（X-axis-probe，可复现协议 `eval/axis_probe.py`）
+
+| 任务 | attention | SGC | chance | 判定 |
+|------|-----------|-----|--------|------|
+| 精确指向（2 层） | 1.000 | 0.398 | 0.125 | **SGC 结构性劣势**（低于局部卷积 0.427） |
+| MQAR G=4 | 0.500 | 0.3125 | 0.125 | 绑定缺陷定位 |
+| MQAR G=4 + 绑定记忆 | 0.2422* | 0.2031 | 0.125 | SGC+记忆 **0.2578**：噪声内**追平**（72% 参数，未超越*） |
+| 聚合 L=129 | 0.938 | 0.875 | 0.5 | attention 略优（"等效 4–7B"未复现） |
+| 聚合 L=65 | 1.000 | 1.000 | 0.5 | 打平 |
+| 精确计数 | 0.812/0.938 | 0.812/0.938 | 0.5 | 逐位打平 |
+| 短程 LM（Markov） | ppl 14.63 | 15.71 | — | attention 优 7% |
+
+\* 单批 128 样本、2 seed；attention seed SD≈0.066，差异 0.0156 在噪声内。
+**判定纪律**：均值差落在对方 bootstrap CI 内 = 噪声内（`--seeds` + CI）。
+
+### 5.12 部署账本
+
+1M 上下文完整推理 **1.948 GiB ≤ 2 GB**（bf16 权重 1.888 + O(1) 流式状态
+30.36 MiB + 融合单缓冲 workspace）；1M→8M 翻倍增量**恒为 0**。
+
+## 6 诚实边界：尚未证明的事（0.1-α 版）
+
+1. 大规模训练有效性（§5.13 战役未运行）；
+2. 与前沿线性架构的定量对比；
+3. **长上下文 fp32 数值稳健性**（重尾实测，见 §5.4）；
+4. **绑定记忆的检索质量数值**（机制与梯度已验证；MQAR 追平未超越，
+   差异在噪声内）；
+5. "越用越好"（R1 反思巩固的泛化判据已收紧为 held-out——
+   `ReflectionConfig.heldout_eval`，gate 只证"不退步"）；
+6. 多模态/物理世界模型/世界探针的**任务质量**（接口、形状、梯度、
+   守护已立，未在真实数据训练验证）。
+
+## 7 分轴等效参数量（推测；轴 C 降级、轴 D 论证修正）
+
+| 轴 | 等效 TS 参数 | 状态 |
+|----|--------------|------|
+| A 原生 4M 训练 | 无上界（TS 算力不可行） | 解析账本 |
+| B 通用短上下文 | 2–4B | 公开证据外推 |
+| C 长上下文聚合 | ~~4–7B~~ → **降级：约一半参数同质量 + 成本优势** | **通过率优势未复现**（0.875 vs 0.938） |
+| D 精确检索 | ~~必输（信息论）~~ → **谱压缩状态必输（可修）**；绑定记忆/旁路修复后 MQAR 追平 | MQAR + 精确指向实测 |
+| E 域内代码 | +1–2B / 域外 ≈0 | verifier 边界 |
+
+**价值定位（正式口径）**：SGC 的结构优势是**长上下文可行性**——1M 上下文
+1.948 GiB vs 120 GiB KV 是数量级差异。宣称口径："在 X 长度以上唯一成本
+可行的选择"，而非"更好的模型"。
+
+## 8 修复路线分级（一致性判据：状态与 L 无关 + 无 O(L²) 交互）
+
+| 级别 | 路线 | 状态 |
+|------|------|------|
+| A | R1 定容绑定记忆（soft 可微写入） | ✅ 已落地（追平未超越） |
+| A | R2 hybrid 频率网格（满秩，cond 1e19→1.4） | ✅ 已落地 |
+| A | R3 分层多尺度 decay_max | ✅ 已落地 |
+| A | R4 记忆一等公民（可微写入门） | ⬜ 规划 |
+| B | R5 滑窗注意力混合（窗口固定，状态仍 O(1)） | ⬜ fallback，分开宣称 |
+| C | 全局注意力 / 增长 KV / RoPE | ❌ 背叛，不做 |
+
+## 9 相关工作与生态
+
+结构化 SSM/长卷积（S4/S5/Hyena/Mamba/GLA/CKConv）、混合架构
+（LongNet/Jamba）、连续知识（CMT）——v1.1 相关工作节不变。0.1-α 新增
+生态组件均遵循同一纪律：**性质可测、口径分账、负面结果照账**。
+
+## 10 结论
+
+SimplCore-0.1-α 的清单：精确对偶双形式、严格因果、常数状态、
+三层精确引用、定容绑定记忆（追平未超越）、多模态入口、物理一致性
+第三信号源、8 项数学核心外部复现为真。同等清晰的 is NOT 清单：
+不是更好的模型（聚合未复现、精确轴先输后平）、长序列 fp32 稳健性
+未验证、大规模训练有效性未证明。把它变成事实需要的是 §5.13 战役的
+一次真实运行，而不是更多的文字。
+
+## 附录 A：数据来源索引
+
+一切实测数字可追溯：`scripts/audit_numbers_20261031.py`（双口径统一后）、
+`eval/axis_probe.py`（X-axis-probe 协议）、`docs/REPRODUCTION_REPORT.md`
+与 `docs/REPRODUCTION_REPORT_PHASE2.md`（复现报告一/二期，含作废修正）、
+`docs/THEORETICAL_EDGE.md`（主张断言 34 项 + 实测对照 + 路线分级）。
 
 ## 附录 B：复现命令
 
 ```bash
-# 数学正确性 + 双形式等价 + 因果性 + 梯度可达（25 项）
-python -m pytest simplcore/sgc/tests/test_mixer_math.py -q
-# 13 项数学证明（符号 + fp64；P01/P04/P05/P10 机器复验定理 1/命题 7/稳定性/定理 3）
-python -m simplcore.core.mathproof
-# 34 项机制层主张断言（docs/THEORETICAL_EDGE.md 逐条）
-python -m simplcore.core.theory
-# 复杂度实算（§7.1 每 token FLOPs 对照表来源）
-python -m simplcore.core.scaling
-# 部署账本（§5.12：1M=1.948 GiB、翻倍增量 0；削减来自融合单遍+缓冲复用，非 chunk/层数/精度）
-python -m simplcore.core.deploy_budget
-# 战役账本（§5.13：阶段/HBM 峰值/token 预算/翻倍裁决）
-python -m simplcore.core.campaign
-# 后端算子契约（16 内核 + 三条逐位一致性 + 8 项 conformance）
-python -m simplcore.core.backend_contract
-# 后端一致性跑批（Phase 0 可执行验收：BackendAdapter 接口 + 9 项检查，负向变异测试守护）
-python -m simplcore.core.conformance_runner        # 缺省 = torch 参考自检
-python -m simplcore.core.conformance_runner --adapter mypkg.backend:MyAdapter --full
-# 训练驱动自检（tiny 课程实跑：分块 BPTT + 课程推进 + no-regression gate）
-python -m simplcore.core.trainer --steps 60
-# 等预算对照（协议 X-equal-budget 可执行化：两臂同 token 流、FLOPs 账双报、
-# 逐窗配对 + bootstrap CI、诚实性字段机器可读；产出 runs/eval_equal_token.json）
-python -m simplcore.core.equal_budget --preset smoke            # 合成语料冒烟
-python -m simplcore.core.equal_budget --preset small --corpus data/processed/sgc_zh \
-  --tokens 2000000 --mode equal_flops                           # 真实语料正式跑
-# 长上下文检索评测（X-longctx-retrieval + X-stream-consistency：needle 机器可判、
-# 流式==整段逐 trial 核验、TS KV 账先于跑、S7 信息论边界主动呈现）
-python -m simplcore.core.longctx_eval --preset smoke --lengths 256
-python -m simplcore.core.longctx_eval --preset 1b \
-  --lengths 1048576,2097152,4194304 --ledger-only               # 1M/2M/4M 可行性账
-# 代码 pass@k 对照（X-code-passk：无偏估计 1-C(n-c,k)/C(n,k)、子进程真实执行判分、
-# ab.py 配对统计；--demo 为固定候选池协议验证，不构成能力证据）
-python -m simplcore.core.code_passk_eval --demo --k 4
-# 解码吞吐对照（X-throughput：真 KV-cache 基线（正确性有测试钉死）、延迟分布与
-# 平坦性比值判据、1M 由解析账分列支撑不冒充实测）
-python -m simplcore.core.throughput_eval --preset smoke --lengths 128,512,2048
-python -m simplcore.core.throughput_eval --preset 1b --lengths 1048576 --ledger-only
-# Phase 1 训练执行器（packed 语料 → 课程窗口流 → StreamingTrainer → 报告）
-python -m simplcore.core.phase1_train --corpus data/processed/sgc_zh --steps 1000
-python -m simplcore.core.phase1_train                          # 合成演示（宣称许可=False）
-# 论文/战役账目交叉审计（任一数字与代码事实源不符即非零退出）
-python -m simplcore.core.paper_audit                           # 产出 runs/paper_audit.json
-# 全量守护测试（844 通过 / 4 环境跳过）
-python -m pytest simplcore -q
-# 真实语料构建
-python scripts/build_corpus.py --parquet-dir data/raw/fineweb_zh --out data/processed/sgc_zh
-# 目标机显存 / 吞吐标定
-python scripts/probe_batch.py --config configs/sgc-1_3b.json --seq-len 4096
-# 融合流式核独立核验（无需 torch）
-g++ -std=c++17 -O2 -I. simplcore/csrc/test_mixer_stream.cpp -o /tmp/t && /tmp/t
-# 训练（目标机）
-python -m simplcore.sgc.train --config configs/sgc-1_3b.json --data-dir data/processed/sgc_zh \
-  --seq-len 4096 --micro-batch 4 --global-batch-tokens 2000000 --max-steps 100000
+# 全量守护（1127 通过 / 6 环境跳过）
+python -m pytest -q
+# 数学证明 13 项 / 主张断言 34 项 / 轴对照协议
+python -m simplcore.core.eval.mathproof
+python -m simplcore.core.eval.claims_audit --verbose
+python -m simplcore.core.eval.axis_probe --seeds 0 1 2 3 4 --steps 3000
+# 数值审计（命题 5 双口径 + 网格零点 + 状态字节账）
+python scripts/audit_numbers_20261031.py
+# 训练吞吐基准
+python scripts/bench_train_throughput.py --seq-lens 512 2048
 ```
-
----
-
-## 附录 C：v1.1 增补数字的来源索引
-
-| 正文数字 | 来源 |
-|---|---|
-| §5.11 数学证明 13 项；fp32 sigmoid 饱和卫兵 | `simplcore/core/mathproof.py` + `python -m simplcore.core.mathproof`（运行输出 13/13）；卫兵在 `simplcore/core/sgc.py` `oscillator_params` |
-| §5.12 部署账本全部数字（1.948 GiB / 31,088 KiB / 增量 0；v1.1.1 勘误：初版 728.1 KiB 漏计 M 因子；削减来自融合单遍+缓冲复用） | `simplcore/core/deploy_budget.py` + `simplcore/core/scaling.py stream_state_bytes` + CLI 运行输出 |
-| §5.13 战役账本（18.7 / 65.2 GiB，26.6B / 10.2B tokens，30/28 天） | `simplcore/core/campaign.py` + CLI 运行输出；MI250 口径见 `docs/TRAINING_BUDGET_MI250.md` |
-| §7.1 FLOPs 对照表（5.72e9 / 4.14e12 / 722× 等） | `simplcore/core/scaling.py`（v1.1 修正公式，P11 审计）+ TS 按标准 $12\,L\,D\cdot$层口径计算，脚本可复现 |
-| §7.2 五轴推测 | **本节为推测**：机制论证（定理/命题）+ 公开 SSM 证据外推，不来自任何实测；判据见 §7.4 |
-| 守护测试 848 项（844+4） | `python -m pytest simplcore -q`（2026-10-29 运行） |
-
----
-
-*本文档版本 v1.1.1 · 2026-10-28 · 六安市青奈科技有限责任公司 SGC 研究组。对应代码 `SimplCore-v0.1-α`。文中每一个数字的来源见附录 A 与附录 C；没有任何数字是估算的——§7 的参数等效性是唯一的例外，它被明确标注为**可证伪的理论推测**。*
