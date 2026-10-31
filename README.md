@@ -266,6 +266,7 @@ offline consolidation 术语，且模块内已用**诚实边界**声明"自进�
 | `docs/THEORETICAL_EDGE.md` | **逐模块的机制层主张与边界论证**：每个模块相对传统 Transformer 的复杂度/状态/机制主张与边界（可执行断言在 `eval/claims_audit.py`） |
 | `docs/ARCHITECTURE.md` | **总体架构设计**：数据流、mixer 分类、流式、记忆、编解码、训练/评测 |
 | `docs/SGC_CORE.md` | **SGC mixer 深度解析**：振荡基字典、FFT↔IIR 对偶、内容门控、局部路径、四层闸门、流式状态 |
+| `docs/SIMPLUNITY.md` | **SimplUnity 技术文档（必读）**：冻结基座 + 路由门 + 域专属专家的 MoA 全解——前向数据流图、ExpertRouter 的 top-k/lb/z-loss 数学、index_add 梯度工程、GATE-3 无回归门、WeightBudget 三层账、五场景使用指南、诚实边界 |
 | `docs/SPRINT30.md` | **30 天冲刺计划**：测后锁预算 + MFU 下限闭合 + 降档阶梯——"1 月必须完全做好训练"的硬保证（`python -m simplcore.core.sprint30`） |
 | `docs/CONDITIONS_LEDGER.md` | **智能条件账本**：五项条件可执行断言 + 120B 主干/2B token 视野阈值账本（`python -m simplcore.core.conditions_ledger`） |
 | `docs/MODULES.md` | 逐模块索引（每个模块一段职责说明） |
@@ -319,6 +320,9 @@ offline consolidation 术语，且模块内已用**诚实边界**声明"自进�
   0.1-α 补齐统一生成入口 `UnityModel.generate()`（O(1) 流式 prefill + MoE 路由采样，
   与基座同温度/top-k/top-p 口径）。
   三个月路线（2B 1 月 + 自进化/模块 2 月，GCD 分工）见 `docs/SIMPLUNITY_3MONTH_PLAN.md`。
+  **▶ SimplUnity 的完整技术文档（架构图/8 组件精讲/梯度工程细节/域隔离与
+  GATE-3 机制/预算三层账/端到端五场景/API 速查/测试矩阵/诚实边界）：
+  `docs/SIMPLUNITY.md` —— 使用或改造 SimplUnity 前必读。**
 - ✅ **多模态入口（0.1-α，从 0 到 1）**（`model/multimodal.py`）：图像 patchify /
   音频帧下采样 → **软 token 拼接**进无位置表序列（模态前缀因果在前）——
   无词表/无位置编码架构对多模态天然友好，不引入注意力；`generate` 走
@@ -404,7 +408,7 @@ offline consolidation 术语，且模块内已用**诚实边界**声明"自进�
 | `smm` | 评估期把采样窗口解码成文本、写入情景记忆库（经验采集） | 评估 hook |
 | `dream` | 训练后跑 ``ReflectionLoop`` 自进化巩固（no-regression gate 逐位回滚） | 训练后 post-hook |
 | `reasoning` | 评估期跑 ``IterativeRefiner`` 迭代式思考 | 评估 hook |
-| `unity` | 冻结基座 + 路由门 + 多个域专属小专家（MoE 效果，训练数据按专家分域）；``--unity-domains`` 强制按域隔离 warm-up；``spawn_expert`` + ``UnitySelfEvolution`` 后台线程长新专家；专家可持久化 | 替换训练前向（``nn.Module``，仅路由+专家进优化器）；详见 ``docs/SIMPLUNITY_SGC.md`` |
+| `unity` | 冻结基座 + 路由门 + 多个域专属小专家（MoE 效果，训练数据按专家分域）；``--unity-domains`` 强制按域隔离 warm-up；``spawn_expert`` + ``UnitySelfEvolution`` 后台线程长新专家；专家可持久化 | 替换训练前向（``nn.Module``，仅路由+专家进优化器）；**详细技术文档：`docs/SIMPLUNITY.md`（必读）** |
 | `bio` | **生物启发增强**（Milinković & Aru 2026, Neurosci. Biobehav. Rev. 181, 106524）：把论文三条核心计算原则做成可训练增强——①混合计算（常驻 O(1) 连续场 × 离散 token 脉冲相互构成）②尺度不可分（micro 路由 / meso 连续场 / macro seq-len 课程三尺度可训双向耦合）③代谢约束（能量预算 + 代谢效率损失塑形学习/稳定性/信息流）；可叠加 ``unity``（meso/macro 调节路由温度）；**生成期也跑混合计算**（``stream_step``/``generate`` 走连续场，与整段前向逐位一致）；**meso→macro 反馈**（连续场就绪度门控序列长度课程推进） | 替换训练前向（``nn.Module``）并自带流式/生成接口；旋钮：``--bio-energy-weight / --bio-metabolic-budget / --bio-field-dt / --bio-field-scale / --bio-adaptive-curriculum / --bio-readiness-gate / --bio-readiness-grace``；详见 ``docs/BIO_ENHANCE.md`` |
 
 使用：
