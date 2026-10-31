@@ -55,6 +55,12 @@ STATE_BYTE_CLAIMS: List[Dict[str, Any]] = [
      "claim": "示例 M=64/D=512/K=4/12 层 ≈3.07 MiB",
      "stated_bytes": 3.07 * MIB,
      "config": {"M": 64, "D": 512, "layers": 12, "K": 4, "batch": 1}},
+    {"id": "S06-edge-training", "source": "docs/EDGE_TRAINING_REPORT.md",
+     "claim": "端侧实测 dim=768/12 层/M=64/K=4 流式状态 4,829,184 B"
+              "（不含 E_t 标量口径；与 stream_state_bytes 的 48 B 差已在"
+              " Paper §4 口径注勘误）",
+     "stated_bytes": 4_829_184,
+     "config": {"M": 64, "D": 768, "layers": 12, "K": 4, "batch": 1}},
 ]
 
 _UNIT_BYTES = {

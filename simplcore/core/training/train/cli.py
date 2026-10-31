@@ -58,6 +58,9 @@ def parse_args(argv=None):
                     help="target tokens per optimiser step; sets accumulation automatically")
     ap.add_argument("--micro-batch", type=int, default=4)
     ap.add_argument("--grad-accum", type=int, default=None)
+    ap.add_argument("--optimizer", choices=("adamw", "adafactor"),
+                    default="adamw",
+                    help="adafactor = factored 二阶矩（2GB 级机器上 1 亿参数可训）")
     ap.add_argument("--lr", type=float, default=3e-4)
     ap.add_argument("--lr-min", type=float, default=3e-5)
     ap.add_argument("--weight-decay", type=float, default=0.1)

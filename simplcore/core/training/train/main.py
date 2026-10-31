@@ -192,7 +192,16 @@ def main(argv=None) -> int:
     model = model.to(device)
 
     groups = build_param_groups(model, args.weight_decay)
-    optim = torch.optim.AdamW(groups, lr=args.lr, betas=tuple(args.betas), eps=1e-8)
+    # R-edge（0.1-α）：--optimizer adafactor——factored 二阶矩，状态 O(m+n)
+    # 而非 O(mn)：2GB 级机器上 1 亿参数可训（AdamW 16B/参数直接爆）。
+    # 端侧实测：108.5M 参数 + Adafactor ≈ 0.87 GB，300 步真实训练
+    # train −63.8% / val −43.8%（docs/EDGE_TRAINING_REPORT.md）。
+    if getattr(args, "optimizer", "adamw") == "adafactor":
+        from .optim import Adafactor
+        optim = Adafactor(groups, lr=args.lr, weight_decay=args.weight_decay)
+    else:
+        optim = torch.optim.AdamW(groups, lr=args.lr, betas=tuple(args.betas),
+                                  eps=1e-8)
 
     if args.compile:
         try:

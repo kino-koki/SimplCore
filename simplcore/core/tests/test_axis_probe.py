@@ -113,9 +113,11 @@ def test_axis_findings_persist_in_docs() -> None:
     paper = (root / "SimplCore_Paper.md").read_text(encoding="utf-8")
     edge = (root / "docs" / "THEORETICAL_EDGE.md").read_text(encoding="utf-8")
     readme = (root / "README.md").read_text(encoding="utf-8")
-    # Paper §7.2：轴 D 定量确认 + 轴 C 未复现注记
-    assert paper.count("0.1-α 独立复现注记") >= 2
-    assert "0.398" in paper and "0.938" in paper
+    # Paper §5.5/§7（0.1-α 重写版）：轴 D 定量确认 + 轴 C 未复现 + 定性词
+    # （重写版把注记整合进正文——按内容等价性断言，不锁旧节名）
+    assert "0.398" in paper and "0.3125" in paper and "0.938" in paper
+    assert "结构性劣势" in paper and "未复现" in paper
+    assert "追平" in paper and "可修的工程缺陷" in paper
     # THEORETICAL_EDGE：实测对照节 + 三条结论
     assert "实测对照（0.1-α 独立复现" in edge
     assert "结构性劣势" in edge and "engineering trade-off" in edge
