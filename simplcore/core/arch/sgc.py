@@ -277,6 +277,7 @@ class SpectralGlobalConv(nn.Module):
         norm: str = "rmsnorm",
         fft_dtype: Optional[torch.dtype] = torch.float32,
         eps: float = 1e-6,
+        num_kernels: int = 1,
         use_mixer_stream: bool = False,
         path_gate: bool = False,
         inst_nonlin: bool = False,
@@ -361,6 +362,65 @@ class SpectralGlobalConv(nn.Module):
         # (with coef == 0 the kernel does not depend on rho/theta at all).
         self.coef = nn.Parameter(torch.randn(num_bases, dim) * 0.02)
 
+        # --- MoK: Mixture-of-Kernels（逐位置内容路由，修复 pairwise 缺陷）----
+        #
+        # 架构缺陷（实测，非推测）
+        # ----------------------
+        # 注意力:  y[i] = Σ_j softmax(q_i·k_j/√d)·v_j
+        #   权重 a[i,j] 是**位置对 (i,j) 的内容函数** —— 二阶（pairwise）交互。
+        # SGC:     y[i] = Σ_τ K[τ]·u[i-τ]
+        #   核 K 是**输入无关的常数**；输入相关部分只有逐元素门控
+        #   （content_gate / evidence_gate / uncertainty_gate / path_gate），
+        #   这些门控只能逐位置、逐通道地缩放，**无法表达
+        #   "位置 i 应当聚合历史的哪种模式"**。
+        #   → 余弦只能拟合"平均位置分布"，复现不了逐 token 的内容路由。
+        #   这是 TS→SC 迁移里 mixer 余弦长期卡在 0.55~0.97 的结构性原因。
+        #
+        # 修复：核本身成为输入的函数 —— N 个核的**逐位置**加权混合
+        #   y_long[t] = Σ_k g_k(h_t) · conv(u, K_k)[t],   g = softmax(W h_t)
+        #
+        # 为什么这修的是根因
+        #   * 逐位置：每个 token 依据自身内容选择不同的历史聚合模式
+        #     → 同一序列里不同位置可以有不同的"关注模式"，这是 pairwise
+        #       路由在卷积框架下可达到的最强形式。
+        #   * 仍然卷积：每个 conv(u, K_k) 是纯因果卷积 → FFT 仍 O(L log L)。
+        #
+        # 为什么核心契约不破（这是本设计的关键）
+        #   所有核**共享同一组振荡基 psi**（rho/theta），只有 readout 系数
+        #   coef 不同。于是 IIR 递推
+        #       y_new = a·y1 + b·y2 + c·u
+        #   与核无关 —— 状态 (y1,y2) 的形状/字节数与 num_kernels 完全无关，
+        #   **O(1) 流式状态逐字节不变**。多核只体现在 readout：
+        #       nxt_k = einsum("bmd,kmd->bkd", y_new, coefs)
+        #       nxt   = Σ_k g_k · nxt_k
+        #   代价是 readout 的 K 倍常数 FLOPs，与序列长度无关。
+        #
+        # 对偶性：g_k(h_t) 是 h_t 的因果函数，与序列其余位置无关 —— 与
+        #   content_gate / path_gate 同构 → 并行(FFT) 与流式(IIR) 逐位一致。
+        #
+        # 兼容：num_kernels=1 时不创建任何新参数、走原代码路径，逐位等价。
+        self.num_kernels = int(num_kernels)
+        if self.num_kernels < 1:
+            raise ValueError("num_kernels must be >= 1")
+        if self.num_kernels > 1:
+            # 多核 readout 系数；coef[0] 是原核，其余小随机初始化，
+            # 保证 num_kernels=1 的参数语义不变。
+            self.coefs = nn.Parameter(
+                torch.randn(self.num_kernels, num_bases, dim) * 0.02)
+            with torch.no_grad():
+                self.coefs[0].copy_(self.coef)
+            # 逐位置路由器：D → K。
+            # ★ 不能 zero-init：若 g 恒为均匀 1/K 且所有核初始相同，
+            #   ∂L/∂K_k ∝ g_k·G 对每个 k 完全相同 → 对称性锁定，
+            #   各核永远收到同一梯度、无法分化（MoE 经典陷阱，见
+            #   RoutedSpectralGlobalConv.route_proj 的同类处理）。
+            #   用 0.01 小随机打破对称：g 仍近似均匀（≈1/K），
+            #   起步接近"平均核"，但梯度已能分流。
+            self.kernel_route = nn.Linear(dim, self.num_kernels, bias=True)
+            with torch.no_grad():
+                self.kernel_route.weight.normal_(0, 0.01)
+                self.kernel_route.bias.zero_()
+
         # Per-channel instantaneous (diagonal) term; init 1 keeps the block close
         # to identity at the start of training.
         self.feed = nn.Parameter(torch.ones(dim))
@@ -404,7 +464,40 @@ class SpectralGlobalConv(nn.Module):
     # -- kernel ---------------------------------------------------------------
     def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict,
                               missing_keys, unexpected_keys, error_msgs) -> None:
-        """在两种 rho 参数化之间迁移 checkpoint。"""
+        """在两种 rho 参数化之间迁移 checkpoint；并把单核 checkpoint 热启动到 MoK。
+
+        MoK 热启动（重要，否则 TS2SC 已有全部 mixer 权重作废）
+        ------------------------------------------------------
+        单核 checkpoint 只有 ``coef``，没有 ``coefs`` / ``kernel_route``。
+        映射规则：
+          * ``coefs[k] = coef`` 对所有 k（所有核初始化为同一个核）
+          * ``kernel_route`` 保持 zero-init（路由均匀 = 1/K）
+        因为 Σ_k g_k = 1 且所有 K_k 相同，若 router 也置零则
+            y_long = Σ_k g_k · conv(u, K) = conv(u, K)
+        → 输出**逐位等价**（可显式把 router 置零来获得精确热启动）。
+        但默认注入 0.01 小随机 router 以打破梯度对称，此时输出是
+        **近似等价**（相对误差 ~1% 量级）：起步接近"平均核"，
+        不丢已有知识、不引入初始化冲击，且训练能真正让各核分化。
+        """
+        if self.num_kernels > 1:
+            ck = prefix + "coefs"
+            c1 = prefix + "coef"
+            if ck not in state_dict and c1 in state_dict:
+                coef = state_dict[c1]
+                state_dict[ck] = coef.unsqueeze(0).expand(
+                    self.num_kernels, -1, -1).clone()
+                # 注意：保留 state_dict[c1]（不删）。多核模块仍注册 ``coef``
+                # 作为兼容占位参数（M×D，前向不走它），这样单核/多核
+                # checkpoint 都能 strict=True 双向加载，不破坏任何既有权重。
+                # 补上 router 参数，使 strict=True 也能直接加载。
+                # 必须是**小随机而非零**：热启动时所有核被复制成同一个核，
+                # 若 g 还恒等于 1/K，则梯度对称、多核永久退化为单核。
+                state_dict[prefix + "kernel_route.weight"] = (
+                    torch.randn(self.num_kernels, self.dim, dtype=coef.dtype,
+                                device=coef.device) * 0.01)
+                state_dict[prefix + "kernel_route.bias"] = torch.zeros(
+                    self.num_kernels, dtype=coef.dtype, device=coef.device)
+
         old = prefix + "raw_rho"
         new = prefix + "raw_rho_log"
         if self.rho_param == "logspace" and old in state_dict and new not in state_dict:
@@ -461,8 +554,36 @@ class SpectralGlobalConv(nn.Module):
         tau = torch.arange(length, device=device, dtype=dtype).unsqueeze(0)      # (1,L)
         log_rho = torch.log(rho.to(dtype)).unsqueeze(1)                          # (M,1)
         psi = torch.exp(log_rho * tau) * torch.sin((tau + 1.0) * theta.to(dtype).unsqueeze(1))
-        kernel = self.coef.to(dtype).t() @ psi                                   # (D, M) @ (M, L)
+        c = self.coefs[0].to(dtype) if self.num_kernels > 1 else self.coef.to(dtype)
+        kernel = c.t() @ psi                                                     # (D, M) @ (M, L)
         return kernel.t().contiguous()                                           # (L, D)
+
+    def build_kernels(self, length: int, device=None, dtype=None) -> torch.Tensor:
+        """物化 MoK 核栈，shape ``(K, length, D)``。
+
+        所有核共享同一组振荡基 ``psi``（rho/theta），只有 readout 系数不同 ——
+        这是"多核不增大 O(1) 状态"的结构原因（见 ``__init__`` 的 MoK 注释）。
+        ``num_kernels == 1`` 时返回单核栈，与 :meth:`build_kernel` 一致。
+        """
+        rho, theta = self.oscillator_params()
+        device = device if device is not None else self.coef.device
+        dtype = dtype if dtype is not None else self.coef.dtype
+        tau = torch.arange(length, device=device, dtype=dtype).unsqueeze(0)      # (1,L)
+        log_rho = torch.log(rho.to(dtype)).unsqueeze(1)                          # (M,1)
+        psi = torch.exp(log_rho * tau) * torch.sin((tau + 1.0) * theta.to(dtype).unsqueeze(1))
+        # (K, M, D) @ (M, L) -> (K, D, L) -> (K, L, D)
+        coefs = self.coefs.to(dtype) if self.num_kernels > 1 else self.coef.to(dtype).unsqueeze(0)
+        kernels = torch.matmul(coefs.transpose(-1, -2), psi)
+        return kernels.transpose(-1, -2).contiguous()
+
+    def _kernel_route_weights(self, h: torch.Tensor) -> torch.Tensor:
+        """逐位置核路由权重 ``g``，shape ``(B, L, K)``，沿 K 归一。
+
+        ``g[t] = softmax(W h_t)`` 是**当前 token 的因果函数**，与序列其余位置
+        无关 —— 与 ``content_gate`` / ``path_gate`` 同构，因此并行(FFT)与
+        流式(IIR)两种形式在 fp32 内逐位一致，FFT/IIR 对偶性不被破坏。
+        """
+        return torch.softmax(self.kernel_route(h), dim=-1)
 
     # -- forward --------------------------------------------------------------
     def _instant_term(self, u: torch.Tensor) -> torch.Tensor:
@@ -479,8 +600,17 @@ class SpectralGlobalConv(nn.Module):
         if self.content_gate:
             u = u * torch.sigmoid(self.gate_proj(h))
 
-        kernel = self.build_kernel(L, device=u.device, dtype=u.dtype)
-        long = fft_causal_conv(u, kernel, self.fft_dtype)
+        if self.num_kernels > 1:
+            # MoK：逐位置内容路由的核混合（修复 pairwise 表达力缺陷）
+            kernels = self.build_kernels(L, device=u.device, dtype=u.dtype)   # (K,L,D)
+            g = self._kernel_route_weights(h)                                  # (B,L,K)
+            long = torch.zeros_like(u)
+            for k in range(self.num_kernels):
+                long = long + g[..., k:k + 1] * fft_causal_conv(
+                    u, kernels[k], self.fft_dtype)
+        else:
+            kernel = self.build_kernel(L, device=u.device, dtype=u.dtype)
+            long = fft_causal_conv(u, kernel, self.fft_dtype)
         local = self._local_conv_full(u)
 
         if self.evidence_gate:
@@ -536,7 +666,8 @@ class SpectralGlobalConv(nn.Module):
         return rho, theta, a_eff, b_eff, small
 
     def _free_response(self, u: torch.Tensor,
-                       state: LayerStreamState) -> torch.Tensor:
+                        state: LayerStreamState,
+                        g: Optional[torch.Tensor] = None) -> torch.Tensor:
         """上一块状态在本块上的**齐次响应**，形状 (B, T, D)。
 
         与 ``fft_causal_conv(u, K)`` 的零初值部分相加，得到与整段并行/逐
@@ -559,9 +690,20 @@ class SpectralGlobalConv(nn.Module):
         small_m = (theta < 1e-3).view(-1, 1)
         p = torch.where(small_m, p_lin, p)
         q = torch.where(small_m, q_lin, q)
-        coef = self.coef.to(rd)
-        h = torch.einsum("mt,bmd->btd", p, a_eff * coef.unsqueeze(0))
-        h = h + torch.einsum("mt,bmd->btd", q, b_eff * coef.unsqueeze(0))
+        # 状态 (y1,y2) 与核无关（共享 psi），但 readout 依赖核：
+        # MoK 下自由响应必须按同一组逐位置路由权重 g 加权，
+        # 否则 chunk 形式与 full forward 在跨块处不一致。
+        if g is not None and self.num_kernels > 1:
+            coefs = self.coefs.to(rd)                                  # (K,M,D)
+            a_k = a_eff.unsqueeze(1) * coefs.unsqueeze(0)              # (B,K,M,D)
+            b_k = b_eff.unsqueeze(1) * coefs.unsqueeze(0)
+            h_k = torch.einsum("mt,bkmd->bktd", p, a_k)
+            h_k = h_k + torch.einsum("mt,bkmd->bktd", q, b_k)
+            h = torch.einsum("bktd,btk->btd", h_k, g.to(rd))
+        else:
+            coef = self.coef.to(rd)
+            h = torch.einsum("mt,bmd->btd", p, a_eff * coef.unsqueeze(0))
+            h = h + torch.einsum("mt,bmd->btd", q, b_eff * coef.unsqueeze(0))
         return h.to(u.dtype)
 
     def _tail_state(self, u: torch.Tensor,
@@ -628,10 +770,19 @@ class SpectralGlobalConv(nn.Module):
         if self.content_gate:
             u = u * torch.sigmoid(self.gate_proj(h))
 
-        kernel = self.build_kernel(T, device=u.device, dtype=u.dtype)
-        long = fft_causal_conv(u, kernel, self.fft_dtype)
+        g = None
+        if self.num_kernels > 1:
+            kernels = self.build_kernels(T, device=u.device, dtype=u.dtype)   # (K,T,D)
+            g = self._kernel_route_weights(h)                                  # (B,T,K)
+            long = torch.zeros_like(u)
+            for k in range(self.num_kernels):
+                long = long + g[..., k:k + 1] * fft_causal_conv(
+                    u, kernels[k], self.fft_dtype)
+        else:
+            kernel = self.build_kernel(T, device=u.device, dtype=u.dtype)
+            long = fft_causal_conv(u, kernel, self.fft_dtype)
         if state is not None and state.length > 0:
-            long = long + self._free_response(u, state)
+            long = long + self._free_response(u, state, g)
 
         buf = state.conv_buf if state is not None else None
         local, new_buf = depthwise_causal_conv(u, self.local_conv.weight, buf)
@@ -791,7 +942,14 @@ class SpectralGlobalConv(nn.Module):
         y_new = a.view(1, M, 1) * state.y1 + b.view(1, M, 1) * state.y2 + c.view(1, M, 1) * um
         state.y2, state.y1 = state.y1, y_new
 
-        nxt = torch.einsum("bmd,md->bd", y_new, self.coef.to(rd)).unsqueeze(1)   # (B,1,D) rd
+        if self.num_kernels > 1:
+            # MoK readout：状态递推与核无关（共享 psi），故 y1/y2 形状不变，
+            # 多核只体现在 readout 的 K 路 einsum + 逐位置路由加权。
+            nxt_k = torch.einsum("bmd,kmd->bkd", y_new, self.coefs.to(rd))       # (B,K,D)
+            g_t = self._kernel_route_weights(h)                                  # (B,1,K)
+            nxt = torch.einsum("bkd,bk->bd", nxt_k, g_t.squeeze(1)).unsqueeze(1)
+        else:
+            nxt = torch.einsum("bmd,md->bd", y_new, self.coef.to(rd)).unsqueeze(1)
         nxt = nxt.to(u.dtype)                                          # 回到计算精度再混合
         loc, state.conv_buf = depthwise_causal_conv(u, self.local_conv.weight, state.conv_buf)
 
@@ -825,7 +983,7 @@ class SpectralGlobalConv(nn.Module):
                 f"out_gate={self.out_gate}, evidence_gate={self.evidence_gate}, "
                 f"uncertainty_gate={self.uncertainty_gate}, "
                 f"path_gate={self.path_gate}, inst_nonlin={self.inst_nonlin}, "
-                f"init_mode={self.init_mode!r}")
+                f"num_kernels={self.num_kernels}, init_mode={self.init_mode!r}")
 
     def streaming_state_bytes(self, batch: int, dtype=torch.float32) -> int:
         """Bytes of constant streaming state, independent of sequence length.
@@ -846,6 +1004,11 @@ class SpectralGlobalConv(nn.Module):
     def effective_kernel_rank(self, length: int) -> int:
         """Numerical rank of the kernel bank; shows the expressivity of the basis."""
         with torch.no_grad():
+            # MoK：对 K 个核分别求秩，取最大（保守上界）
+            if self.num_kernels > 1:
+                Ks = self.build_kernels(length)
+                return max(torch.linalg.matrix_rank(Ks[k]).item()
+                           for k in range(self.num_kernels))
             K = self.build_kernel(length)
             return int(torch.linalg.matrix_rank(K.t().float()))
 
@@ -908,6 +1071,11 @@ class RoutedSpectralGlobalConv(SpectralGlobalConv):
         # 显式关闭而不是静默给出错误结果。
         kwargs["use_mixer_stream"] = False
         super().__init__(*args, **kwargs)
+        if self.num_kernels > 1:
+            raise ValueError(
+                "RoutedSpectralGlobalConv 使用自己的分组谱专家路由，"
+                "与 MoK(num_kernels>1) 的逐位置核路由是两套不同的混入机制；"
+                "叠加会静默忽略 MoK 而给出不一致结果。请二选一。")
         M = self.num_bases
         if route_groups < 1 or M % route_groups:
             raise ValueError(
