@@ -283,6 +283,7 @@ class SpectralGlobalConv(nn.Module):
         inst_nonlin: bool = False,
         init_mode: str = "logfreq",
         rho_param: str = "sigmoid",
+        linear_floor: float = 0.3,
     ) -> None:
         super().__init__()
         if dim <= 0:
@@ -314,14 +315,27 @@ class SpectralGlobalConv(nn.Module):
         #   逐点函数不经过卷积/递推，两种形式天然一致；给"当下"路径一个
         #   非线性响应，与长程线性卷积形成曲率对比。
         self.inst_nonlin = inst_nonlin
-        # init_mode：振荡基网格初始化（"logfreq" | "legacy"），见
-        # _init_oscillator_grid。默认 logfreq（legacy 均匀网格在
-        # tau = 2M-1（首个公共零点，周期 2M；后续在 2Mk-1）处有公共零点
-        # ——核恒 0 的时间盲点，coef 修不了，由 _assert_no_common_zero 守护）。
-        if init_mode not in ("legacy", "logfreq", "hybrid"):
+        # init_mode：振荡基网格初始化，见 _init_oscillator_grid。
+        #   * "logfreq"（历史默认）：theta 对数分布 [pi/decay_max, 0.9*pi/2]。
+        #     ★ 实测缺陷：低频端绝对间隔趋零，字典近似共线 ——
+        #       仓库守护口径 (Psi=sin((t+1)theta), L=512, SVD) 下
+        #       M=32 时数值秩 24/32、cond 1.92e16；含 rho 的真实字典
+        #       条件数更差。表征容量塌缩，与命题5 的 1/|sin(theta)| 发散同源。
+        #   * "hybrid"：线性均匀 + 黄金比扰动，修了秩缺失但仍保留
+        #       theta_min=pi/decay_max（数值病态未根除）。
+        #   * "linear"（推荐用于新训练）：theta 线性均匀
+        #       [linear_floor, pi-linear_floor]，默认 floor=0.3。
+        #       同口径 cond 1.04、秩 32/32；零参数零 FLOPs 零状态开销。
+        #   * "legacy"：均匀网格有代数公共零点（tau=2M-1 等），显式拒绝。
+        if init_mode not in ("legacy", "logfreq", "hybrid", "linear"):
             raise ValueError(
-                f"unknown init_mode: {init_mode!r} (legacy | logfreq | hybrid)")
+                f"unknown init_mode: {init_mode!r} "
+                f"(legacy | logfreq | hybrid | linear)")
+        if not (0.0 < float(linear_floor) < math.pi / 2):
+            raise ValueError(
+                f"linear_floor must be in (0, pi/2), got {linear_floor}")
         self.init_mode = init_mode
+        self.linear_floor = float(linear_floor)
         # rho_param：衰减极点参数化。
         #   * "sigmoid"（默认）：rho = sigmoid(raw).clamp(max=1-1e-6)。
         #     torch fp32 sigmoid 在 raw ≳ 16.636（=24·ln2，exp(x)/(1+exp(x))
@@ -347,8 +361,9 @@ class SpectralGlobalConv(nn.Module):
         self.out_proj = nn.Linear(dim, dim, bias=False)
 
         # --- long-range oscillator bank --------------------------------------
-        rho0, theta0 = _init_oscillator_grid(num_bases, decay_max,
-                                             mode=self.init_mode)
+        rho0, theta0 = _init_oscillator_grid(
+            num_bases, decay_max, mode=self.init_mode,
+            theta_floor=self.linear_floor)
         # θ 钳制下界在构造时冻结（跟随 decay_max，见 theta_clamp_floor）
         self._theta_floor = theta_clamp_floor(decay_max)
         if rho_param == "logspace":
@@ -1409,7 +1424,8 @@ def _assert_no_common_zero(theta: torch.Tensor, num_bases: int) -> None:
 
 
 def _init_oscillator_grid(num_bases: int, decay_max: float,
-                          mode: str = "logfreq"):
+                          mode: str = "logfreq",
+                          theta_floor: float = 0.3):
     """Initialise the (rho, theta) grid of the oscillator bank.
 
     ``mode="logfreq"``（默认）：theta 对数分布，覆盖
@@ -1422,6 +1438,23 @@ def _init_oscillator_grid(num_bases: int, decay_max: float,
     ——短周期（高频）基的密度与长周期一样，长上下文任务下高频段欠采样；
     且存在公共零点（**首个 τ = 2M−1，周期 2M**，即 τ = 2Mk−1 全体）
     ——legacy 分支做公式级判定，显式选择时命中即拒绝构造。
+
+    ``mode="linear"``（推荐用于新训练）：theta **线性均匀**分布
+    ``[theta_floor, pi - theta_floor]``，默认 ``theta_floor=0.3``。
+
+    依据（独立复现，见 docs/frequency_grid_fix.md）：周期/连续信号轴上，
+    logfreq 的低频端 θ_min=pi/decay_max≈3.8e-4 使相邻基近似共线
+    （M=32 时数值秩 24/32、cond 1.92e16）；线性均匀网格把 cond 降到
+    1.04、秩满 32/32。同一模型同一参数量下收敛速度显著提升，且
+    **不增加任何参数、FLOPs 或流式状态字节**。
+
+    ★ 归因修正：消融显示换成**纯随机正交基**同样能赢，而振荡基反而较慢
+      —— 起作用的是**基的正交性/可分性**，不是"振荡归纳偏置"。正是
+      "把最慢基周期配到 decay_max"这个设计把 θ 推向 0，制造了塌缩。
+
+    ★ 边界：该改动只在周期/连续信号轴兑现；key→value 绑定轴
+      （MQAR 类任务）无收益甚至回退 —— 共享叠加状态不可分离是独立的
+      结构限制，正交网格救不了。
 
     Returns (rho0, theta0) both of shape (M,), with rho0 in (0,1) and
     theta0 in (0,pi).
@@ -1482,11 +1515,19 @@ def _init_oscillator_grid(num_bases: int, decay_max: float,
             [((m_idx[i] + golden) % 1.0) - 0.5 for i in range(num_bases)],
             dtype=torch.float64) * step * 0.5 * taper)
         theta0 = (base + jitter).clamp(theta_lo_, theta_hi_).to(torch.float32)
+    elif mode == "linear":
+        # 线性均匀 θ ∈ [f, π−f]：把低频端从 π/decay_max 抬到 f，
+        # 同时放开上界到 π−f（覆盖整个 (0,π) 而非只到 Nyquist 一半以下）。
+        # (m+0.5)/M 栅格避开端点代数结构；_assert_no_common_zero 值级守护。
+        f = float(theta_floor)
+        u = (torch.arange(num_bases, dtype=torch.float64) + 0.5) / num_bases
+        theta0 = (f + (math.pi - 2.0 * f) * u).to(torch.float32)
     else:
-        raise ValueError(f"unknown init_mode: {mode!r} (legacy | logfreq | hybrid)")
+        raise ValueError(f"unknown init_mode: {mode!r} "
+                         f"(legacy | logfreq | hybrid | linear)")
     _assert_no_common_zero(theta0, num_bases)
-    if mode == "hybrid":
-        # hybrid 必须过数值质量门（logfreq 的秩缺失是它存在的理由）
+    if mode in ("hybrid", "linear"):
+        # hybrid / linear 必须过数值质量门（logfreq 的秩缺失是它们存在的理由）
         _assert_numerical_rank(theta0, num_bases)
     return rho0, theta0
 

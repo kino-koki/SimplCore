@@ -155,8 +155,10 @@ def test_logfreq_changes_initial_kernel():
 
 
 def test_bad_init_mode_rejected():
+    # "linear" 自频率网格修复起是合法模式（见 test_linear_grid.py），
+    # 不再用作非法值样本；换一个真正不存在的名字。
     with pytest.raises(ValueError):
-        _init_oscillator_grid(8, 128.0, mode="linear")
+        _init_oscillator_grid(8, 128.0, mode="not_a_real_grid")
     with pytest.raises(ValueError):
         m = _model(sgc_init_mode="bogus")
         m.validate if False else None
