@@ -1,0 +1,145 @@
+{
+ "rows": [
+  {
+   "layer": 0,
+   "rms_scale": 1.3485,
+   "residual_tap_l1": 0.01464
+  },
+  {
+   "layer": 1,
+   "rms_scale": 1.8099,
+   "residual_tap_l1": 0.02348
+  },
+  {
+   "layer": 2,
+   "rms_scale": 1.7942,
+   "residual_tap_l1": 0.03601
+  },
+  {
+   "layer": 3,
+   "rms_scale": 1.2339,
+   "residual_tap_l1": 0.02311
+  },
+  {
+   "layer": 4,
+   "rms_scale": 1.3795,
+   "residual_tap_l1": 0.02846
+  },
+  {
+   "layer": 5,
+   "rms_scale": 1.5346,
+   "residual_tap_l1": 0.03419
+  },
+  {
+   "layer": 6,
+   "rms_scale": 1.6765,
+   "residual_tap_l1": 0.02897
+  },
+  {
+   "layer": 7,
+   "rms_scale": 1.3412,
+   "residual_tap_l1": 0.0233
+  },
+  {
+   "layer": 8,
+   "rms_scale": 1.5873,
+   "residual_tap_l1": 0.02376
+  },
+  {
+   "layer": 9,
+   "rms_scale": 1.5138,
+   "residual_tap_l1": 0.0272
+  },
+  {
+   "layer": 10,
+   "rms_scale": 1.4568,
+   "residual_tap_l1": 0.02298
+  },
+  {
+   "layer": 11,
+   "rms_scale": 1.6937,
+   "residual_tap_l1": 0.0267
+  },
+  {
+   "layer": 12,
+   "rms_scale": 1.1226,
+   "residual_tap_l1": 0.02554
+  },
+  {
+   "layer": 13,
+   "rms_scale": 1.2487,
+   "residual_tap_l1": 0.02805
+  },
+  {
+   "layer": 14,
+   "rms_scale": 1.6329,
+   "residual_tap_l1": 0.02344
+  },
+  {
+   "layer": 15,
+   "rms_scale": 1.4397,
+   "residual_tap_l1": 0.02578
+  },
+  {
+   "layer": 16,
+   "rms_scale": 1.3961,
+   "residual_tap_l1": 0.0294
+  },
+  {
+   "layer": 17,
+   "rms_scale": 1.4578,
+   "residual_tap_l1": 0.02465
+  },
+  {
+   "layer": 18,
+   "rms_scale": 1.4292,
+   "residual_tap_l1": 0.02744
+  },
+  {
+   "layer": 19,
+   "rms_scale": 1.5737,
+   "residual_tap_l1": 0.02099
+  },
+  {
+   "layer": 20,
+   "rms_scale": 1.5531,
+   "residual_tap_l1": 0.04237
+  },
+  {
+   "layer": 21,
+   "rms_scale": 1.3985,
+   "residual_tap_l1": 0.02036
+  },
+  {
+   "layer": 22,
+   "rms_scale": 1.4118,
+   "residual_tap_l1": 0.02629
+  },
+  {
+   "layer": 23,
+   "rms_scale": 1.1657,
+   "residual_tap_l1": 0.0245
+  },
+  {
+   "layer": 24,
+   "rms_scale": 1.361,
+   "residual_tap_l1": 0.02072
+  },
+  {
+   "layer": 25,
+   "rms_scale": 1.2481,
+   "residual_tap_l1": 0.02964
+  },
+  {
+   "layer": 26,
+   "rms_scale": 1.4708,
+   "residual_tap_l1": 0.0209
+  },
+  {
+   "layer": 27,
+   "rms_scale": 1.4791,
+   "residual_tap_l1": 0.02562
+  }
+ ],
+ "method": "v4 + A3 lowpass only; A1 SVD fill excluded"
+}

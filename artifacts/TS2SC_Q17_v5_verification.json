@@ -1,0 +1,87 @@
+{
+ "prompt": "华为是什么公司",
+ "chat_template": "Qwen3-Instruct + no-think prefilled",
+ "nnew_target": 8,
+ "rows": {
+  "teacher": {
+   "ids": [
+    104641,
+    99361,
+    103921,
+    9909,
+    81378,
+    37585,
+    24561,
+    3539
+   ],
+   "text": "华为技术有限公司（Huawei Technologies Co",
+   "text_clean": "华为技术有限公司（Huawei Technologies Co",
+   "n_tokens": 8,
+   "zh_ratio": 0.2581,
+   "rep3": 0.0,
+   "has_replacement_char": false,
+   "distinct_tokens": 8,
+   "is_single_token_loop": false
+  },
+  "ck4_v4_best": {
+   "ids": [
+    198,
+    32313,
+    99879,
+    198,
+    106287,
+    99879,
+    99921,
+    198
+   ],
+   "text": "\nOkay发现\n嗯发现宫\n",
+   "text_clean": "\nOkay发现\n嗯发现宫\n",
+   "n_tokens": 8,
+   "zh_ratio": 0.4615,
+   "rep3": 0.0,
+   "has_replacement_char": false,
+   "distinct_tokens": 5,
+   "is_single_token_loop": false
+  },
+  "ck5_v5_full": {
+   "ids": [
+    115489,
+    11534,
+    11534,
+    11534,
+    11534,
+    42906,
+    42906,
+    42906
+   ],
+   "text": "前置����OULDOULDOULD",
+   "text_clean": "前置OULDOULDOULD",
+   "n_tokens": 8,
+   "zh_ratio": 0.1429,
+   "rep3": 0.1667,
+   "has_replacement_char": true,
+   "distinct_tokens": 3,
+   "is_single_token_loop": false
+  },
+  "ck6_v4_plus_lowpass": {
+   "ids": [
+    14777,
+    198,
+    262,
+    220,
+    40820,
+    198,
+    18493,
+    198
+   ],
+   "text": "一\n    二\n在\n",
+   "text_clean": "一\n    二\n在\n",
+   "n_tokens": 8,
+   "zh_ratio": 0.3,
+   "rep3": 0.0,
+   "has_replacement_char": false,
+   "distinct_tokens": 6,
+   "is_single_token_loop": false
+  }
+ }
+}
