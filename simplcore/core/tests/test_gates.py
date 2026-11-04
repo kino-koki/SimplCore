@@ -30,7 +30,14 @@ M = 8
 
 
 def _layer(**kw) -> SpectralGlobalConv:
+    """P0-4：闸门默认值已在算子层统一为 False（与 SimplCoreConfig 对齐）。
+
+    本文件的测试意图是**带 L2/L3 闸门**的双形式与门控行为，不该依赖
+    隐式默认——用 setdefault 显式声明；调用方显式传值时以调用方为准。
+    """
     torch.manual_seed(0)
+    kw.setdefault("evidence_gate", True)
+    kw.setdefault("uncertainty_gate", True)
     return SpectralGlobalConv(
         dim=DIM, num_bases=M, decay_max=64.0, local_kernel=4, **kw
     )

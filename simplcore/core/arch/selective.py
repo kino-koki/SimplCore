@@ -98,8 +98,8 @@ class GatedSpectralConv2(nn.Module):
                  gate_ab: bool = True, norm: str = "rmsnorm",
                  fft_dtype: Optional[torch.dtype] = torch.float32,
                  eps: float = 1e-6,
-                 evidence_gate: bool = True,
-                 uncertainty_gate: bool = True) -> None:
+                 evidence_gate: bool = False,     # P0-4: 与 SimplCoreConfig 对齐
+                 uncertainty_gate: bool = False) -> None:
         super().__init__()
         if dim % num_heads:
             raise ValueError("dim must be divisible by num_heads")
@@ -376,7 +376,7 @@ def analytic_gated_spectral_params(
     content_gate: bool = True, out_gate: bool = False,
     gate_ab: bool = True, local_kernel: int = 4,
     norm: str = "rmsnorm",
-    evidence_gate: bool = True, uncertainty_gate: bool = True,
+    evidence_gate: bool = False, uncertainty_gate: bool = False,  # P0-4
 ) -> int:
     """:class:`GatedSpectralConv2` 的精确参数量（不实例化）。
 

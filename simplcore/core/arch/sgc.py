@@ -7,6 +7,7 @@ See package docstring in ``simplcore/core/__init__.py`` and ``docs/SGC_CORE.md``
 from __future__ import annotations
 
 import math
+import warnings
 from dataclasses import dataclass
 from typing import Any, Optional, Tuple
 
@@ -262,6 +263,11 @@ class SpectralGlobalConv(nn.Module):
         norm: "rmsnorm" or "layernorm".
         fft_dtype: dtype for the FFT path; ``torch.float32`` by default.
         eps: norm epsilon.
+        kernel_norm: "none" (default, bitwise-compatible with all existing
+            checkpoints) or "analytic_l2" — divide each oscillator's readout
+            coefficient by its infinite-horizon L2 energy. Removes the
+            length-dependent injection drift; no L-dependent term is
+            introduced, so FFT/IIR duality and O(1) state are preserved.
     """
 
     def __init__(
@@ -272,8 +278,8 @@ class SpectralGlobalConv(nn.Module):
         local_kernel: int = 4,
         content_gate: bool = True,
         out_gate: bool = False,
-        evidence_gate: bool = True,
-        uncertainty_gate: bool = True,
+        evidence_gate: bool = False,      # P0-4: 与 SimplCoreConfig / 技术报告 §3.1 对齐
+        uncertainty_gate: bool = False,
         norm: str = "rmsnorm",
         fft_dtype: Optional[torch.dtype] = torch.float32,
         eps: float = 1e-6,
@@ -284,6 +290,7 @@ class SpectralGlobalConv(nn.Module):
         init_mode: str = "logfreq",
         rho_param: str = "sigmoid",
         linear_floor: float = 0.3,
+        kernel_norm: str = "none",
     ) -> None:
         super().__init__()
         if dim <= 0:
@@ -292,7 +299,18 @@ class SpectralGlobalConv(nn.Module):
             raise ValueError("num_bases must be positive")
         if local_kernel < 1:
             raise ValueError("local_kernel must be >= 1")
+        if kernel_norm not in ("none", "analytic_l2"):
+            raise ValueError(
+                f"unknown kernel_norm={kernel_norm!r} (none | analytic_l2)")
+        if kernel_norm != "none" and use_mixer_stream:
+            # 融合算子在 C++ 侧直接读 coef，未实现解析归一；必须回退 PyTorch
+            # step 路径，否则 FFT/IIR 对偶静默破裂。显式报错而非静默降级。
+            raise ValueError(
+                "kernel_norm='analytic_l2' is incompatible with "
+                "use_mixer_stream=True (fused op reads raw coef); "
+                "set use_mixer_stream=False")
 
+        self.kernel_norm = kernel_norm
         self.dim = dim
         self.num_bases = num_bases
         self.local_kernel = local_kernel
@@ -528,6 +546,56 @@ class SpectralGlobalConv(nn.Module):
             state_dict, prefix, local_metadata, strict,
             missing_keys, unexpected_keys, error_msgs)
 
+    def _psi_l2_inv(self, dtype) -> Optional[torch.Tensor]:
+        """每个振荡基在**无限长**序列上能量的倒数平方根，形状 (M,)。
+
+        闭式（严格与 L 无关，因此可安全用于 FFT 与 IIR 两条路径）::
+
+            ||psi_m||^2_oo = SUM_{t>=0} rho^{2t} sin^2((t+1)theta)
+                           = 1/2/(1-z) - 1/2 (c-z)/(1-2zc+z^2),
+            z = rho^2, c = cos(2 theta).
+
+        推导：sin^2(a)=(1-cos 2a)/2，几何级数 SUM z^t e^{2i(t+1)theta} 取实部。
+        数值核对见 docs/kernel_norm_fix.md（m=31: 闭式 354.4743 =
+        L=8192 数值 354.4710）。
+
+        为什么需要它（实测架构缺陷）
+        --------------------------------
+        未归一化时 ``long[t] = SUM_tau K[tau] u[t-tau]`` 的累加项数随 t 增长，
+        rho->1 的慢基几乎不衰减，注入幅度随序列长度单调膨胀；而注意力的
+        softmax 是凸组合、幅度与 L 无关。实测 Qwen3-0.6B 迁移 ck 上
+        L=8->256 时 SGC long 的 rms 增长 2.82x，teacher attn@v 反而降到 0.27x
+        ——方向相反。生成时序列逐 token 变长，mixer 注入持续增大，正是
+        「前言不搭后语」的结构来源。
+
+        把 1/||psi_m||_oo 吸收进 readout 系数 coef 后，每个基对核的贡献
+        变为单位能量，long 的统计幅度由 coef 决定、与 L 无关。
+        递推 (y1,y2) 完全不变 —— 只是 readout 缩放，故 O(1) 状态、
+        FFT/IIR 对偶、因果性全部保持。梯度仍可经 rho/theta 回流。
+        """
+        if self.kernel_norm == "none":
+            return None
+        rho, theta = self.oscillator_params()
+        rho = rho.to(dtype); theta = theta.to(dtype)
+        z = (rho * rho).clamp(max=1.0 - 1e-7)
+        c = torch.cos(2.0 * theta)
+        denom = (1.0 - 2.0 * z * c + z * z).clamp_min(1e-12)
+        e2 = 0.5 / (1.0 - z) - 0.5 * (c - z) / denom
+        return torch.rsqrt(e2.clamp_min(1e-8))                       # (M,)
+
+    def _coef_eff(self, dtype) -> torch.Tensor:
+        """readout 系数（单核）：归一化因子已吸收，形状 (M,D)。"""
+        c = self.coef.to(dtype)
+        inv = self._psi_l2_inv(dtype)
+        return c if inv is None else c * inv.unsqueeze(1)
+
+    def _coefs_eff(self, dtype) -> torch.Tensor:
+        """readout 系数（MoK 多核）：形状 (K,M,D)。"""
+        c = self.coefs.to(dtype) if self.num_kernels > 1 \
+            else self.coef.to(dtype).unsqueeze(0)
+        inv = self._psi_l2_inv(dtype)
+        return c if inv is None else c * inv.view(1, -1, 1)
+
     def oscillator_params(self) -> Tuple[torch.Tensor, torch.Tensor]:
         """Return (rho, theta), both of shape (M,), with rho in (0,1), theta in (0,pi).
 
@@ -569,7 +637,8 @@ class SpectralGlobalConv(nn.Module):
         tau = torch.arange(length, device=device, dtype=dtype).unsqueeze(0)      # (1,L)
         log_rho = torch.log(rho.to(dtype)).unsqueeze(1)                          # (M,1)
         psi = torch.exp(log_rho * tau) * torch.sin((tau + 1.0) * theta.to(dtype).unsqueeze(1))
-        c = self.coefs[0].to(dtype) if self.num_kernels > 1 else self.coef.to(dtype)
+        c = self._coefs_eff(dtype)[0] if self.num_kernels > 1 \
+            else self._coef_eff(dtype)
         kernel = c.t() @ psi                                                     # (D, M) @ (M, L)
         return kernel.t().contiguous()                                           # (L, D)
 
@@ -587,7 +656,7 @@ class SpectralGlobalConv(nn.Module):
         log_rho = torch.log(rho.to(dtype)).unsqueeze(1)                          # (M,1)
         psi = torch.exp(log_rho * tau) * torch.sin((tau + 1.0) * theta.to(dtype).unsqueeze(1))
         # (K, M, D) @ (M, L) -> (K, D, L) -> (K, L, D)
-        coefs = self.coefs.to(dtype) if self.num_kernels > 1 else self.coef.to(dtype).unsqueeze(0)
+        coefs = self._coefs_eff(dtype)
         kernels = torch.matmul(coefs.transpose(-1, -2), psi)
         return kernels.transpose(-1, -2).contiguous()
 
@@ -709,14 +778,14 @@ class SpectralGlobalConv(nn.Module):
         # MoK 下自由响应必须按同一组逐位置路由权重 g 加权，
         # 否则 chunk 形式与 full forward 在跨块处不一致。
         if g is not None and self.num_kernels > 1:
-            coefs = self.coefs.to(rd)                                  # (K,M,D)
+            coefs = self._coefs_eff(rd)                               # (K,M,D)
             a_k = a_eff.unsqueeze(1) * coefs.unsqueeze(0)              # (B,K,M,D)
             b_k = b_eff.unsqueeze(1) * coefs.unsqueeze(0)
             h_k = torch.einsum("mt,bkmd->bktd", p, a_k)
             h_k = h_k + torch.einsum("mt,bkmd->bktd", q, b_k)
             h = torch.einsum("bktd,btk->btd", h_k, g.to(rd))
         else:
-            coef = self.coef.to(rd)
+            coef = self._coef_eff(rd)
             h = torch.einsum("mt,bmd->btd", p, a_eff * coef.unsqueeze(0))
             h = h + torch.einsum("mt,bmd->btd", q, b_eff * coef.unsqueeze(0))
         return h.to(u.dtype)
@@ -960,11 +1029,11 @@ class SpectralGlobalConv(nn.Module):
         if self.num_kernels > 1:
             # MoK readout：状态递推与核无关（共享 psi），故 y1/y2 形状不变，
             # 多核只体现在 readout 的 K 路 einsum + 逐位置路由加权。
-            nxt_k = torch.einsum("bmd,kmd->bkd", y_new, self.coefs.to(rd))       # (B,K,D)
+            nxt_k = torch.einsum("bmd,kmd->bkd", y_new, self._coefs_eff(rd))     # (B,K,D)
             g_t = self._kernel_route_weights(h)                                  # (B,1,K)
             nxt = torch.einsum("bkd,bk->bd", nxt_k, g_t.squeeze(1)).unsqueeze(1)
         else:
-            nxt = torch.einsum("bmd,md->bd", y_new, self.coef.to(rd)).unsqueeze(1)
+            nxt = torch.einsum("bmd,md->bd", y_new, self._coef_eff(rd)).unsqueeze(1)
         nxt = nxt.to(u.dtype)                                          # 回到计算精度再混合
         loc, state.conv_buf = depthwise_causal_conv(u, self.local_conv.weight, state.conv_buf)
 
@@ -998,7 +1067,8 @@ class SpectralGlobalConv(nn.Module):
                 f"out_gate={self.out_gate}, evidence_gate={self.evidence_gate}, "
                 f"uncertainty_gate={self.uncertainty_gate}, "
                 f"path_gate={self.path_gate}, inst_nonlin={self.inst_nonlin}, "
-                f"num_kernels={self.num_kernels}, init_mode={self.init_mode!r}")
+                f"num_kernels={self.num_kernels}, init_mode={self.init_mode!r}, "
+                f"kernel_norm={self.kernel_norm!r}")
 
     def streaming_state_bytes(self, batch: int, dtype=torch.float32) -> int:
         """Bytes of constant streaming state, independent of sequence length.
@@ -1165,7 +1235,7 @@ class RoutedSpectralGlobalConv(SpectralGlobalConv):
     def _group_kernel(self, sel: slice, length: int, device, dtype) -> torch.Tensor:
         """第 ``sel`` 组基的核 bank (L, D)：``coef[sel].T @ psi[sel]``。"""
         psi = self._oscillator_psi(length, device=device, dtype=dtype)
-        return (self.coef.to(dtype)[sel].t() @ psi[sel]).t().contiguous()
+        return (self._coef_eff(dtype)[sel].t() @ psi[sel]).t().contiguous()
 
     def _grouped_long(self, u: torch.Tensor, w: torch.Tensor,
                       length: int) -> torch.Tensor:
@@ -1353,7 +1423,7 @@ class RoutedSpectralGlobalConv(SpectralGlobalConv):
             + c.view(1, M, 1) * u_inj
         state.y2, state.y1 = state.y1, y_new
 
-        nxt = torch.einsum("bmd,md->bd", y_new, self.coef.to(rd)).unsqueeze(1)
+        nxt = torch.einsum("bmd,md->bd", y_new, self._coef_eff(rd)).unsqueeze(1)
         nxt = nxt.to(u.dtype)
         loc, state.conv_buf = depthwise_causal_conv(
             u, self.local_conv.weight, state.conv_buf)
@@ -1529,6 +1599,17 @@ def _init_oscillator_grid(num_bases: int, decay_max: float,
     if mode in ("hybrid", "linear"):
         # hybrid / linear 必须过数值质量门（logfreq 的秩缺失是它们存在的理由）
         _assert_numerical_rank(theta0, num_bases)
+    elif mode == "logfreq":
+        # P0-3（上游待修清单）：logfreq 是历史默认，不能改成硬拒绝（会破坏
+        # 既有 checkpoint 的可复现性），但也不能静默放行一个 cond~1e16、
+        # 数值秩 24/32 的字典。这里留下可审计的警告，与构造期质量门口径一致。
+        rank, cond = _grid_rank_condition(theta0, L=max(512, 4 * num_bases))
+        if rank < num_bases or cond > 1e6:
+            warnings.warn(
+                f"init_mode='logfreq': damped-oscillator grid is "
+                f"rank-deficient (rank={rank}/{num_bases}, cond={cond:.2e}); "
+                f"consider init_mode='linear' or 'hybrid' for new training.",
+                RuntimeWarning, stacklevel=2)
     return rho0, theta0
 
 

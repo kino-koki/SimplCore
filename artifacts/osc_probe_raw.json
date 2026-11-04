@@ -1,0 +1,219 @@
+{
+ "method": "osc period-signal probe; grid scan + paired bootstrap",
+ "config": {
+  "steps": 250,
+  "seeds": [
+   0,
+   1,
+   2
+  ],
+  "V": 16,
+  "D": 32,
+  "M": 16,
+  "L": 96,
+  "period": 7,
+  "eps": 0.15,
+  "n_eval": 64,
+  "batch": 4,
+  "lr": 0.003,
+  "n_boot": 2000
+ },
+ "honest_boundary": "小预算前哨（D=32 / 1 层 / 数百步 / 3 seeds / 合成任务），只验证「脚本可在本仓重跑并产出 raw json」；不等于白盒报告 §15 的 1500/3000 步定量结论与 CI [+0.0996,+0.1621]。若全部网格饱和或全部接近 chance，本结果不构成任何一方的收益/无效证据，需加大预算并重新设计难度。",
+ "baselines": {
+  "osc": {
+   "chance": 0.0625,
+   "copy_last": 0.1575,
+   "n": 2000,
+   "eps": 0.15,
+   "V": 16,
+   "period": 7
+  },
+  "osc0": {
+   "chance": 0.0625,
+   "copy_last": 0.154,
+   "n": 2000,
+   "eps": 0.0,
+   "V": 16,
+   "period": 7
+  }
+ },
+ "rows": [
+  {
+   "name": "logfreq",
+   "mode": "logfreq",
+   "linear_floor": 0.3,
+   "skew": 0.0,
+   "accs": [
+    0.1562,
+    0.1406,
+    0.1094
+   ],
+   "mean": 0.1354,
+   "final_loss": [
+    2.55655,
+    2.36091,
+    2.33538
+   ],
+   "params": 3825
+  },
+  {
+   "name": "hybrid",
+   "mode": "hybrid",
+   "linear_floor": 0.3,
+   "skew": 0.0,
+   "accs": [
+    0.1719,
+    0.1094,
+    0.125
+   ],
+   "mean": 0.1354,
+   "final_loss": [
+    2.76261,
+    2.63595,
+    2.56204
+   ],
+   "params": 3825
+  },
+  {
+   "name": "linear_f0.10",
+   "mode": "linear",
+   "linear_floor": 0.1,
+   "skew": 0.0,
+   "accs": [
+    0.1406,
+    0.125,
+    0.125
+   ],
+   "mean": 0.1302,
+   "final_loss": [
+    2.7983,
+    2.4952,
+    2.8819
+   ],
+   "params": 3825
+  },
+  {
+   "name": "linear_f0.30",
+   "mode": "linear",
+   "linear_floor": 0.3,
+   "skew": 0.0,
+   "accs": [
+    0.1094,
+    0.1406,
+    0.125
+   ],
+   "mean": 0.125,
+   "final_loss": [
+    2.76037,
+    2.44202,
+    2.91482
+   ],
+   "params": 3825
+  },
+  {
+   "name": "linear_f0.50",
+   "mode": "linear",
+   "linear_floor": 0.5,
+   "skew": 0.0,
+   "accs": [
+    0.125,
+    0.1406,
+    0.1094
+   ],
+   "mean": 0.125,
+   "final_loss": [
+    2.80632,
+    2.58176,
+    2.98689
+   ],
+   "params": 3825
+  },
+  {
+   "name": "linear_f0.30_skew+0.6",
+   "mode": "linear",
+   "linear_floor": 0.3,
+   "skew": 0.6,
+   "accs": [
+    0.1406,
+    0.0938,
+    0.0938
+   ],
+   "mean": 0.1094,
+   "final_loss": [
+    2.83395,
+    2.54092,
+    2.83066
+   ],
+   "params": 3825
+  },
+  {
+   "name": "linear_f0.30_skew-0.6",
+   "mode": "linear",
+   "linear_floor": 0.3,
+   "skew": -0.6,
+   "accs": [
+    0.125,
+    0.125,
+    0.125
+   ],
+   "mean": 0.125,
+   "final_loss": [
+    2.75178,
+    2.4669,
+    2.76804
+   ],
+   "params": 3825
+  }
+ ],
+ "paired_vs_logfreq": {
+  "hybrid - logfreq": {
+   "diff": 0.0,
+   "ci95": [
+    -0.0312,
+    0.0157
+   ],
+   "significant": false
+  },
+  "linear_f0.10 - logfreq": {
+   "diff": -0.0052,
+   "ci95": [
+    -0.0156,
+    0.0156
+   ],
+   "significant": false
+  },
+  "linear_f0.30 - logfreq": {
+   "diff": -0.0104,
+   "ci95": [
+    -0.0468,
+    0.0156
+   ],
+   "significant": false
+  },
+  "linear_f0.50 - logfreq": {
+   "diff": -0.0104,
+   "ci95": [
+    -0.0312,
+    0.0
+   ],
+   "significant": false
+  },
+  "linear_f0.30_skew+0.6 - logfreq": {
+   "diff": -0.026,
+   "ci95": [
+    -0.0468,
+    -0.0156
+   ],
+   "significant": true
+  },
+  "linear_f0.30_skew-0.6 - logfreq": {
+   "diff": -0.0104,
+   "ci95": [
+    -0.0312,
+    0.0156
+   ],
+   "significant": false
+  }
+ },
+ "p1_5_note": "含 skew 的网格用于检验「非对称 θ 网格打破 π/2 镜像是否改善 含 ρ 口径下的可分性」；本脚本的 acc 是训练后下游准确率，不是 Gram 条件数，两者需分开看（见 docs/frequency_grid_fix.md §3）。"
+}

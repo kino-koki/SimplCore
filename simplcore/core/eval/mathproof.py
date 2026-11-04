@@ -43,7 +43,8 @@ from ..training.envlearn import WeightBudget
 from ..arch.gates import evidence_weight_step, evidence_weights, joint_disagreement, uncertainty_weights
 from .scaling import (_long_range_flops, embedding_params, infer_flops_per_token,
                       non_embedding_params, stream_state_bytes)
-from ..arch.sgc import RMSNorm, SpectralGlobalConv, fft_causal_conv
+from ..arch.sgc import (RMSNorm, SpectralGlobalConv, fft_causal_conv,
+                        theta_clamp_floor)
 
 GIB = 1024 ** 3
 
@@ -270,9 +271,17 @@ def _proof_bibo_stability() -> ProofResult:
     ``SpectralGlobalConv.oscillator_params`` 已加 ``clamp(max=1−1e-6)`` ——
     此处验证：把 raw_rho 推到 ±30，ρ 仍严格 < 1。
 
-    **θ 卫兵（P1）**：命题 5 修正后的误差界含 1/|sinθ_m|，θ→0/π 时界发散。
-    ``oscillator_params`` 已加 ``θ ∈ [1e-3, π−1e-3]`` 参数级钳制——此处验证：
-    把 raw_theta 推到 ±30，θ 仍严格落在钳制区间内（|sinθ| ≥ sin(1e-3)）。
+    **θ 卫兵（P1，0.1-α 口径修正）**：命题 5 修正后的误差界含
+    1/|sinθ_m|，θ→0/π 时界发散。``oscillator_params`` 的**上界**是绝对的
+    ``π−1e-3``；**下界**由 ``theta_clamp_floor(decay_max) = min(1e-3,
+    π/decay_max)`` 给出——它随 decay_max 让步（logfreq 最慢基的合法初值
+    θ_min=π/decay_max 不被钳掉），**不提供固定 1e-3 保证**。
+
+    上游待修清单 P0-2：旧版只在 ``decay_max=64``（floor 恰为 1e-3）上断言
+    ``theta_lo >= 1e-3``，把小配置的保证误当成生产配置的保证。这里改为按
+    ``(64, 8192, 16384, 4e6)`` 逐档扫描、按各档真实 floor 断言，并在
+    ``detail`` 里如实打印每个档位的 ``1/|sin floor|``（默认档约 2608×、
+    tuan-2b 档约 1.27e6×）——这些是误差界的实际放大量，不是卫兵失效。
     """
     # (a) fp64 数学层：sigmoid 严格开区间
     raw = torch.tensor([0.0, 5.0, -5.0, 20.0, -20.0], dtype=torch.float64)
@@ -288,33 +297,49 @@ def _proof_bibo_stability() -> ProofResult:
             l1 = psi.abs().sum().item()
             worst_l1 = max(worst_l1, l1 - 1.0 / (1.0 - r))
     # (c) 实现层：极端 raw_rho 下 ρ 仍严格 < 1（卫兵生效）
-    mx = SpectralGlobalConv(dim=4, num_bases=4, decay_max=64, local_kernel=1,
-                            content_gate=False, evidence_gate=False,
-                            uncertainty_gate=False)
-    with torch.no_grad():
-        mx.raw_rho.fill_(30.0)
-        rho_hi = mx.oscillator_params()[0]
-        mx.raw_rho.fill_(-30.0)
-        rho_lo = mx.oscillator_params()[0]
-        # (d) θ 钳制卫兵：raw_theta 推到极端，θ 仍严格落在 [1e-3, π−1e-3]
-        mx.raw_theta.fill_(30.0)
-        theta_hi = mx.oscillator_params()[1]
-        mx.raw_theta.fill_(-30.0)
-        theta_lo = mx.oscillator_params()[1]
-    guard_ok = bool((rho_hi < 1.0).all() and (rho_lo > 0.0).all()
-                    and (rho_hi <= 1.0 - 1e-6).all())
-    theta_ok = bool((theta_hi <= math.pi - 1e-3).all()
-                    and (theta_lo >= 1e-3).all()
-                    and torch.sin(theta_hi).abs().min() >= math.sin(1e-3) - 1e-9
-                    and torch.sin(theta_lo).abs().min() >= math.sin(1e-3) - 1e-9)
+    # (d) θ 卫兵按 decay_max 扫描（P0-2）——旧版只测 64，误把小配置保证
+    #     当成生产配置保证。每档按 theta_clamp_floor(dm) 断言，并如实记录
+    #     1/|sin floor| 这个误差界放大量。
+    DECAY_CASES = (64.0, 8192.0, 16384.0, 4_000_000.0)
+    guard_ok = True
+    theta_ok = True
+    theta_cases = []
+    for dm in DECAY_CASES:
+        mx = SpectralGlobalConv(dim=4, num_bases=4, decay_max=dm, local_kernel=1,
+                                content_gate=False, evidence_gate=False,
+                                uncertainty_gate=False)
+        floor = theta_clamp_floor(dm)
+        with torch.no_grad():
+            mx.raw_rho.fill_(30.0)
+            rho_hi = mx.oscillator_params()[0]
+            mx.raw_rho.fill_(-30.0)
+            rho_lo = mx.oscillator_params()[0]
+            mx.raw_theta.fill_(30.0)
+            theta_hi = mx.oscillator_params()[1]
+            mx.raw_theta.fill_(-30.0)
+            theta_lo = mx.oscillator_params()[1]
+        guard_ok &= bool((rho_hi < 1.0).all() and (rho_lo > 0.0).all()
+                         and (rho_hi <= 1.0 - 1e-6).all())
+        # 上界绝对；下界随 decay_max 让步，按各档真实 floor 断言
+        case_ok = bool((theta_hi <= math.pi - 1e-3 + 1e-9).all()
+                       and (theta_lo >= floor - 1e-9).all()
+                       and torch.sin(theta_hi).abs().min() >= math.sin(1e-3) - 1e-9)
+        theta_ok &= case_ok
+        amp = 1.0 / math.sin(floor)
+        theta_cases.append(
+            f"dm={dm:g}: floor={floor:.3e}, 1/|sin floor|={amp:.1f}×, ok={case_ok}")
+        del mx
     ok = math_ok and worst_env <= 0.0 and worst_l1 <= 1e-9 and guard_ok and theta_ok
     return ProofResult("P05", "BIBO 稳定：|ψ_τ| ≤ ρ^τ, Σ|ψ| ≤ 1/(1−ρ)；fp32 饱和与 θ 漂移均被卫兵拦截",
                        "numeric-fp64 + fp32-impl", ok,
                        f"fp64 sigmoid 严格={math_ok}, 包络违反={worst_env:.1e}, "
                        f"ℓ₁ 超界={worst_l1:.1e}, raw=±30 时 ρ<1={guard_ok}, "
-                       f"θ 钳制 [1e-3, π−1e-3] 生效={theta_ok}",
+                       f"θ 上界绝对/下界随 decay_max 让步，逐档={theta_ok}; "
+                       + " | ".join(theta_cases),
                        "饱和阈值：实测 16.636（24·ln2）为紧界、25·ln2≈17.33 为解析充分界；"
-                       "卫兵阈值 1−1e-6 高于 ρ₀≈0.99988（decay_max=8192），不影响初始化")
+                       "卫兵阈值 1−1e-6 高于 ρ₀≈0.99988（decay_max=8192），不影响初始化。"
+                       "口径修正：下界不是固定 1e-3；默认档误差界实际放大约 2608×、"
+                       "tuan-2b(4e6) 档约 1.27e6×，论文/§3.1 的「固定 1e-3 保证」表述已撤回")
 
 
 # ---------------------------------------------------------------------------

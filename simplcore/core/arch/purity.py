@@ -105,8 +105,13 @@ _SOURCE_SCAN_EXCLUDE_PARTS = ("tests", "__pycache__", ".trash", ".archive")
 #:   （迷你 Transformer，先例：equal_budget.py）——「SGC 精确指向结构性
 #:   劣势」等负面结果的可持续复现装置；对照臂自包含、不进运行时，
 #:   移除即恢复全量守卫。
+#: - migration/dc_bias.py：TS→SGC **解析迁移辅助件**，把 teacher 的
+#:   attention 子层输出当作外部张量读入以估计 DC 补偿量；它不实现任何
+#:   注意力算子、不进运行时、不进 mixer 注册表。属于「引用概念而非实现」，
+#:   与 axis_probe 的 TS 对照臂同类；移除即恢复全量守卫。
 _SOURCE_SCAN_DEFINITION_EXEMPT_FILES = frozenset({"sidecar_exact_attn.py",
-                                                  "axis_probe.py"})
+                                                  "axis_probe.py",
+                                                  "dc_bias.py"})
 
 
 def _identifier_hit(name: str) -> bool:

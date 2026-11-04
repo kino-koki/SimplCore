@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import warnings
 from dataclasses import dataclass, asdict, field
 from typing import Optional
 
@@ -316,11 +317,23 @@ class SimplCoreConfig:
             raise ValueError("local_kernel must be >= 1")
         if self.decay_scale <= 0:
             raise ValueError(f"decay_scale must be positive, got {self.decay_scale}")
-        if getattr(self, "sgc_init_mode", "legacy") not in ("legacy", "logfreq",
-                                                            "hybrid"):
+        # P0-1（上游待修清单）：init_mode="linear" 已在 sgc.py 实现且有 10 项
+        # 守护测试，但这里的历史白名单漏了它，导致 SimplCoreConfig →
+        # SimplCoreModel 主路径无法启用频率网格修复。放行并保持默认 logfreq。
+        init_mode = getattr(self, "sgc_init_mode", "logfreq")
+        if init_mode not in ("legacy", "logfreq", "hybrid", "linear"):
             raise ValueError(
-                f"sgc_init_mode must be 'legacy' | 'logfreq' | 'hybrid', "
-                f"got {self.sgc_init_mode!r}")
+                f"sgc_init_mode must be 'legacy' | 'logfreq' | 'hybrid' | "
+                f"'linear', got {init_mode!r}")
+        if init_mode == "legacy":
+            # legacy 均匀网格存在不可修的代数公共零点，构造期
+            # _assert_no_common_zero 会显式抛 ValueError；在这里提前说明，
+            # 免得用户看到的是算子层的间接报错。
+            warnings.warn(
+                "sgc_init_mode='legacy' has an unfixable algebraic common "
+                "zero (kernel identically zero at tau=2M-1); mixer "
+                "construction will be rejected. Use 'logfreq' / 'linear' "
+                "/ 'hybrid'.", RuntimeWarning, stacklevel=2)
         rho_param = getattr(self, "sgc_rho_param", "sigmoid")
         if rho_param not in ("sigmoid", "logspace"):
             raise ValueError(

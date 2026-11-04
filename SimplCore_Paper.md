@@ -13,7 +13,9 @@ SimplCore 是一套**可训练、彻底非注意力**的序列建模架构。其
 递推（$O(1)$ 常数状态），**无位置嵌入表、无 KV 缓存、无最大长度截断**。
 三条可机器验证的结构性质（全部有守护测试与 13 项数学证明支撑）：
 
-1. **双形式精确对偶**：FFT 整段与 IIR 流式在 fp32 下逐位一致（守护测试锁定）；
+1. **双形式对偶（分路径口径）**：流式 IIR 路径严格逐位（含因果性）；
+   FFT 整段路径在 fp32 下是**容差内一致**（噪声 <1e-5、偏差随 $L$ 增长，
+   §5.4），不是无条件逐位一致；数学等价性由 fp64 证明（P01/P06）支撑；
 2. **严格因果**：扰动未来 token，过去输出逐位不变（精确 0，非容差）；
 3. **常数状态**：流式状态字节数与序列长度无关，1M 上下文部署 1.948 GiB
    （同规模 TS 的 KV cache ≈ 129 GB (120 GiB)，数量级差异）。
@@ -34,7 +36,8 @@ SGC replaces softmax self-attention with causal spectral convolution over a
 damped-oscillator basis dictionary: FFT parallel form for training
 ($O(D\log L)$), second-order IIR recurrence for inference ($O(1)$ state),
 with no positional table, no KV cache, and no length cap. Three structural
-properties are machine-verified: bitwise dual-form equivalence, strict
+properties are machine-verified: dual-form equivalence (bitwise on the
+streaming path; fp32 tolerance on the parallel path, §5.4), strict
 causality (future perturbation leaves the past bit-identical), and
 length-independent streaming state (1.948 GiB @ 1M context vs ≈120 GiB KV).
 We equally report the costs: exact pointing and MQAR association-recall are
@@ -114,7 +117,7 @@ mixer。四个参数级卫兵（全部 opt-in 默认关或默认安全）：
 
 ### 3.3 定容绑定记忆（R1）——修复 key→value 绑定缺陷
 
-MQAR 对照（§7.2）定位：SGC 缺的不是感受野，是**绑定能力**。第一版定容
+MQAR 对照（§5.5）定位：SGC 缺的不是感受野，是**绑定能力**。第一版定容
 记忆原型失败的真卡点在读取（槽内 $h_t$ 既当 key 又当 value）。R1 的修复：
 **槽内 key/value 分开投影** + **局部窗口绑定写入**（宽 W 的相邻窗口前半进
 key 侧、后半进 value 侧——"键 值"恰是相邻结构）+ FIFO 环形定容槽。
@@ -140,11 +143,16 @@ key 侧、后半进 value 侧——"键 值"恰是相邻结构）+ FIFO 环形�
 `simplcore/core/eval/mathproof.py`（13 项机器可验证证明：符号 + fp64）。
 核心结论与 0.1-α 状态：
 
-- **定理 1（双形式对偶）**：FFT 整段 == IIR 流式（fp32 短序列逐位一致，
-  守护测试锁定；长序列偏差见 §5.4 勘误）。
+- **定理 1（双形式对偶，分路径口径）**：流式 IIR 路径与闭式核严格逐位
+  一致（守护测试锁定）；FFT 整段路径在 fp32 下是容差内一致（短序列
+  <1e-5，长序列偏差见 §5.4 勘误），fp64 下数学等价（P01/P06）。
+  **撤回**「fp32 无条件逐位一致」的旧表述。
 - **定理 2（严格因果）**：流式路径未来泄漏逐位为 0。
 - **定理 3（O(1) 状态）**：状态字节数 $4(2MD+(K{-}1)D+1)$ 与 $L$ 无关
   （M=64, D=1024, K=4 → 524.0 KiB/层；`mathproof` P12 硬断言）。
+  **口径注（P1-2）**：公式中的 $+1$ 是 L2 证据门开启时常驻的每序列 fp32
+  标量，**不是结构常数**；`SimplCoreConfig` 默认闸门 OFF，实际为
+  $4(2MD+(K{-}1)D)$（§5.14 的 4,829,184 B 即此口径）。
 - **命题 5（误差界，0.1-α 双口径勘误后口径）**：舍入误差注入系数为 1
   （非 $\sin\theta_m$），故误差冲激响应为 $\psi_m[\tau]/|\sin\theta_m|$，
   界为 $\delta_{\max}/((1-\rho)|\sin\theta|)$。**口径纪律（0.1-α 二次审计
@@ -154,7 +162,13 @@ key 侧、后半进 value 侧——"键 值"恰是相邻结构）+ FIFO 环形�
   裸 $u$ 常数（口径 A）只在 $|\tilde y|\le1$ 成立，**不是界**。口径 B 实测：
   旧界（无 $1/|\sin\theta|$ 因子）在 legacy M=8 网格被违反 1.69×、
   修正界成立；论文旧数字 5.79×/5.13 来自 legacy M=8 + 未标口径（该网格
-  已被构造期守护拒绝）。
+  已被构造期守护拒绝）。**P1 卫兵口径修正（P0-2）**：θ 钳制的**上界**
+  $\pi-10^{-3}$ 是绝对的；**下界**随 `decay_max` 让步
+  $\min(10^{-3},\pi/\text{decay\_max})$，**不提供固定 $10^{-3}$ 保证**——
+  logfreq 最慢基的合法初值 $\theta_{\min}=\pi/\text{decay\_max}$ 不被钳掉。
+  由此默认档误差界实际放大约 2608×、`tuan-2b`（4e6）档约 1.27e6×；
+  `mathproof` P05 已改为按 $(64,8192,16384,4\times10^6)$ 逐档扫描并如实
+  打印各档 $1/|\sin\text{floor}|$，不再用 `decay_max=64` 的小配置代表生产配置。
 - **P10（有损上限的适用范围修正）**：有限常驻状态对**无界** $L$ 的原文
   必有损（信息论，仍真）；但**任务绑定对数有限时，定容槽位存绑定副本
   同样是 O(1) 且无损**——"常数状态建模必输"不成立，"SGC 当前的谱压缩
@@ -166,6 +180,9 @@ key 侧、后半进 value 侧——"键 值"恰是相邻结构）+ FIFO 环形�
 
 8 项数学核心全过（外部独立复现确认：双形式对偶、流式逐位零泄漏、
 状态字节数四长度逐字节相同、训练缩放斜率 1.09 vs TS 2.35）。
+**口径（P1-1）**：「对偶」指流式路径逐位 / 并行路径 fp32 容差内；
+fp32 在 $L=64$ 即 `bitwise=False`（rel_err 1.15e-5），显式 fp64 才
+2.43e−14——数学等价、fp32 不逐位。
 
 ### 5.4 双形式偏差（两代网格勘误后口径）
 
@@ -187,6 +204,12 @@ conformance 实测为准，不得由短序列外推。
 | 聚合 L=129 | 0.938 | 0.875 | 0.5 | attention 略优（"等效 4–7B"未复现） |
 | 聚合 L=65 | 1.000 | 1.000 | 0.5 | 打平 |
 | 精确计数 | 0.812/0.938 | 0.812/0.938 | 0.5 | 逐位打平 |
+
+**复现口径补注（P1-3）**：上表两行 MQAR 数字来自**外部白盒复现**，
+`eval/axis_probe.py` 旧版 `TASK_SPECS` 只有 4 个任务、没有 MQAR 生成器，
+附录 B 的 `--seeds 0 1 2 3 4` 命令**复现不了这两行**。现已补入
+`mqar_g4`（4 对 key→value、8 类、chance 0.125），命令可跑出一条同口径
+MQAR 前哨；两代数字需在同一任务定义下重跑才能对齐，不得直接比较。
 | 短程 LM（Markov） | ppl 14.63 | 15.71 | — | attention 优 7% |
 
 \* 单批 128 样本、2 seed；attention seed SD≈0.066，差异 0.0156 在噪声内。
@@ -196,6 +219,9 @@ conformance 实测为准，不得由短序列外推。
 
 1M 上下文完整推理 **1.948 GiB ≤ 2 GB**（bf16 权重 1.888 + O(1) 流式状态
 30.36 MiB + 融合单缓冲 workspace）；1M→8M 翻倍增量**恒为 0**。
+**口径注（P2-4）**：此处 1.888 GiB 权重对应约 10.1 亿参数的更大预设，
+**不是** §5.14 的 1.085 亿参数（dim=768/12 层/M=64，对应
+`configs/tuan-150m.json`）；两节是不同规模配置，不可互相反推。
 
 ### 5.14 端侧极限训练（外部实测，`docs/EDGE_TRAINING_REPORT.md`）
 
