@@ -4,6 +4,11 @@
 > 建议还是去用 **Mamba** 进行开发、设计模型。本仓库没有经过大规模训练验证，
 > 所有"优于 Transformer"的主张都是**机制层结构性质**（可运行断言），
 > **不是**实测的质量结论。
+>
+> 📄 **论文主稿已重构（2026-11-05）**：`SimplCore_Paper.md` 现为 **0.2-β
+> 表达力边界刻画稿**，章节号已变更。本文及仓库文档中形如「论文 §7.2」
+> 的旧引用请对照归档版 `docs/SimplCore_Paper_v0.1alpha.md`；改写清单见
+> `docs/PAPER_REWRITE_NOTE.md`。**当前状态不宜直接投稿**，见主稿 §7。
 
 **可训练、彻底非注意力**的序列建模仓库。架构叫 **SimplCore**，
 主推实现位于 `simplcore/core/`：用**因果谱全局卷积**替代自注意力，
@@ -51,7 +56,7 @@ RoPE、KV 缓存、位置嵌入表。注意力族（`CausalAttention` / `Reasoni
 > 1.09 vs 2.35；流式零泄漏）。**engineering trade-off，不是"更好的模型"**。
 > 架构响应已落地：精确引用走 `memory/sidecar.py` 三层旁路（见 §3），
 > O(1) 状态定位为**选择性寻址器**。完整表与局限见
-> `docs/THEORETICAL_EDGE.md` 实测对照节、`SimplCore_Paper.md` §7.2 轴注记、
+> `docs/THEORETICAL_EDGE.md` 实测对照节、`docs/SimplCore_Paper_v0.1alpha.md` §7 轴注记（旧稿归档）、
 > 复现协议 `eval/axis_probe.py`；MQAR 绑定缺陷的修复路线分级
 > （A/B/C 一致性判据 + R1 定容绑定记忆已落地）见
 > `docs/REPRODUCTION_REPORT.md` 与 `docs/THEORETICAL_EDGE.md` 路线分级节。
@@ -262,7 +267,8 @@ offline consolidation 术语，且模块内已用**诚实边界**声明"自进�
 
 | 文档 | 内容 |
 |------|------|
-| `SimplCore_Paper.md` | **架构白皮书（v1.1.2，含 v1.2 扩展）**：定理 1–4 / 命题 5–7（命题 5 误差界 v1.1.2 含 1/\|sinθ\| 修正）、§3.5 世界模型理论动机、SGC-R 谱专家路由、负面结果与撤回、13 项数学证明、部署/战役账本、§7 等效参数推测（明确标注为可证伪理论推测） |
+| `SimplCore_Paper.md` | **论文主稿（0.2-β，表达力边界刻画）**：四条表达力边界（函数类不匹配 / 静态核天花板 / 时变参数破坏 FFT 对偶 / 内容寻址等参数仍输 attention）、三条结构性质的分路径口径、`[R]/[E]/[A]/[C]` 四级证据分级、47 万参数三臂训练与 SFSC-FDCAO 六臂前哨、§7 投稿硬门槛清单。**不是 SOTA 主张；当前不宜直接投稿** |
+| `docs/SimplCore_Paper_v0.1alpha.md` | **0.1-α 原稿归档**（逐字节保留）：架构白皮书 v1.1.2 / 定理 1–4 / 命题 5–7 / §7 分轴等效参数推测 / 旧章节号，供口径追溯 |
 | `docs/THEORETICAL_EDGE.md` | **逐模块的机制层主张与边界论证**：每个模块相对传统 Transformer 的复杂度/状态/机制主张与边界（可执行断言在 `eval/claims_audit.py`） |
 | `docs/ARCHITECTURE.md` | **总体架构设计**：数据流、mixer 分类、流式、记忆、编解码、训练/评测 |
 | `docs/SGC_CORE.md` | **SGC mixer 深度解析**：振荡基字典、FFT↔IIR 对偶、内容门控、局部路径、四层闸门、流式状态 |

@@ -1,0 +1,137 @@
+{
+ "total": 26,
+ "passed": 26,
+ "failed": 0,
+ "checks": [
+  {
+   "name": "摘要不含「超越 Transformer」",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "摘要不含「替代注意力」",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "摘要不含「唯一成本可行」",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "摘要不含「等效 4–7B」",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "摘要不含「SOTA 的模型更好」",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "标题不含「替代注意力」",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "摘要无 [C] 标记",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "结论无 [C] 标记",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "无 arXiv ID / DOI 引用",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 0.2484/0.2476 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 0.5430/0.4478 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 10.817/10.217 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 0.8672/1.0000 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 1.92/1.04 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 0.9720/17.67 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 1.948/120 GiB 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "标注 osc_probe 未复现",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "标注脚本到位≠结论到位",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "证据等级 [R] 已定义并使用",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "证据等级 [E] 已定义并使用",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "证据等级 [A] 已定义并使用",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "证据等级 [C] 已定义并使用",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "含 AI 使用声明模板",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "明确标注当前不宜投稿",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "已撤回 fp32 无条件逐位",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "附录 A 指向归档路径",
+   "passed": true,
+   "detail": ""
+  }
+ ]
+}
