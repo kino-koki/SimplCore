@@ -1,0 +1,118 @@
+{
+ "note": "B1 additive-separation numerical corollary; shared embeddings; train/held-out disjoint; no training, no torch, no external data",
+ "setting": "key = orthogonal one-hot, value = random unit vectors, query = j-th key. Deliberately the MOST favorable setting, so a static failure here is a stronger lower bound.",
+ "static_baseline": "arbitrary FIXED linear map on the concatenated u (strictly more permissive than a static K(tau)) -> optimistic upper bound on any static-kernel model",
+ "scaling": [
+  {
+   "V": 8,
+   "d": 16,
+   "static_train_l2": 0.774461,
+   "static_heldout_l2": 0.907112,
+   "naive_bilinear_heldout_l2": 0.933706,
+   "matched_bilinear_heldout_l2": 0.0
+  },
+  {
+   "V": 8,
+   "d": 32,
+   "static_train_l2": 0.782823,
+   "static_heldout_l2": 0.909649,
+   "naive_bilinear_heldout_l2": 0.937037,
+   "matched_bilinear_heldout_l2": 0.0
+  },
+  {
+   "V": 8,
+   "d": 64,
+   "static_train_l2": 0.797167,
+   "static_heldout_l2": 0.922327,
+   "naive_bilinear_heldout_l2": 0.943113,
+   "matched_bilinear_heldout_l2": 0.0
+  },
+  {
+   "V": 16,
+   "d": 16,
+   "static_train_l2": 0.749831,
+   "static_heldout_l2": 0.964608,
+   "naive_bilinear_heldout_l2": 0.983744,
+   "matched_bilinear_heldout_l2": 0.0
+  },
+  {
+   "V": 16,
+   "d": 32,
+   "static_train_l2": 0.750859,
+   "static_heldout_l2": 0.983212,
+   "naive_bilinear_heldout_l2": 0.983727,
+   "matched_bilinear_heldout_l2": 0.0
+  },
+  {
+   "V": 16,
+   "d": 64,
+   "static_train_l2": 0.749789,
+   "static_heldout_l2": 0.9903,
+   "naive_bilinear_heldout_l2": 0.986942,
+   "matched_bilinear_heldout_l2": 0.0
+  },
+  {
+   "V": 32,
+   "d": 16,
+   "static_train_l2": 0.737479,
+   "static_heldout_l2": 0.9789,
+   "naive_bilinear_heldout_l2": 0.990846,
+   "matched_bilinear_heldout_l2": 0.0
+  },
+  {
+   "V": 32,
+   "d": 32,
+   "static_train_l2": 0.609592,
+   "static_heldout_l2": 1.180017,
+   "naive_bilinear_heldout_l2": 0.985719,
+   "matched_bilinear_heldout_l2": 3e-06
+  },
+  {
+   "V": 32,
+   "d": 64,
+   "static_train_l2": 0.604691,
+   "static_heldout_l2": 1.219106,
+   "naive_bilinear_heldout_l2": 0.987128,
+   "matched_bilinear_heldout_l2": 0.0
+  },
+  {
+   "V": 64,
+   "d": 16,
+   "static_train_l2": 0.715748,
+   "static_heldout_l2": 0.994017,
+   "naive_bilinear_heldout_l2": 0.989112,
+   "matched_bilinear_heldout_l2": 0.0
+  },
+  {
+   "V": 64,
+   "d": 32,
+   "static_train_l2": 0.584493,
+   "static_heldout_l2": 1.247779,
+   "naive_bilinear_heldout_l2": 1.000851,
+   "matched_bilinear_heldout_l2": 0.0
+  },
+  {
+   "V": 64,
+   "d": 64,
+   "static_train_l2": 0.150301,
+   "static_heldout_l2": 5.692624,
+   "naive_bilinear_heldout_l2": 0.998923,
+   "matched_bilinear_heldout_l2": 0.002463
+  }
+ ],
+ "analytic_toy": {
+  "lhs_fixed": 0.9099999999999999,
+  "rhs_possible": [
+   -0.7000000000000001,
+   -0.8999999999999999,
+   1.4,
+   0.0
+  ],
+  "max_abs_gap": 1.8099999999999998,
+  "contradiction": true
+ },
+ "static_stays_positive": true,
+ "naive_bilinear_also_fails": true,
+ "matched_bilinear_collapses": true,
+ "interpretation": "静态线性读出（连比 K(tau) 更宽松的版本）在最有利设置下 held-out 误差恒 >0.5；仅加乘积交互但抹平位置同样失败；只有 key/value 分离 + (q·k_p) 匹配加权（attention / 线性注意力 / FD-CAO 的最小形式）把误差压到 ~0。与 B1 推论一致：打破可加分离需要 query 与 key 的成对匹配，不是任意非线性、任意门控或加长记忆。"
+}
