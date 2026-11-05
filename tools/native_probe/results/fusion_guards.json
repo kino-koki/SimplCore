@@ -1,0 +1,629 @@
+{
+ "B0_base": {
+  "kernel_guard": {
+   "guards": [
+    {
+     "name": "toeplitz",
+     "passed": true,
+     "max_dev": 0.0
+    },
+    {
+     "name": "fft_vs_toeplitz",
+     "passed": true,
+     "rel_err": 3.570736694436011e-16
+    },
+    {
+     "name": "iir_vs_toeplitz",
+     "passed": true,
+     "rel_err": 1.3390262604135042e-15,
+     "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+    },
+    {
+     "name": "strict_causality",
+     "passed": true,
+     "max_past_abs_diff": 0.0
+    },
+    {
+     "name": "state_independent_of_L",
+     "passed": true,
+     "bytes_by_L": {
+      "9": 512,
+      "17": 512,
+      "25": 512,
+      "65": 512
+     }
+    },
+    {
+     "name": "rho_theta_frozen",
+     "fingerprint": 17.69217406252558,
+     "passed": true,
+     "note": "调用方在训练后与训练前逐位比较"
+    }
+   ],
+   "all_passed": true,
+   "M": 16,
+   "L": 9,
+   "C": 4,
+   "state_bytes": 512,
+   "cond_gram": 2.9649947869279245e+17
+  },
+  "kernel_all_passed": true,
+  "end_to_end_fft": "single FFT",
+  "rho_theta_frozen": true,
+  "fingerprint": 17.69217406252558,
+  "state_bytes": 512,
+  "coeff_frozen_note": "a=2ρcosθ, b=−ρ², c=sinθ 与 t 无关 ⇒ 核 Toeplitz",
+  "all_passed": true
+ },
+ "F1_reso": {
+  "kernel_guard": {
+   "guards": [
+    {
+     "name": "toeplitz",
+     "passed": true,
+     "max_dev": 0.0
+    },
+    {
+     "name": "fft_vs_toeplitz",
+     "passed": true,
+     "rel_err": 2.0215005040438455e-16
+    },
+    {
+     "name": "iir_vs_toeplitz",
+     "passed": true,
+     "rel_err": 5.660201411322768e-16,
+     "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+    },
+    {
+     "name": "strict_causality",
+     "passed": true,
+     "max_past_abs_diff": 0.0
+    },
+    {
+     "name": "state_independent_of_L",
+     "passed": true,
+     "bytes_by_L": {
+      "9": 512,
+      "17": 512,
+      "25": 512,
+      "65": 512
+     }
+    },
+    {
+     "name": "rho_theta_frozen",
+     "fingerprint": 25.985338223013947,
+     "passed": true,
+     "note": "调用方在训练后与训练前逐位比较"
+    }
+   ],
+   "all_passed": true,
+   "M": 16,
+   "L": 9,
+   "C": 4,
+   "state_bytes": 512,
+   "cond_gram": 9.334788890060563e+16
+  },
+  "kernel_all_passed": true,
+  "end_to_end_fft": "single FFT",
+  "rho_theta_frozen": true,
+  "fingerprint": 25.985338223013947,
+  "state_bytes": 512,
+  "coeff_frozen_note": "a=2ρcosθ, b=−ρ², c=sinθ 与 t 无关 ⇒ 核 Toeplitz",
+  "all_passed": true
+ },
+ "F2_full": {
+  "kernel_guard": {
+   "guards": [
+    {
+     "name": "toeplitz",
+     "passed": true,
+     "max_dev": 0.0
+    },
+    {
+     "name": "fft_vs_toeplitz",
+     "passed": true,
+     "rel_err": 2.0215005040438455e-16
+    },
+    {
+     "name": "iir_vs_toeplitz",
+     "passed": true,
+     "rel_err": 5.660201411322768e-16,
+     "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+    },
+    {
+     "name": "strict_causality",
+     "passed": true,
+     "max_past_abs_diff": 0.0
+    },
+    {
+     "name": "state_independent_of_L",
+     "passed": true,
+     "bytes_by_L": {
+      "9": 512,
+      "17": 512,
+      "25": 512,
+      "65": 512
+     }
+    },
+    {
+     "name": "rho_theta_frozen",
+     "fingerprint": 25.985338223013947,
+     "passed": true,
+     "note": "调用方在训练后与训练前逐位比较"
+    }
+   ],
+   "all_passed": true,
+   "M": 16,
+   "L": 9,
+   "C": 4,
+   "state_bytes": 512,
+   "cond_gram": 9.334788890060563e+16
+  },
+  "kernel_all_passed": true,
+  "end_to_end_fft": "scan (O(L·M)，u_t 内生依赖 y_{t-1})",
+  "rho_theta_frozen": true,
+  "fingerprint": 25.985338223013947,
+  "state_bytes": 512,
+  "coeff_frozen_note": "a=2ρcosθ, b=−ρ², c=sinθ 与 t 无关 ⇒ 核 Toeplitz",
+  "all_passed": true
+ },
+ "A1_noSFSC": {
+  "kernel_guard": {
+   "guards": [
+    {
+     "name": "toeplitz",
+     "passed": true,
+     "max_dev": 0.0
+    },
+    {
+     "name": "fft_vs_toeplitz",
+     "passed": true,
+     "rel_err": 2.0215005040438455e-16
+    },
+    {
+     "name": "iir_vs_toeplitz",
+     "passed": true,
+     "rel_err": 5.660201411322768e-16,
+     "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+    },
+    {
+     "name": "strict_causality",
+     "passed": true,
+     "max_past_abs_diff": 0.0
+    },
+    {
+     "name": "state_independent_of_L",
+     "passed": true,
+     "bytes_by_L": {
+      "9": 512,
+      "17": 512,
+      "25": 512,
+      "65": 512
+     }
+    },
+    {
+     "name": "rho_theta_frozen",
+     "fingerprint": 25.985338223013947,
+     "passed": true,
+     "note": "调用方在训练后与训练前逐位比较"
+    }
+   ],
+   "all_passed": true,
+   "M": 16,
+   "L": 9,
+   "C": 4,
+   "state_bytes": 512,
+   "cond_gram": 9.334788890060563e+16
+  },
+  "kernel_all_passed": true,
+  "end_to_end_fft": "single FFT",
+  "rho_theta_frozen": true,
+  "fingerprint": 25.985338223013947,
+  "state_bytes": 512,
+  "coeff_frozen_note": "a=2ρcosθ, b=−ρ², c=sinθ 与 t 无关 ⇒ 核 Toeplitz",
+  "all_passed": true
+ },
+ "A2_noFDCAO": {
+  "kernel_guard": {
+   "guards": [
+    {
+     "name": "toeplitz",
+     "passed": true,
+     "max_dev": 0.0
+    },
+    {
+     "name": "fft_vs_toeplitz",
+     "passed": true,
+     "rel_err": 2.0215005040438455e-16
+    },
+    {
+     "name": "iir_vs_toeplitz",
+     "passed": true,
+     "rel_err": 5.660201411322768e-16,
+     "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+    },
+    {
+     "name": "strict_causality",
+     "passed": true,
+     "max_past_abs_diff": 0.0
+    },
+    {
+     "name": "state_independent_of_L",
+     "passed": true,
+     "bytes_by_L": {
+      "9": 512,
+      "17": 512,
+      "25": 512,
+      "65": 512
+     }
+    },
+    {
+     "name": "rho_theta_frozen",
+     "fingerprint": 25.985338223013947,
+     "passed": true,
+     "note": "调用方在训练后与训练前逐位比较"
+    }
+   ],
+   "all_passed": true,
+   "M": 16,
+   "L": 9,
+   "C": 4,
+   "state_bytes": 512,
+   "cond_gram": 9.334788890060563e+16
+  },
+  "kernel_all_passed": true,
+  "end_to_end_fft": "scan (O(L·M)，u_t 内生依赖 y_{t-1})",
+  "rho_theta_frozen": true,
+  "fingerprint": 25.985338223013947,
+  "state_bytes": 512,
+  "coeff_frozen_note": "a=2ρcosθ, b=−ρ², c=sinθ 与 t 无关 ⇒ 核 Toeplitz",
+  "all_passed": true
+ },
+ "A3_noBind": {
+  "kernel_guard": {
+   "guards": [
+    {
+     "name": "toeplitz",
+     "passed": true,
+     "max_dev": 0.0
+    },
+    {
+     "name": "fft_vs_toeplitz",
+     "passed": true,
+     "rel_err": 2.0215005040438455e-16
+    },
+    {
+     "name": "iir_vs_toeplitz",
+     "passed": true,
+     "rel_err": 5.660201411322768e-16,
+     "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+    },
+    {
+     "name": "strict_causality",
+     "passed": true,
+     "max_past_abs_diff": 0.0
+    },
+    {
+     "name": "state_independent_of_L",
+     "passed": true,
+     "bytes_by_L": {
+      "9": 512,
+      "17": 512,
+      "25": 512,
+      "65": 512
+     }
+    },
+    {
+     "name": "rho_theta_frozen",
+     "fingerprint": 25.985338223013947,
+     "passed": true,
+     "note": "调用方在训练后与训练前逐位比较"
+    }
+   ],
+   "all_passed": true,
+   "M": 16,
+   "L": 9,
+   "C": 4,
+   "state_bytes": 512,
+   "cond_gram": 9.334788890060563e+16
+  },
+  "kernel_all_passed": true,
+  "end_to_end_fft": "scan (O(L·M)，u_t 内生依赖 y_{t-1})",
+  "rho_theta_frozen": true,
+  "fingerprint": 25.985338223013947,
+  "state_bytes": 512,
+  "coeff_frozen_note": "a=2ρcosθ, b=−ρ², c=sinθ 与 t 无关 ⇒ 核 Toeplitz",
+  "all_passed": true
+ },
+ "F3_full_C8": {
+  "kernel_guard": {
+   "guards": [
+    {
+     "name": "toeplitz",
+     "passed": true,
+     "max_dev": 0.0
+    },
+    {
+     "name": "fft_vs_toeplitz",
+     "passed": true,
+     "rel_err": 2.8968653844150555e-16
+    },
+    {
+     "name": "iir_vs_toeplitz",
+     "passed": true,
+     "rel_err": 6.880055287985757e-16,
+     "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+    },
+    {
+     "name": "strict_causality",
+     "passed": true,
+     "max_past_abs_diff": 0.0
+    },
+    {
+     "name": "state_independent_of_L",
+     "passed": true,
+     "bytes_by_L": {
+      "9": 1024,
+      "17": 1024,
+      "25": 1024,
+      "65": 1024
+     }
+    },
+    {
+     "name": "rho_theta_frozen",
+     "fingerprint": 25.985338223013947,
+     "passed": true,
+     "note": "调用方在训练后与训练前逐位比较"
+    }
+   ],
+   "all_passed": true,
+   "M": 16,
+   "L": 9,
+   "C": 8,
+   "state_bytes": 1024,
+   "cond_gram": 9.334788890060563e+16
+  },
+  "kernel_all_passed": true,
+  "end_to_end_fft": "scan (O(L·M)，u_t 内生依赖 y_{t-1})",
+  "rho_theta_frozen": true,
+  "fingerprint": 25.985338223013947,
+  "state_bytes": 1024,
+  "coeff_frozen_note": "a=2ρcosθ, b=−ρ², c=sinθ 与 t 无关 ⇒ 核 Toeplitz",
+  "all_passed": true
+ },
+ "UP_softmax": {
+  "kernel_guard": {
+   "all_passed": false,
+   "note": "attention 对照，无 SGC 核"
+  },
+  "end_to_end_fft": "N/A",
+  "state_bytes": 0,
+  "rho_theta_frozen": true,
+  "all_passed": false,
+  "note": "上界对照臂，不参与保持-SGC 判定"
+ },
+ "F4_cell00": {
+  "kernel_guard": {
+   "guards": [
+    {
+     "name": "toeplitz",
+     "passed": true,
+     "max_dev": 0.0
+    },
+    {
+     "name": "fft_vs_toeplitz",
+     "passed": true,
+     "rel_err": 3.570736694436011e-16
+    },
+    {
+     "name": "iir_vs_toeplitz",
+     "passed": true,
+     "rel_err": 1.3390262604135042e-15,
+     "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+    },
+    {
+     "name": "strict_causality",
+     "passed": true,
+     "max_past_abs_diff": 0.0
+    },
+    {
+     "name": "state_independent_of_L",
+     "passed": true,
+     "bytes_by_L": {
+      "9": 512,
+      "17": 512,
+      "25": 512,
+      "65": 512
+     }
+    },
+    {
+     "name": "rho_theta_frozen",
+     "fingerprint": 17.69217406252558,
+     "passed": true,
+     "note": "调用方在训练后与训练前逐位比较"
+    }
+   ],
+   "all_passed": true,
+   "M": 16,
+   "L": 9,
+   "C": 4,
+   "state_bytes": 512,
+   "cond_gram": 2.9649947869279245e+17
+  },
+  "kernel_all_passed": true,
+  "end_to_end_fft": "single FFT",
+  "rho_theta_frozen": true,
+  "fingerprint": 17.69217406252558,
+  "state_bytes": 512,
+  "coeff_frozen_note": "a=2ρcosθ, b=−ρ², c=sinθ 与 t 无关 ⇒ 核 Toeplitz",
+  "all_passed": true
+ },
+ "F5_cell10": {
+  "kernel_guard": {
+   "guards": [
+    {
+     "name": "toeplitz",
+     "passed": true,
+     "max_dev": 0.0
+    },
+    {
+     "name": "fft_vs_toeplitz",
+     "passed": true,
+     "rel_err": 3.570736694436011e-16
+    },
+    {
+     "name": "iir_vs_toeplitz",
+     "passed": true,
+     "rel_err": 1.3390262604135042e-15,
+     "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+    },
+    {
+     "name": "strict_causality",
+     "passed": true,
+     "max_past_abs_diff": 0.0
+    },
+    {
+     "name": "state_independent_of_L",
+     "passed": true,
+     "bytes_by_L": {
+      "9": 512,
+      "17": 512,
+      "25": 512,
+      "65": 512
+     }
+    },
+    {
+     "name": "rho_theta_frozen",
+     "fingerprint": 17.69217406252558,
+     "passed": true,
+     "note": "调用方在训练后与训练前逐位比较"
+    }
+   ],
+   "all_passed": true,
+   "M": 16,
+   "L": 9,
+   "C": 4,
+   "state_bytes": 512,
+   "cond_gram": 2.9649947869279245e+17
+  },
+  "kernel_all_passed": true,
+  "end_to_end_fft": "scan (O(L·M)，u_t 内生依赖 y_{t-1})",
+  "rho_theta_frozen": true,
+  "fingerprint": 17.69217406252558,
+  "state_bytes": 512,
+  "coeff_frozen_note": "a=2ρcosθ, b=−ρ², c=sinθ 与 t 无关 ⇒ 核 Toeplitz",
+  "all_passed": true
+ },
+ "F6_cell01": {
+  "kernel_guard": {
+   "guards": [
+    {
+     "name": "toeplitz",
+     "passed": true,
+     "max_dev": 0.0
+    },
+    {
+     "name": "fft_vs_toeplitz",
+     "passed": true,
+     "rel_err": 3.570736694436011e-16
+    },
+    {
+     "name": "iir_vs_toeplitz",
+     "passed": true,
+     "rel_err": 1.3390262604135042e-15,
+     "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+    },
+    {
+     "name": "strict_causality",
+     "passed": true,
+     "max_past_abs_diff": 0.0
+    },
+    {
+     "name": "state_independent_of_L",
+     "passed": true,
+     "bytes_by_L": {
+      "9": 512,
+      "17": 512,
+      "25": 512,
+      "65": 512
+     }
+    },
+    {
+     "name": "rho_theta_frozen",
+     "fingerprint": 17.69217406252558,
+     "passed": true,
+     "note": "调用方在训练后与训练前逐位比较"
+    }
+   ],
+   "all_passed": true,
+   "M": 16,
+   "L": 9,
+   "C": 4,
+   "state_bytes": 512,
+   "cond_gram": 2.9649947869279245e+17
+  },
+  "kernel_all_passed": true,
+  "end_to_end_fft": "single FFT",
+  "rho_theta_frozen": true,
+  "fingerprint": 17.69217406252558,
+  "state_bytes": 512,
+  "coeff_frozen_note": "a=2ρcosθ, b=−ρ², c=sinθ 与 t 无关 ⇒ 核 Toeplitz",
+  "all_passed": true
+ },
+ "F7_cell11": {
+  "kernel_guard": {
+   "guards": [
+    {
+     "name": "toeplitz",
+     "passed": true,
+     "max_dev": 0.0
+    },
+    {
+     "name": "fft_vs_toeplitz",
+     "passed": true,
+     "rel_err": 3.570736694436011e-16
+    },
+    {
+     "name": "iir_vs_toeplitz",
+     "passed": true,
+     "rel_err": 1.3390262604135042e-15,
+     "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+    },
+    {
+     "name": "strict_causality",
+     "passed": true,
+     "max_past_abs_diff": 0.0
+    },
+    {
+     "name": "state_independent_of_L",
+     "passed": true,
+     "bytes_by_L": {
+      "9": 512,
+      "17": 512,
+      "25": 512,
+      "65": 512
+     }
+    },
+    {
+     "name": "rho_theta_frozen",
+     "fingerprint": 17.69217406252558,
+     "passed": true,
+     "note": "调用方在训练后与训练前逐位比较"
+    }
+   ],
+   "all_passed": true,
+   "M": 16,
+   "L": 9,
+   "C": 4,
+   "state_bytes": 512,
+   "cond_gram": 2.9649947869279245e+17
+  },
+  "kernel_all_passed": true,
+  "end_to_end_fft": "scan (O(L·M)，u_t 内生依赖 y_{t-1})",
+  "rho_theta_frozen": true,
+  "fingerprint": 17.69217406252558,
+  "state_bytes": 512,
+  "coeff_frozen_note": "a=2ρcosθ, b=−ρ², c=sinθ 与 t 无关 ⇒ 核 Toeplitz",
+  "all_passed": true
+ }
+}

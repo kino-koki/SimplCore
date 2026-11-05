@@ -1,0 +1,143 @@
+{
+ "logfreq": {
+  "guards": [
+   {
+    "name": "toeplitz",
+    "passed": true,
+    "max_dev": 0.0
+   },
+   {
+    "name": "fft_vs_toeplitz",
+    "passed": true,
+    "rel_err": 3.570736694436011e-16
+   },
+   {
+    "name": "iir_vs_toeplitz",
+    "passed": true,
+    "rel_err": 1.3390262604135042e-15,
+    "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+   },
+   {
+    "name": "strict_causality",
+    "passed": true,
+    "max_past_abs_diff": 0.0
+   },
+   {
+    "name": "state_independent_of_L",
+    "passed": true,
+    "bytes_by_L": {
+     "9": 512,
+     "17": 512,
+     "25": 512,
+     "65": 512
+    }
+   },
+   {
+    "name": "rho_theta_frozen",
+    "fingerprint": 17.69217406252558,
+    "passed": true,
+    "note": "调用方在训练后与训练前逐位比较"
+   }
+  ],
+  "all_passed": true,
+  "M": 16,
+  "L": 9,
+  "C": 4,
+  "state_bytes": 512,
+  "cond_gram": 2.9649947869279245e+17
+ },
+ "linear": {
+  "guards": [
+   {
+    "name": "toeplitz",
+    "passed": true,
+    "max_dev": 0.0
+   },
+   {
+    "name": "fft_vs_toeplitz",
+    "passed": true,
+    "rel_err": 2.114632197527115e-16
+   },
+   {
+    "name": "iir_vs_toeplitz",
+    "passed": true,
+    "rel_err": 9.86828358845987e-16,
+    "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+   },
+   {
+    "name": "strict_causality",
+    "passed": true,
+    "max_past_abs_diff": 0.0
+   },
+   {
+    "name": "state_independent_of_L",
+    "passed": true,
+    "bytes_by_L": {
+     "9": 512,
+     "17": 512,
+     "25": 512,
+     "65": 512
+    }
+   },
+   {
+    "name": "rho_theta_frozen",
+    "fingerprint": 37.53950108575128,
+    "passed": true,
+    "note": "调用方在训练后与训练前逐位比较"
+   }
+  ],
+  "all_passed": true,
+  "M": 16,
+  "L": 9,
+  "C": 4,
+  "state_bytes": 512,
+  "cond_gram": 3.1670974228100124e+16
+ },
+ "flat": {
+  "guards": [
+   {
+    "name": "toeplitz",
+    "passed": true,
+    "max_dev": 0.0
+   },
+   {
+    "name": "fft_vs_toeplitz",
+    "passed": true,
+    "rel_err": 2.1114109649827197e-16
+   },
+   {
+    "name": "iir_vs_toeplitz",
+    "passed": true,
+    "rel_err": 7.917791118685199e-16,
+    "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+   },
+   {
+    "name": "strict_causality",
+    "passed": true,
+    "max_past_abs_diff": 0.0
+   },
+   {
+    "name": "state_independent_of_L",
+    "passed": true,
+    "bytes_by_L": {
+     "9": 512,
+     "17": 512,
+     "25": 512,
+     "65": 512
+    }
+   },
+   {
+    "name": "rho_theta_frozen",
+    "fingerprint": 39.2,
+    "passed": true,
+    "note": "调用方在训练后与训练前逐位比较"
+   }
+  ],
+  "all_passed": true,
+  "M": 16,
+  "L": 9,
+  "C": 4,
+  "state_bytes": 512,
+  "cond_gram": 1.3784830588349974e+16
+ }
+}

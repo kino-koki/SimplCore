@@ -1,0 +1,32 @@
+{
+ "G2_bipole-vs-G0_osc": {
+  "n": 1536,
+  "mean_diff": 0.19010416666666666,
+  "ci95": [
+   0.158203125,
+   0.22200520833333334
+  ],
+  "seed_pair_diffs": [
+   0.185546875,
+   0.197265625,
+   0.1875
+  ],
+  "all_seed_positive": true,
+  "note": "样本内配对 bootstrap；仅 3 seed，不含 seed 间方差"
+ },
+ "G7_bipole_C32-vs-G0_osc": {
+  "n": 1536,
+  "mean_diff": 0.3743489583333333,
+  "ci95": [
+   0.3470052083333333,
+   0.40234375
+  ],
+  "seed_pair_diffs": [
+   0.361328125,
+   0.3828125,
+   0.37890625
+  ],
+  "all_seed_positive": true,
+  "note": "样本内配对 bootstrap；仅 3 seed，不含 seed 间方差"
+ }
+}

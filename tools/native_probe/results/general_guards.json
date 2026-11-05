@@ -1,0 +1,93 @@
+{
+ "G0_osc": {
+  "toeplitz": true,
+  "fft_iir": true,
+  "iir_vs_toeplitz": true,
+  "strict_causality": true,
+  "state_independent_of_L": true,
+  "max_toeplitz_dev": 0.0,
+  "rel_fft": 3.570736694436011e-16,
+  "rel_iir": 5.088299789571316e-15,
+  "state_bytes": 512,
+  "time_invariance": "(r1,r2)/(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ",
+  "all_passed": true
+ },
+ "G1_osc_learn": {
+  "toeplitz": true,
+  "fft_iir": true,
+  "iir_vs_toeplitz": true,
+  "strict_causality": true,
+  "state_independent_of_L": true,
+  "max_toeplitz_dev": 0.0,
+  "rel_fft": 3.5917328503035475e-16,
+  "rel_iir": 4.130492777849079e-15,
+  "state_bytes": 512,
+  "time_invariance": "(r1,r2)/(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ",
+  "all_passed": true
+ },
+ "G2_bipole": {
+  "toeplitz": true,
+  "fft_iir": true,
+  "iir_vs_toeplitz": true,
+  "strict_causality": true,
+  "state_independent_of_L": true,
+  "max_toeplitz_dev": 0.0,
+  "rel_fft": 2.3083591464002563e-16,
+  "rel_iir": 1.962105274440218e-15,
+  "state_bytes": 512,
+  "time_invariance": "(r1,r2)/(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ",
+  "all_passed": true
+ },
+ "G3_mixed": {
+  "toeplitz": true,
+  "fft_iir": true,
+  "iir_vs_toeplitz": true,
+  "strict_causality": true,
+  "state_independent_of_L": true,
+  "max_toeplitz_dev": 0.0,
+  "rel_fft": 2.9202529331647305e-16,
+  "rel_iir": 2.482214993190021e-15,
+  "state_bytes": 512,
+  "time_invariance": "(r1,r2)/(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ",
+  "all_passed": true
+ },
+ "G4_bipole_C8": {
+  "toeplitz": true,
+  "fft_iir": true,
+  "iir_vs_toeplitz": true,
+  "strict_causality": true,
+  "state_independent_of_L": true,
+  "max_toeplitz_dev": 0.0,
+  "rel_fft": 2.1060517777808482e-16,
+  "rel_iir": 2.1060517777808483e-15,
+  "state_bytes": 1024,
+  "time_invariance": "(r1,r2)/(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ",
+  "all_passed": true
+ },
+ "G5_bipole_C16": {
+  "toeplitz": true,
+  "fft_iir": true,
+  "iir_vs_toeplitz": true,
+  "strict_causality": true,
+  "state_independent_of_L": true,
+  "max_toeplitz_dev": 0.0,
+  "rel_fft": 2.3531622886468897e-16,
+  "rel_iir": 1.686432973530271e-15,
+  "state_bytes": 2048,
+  "time_invariance": "(r1,r2)/(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ",
+  "all_passed": true
+ },
+ "G6_mixed_C16": {
+  "toeplitz": true,
+  "fft_iir": true,
+  "iir_vs_toeplitz": true,
+  "strict_causality": true,
+  "state_independent_of_L": true,
+  "max_toeplitz_dev": 0.0,
+  "rel_fft": 2.3531622886468897e-16,
+  "rel_iir": 1.686432973530271e-15,
+  "state_bytes": 2048,
+  "time_invariance": "(r1,r2)/(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ",
+  "all_passed": true
+ }
+}

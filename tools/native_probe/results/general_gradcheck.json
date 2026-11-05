@@ -1,0 +1,37 @@
+[
+ {
+  "arm": "G0_osc",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "G1_osc_learn",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "G2_bipole",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "G3_mixed",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "G4_bipole_C8",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "G5_bipole_C16",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "G6_mixed_C16",
+  "worst_rel": 0.0,
+  "passed": true
+ }
+]

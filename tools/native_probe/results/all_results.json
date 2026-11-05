@@ -1,0 +1,7517 @@
+{
+ "S0_static": [
+  {
+   "arm": "S0_static",
+   "seed": 0,
+   "params": 8192,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.570736694436011e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.3390262604135042e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.220703125,
+   "shuffle_acc": 0.26171875,
+   "length_generalization": {
+    "L9": 0.23046875,
+    "L17": 0.1015625,
+    "L25": 0.07421875,
+    "L33": 0.05078125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.080934163650347,
+     "acc": 0.01171875
+    },
+    {
+     "step": 200,
+     "loss": 2.923311840926913,
+     "acc": 0.140625
+    },
+    {
+     "step": 400,
+     "loss": 2.3035923445896582,
+     "acc": 0.171875
+    },
+    {
+     "step": 600,
+     "loss": 1.8901876941372588,
+     "acc": 0.1796875
+    },
+    {
+     "step": 800,
+     "loss": 1.3248289766022927,
+     "acc": 0.18359375
+    },
+    {
+     "step": 1000,
+     "loss": 1.8719752972793318,
+     "acc": 0.20703125
+    },
+    {
+     "step": 1200,
+     "loss": 1.500573922575668,
+     "acc": 0.208984375
+    },
+    {
+     "step": 1400,
+     "loss": 0.9054008303404475,
+     "acc": 0.2109375
+    },
+    {
+     "step": 1600,
+     "loss": 1.3094903353937104,
+     "acc": 0.201171875
+    },
+    {
+     "step": 1800,
+     "loss": 0.7975885413094858,
+     "acc": 0.193359375
+    },
+    {
+     "step": 2000,
+     "loss": 0.9108919978538503,
+     "acc": 0.208984375
+    },
+    {
+     "step": 2200,
+     "loss": 1.7504445528389354,
+     "acc": 0.208984375
+    },
+    {
+     "step": 2400,
+     "loss": 0.9811233943829418,
+     "acc": 0.203125
+    },
+    {
+     "step": 2600,
+     "loss": 1.5811524603477038,
+     "acc": 0.2109375
+    },
+    {
+     "step": 2800,
+     "loss": 1.0664403000529248,
+     "acc": 0.23828125
+    },
+    {
+     "step": 3000,
+     "loss": 0.5061943689723973,
+     "acc": 0.220703125
+    }
+   ],
+   "elapsed_s": 6.3,
+   "eliminated": false
+  },
+  {
+   "arm": "S0_static",
+   "seed": 1,
+   "params": 8192,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.152706946550517e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.793922455458764e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.203125,
+   "shuffle_acc": 0.212890625,
+   "length_generalization": {
+    "L9": 0.21484375,
+    "L17": 0.1015625,
+    "L25": 0.08984375,
+    "L33": 0.03125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.252427378359881,
+     "acc": 0.005859375
+    },
+    {
+     "step": 200,
+     "loss": 2.7775869832769002,
+     "acc": 0.111328125
+    },
+    {
+     "step": 400,
+     "loss": 2.023282033485041,
+     "acc": 0.158203125
+    },
+    {
+     "step": 600,
+     "loss": 1.7617398354048954,
+     "acc": 0.169921875
+    },
+    {
+     "step": 800,
+     "loss": 2.129473063040887,
+     "acc": 0.166015625
+    },
+    {
+     "step": 1000,
+     "loss": 1.2733476029071256,
+     "acc": 0.177734375
+    },
+    {
+     "step": 1200,
+     "loss": 1.4213042956020385,
+     "acc": 0.220703125
+    },
+    {
+     "step": 1400,
+     "loss": 1.118257754009908,
+     "acc": 0.220703125
+    },
+    {
+     "step": 1600,
+     "loss": 1.3845452003557006,
+     "acc": 0.2265625
+    },
+    {
+     "step": 1800,
+     "loss": 0.946895182246414,
+     "acc": 0.224609375
+    },
+    {
+     "step": 2000,
+     "loss": 1.1178247600498836,
+     "acc": 0.22265625
+    },
+    {
+     "step": 2200,
+     "loss": 1.2711395220218056,
+     "acc": 0.208984375
+    },
+    {
+     "step": 2400,
+     "loss": 1.635382967670254,
+     "acc": 0.216796875
+    },
+    {
+     "step": 2600,
+     "loss": 1.0952864467298833,
+     "acc": 0.205078125
+    },
+    {
+     "step": 2800,
+     "loss": 0.976509755576128,
+     "acc": 0.19140625
+    },
+    {
+     "step": 3000,
+     "loss": 1.3527417418963636,
+     "acc": 0.203125
+    }
+   ],
+   "elapsed_s": 6.1,
+   "eliminated": false
+  },
+  {
+   "arm": "S0_static",
+   "seed": 2,
+   "params": 8192,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.5065553469371667e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1091774857120335e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.2265625,
+   "shuffle_acc": 0.232421875,
+   "length_generalization": {
+    "L9": 0.18359375,
+    "L17": 0.12109375,
+    "L25": 0.078125,
+    "L33": 0.05859375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.180816378826361,
+     "acc": 0.009765625
+    },
+    {
+     "step": 200,
+     "loss": 2.7782513151833594,
+     "acc": 0.15625
+    },
+    {
+     "step": 400,
+     "loss": 2.290199725356352,
+     "acc": 0.193359375
+    },
+    {
+     "step": 600,
+     "loss": 1.9181686973039414,
+     "acc": 0.205078125
+    },
+    {
+     "step": 800,
+     "loss": 2.007877571674803,
+     "acc": 0.212890625
+    },
+    {
+     "step": 1000,
+     "loss": 1.6743919172953612,
+     "acc": 0.22265625
+    },
+    {
+     "step": 1200,
+     "loss": 1.463364771521492,
+     "acc": 0.201171875
+    },
+    {
+     "step": 1400,
+     "loss": 1.3106940706691872,
+     "acc": 0.205078125
+    },
+    {
+     "step": 1600,
+     "loss": 1.4368105447406068,
+     "acc": 0.2109375
+    },
+    {
+     "step": 1800,
+     "loss": 1.525641821186881,
+     "acc": 0.236328125
+    },
+    {
+     "step": 2000,
+     "loss": 1.0094054945942237,
+     "acc": 0.212890625
+    },
+    {
+     "step": 2200,
+     "loss": 1.116350394501696,
+     "acc": 0.24609375
+    },
+    {
+     "step": 2400,
+     "loss": 0.9851759159464106,
+     "acc": 0.2265625
+    },
+    {
+     "step": 2600,
+     "loss": 1.4956398057248887,
+     "acc": 0.23828125
+    },
+    {
+     "step": 2800,
+     "loss": 0.9158753265912409,
+     "acc": 0.228515625
+    },
+    {
+     "step": 3000,
+     "loss": 1.1566466848846122,
+     "acc": 0.2265625
+    }
+   ],
+   "elapsed_s": 6.2,
+   "eliminated": false
+  }
+ ],
+ "S1_demod": [
+  {
+   "arm": "S1_demod",
+   "seed": 0,
+   "params": 10240,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.570736694436011e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.3390262604135042e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.201171875,
+   "shuffle_acc": 0.220703125,
+   "length_generalization": {
+    "L9": 0.1875,
+    "L17": 0.0703125,
+    "L25": 0.06640625,
+    "L33": 0.0546875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.152535471202889,
+     "acc": 0.009765625
+    },
+    {
+     "step": 200,
+     "loss": 3.2345930668580833,
+     "acc": 0.078125
+    },
+    {
+     "step": 400,
+     "loss": 2.073279343008,
+     "acc": 0.177734375
+    },
+    {
+     "step": 600,
+     "loss": 1.7812231154450213,
+     "acc": 0.208984375
+    },
+    {
+     "step": 800,
+     "loss": 1.196007574907026,
+     "acc": 0.197265625
+    },
+    {
+     "step": 1000,
+     "loss": 1.317893112277017,
+     "acc": 0.20703125
+    },
+    {
+     "step": 1200,
+     "loss": 1.4567676725584233,
+     "acc": 0.1953125
+    },
+    {
+     "step": 1400,
+     "loss": 1.4486311408845118,
+     "acc": 0.21484375
+    },
+    {
+     "step": 1600,
+     "loss": 0.6598926140265171,
+     "acc": 0.21875
+    },
+    {
+     "step": 1800,
+     "loss": 0.5865700256090702,
+     "acc": 0.203125
+    },
+    {
+     "step": 2000,
+     "loss": 0.7040195272633039,
+     "acc": 0.197265625
+    },
+    {
+     "step": 2200,
+     "loss": 0.8733267159585061,
+     "acc": 0.205078125
+    },
+    {
+     "step": 2400,
+     "loss": 0.723008947633357,
+     "acc": 0.185546875
+    },
+    {
+     "step": 2600,
+     "loss": 0.9517847193048753,
+     "acc": 0.208984375
+    },
+    {
+     "step": 2800,
+     "loss": 0.9635141712107783,
+     "acc": 0.1875
+    },
+    {
+     "step": 3000,
+     "loss": 0.5473096485104575,
+     "acc": 0.201171875
+    }
+   ],
+   "elapsed_s": 6.8,
+   "eliminated": false
+  },
+  {
+   "arm": "S1_demod",
+   "seed": 1,
+   "params": 10240,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.152706946550517e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.793922455458764e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.1875,
+   "shuffle_acc": 0.19140625,
+   "length_generalization": {
+    "L9": 0.2265625,
+    "L17": 0.12109375,
+    "L25": 0.06640625,
+    "L33": 0.04296875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.1596704246325285,
+     "acc": 0.009765625
+    },
+    {
+     "step": 200,
+     "loss": 3.0289398519337714,
+     "acc": 0.072265625
+    },
+    {
+     "step": 400,
+     "loss": 2.4115592051720847,
+     "acc": 0.1328125
+    },
+    {
+     "step": 600,
+     "loss": 1.879188183971273,
+     "acc": 0.1484375
+    },
+    {
+     "step": 800,
+     "loss": 1.7572580508645324,
+     "acc": 0.17578125
+    },
+    {
+     "step": 1000,
+     "loss": 1.54639877704941,
+     "acc": 0.162109375
+    },
+    {
+     "step": 1200,
+     "loss": 1.2705754224015025,
+     "acc": 0.185546875
+    },
+    {
+     "step": 1400,
+     "loss": 0.842413400523008,
+     "acc": 0.203125
+    },
+    {
+     "step": 1600,
+     "loss": 1.4767855504699132,
+     "acc": 0.19140625
+    },
+    {
+     "step": 1800,
+     "loss": 0.5191370477471354,
+     "acc": 0.19921875
+    },
+    {
+     "step": 2000,
+     "loss": 0.4878845485967891,
+     "acc": 0.201171875
+    },
+    {
+     "step": 2200,
+     "loss": 0.5852546095468935,
+     "acc": 0.205078125
+    },
+    {
+     "step": 2400,
+     "loss": 0.6547926567425906,
+     "acc": 0.201171875
+    },
+    {
+     "step": 2600,
+     "loss": 0.5237629616905609,
+     "acc": 0.18359375
+    },
+    {
+     "step": 2800,
+     "loss": 0.32022231906617277,
+     "acc": 0.201171875
+    },
+    {
+     "step": 3000,
+     "loss": 0.2556953719174314,
+     "acc": 0.1875
+    }
+   ],
+   "elapsed_s": 6.4,
+   "eliminated": false
+  },
+  {
+   "arm": "S1_demod",
+   "seed": 2,
+   "params": 10240,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.5065553469371667e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1091774857120335e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.197265625,
+   "shuffle_acc": 0.21484375,
+   "length_generalization": {
+    "L9": 0.203125,
+    "L17": 0.078125,
+    "L25": 0.08203125,
+    "L33": 0.05859375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.15937132030753,
+     "acc": 0.01171875
+    },
+    {
+     "step": 200,
+     "loss": 3.187414773071625,
+     "acc": 0.08203125
+    },
+    {
+     "step": 400,
+     "loss": 2.4162473939113394,
+     "acc": 0.1875
+    },
+    {
+     "step": 600,
+     "loss": 1.6257788362519423,
+     "acc": 0.19140625
+    },
+    {
+     "step": 800,
+     "loss": 1.7162372647069715,
+     "acc": 0.203125
+    },
+    {
+     "step": 1000,
+     "loss": 1.32833815701418,
+     "acc": 0.208984375
+    },
+    {
+     "step": 1200,
+     "loss": 1.1702251752669806,
+     "acc": 0.19140625
+    },
+    {
+     "step": 1400,
+     "loss": 0.8315118065514805,
+     "acc": 0.1953125
+    },
+    {
+     "step": 1600,
+     "loss": 1.0316268425644637,
+     "acc": 0.205078125
+    },
+    {
+     "step": 1800,
+     "loss": 1.3492813572638032,
+     "acc": 0.18359375
+    },
+    {
+     "step": 2000,
+     "loss": 0.7613074613872515,
+     "acc": 0.18359375
+    },
+    {
+     "step": 2200,
+     "loss": 0.4807687336983912,
+     "acc": 0.193359375
+    },
+    {
+     "step": 2400,
+     "loss": 1.1351462992067434,
+     "acc": 0.193359375
+    },
+    {
+     "step": 2600,
+     "loss": 0.6119883782266843,
+     "acc": 0.193359375
+    },
+    {
+     "step": 2800,
+     "loss": 0.4932172724453242,
+     "acc": 0.20703125
+    },
+    {
+     "step": 3000,
+     "loss": 0.550430970175352,
+     "acc": 0.197265625
+    }
+   ],
+   "elapsed_s": 6.5,
+   "eliminated": false
+  }
+ ],
+ "S2_bind": [
+  {
+   "arm": "S2_bind",
+   "seed": 0,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.570736694436011e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.3390262604135042e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.529296875,
+   "shuffle_acc": 0.505859375,
+   "length_generalization": {
+    "L9": 0.47265625,
+    "L17": 0.1875,
+    "L25": 0.1484375,
+    "L33": 0.09765625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158334847452692,
+     "acc": 0.033203125
+    },
+    {
+     "step": 200,
+     "loss": 3.0184429814384615,
+     "acc": 0.189453125
+    },
+    {
+     "step": 400,
+     "loss": 1.6383728943039102,
+     "acc": 0.37109375
+    },
+    {
+     "step": 600,
+     "loss": 0.6918360808009414,
+     "acc": 0.439453125
+    },
+    {
+     "step": 800,
+     "loss": 0.17715685111952462,
+     "acc": 0.48046875
+    },
+    {
+     "step": 1000,
+     "loss": 0.11131402493138193,
+     "acc": 0.517578125
+    },
+    {
+     "step": 1200,
+     "loss": 0.05021290614412395,
+     "acc": 0.517578125
+    },
+    {
+     "step": 1400,
+     "loss": 0.014785988144196583,
+     "acc": 0.509765625
+    },
+    {
+     "step": 1600,
+     "loss": 0.010561351912174265,
+     "acc": 0.521484375
+    },
+    {
+     "step": 1800,
+     "loss": 0.00408238340931326,
+     "acc": 0.5234375
+    },
+    {
+     "step": 2000,
+     "loss": 0.0018177817438548216,
+     "acc": 0.5234375
+    },
+    {
+     "step": 2200,
+     "loss": 0.0012320715827596534,
+     "acc": 0.525390625
+    },
+    {
+     "step": 2400,
+     "loss": 0.0017418251375137552,
+     "acc": 0.5234375
+    },
+    {
+     "step": 2600,
+     "loss": 0.0026316444494058964,
+     "acc": 0.525390625
+    },
+    {
+     "step": 2800,
+     "loss": 0.0008241512015921512,
+     "acc": 0.525390625
+    },
+    {
+     "step": 3000,
+     "loss": 0.0014448175717086027,
+     "acc": 0.529296875
+    }
+   ],
+   "elapsed_s": 8.4,
+   "eliminated": false
+  },
+  {
+   "arm": "S2_bind",
+   "seed": 1,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.152706946550517e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.793922455458764e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.572265625,
+   "shuffle_acc": 0.541015625,
+   "length_generalization": {
+    "L9": 0.52734375,
+    "L17": 0.21875,
+    "L25": 0.20703125,
+    "L33": 0.12109375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158170065580377,
+     "acc": 0.015625
+    },
+    {
+     "step": 200,
+     "loss": 3.248762439607022,
+     "acc": 0.177734375
+    },
+    {
+     "step": 400,
+     "loss": 1.047485442700317,
+     "acc": 0.38671875
+    },
+    {
+     "step": 600,
+     "loss": 0.17719200056208972,
+     "acc": 0.501953125
+    },
+    {
+     "step": 800,
+     "loss": 0.30629647858353715,
+     "acc": 0.525390625
+    },
+    {
+     "step": 1000,
+     "loss": 0.19832565423627296,
+     "acc": 0.537109375
+    },
+    {
+     "step": 1200,
+     "loss": 0.024389724684002766,
+     "acc": 0.5546875
+    },
+    {
+     "step": 1400,
+     "loss": 0.01061820194703885,
+     "acc": 0.56640625
+    },
+    {
+     "step": 1600,
+     "loss": 0.006738694377742748,
+     "acc": 0.55859375
+    },
+    {
+     "step": 1800,
+     "loss": 0.0021587121840418388,
+     "acc": 0.560546875
+    },
+    {
+     "step": 2000,
+     "loss": 0.0018507803143660065,
+     "acc": 0.564453125
+    },
+    {
+     "step": 2200,
+     "loss": 0.002508976085745378,
+     "acc": 0.5625
+    },
+    {
+     "step": 2400,
+     "loss": 0.0011414851426882323,
+     "acc": 0.5703125
+    },
+    {
+     "step": 2600,
+     "loss": 0.0010032981800546746,
+     "acc": 0.57421875
+    },
+    {
+     "step": 2800,
+     "loss": 0.0006927234440796442,
+     "acc": 0.57421875
+    },
+    {
+     "step": 3000,
+     "loss": 0.0007607193989668999,
+     "acc": 0.572265625
+    }
+   ],
+   "elapsed_s": 7.8,
+   "eliminated": false
+  },
+  {
+   "arm": "S2_bind",
+   "seed": 2,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.5065553469371667e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1091774857120335e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.548828125,
+   "shuffle_acc": 0.560546875,
+   "length_generalization": {
+    "L9": 0.5625,
+    "L17": 0.30078125,
+    "L25": 0.1953125,
+    "L33": 0.0859375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.159541653915552,
+     "acc": 0.015625
+    },
+    {
+     "step": 200,
+     "loss": 2.4139727512891826,
+     "acc": 0.185546875
+    },
+    {
+     "step": 400,
+     "loss": 0.8751665204846262,
+     "acc": 0.412109375
+    },
+    {
+     "step": 600,
+     "loss": 0.6666010661904489,
+     "acc": 0.484375
+    },
+    {
+     "step": 800,
+     "loss": 0.11384600077960622,
+     "acc": 0.53515625
+    },
+    {
+     "step": 1000,
+     "loss": 0.12477969297430604,
+     "acc": 0.53125
+    },
+    {
+     "step": 1200,
+     "loss": 0.086239725246724,
+     "acc": 0.52734375
+    },
+    {
+     "step": 1400,
+     "loss": 0.030516124635163344,
+     "acc": 0.521484375
+    },
+    {
+     "step": 1600,
+     "loss": 0.0070514869901220495,
+     "acc": 0.5390625
+    },
+    {
+     "step": 1800,
+     "loss": 0.0027031284586799976,
+     "acc": 0.55078125
+    },
+    {
+     "step": 2000,
+     "loss": 0.005806574725539012,
+     "acc": 0.54296875
+    },
+    {
+     "step": 2200,
+     "loss": 0.0018829732864067948,
+     "acc": 0.546875
+    },
+    {
+     "step": 2400,
+     "loss": 0.0013541413182113545,
+     "acc": 0.544921875
+    },
+    {
+     "step": 2600,
+     "loss": 0.0008731893302128734,
+     "acc": 0.55078125
+    },
+    {
+     "step": 2800,
+     "loss": 0.0007026793560283206,
+     "acc": 0.548828125
+    },
+    {
+     "step": 3000,
+     "loss": 0.0007336787408470278,
+     "acc": 0.548828125
+    }
+   ],
+   "elapsed_s": 7.2,
+   "eliminated": false
+  }
+ ],
+ "S3_bind_orth": [
+  {
+   "arm": "S3_bind_orth",
+   "seed": 0,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.114632197527115e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 9.86828358845987e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 37.53950108575128,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 3.1670974228100124e+16
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 37.53950108575128,
+   "fingerprint_after": 37.53950108575128,
+   "final_acc": 0.076171875,
+   "shuffle_acc": 0.08984375,
+   "length_generalization": {
+    "L9": 0.109375,
+    "L17": 0.0390625,
+    "L25": 0.04296875,
+    "L33": 0.02734375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.15954335589965,
+     "acc": 0.013671875
+    },
+    {
+     "step": 200,
+     "loss": 3.257100621919598,
+     "acc": 0.037109375
+    },
+    {
+     "step": 400,
+     "loss": 2.009612684451583,
+     "acc": 0.06640625
+    },
+    {
+     "step": 600,
+     "loss": 1.557251575194427,
+     "acc": 0.080078125
+    },
+    {
+     "step": 800,
+     "loss": 1.2135360361516452,
+     "acc": 0.068359375
+    },
+    {
+     "step": 1000,
+     "loss": 1.079705038157474,
+     "acc": 0.078125
+    },
+    {
+     "step": 1200,
+     "loss": 0.8886637647233979,
+     "acc": 0.080078125
+    },
+    {
+     "step": 1400,
+     "loss": 0.5612916053704821,
+     "acc": 0.078125
+    },
+    {
+     "step": 1600,
+     "loss": 0.5210281806151792,
+     "acc": 0.080078125
+    },
+    {
+     "step": 1800,
+     "loss": 0.08303360607882616,
+     "acc": 0.078125
+    },
+    {
+     "step": 2000,
+     "loss": 0.3122257950566539,
+     "acc": 0.087890625
+    },
+    {
+     "step": 2200,
+     "loss": 0.08335866067542334,
+     "acc": 0.078125
+    },
+    {
+     "step": 2400,
+     "loss": 0.029289867473653287,
+     "acc": 0.078125
+    },
+    {
+     "step": 2600,
+     "loss": 0.2984212808870054,
+     "acc": 0.080078125
+    },
+    {
+     "step": 2800,
+     "loss": 0.13038985032332767,
+     "acc": 0.078125
+    },
+    {
+     "step": 3000,
+     "loss": 0.06036710613526436,
+     "acc": 0.076171875
+    }
+   ],
+   "elapsed_s": 7.0,
+   "eliminated": false
+  },
+  {
+   "arm": "S3_bind_orth",
+   "seed": 1,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.302041436157945e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.5346942907719634e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 37.53950108575128,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 3.1670974228100124e+16
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 37.53950108575128,
+   "fingerprint_after": 37.53950108575128,
+   "final_acc": 0.1015625,
+   "shuffle_acc": 0.095703125,
+   "length_generalization": {
+    "L9": 0.078125,
+    "L17": 0.0625,
+    "L25": 0.0390625,
+    "L33": 0.046875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158689855907533,
+     "acc": 0.017578125
+    },
+    {
+     "step": 200,
+     "loss": 3.391667453267156,
+     "acc": 0.0625
+    },
+    {
+     "step": 400,
+     "loss": 1.1971439232491647,
+     "acc": 0.10546875
+    },
+    {
+     "step": 600,
+     "loss": 1.9608571497539709,
+     "acc": 0.087890625
+    },
+    {
+     "step": 800,
+     "loss": 1.1098670492085956,
+     "acc": 0.08984375
+    },
+    {
+     "step": 1000,
+     "loss": 0.5093741338031005,
+     "acc": 0.087890625
+    },
+    {
+     "step": 1200,
+     "loss": 0.4952988201661339,
+     "acc": 0.099609375
+    },
+    {
+     "step": 1400,
+     "loss": 0.3665942995221518,
+     "acc": 0.083984375
+    },
+    {
+     "step": 1600,
+     "loss": 0.5306705961674614,
+     "acc": 0.08203125
+    },
+    {
+     "step": 1800,
+     "loss": 0.09153015778171067,
+     "acc": 0.08203125
+    },
+    {
+     "step": 2000,
+     "loss": 0.02875553005176173,
+     "acc": 0.0703125
+    },
+    {
+     "step": 2200,
+     "loss": 0.08358965755069184,
+     "acc": 0.08203125
+    },
+    {
+     "step": 2400,
+     "loss": 0.07716176133058678,
+     "acc": 0.08203125
+    },
+    {
+     "step": 2600,
+     "loss": 0.05490212636814232,
+     "acc": 0.078125
+    },
+    {
+     "step": 2800,
+     "loss": 0.05938593500453589,
+     "acc": 0.078125
+    },
+    {
+     "step": 3000,
+     "loss": 0.14485748571826385,
+     "acc": 0.1015625
+    }
+   ],
+   "elapsed_s": 7.1,
+   "eliminated": false
+  },
+  {
+   "arm": "S3_bind_orth",
+   "seed": 2,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1400789971262774e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.0343715152777007e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 37.53950108575128,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 3.1670974228100124e+16
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 37.53950108575128,
+   "fingerprint_after": 37.53950108575128,
+   "final_acc": 0.09765625,
+   "shuffle_acc": 0.08203125,
+   "length_generalization": {
+    "L9": 0.07421875,
+    "L17": 0.0390625,
+    "L25": 0.0234375,
+    "L33": 0.02734375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.156686833954871,
+     "acc": 0.015625
+    },
+    {
+     "step": 200,
+     "loss": 3.2753775130457403,
+     "acc": 0.056640625
+    },
+    {
+     "step": 400,
+     "loss": 2.0320890377175513,
+     "acc": 0.1015625
+    },
+    {
+     "step": 600,
+     "loss": 1.8526766196525413,
+     "acc": 0.109375
+    },
+    {
+     "step": 800,
+     "loss": 1.4139199310711028,
+     "acc": 0.083984375
+    },
+    {
+     "step": 1000,
+     "loss": 1.449963776304826,
+     "acc": 0.09765625
+    },
+    {
+     "step": 1200,
+     "loss": 0.5440412857826447,
+     "acc": 0.103515625
+    },
+    {
+     "step": 1400,
+     "loss": 0.502493822584446,
+     "acc": 0.111328125
+    },
+    {
+     "step": 1600,
+     "loss": 0.4551983499264382,
+     "acc": 0.107421875
+    },
+    {
+     "step": 1800,
+     "loss": 0.1266988938641085,
+     "acc": 0.10546875
+    },
+    {
+     "step": 2000,
+     "loss": 0.2601759177317604,
+     "acc": 0.111328125
+    },
+    {
+     "step": 2200,
+     "loss": 0.09677411413280546,
+     "acc": 0.10546875
+    },
+    {
+     "step": 2400,
+     "loss": 0.27339320272451684,
+     "acc": 0.103515625
+    },
+    {
+     "step": 2600,
+     "loss": 0.028272022457043397,
+     "acc": 0.091796875
+    },
+    {
+     "step": 2800,
+     "loss": 0.023970932772203093,
+     "acc": 0.107421875
+    },
+    {
+     "step": 3000,
+     "loss": 0.011000944864278724,
+     "acc": 0.09765625
+    }
+   ],
+   "elapsed_s": 6.9,
+   "eliminated": false
+  }
+ ],
+ "S4_phase_orth": [
+  {
+   "arm": "S4_phase_orth",
+   "seed": 0,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.114632197527115e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 9.86828358845987e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 37.53950108575128,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 3.1670974228100124e+16
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 37.53950108575128,
+   "fingerprint_after": 37.53950108575128,
+   "final_acc": 0.078125,
+   "shuffle_acc": 0.08203125,
+   "length_generalization": {
+    "L9": 0.10546875,
+    "L17": 0.0390625,
+    "L25": 0.04296875,
+    "L33": 0.05078125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.1595332521342705,
+     "acc": 0.013671875
+    },
+    {
+     "step": 200,
+     "loss": 3.238427648128228,
+     "acc": 0.044921875
+    },
+    {
+     "step": 400,
+     "loss": 2.474448644999491,
+     "acc": 0.06640625
+    },
+    {
+     "step": 600,
+     "loss": 1.9017720074848765,
+     "acc": 0.068359375
+    },
+    {
+     "step": 800,
+     "loss": 0.9598456471227652,
+     "acc": 0.068359375
+    },
+    {
+     "step": 1000,
+     "loss": 1.1934037130226955,
+     "acc": 0.08203125
+    },
+    {
+     "step": 1200,
+     "loss": 1.6284488990488166,
+     "acc": 0.083984375
+    },
+    {
+     "step": 1400,
+     "loss": 0.9097349209389156,
+     "acc": 0.078125
+    },
+    {
+     "step": 1600,
+     "loss": 0.5859260950053424,
+     "acc": 0.072265625
+    },
+    {
+     "step": 1800,
+     "loss": 0.22118183259772214,
+     "acc": 0.0703125
+    },
+    {
+     "step": 2000,
+     "loss": 0.8057073641686671,
+     "acc": 0.078125
+    },
+    {
+     "step": 2200,
+     "loss": 0.19930589333008986,
+     "acc": 0.087890625
+    },
+    {
+     "step": 2400,
+     "loss": 0.05867086803504375,
+     "acc": 0.091796875
+    },
+    {
+     "step": 2600,
+     "loss": 0.43623831449603745,
+     "acc": 0.078125
+    },
+    {
+     "step": 2800,
+     "loss": 0.07807366295729294,
+     "acc": 0.078125
+    },
+    {
+     "step": 3000,
+     "loss": 0.03048974720027198,
+     "acc": 0.078125
+    }
+   ],
+   "elapsed_s": 8.3,
+   "eliminated": false
+  },
+  {
+   "arm": "S4_phase_orth",
+   "seed": 1,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.302041436157945e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.5346942907719634e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 37.53950108575128,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 3.1670974228100124e+16
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 37.53950108575128,
+   "fingerprint_after": 37.53950108575128,
+   "final_acc": 0.078125,
+   "shuffle_acc": 0.087890625,
+   "length_generalization": {
+    "L9": 0.11328125,
+    "L17": 0.08984375,
+    "L25": 0.05078125,
+    "L33": 0.01953125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158694015608237,
+     "acc": 0.01953125
+    },
+    {
+     "step": 200,
+     "loss": 3.4034725769919767,
+     "acc": 0.0625
+    },
+    {
+     "step": 400,
+     "loss": 1.307792727770512,
+     "acc": 0.107421875
+    },
+    {
+     "step": 600,
+     "loss": 1.8592715323623588,
+     "acc": 0.119140625
+    },
+    {
+     "step": 800,
+     "loss": 1.3913194423216184,
+     "acc": 0.109375
+    },
+    {
+     "step": 1000,
+     "loss": 0.5879587159750874,
+     "acc": 0.099609375
+    },
+    {
+     "step": 1200,
+     "loss": 1.1078083241551886,
+     "acc": 0.083984375
+    },
+    {
+     "step": 1400,
+     "loss": 0.5844317784717066,
+     "acc": 0.087890625
+    },
+    {
+     "step": 1600,
+     "loss": 0.6422217187360975,
+     "acc": 0.0859375
+    },
+    {
+     "step": 1800,
+     "loss": 0.25338711925530394,
+     "acc": 0.083984375
+    },
+    {
+     "step": 2000,
+     "loss": 0.146491578580625,
+     "acc": 0.080078125
+    },
+    {
+     "step": 2200,
+     "loss": 0.12691916798508654,
+     "acc": 0.083984375
+    },
+    {
+     "step": 2400,
+     "loss": 0.10501577315376807,
+     "acc": 0.080078125
+    },
+    {
+     "step": 2600,
+     "loss": 0.12736819432272806,
+     "acc": 0.0859375
+    },
+    {
+     "step": 2800,
+     "loss": 0.04486930829168901,
+     "acc": 0.08984375
+    },
+    {
+     "step": 3000,
+     "loss": 0.06351544299329323,
+     "acc": 0.078125
+    }
+   ],
+   "elapsed_s": 8.2,
+   "eliminated": false
+  },
+  {
+   "arm": "S4_phase_orth",
+   "seed": 2,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1400789971262774e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.0343715152777007e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 37.53950108575128,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 3.1670974228100124e+16
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 37.53950108575128,
+   "fingerprint_after": 37.53950108575128,
+   "final_acc": 0.091796875,
+   "shuffle_acc": 0.09765625,
+   "length_generalization": {
+    "L9": 0.11328125,
+    "L17": 0.0234375,
+    "L25": 0.0390625,
+    "L33": 0.04296875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.156723010812227,
+     "acc": 0.015625
+    },
+    {
+     "step": 200,
+     "loss": 3.4002910936465476,
+     "acc": 0.05859375
+    },
+    {
+     "step": 400,
+     "loss": 2.1494804312802085,
+     "acc": 0.09765625
+    },
+    {
+     "step": 600,
+     "loss": 1.5416809936670246,
+     "acc": 0.07421875
+    },
+    {
+     "step": 800,
+     "loss": 1.3267484418841442,
+     "acc": 0.08203125
+    },
+    {
+     "step": 1000,
+     "loss": 1.797860549941943,
+     "acc": 0.083984375
+    },
+    {
+     "step": 1200,
+     "loss": 0.6791616448008125,
+     "acc": 0.08203125
+    },
+    {
+     "step": 1400,
+     "loss": 0.4438177997487766,
+     "acc": 0.080078125
+    },
+    {
+     "step": 1600,
+     "loss": 0.4905598903025799,
+     "acc": 0.080078125
+    },
+    {
+     "step": 1800,
+     "loss": 0.1723480047816245,
+     "acc": 0.095703125
+    },
+    {
+     "step": 2000,
+     "loss": 0.8015746411536536,
+     "acc": 0.09765625
+    },
+    {
+     "step": 2200,
+     "loss": 0.2878859060690575,
+     "acc": 0.099609375
+    },
+    {
+     "step": 2400,
+     "loss": 0.4481989709909844,
+     "acc": 0.091796875
+    },
+    {
+     "step": 2600,
+     "loss": 0.10157393711299106,
+     "acc": 0.103515625
+    },
+    {
+     "step": 2800,
+     "loss": 0.10549294151826889,
+     "acc": 0.1015625
+    },
+    {
+     "step": 3000,
+     "loss": 0.05766219953383672,
+     "acc": 0.091796875
+    }
+   ],
+   "elapsed_s": 8.2,
+   "eliminated": false
+  }
+ ],
+ "S5_bind_flat": [
+  {
+   "arm": "S5_bind_flat",
+   "seed": 0,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1114109649827197e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 7.917791118685199e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 39.2,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 1.3784830588349974e+16
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 39.2,
+   "fingerprint_after": 39.2,
+   "final_acc": 0.1015625,
+   "shuffle_acc": 0.1015625,
+   "length_generalization": {
+    "L9": 0.11328125,
+    "L17": 0.05078125,
+    "L25": 0.0390625,
+    "L33": 0.02734375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.15932014481787,
+     "acc": 0.013671875
+    },
+    {
+     "step": 200,
+     "loss": 2.713739036490588,
+     "acc": 0.06640625
+    },
+    {
+     "step": 400,
+     "loss": 2.5310873746321345,
+     "acc": 0.06640625
+    },
+    {
+     "step": 600,
+     "loss": 1.31780102082652,
+     "acc": 0.099609375
+    },
+    {
+     "step": 800,
+     "loss": 1.0791102647618462,
+     "acc": 0.083984375
+    },
+    {
+     "step": 1000,
+     "loss": 0.845709088161146,
+     "acc": 0.107421875
+    },
+    {
+     "step": 1200,
+     "loss": 1.2918997396577194,
+     "acc": 0.0859375
+    },
+    {
+     "step": 1400,
+     "loss": 0.16519803829646496,
+     "acc": 0.0859375
+    },
+    {
+     "step": 1600,
+     "loss": 0.173364574487537,
+     "acc": 0.08984375
+    },
+    {
+     "step": 1800,
+     "loss": 0.03941786758235037,
+     "acc": 0.091796875
+    },
+    {
+     "step": 2000,
+     "loss": 0.03284562395245348,
+     "acc": 0.087890625
+    },
+    {
+     "step": 2200,
+     "loss": 0.21458025028659922,
+     "acc": 0.091796875
+    },
+    {
+     "step": 2400,
+     "loss": 0.21314408146035912,
+     "acc": 0.087890625
+    },
+    {
+     "step": 2600,
+     "loss": 0.18929647102910155,
+     "acc": 0.109375
+    },
+    {
+     "step": 2800,
+     "loss": 0.01397215502109774,
+     "acc": 0.1015625
+    },
+    {
+     "step": 3000,
+     "loss": 0.023855471980121057,
+     "acc": 0.1015625
+    }
+   ],
+   "elapsed_s": 7.2,
+   "eliminated": false
+  },
+  {
+   "arm": "S5_bind_flat",
+   "seed": 1,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.7462704908603434e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 8.731352454301717e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 39.2,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 1.3784830588349974e+16
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 39.2,
+   "fingerprint_after": 39.2,
+   "final_acc": 0.099609375,
+   "shuffle_acc": 0.1015625,
+   "length_generalization": {
+    "L9": 0.10546875,
+    "L17": 0.04296875,
+    "L25": 0.03515625,
+    "L33": 0.03515625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.159683044262745,
+     "acc": 0.01171875
+    },
+    {
+     "step": 200,
+     "loss": 3.1757286013432,
+     "acc": 0.056640625
+    },
+    {
+     "step": 400,
+     "loss": 0.9886222046452036,
+     "acc": 0.09765625
+    },
+    {
+     "step": 600,
+     "loss": 1.995650963335101,
+     "acc": 0.1171875
+    },
+    {
+     "step": 800,
+     "loss": 0.4050062813289751,
+     "acc": 0.1171875
+    },
+    {
+     "step": 1000,
+     "loss": 0.4228153989315559,
+     "acc": 0.111328125
+    },
+    {
+     "step": 1200,
+     "loss": 0.26443261107806176,
+     "acc": 0.103515625
+    },
+    {
+     "step": 1400,
+     "loss": 0.34566759987714435,
+     "acc": 0.10546875
+    },
+    {
+     "step": 1600,
+     "loss": 0.06673219264785378,
+     "acc": 0.11328125
+    },
+    {
+     "step": 1800,
+     "loss": 0.15405140500855574,
+     "acc": 0.103515625
+    },
+    {
+     "step": 2000,
+     "loss": 0.054005964054342756,
+     "acc": 0.109375
+    },
+    {
+     "step": 2200,
+     "loss": 0.015857936666774944,
+     "acc": 0.1015625
+    },
+    {
+     "step": 2400,
+     "loss": 0.05688277180443948,
+     "acc": 0.10546875
+    },
+    {
+     "step": 2600,
+     "loss": 0.01820576158419894,
+     "acc": 0.1015625
+    },
+    {
+     "step": 2800,
+     "loss": 0.01830365929255108,
+     "acc": 0.095703125
+    },
+    {
+     "step": 3000,
+     "loss": 0.004657599580378709,
+     "acc": 0.099609375
+    }
+   ],
+   "elapsed_s": 7.3,
+   "eliminated": false
+  },
+  {
+   "arm": "S5_bind_flat",
+   "seed": 2,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.138976340797112e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 6.773425079190855e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 39.2,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 1.3784830588349974e+16
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 39.2,
+   "fingerprint_after": 39.2,
+   "final_acc": 0.107421875,
+   "shuffle_acc": 0.09765625,
+   "length_generalization": {
+    "L9": 0.1171875,
+    "L17": 0.046875,
+    "L25": 0.05078125,
+    "L33": 0.01171875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.15706398065259,
+     "acc": 0.017578125
+    },
+    {
+     "step": 200,
+     "loss": 2.945401334773453,
+     "acc": 0.103515625
+    },
+    {
+     "step": 400,
+     "loss": 1.352588670277247,
+     "acc": 0.12890625
+    },
+    {
+     "step": 600,
+     "loss": 1.4390782301713672,
+     "acc": 0.138671875
+    },
+    {
+     "step": 800,
+     "loss": 1.0312804375574292,
+     "acc": 0.12890625
+    },
+    {
+     "step": 1000,
+     "loss": 0.8652783554655663,
+     "acc": 0.12890625
+    },
+    {
+     "step": 1200,
+     "loss": 0.4447475818307994,
+     "acc": 0.109375
+    },
+    {
+     "step": 1400,
+     "loss": 0.5347310666388012,
+     "acc": 0.111328125
+    },
+    {
+     "step": 1600,
+     "loss": 0.32457330337197476,
+     "acc": 0.103515625
+    },
+    {
+     "step": 1800,
+     "loss": 0.05049053412688728,
+     "acc": 0.107421875
+    },
+    {
+     "step": 2000,
+     "loss": 0.03184449268336206,
+     "acc": 0.091796875
+    },
+    {
+     "step": 2200,
+     "loss": 0.18521035527036012,
+     "acc": 0.091796875
+    },
+    {
+     "step": 2400,
+     "loss": 0.03605150999053884,
+     "acc": 0.09765625
+    },
+    {
+     "step": 2600,
+     "loss": 0.02695380605049923,
+     "acc": 0.09375
+    },
+    {
+     "step": 2800,
+     "loss": 0.013088174901534955,
+     "acc": 0.103515625
+    },
+    {
+     "step": 3000,
+     "loss": 0.009205186729295788,
+     "acc": 0.107421875
+    }
+   ],
+   "elapsed_s": 7.1,
+   "eliminated": false
+  }
+ ],
+ "S6_bind_M32": [
+  {
+   "arm": "S6_bind_M32",
+   "seed": 0,
+   "params": 22528,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.872804269314692e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 7.182010673286729e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 75.33485795798262,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 32,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 1024,
+    "cond_gram": 7.791241970846915e+16
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 75.33485795798262,
+   "fingerprint_after": 75.33485795798262,
+   "final_acc": 0.08984375,
+   "shuffle_acc": 0.091796875,
+   "length_generalization": {
+    "L9": 0.0703125,
+    "L17": 0.0625,
+    "L25": 0.046875,
+    "L33": 0.0390625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158750731911898,
+     "acc": 0.0234375
+    },
+    {
+     "step": 200,
+     "loss": 2.9327010477631315,
+     "acc": 0.068359375
+    },
+    {
+     "step": 400,
+     "loss": 2.1226261587113937,
+     "acc": 0.087890625
+    },
+    {
+     "step": 600,
+     "loss": 0.8636587952739625,
+     "acc": 0.103515625
+    },
+    {
+     "step": 800,
+     "loss": 0.4073453225898801,
+     "acc": 0.0859375
+    },
+    {
+     "step": 1000,
+     "loss": 0.205979674155825,
+     "acc": 0.091796875
+    },
+    {
+     "step": 1200,
+     "loss": 0.1112830807301156,
+     "acc": 0.091796875
+    },
+    {
+     "step": 1400,
+     "loss": 0.011846076427283147,
+     "acc": 0.0859375
+    },
+    {
+     "step": 1600,
+     "loss": 0.010540988293220688,
+     "acc": 0.091796875
+    },
+    {
+     "step": 1800,
+     "loss": 0.0020488623669473963,
+     "acc": 0.08984375
+    },
+    {
+     "step": 2000,
+     "loss": 0.0039672435305550865,
+     "acc": 0.08984375
+    },
+    {
+     "step": 2200,
+     "loss": 0.0023405812215668374,
+     "acc": 0.091796875
+    },
+    {
+     "step": 2400,
+     "loss": 0.0009224033583251176,
+     "acc": 0.091796875
+    },
+    {
+     "step": 2600,
+     "loss": 0.0015000952900940379,
+     "acc": 0.09375
+    },
+    {
+     "step": 2800,
+     "loss": 0.0006324392458153321,
+     "acc": 0.09375
+    },
+    {
+     "step": 3000,
+     "loss": 0.0009399258993073962,
+     "acc": 0.08984375
+    }
+   ],
+   "elapsed_s": 11.6,
+   "eliminated": false
+  },
+  {
+   "arm": "S6_bind_M32",
+   "seed": 1,
+   "params": 22528,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1494287494341353e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 6.627405310755251e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 75.33485795798262,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 32,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 1024,
+    "cond_gram": 7.791241970846915e+16
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 75.33485795798262,
+   "fingerprint_after": 75.33485795798262,
+   "final_acc": 0.115234375,
+   "shuffle_acc": 0.09765625,
+   "length_generalization": {
+    "L9": 0.1015625,
+    "L17": 0.08203125,
+    "L25": 0.04296875,
+    "L33": 0.02734375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.159833104224483,
+     "acc": 0.017578125
+    },
+    {
+     "step": 200,
+     "loss": 2.7462984409178657,
+     "acc": 0.078125
+    },
+    {
+     "step": 400,
+     "loss": 1.000822608571094,
+     "acc": 0.109375
+    },
+    {
+     "step": 600,
+     "loss": 1.1188637609607943,
+     "acc": 0.111328125
+    },
+    {
+     "step": 800,
+     "loss": 0.5875967818107765,
+     "acc": 0.119140625
+    },
+    {
+     "step": 1000,
+     "loss": 0.02257400326061198,
+     "acc": 0.109375
+    },
+    {
+     "step": 1200,
+     "loss": 0.06082088682743536,
+     "acc": 0.111328125
+    },
+    {
+     "step": 1400,
+     "loss": 0.006846593659719135,
+     "acc": 0.115234375
+    },
+    {
+     "step": 1600,
+     "loss": 0.005011122775660349,
+     "acc": 0.1171875
+    },
+    {
+     "step": 1800,
+     "loss": 0.004075516627179131,
+     "acc": 0.115234375
+    },
+    {
+     "step": 2000,
+     "loss": 0.0015166914633646437,
+     "acc": 0.1171875
+    },
+    {
+     "step": 2200,
+     "loss": 0.0033518830999314853,
+     "acc": 0.1171875
+    },
+    {
+     "step": 2400,
+     "loss": 0.0011967218612968147,
+     "acc": 0.115234375
+    },
+    {
+     "step": 2600,
+     "loss": 0.0011955505020770144,
+     "acc": 0.115234375
+    },
+    {
+     "step": 2800,
+     "loss": 0.000759489569366984,
+     "acc": 0.115234375
+    },
+    {
+     "step": 3000,
+     "loss": 0.0006417031129268068,
+     "acc": 0.115234375
+    }
+   ],
+   "elapsed_s": 11.6,
+   "eliminated": false
+  },
+  {
+   "arm": "S6_bind_M32",
+   "seed": 2,
+   "params": 22528,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.7636162870369315e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 6.909040717592329e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 75.33485795798262,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 32,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 1024,
+    "cond_gram": 7.791241970846915e+16
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 75.33485795798262,
+   "fingerprint_after": 75.33485795798262,
+   "final_acc": 0.099609375,
+   "shuffle_acc": 0.099609375,
+   "length_generalization": {
+    "L9": 0.09375,
+    "L17": 0.03515625,
+    "L25": 0.05078125,
+    "L33": 0.03125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.1579477444977755,
+     "acc": 0.009765625
+    },
+    {
+     "step": 200,
+     "loss": 3.144763626494246,
+     "acc": 0.0546875
+    },
+    {
+     "step": 400,
+     "loss": 0.9924231382948759,
+     "acc": 0.095703125
+    },
+    {
+     "step": 600,
+     "loss": 1.541678584184582,
+     "acc": 0.11328125
+    },
+    {
+     "step": 800,
+     "loss": 0.5528716238876795,
+     "acc": 0.08984375
+    },
+    {
+     "step": 1000,
+     "loss": 0.271370678128388,
+     "acc": 0.091796875
+    },
+    {
+     "step": 1200,
+     "loss": 0.06106986983768648,
+     "acc": 0.083984375
+    },
+    {
+     "step": 1400,
+     "loss": 0.019745453851525457,
+     "acc": 0.09765625
+    },
+    {
+     "step": 1600,
+     "loss": 0.0209853536312326,
+     "acc": 0.095703125
+    },
+    {
+     "step": 1800,
+     "loss": 0.002756973871901127,
+     "acc": 0.09375
+    },
+    {
+     "step": 2000,
+     "loss": 0.0037160340381134035,
+     "acc": 0.09765625
+    },
+    {
+     "step": 2200,
+     "loss": 0.0032500170644437524,
+     "acc": 0.1015625
+    },
+    {
+     "step": 2400,
+     "loss": 0.0010348862311051516,
+     "acc": 0.099609375
+    },
+    {
+     "step": 2600,
+     "loss": 0.0012065045172401409,
+     "acc": 0.099609375
+    },
+    {
+     "step": 2800,
+     "loss": 0.000818564888040677,
+     "acc": 0.099609375
+    },
+    {
+     "step": 3000,
+     "loss": 0.0006844608062238635,
+     "acc": 0.099609375
+    }
+   ],
+   "elapsed_s": 11.6,
+   "eliminated": false
+  }
+ ],
+ "A_attn_lr": [
+  {
+   "arm": "A_attn_lr",
+   "seed": 0,
+   "params": 8704,
+   "guards": null,
+   "rho_theta_frozen": true,
+   "fingerprint_before": null,
+   "fingerprint_after": null,
+   "final_acc": 0.216796875,
+   "shuffle_acc": 0.23828125,
+   "length_generalization": {},
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.161074832618622,
+     "acc": 0.01171875
+    },
+    {
+     "step": 200,
+     "loss": 2.5649090548317464,
+     "acc": 0.2578125
+    },
+    {
+     "step": 400,
+     "loss": 2.0719262503712095,
+     "acc": 0.27734375
+    },
+    {
+     "step": 600,
+     "loss": 1.7648606091986752,
+     "acc": 0.28125
+    },
+    {
+     "step": 800,
+     "loss": 1.5488886892086953,
+     "acc": 0.251953125
+    },
+    {
+     "step": 1000,
+     "loss": 1.4486992291660874,
+     "acc": 0.248046875
+    },
+    {
+     "step": 1200,
+     "loss": 1.255582962514822,
+     "acc": 0.25390625
+    },
+    {
+     "step": 1400,
+     "loss": 1.204609946050543,
+     "acc": 0.234375
+    },
+    {
+     "step": 1600,
+     "loss": 1.5788512114691502,
+     "acc": 0.220703125
+    },
+    {
+     "step": 1800,
+     "loss": 0.9497039984464861,
+     "acc": 0.2109375
+    },
+    {
+     "step": 2000,
+     "loss": 1.0172626186257452,
+     "acc": 0.216796875
+    },
+    {
+     "step": 2200,
+     "loss": 1.3451669078843207,
+     "acc": 0.216796875
+    },
+    {
+     "step": 2400,
+     "loss": 1.0207124327995794,
+     "acc": 0.216796875
+    },
+    {
+     "step": 2600,
+     "loss": 1.1312350128011475,
+     "acc": 0.236328125
+    },
+    {
+     "step": 2800,
+     "loss": 1.2853965386777353,
+     "acc": 0.205078125
+    },
+    {
+     "step": 3000,
+     "loss": 1.102356459176387,
+     "acc": 0.216796875
+    }
+   ],
+   "elapsed_s": 4.6,
+   "eliminated": false
+  },
+  {
+   "arm": "A_attn_lr",
+   "seed": 1,
+   "params": 8704,
+   "guards": null,
+   "rho_theta_frozen": true,
+   "fingerprint_before": null,
+   "fingerprint_after": null,
+   "final_acc": 0.255859375,
+   "shuffle_acc": 0.232421875,
+   "length_generalization": {},
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.133320108367196,
+     "acc": 0.017578125
+    },
+    {
+     "step": 200,
+     "loss": 2.561456964209165,
+     "acc": 0.197265625
+    },
+    {
+     "step": 400,
+     "loss": 1.8934863291973776,
+     "acc": 0.234375
+    },
+    {
+     "step": 600,
+     "loss": 1.56224242710619,
+     "acc": 0.26171875
+    },
+    {
+     "step": 800,
+     "loss": 1.658846222147146,
+     "acc": 0.255859375
+    },
+    {
+     "step": 1000,
+     "loss": 1.177262353725187,
+     "acc": 0.265625
+    },
+    {
+     "step": 1200,
+     "loss": 1.5475432200613972,
+     "acc": 0.240234375
+    },
+    {
+     "step": 1400,
+     "loss": 1.044658465980693,
+     "acc": 0.24609375
+    },
+    {
+     "step": 1600,
+     "loss": 1.6922264805777438,
+     "acc": 0.244140625
+    },
+    {
+     "step": 1800,
+     "loss": 0.7102544982498534,
+     "acc": 0.25
+    },
+    {
+     "step": 2000,
+     "loss": 1.4773886702310075,
+     "acc": 0.240234375
+    },
+    {
+     "step": 2200,
+     "loss": 0.9519898774787133,
+     "acc": 0.234375
+    },
+    {
+     "step": 2400,
+     "loss": 1.5223677788654881,
+     "acc": 0.248046875
+    },
+    {
+     "step": 2600,
+     "loss": 1.180242365685415,
+     "acc": 0.224609375
+    },
+    {
+     "step": 2800,
+     "loss": 1.2765658318144888,
+     "acc": 0.224609375
+    },
+    {
+     "step": 3000,
+     "loss": 0.7220693772856188,
+     "acc": 0.255859375
+    }
+   ],
+   "elapsed_s": 4.5,
+   "eliminated": false
+  },
+  {
+   "arm": "A_attn_lr",
+   "seed": 2,
+   "params": 8704,
+   "guards": null,
+   "rho_theta_frozen": true,
+   "fingerprint_before": null,
+   "fingerprint_after": null,
+   "final_acc": 0.20703125,
+   "shuffle_acc": 0.291015625,
+   "length_generalization": {},
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.143399596521791,
+     "acc": 0.015625
+    },
+    {
+     "step": 200,
+     "loss": 2.446449428919819,
+     "acc": 0.275390625
+    },
+    {
+     "step": 400,
+     "loss": 1.9369149306578417,
+     "acc": 0.265625
+    },
+    {
+     "step": 600,
+     "loss": 1.4321090649541444,
+     "acc": 0.244140625
+    },
+    {
+     "step": 800,
+     "loss": 1.7191359085254705,
+     "acc": 0.251953125
+    },
+    {
+     "step": 1000,
+     "loss": 1.53045917279427,
+     "acc": 0.248046875
+    },
+    {
+     "step": 1200,
+     "loss": 1.3526837669404213,
+     "acc": 0.26953125
+    },
+    {
+     "step": 1400,
+     "loss": 1.1435248428549523,
+     "acc": 0.25
+    },
+    {
+     "step": 1600,
+     "loss": 1.4012927498651624,
+     "acc": 0.25390625
+    },
+    {
+     "step": 1800,
+     "loss": 1.176337837443473,
+     "acc": 0.220703125
+    },
+    {
+     "step": 2000,
+     "loss": 1.252703553419973,
+     "acc": 0.23046875
+    },
+    {
+     "step": 2200,
+     "loss": 1.3380206452647925,
+     "acc": 0.232421875
+    },
+    {
+     "step": 2400,
+     "loss": 0.9841846593417842,
+     "acc": 0.220703125
+    },
+    {
+     "step": 2600,
+     "loss": 1.2355359161789439,
+     "acc": 0.248046875
+    },
+    {
+     "step": 2800,
+     "loss": 0.9537337895472543,
+     "acc": 0.2109375
+    },
+    {
+     "step": 3000,
+     "loss": 1.091151553803572,
+     "acc": 0.20703125
+    }
+   ],
+   "elapsed_s": 4.6,
+   "eliminated": false
+  }
+ ],
+ "A_softmax": [
+  {
+   "arm": "A_softmax",
+   "seed": 0,
+   "params": 7168,
+   "guards": null,
+   "rho_theta_frozen": true,
+   "fingerprint_before": null,
+   "fingerprint_after": null,
+   "final_acc": 0.248046875,
+   "shuffle_acc": 0.271484375,
+   "length_generalization": {},
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.142795563157898,
+     "acc": 0.01953125
+    },
+    {
+     "step": 200,
+     "loss": 3.0071177408682854,
+     "acc": 0.19921875
+    },
+    {
+     "step": 400,
+     "loss": 2.22793891546919,
+     "acc": 0.244140625
+    },
+    {
+     "step": 600,
+     "loss": 2.1486196475680863,
+     "acc": 0.23046875
+    },
+    {
+     "step": 800,
+     "loss": 1.7422012563040972,
+     "acc": 0.21875
+    },
+    {
+     "step": 1000,
+     "loss": 2.2199490203832384,
+     "acc": 0.25
+    },
+    {
+     "step": 1200,
+     "loss": 1.549848487893009,
+     "acc": 0.216796875
+    },
+    {
+     "step": 1400,
+     "loss": 1.4600183468055306,
+     "acc": 0.2421875
+    },
+    {
+     "step": 1600,
+     "loss": 1.668879855287999,
+     "acc": 0.20703125
+    },
+    {
+     "step": 1800,
+     "loss": 1.019461334809451,
+     "acc": 0.216796875
+    },
+    {
+     "step": 2000,
+     "loss": 1.2248430088979858,
+     "acc": 0.216796875
+    },
+    {
+     "step": 2200,
+     "loss": 1.4519326685093041,
+     "acc": 0.240234375
+    },
+    {
+     "step": 2400,
+     "loss": 1.0337864822376837,
+     "acc": 0.2265625
+    },
+    {
+     "step": 2600,
+     "loss": 1.6306404473571496,
+     "acc": 0.21484375
+    },
+    {
+     "step": 2800,
+     "loss": 1.1454960306312196,
+     "acc": 0.236328125
+    },
+    {
+     "step": 3000,
+     "loss": 1.1793250589025257,
+     "acc": 0.248046875
+    }
+   ],
+   "elapsed_s": 3.3,
+   "eliminated": false
+  },
+  {
+   "arm": "A_softmax",
+   "seed": 1,
+   "params": 7168,
+   "guards": null,
+   "rho_theta_frozen": true,
+   "fingerprint_before": null,
+   "fingerprint_after": null,
+   "final_acc": 0.23828125,
+   "shuffle_acc": 0.2421875,
+   "length_generalization": {},
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.1482016046166565,
+     "acc": 0.03125
+    },
+    {
+     "step": 200,
+     "loss": 2.901011576880589,
+     "acc": 0.1953125
+    },
+    {
+     "step": 400,
+     "loss": 2.3513755678587875,
+     "acc": 0.216796875
+    },
+    {
+     "step": 600,
+     "loss": 2.436297489168628,
+     "acc": 0.25
+    },
+    {
+     "step": 800,
+     "loss": 2.0762091059634944,
+     "acc": 0.2265625
+    },
+    {
+     "step": 1000,
+     "loss": 1.5163373559498425,
+     "acc": 0.2421875
+    },
+    {
+     "step": 1200,
+     "loss": 1.5860040746796793,
+     "acc": 0.232421875
+    },
+    {
+     "step": 1400,
+     "loss": 1.0459192921547764,
+     "acc": 0.23828125
+    },
+    {
+     "step": 1600,
+     "loss": 1.4758800904130411,
+     "acc": 0.2578125
+    },
+    {
+     "step": 1800,
+     "loss": 1.1192228617384836,
+     "acc": 0.26171875
+    },
+    {
+     "step": 2000,
+     "loss": 1.7538535610414896,
+     "acc": 0.234375
+    },
+    {
+     "step": 2200,
+     "loss": 1.0038531287562753,
+     "acc": 0.251953125
+    },
+    {
+     "step": 2400,
+     "loss": 1.8760675807049934,
+     "acc": 0.251953125
+    },
+    {
+     "step": 2600,
+     "loss": 1.3297688022628522,
+     "acc": 0.224609375
+    },
+    {
+     "step": 2800,
+     "loss": 1.184141591347466,
+     "acc": 0.234375
+    },
+    {
+     "step": 3000,
+     "loss": 1.1893908594297766,
+     "acc": 0.23828125
+    }
+   ],
+   "elapsed_s": 3.1,
+   "eliminated": false
+  },
+  {
+   "arm": "A_softmax",
+   "seed": 2,
+   "params": 7168,
+   "guards": null,
+   "rho_theta_frozen": true,
+   "fingerprint_before": null,
+   "fingerprint_after": null,
+   "final_acc": 0.224609375,
+   "shuffle_acc": 0.26953125,
+   "length_generalization": {},
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.1556233051302724,
+     "acc": 0.021484375
+    },
+    {
+     "step": 200,
+     "loss": 2.8887160217047683,
+     "acc": 0.224609375
+    },
+    {
+     "step": 400,
+     "loss": 2.6851365110281247,
+     "acc": 0.255859375
+    },
+    {
+     "step": 600,
+     "loss": 2.0201253774792756,
+     "acc": 0.228515625
+    },
+    {
+     "step": 800,
+     "loss": 2.057561652639981,
+     "acc": 0.220703125
+    },
+    {
+     "step": 1000,
+     "loss": 1.531906705846601,
+     "acc": 0.2265625
+    },
+    {
+     "step": 1200,
+     "loss": 1.4497851888976552,
+     "acc": 0.205078125
+    },
+    {
+     "step": 1400,
+     "loss": 1.5827364035645082,
+     "acc": 0.2109375
+    },
+    {
+     "step": 1600,
+     "loss": 1.6159864102905994,
+     "acc": 0.2265625
+    },
+    {
+     "step": 1800,
+     "loss": 1.6580849245795743,
+     "acc": 0.224609375
+    },
+    {
+     "step": 2000,
+     "loss": 0.9770629858315851,
+     "acc": 0.23046875
+    },
+    {
+     "step": 2200,
+     "loss": 1.6307537461064403,
+     "acc": 0.232421875
+    },
+    {
+     "step": 2400,
+     "loss": 1.4545613637782981,
+     "acc": 0.23046875
+    },
+    {
+     "step": 2600,
+     "loss": 1.1909037305998695,
+     "acc": 0.240234375
+    },
+    {
+     "step": 2800,
+     "loss": 1.059908505442528,
+     "acc": 0.234375
+    },
+    {
+     "step": 3000,
+     "loss": 1.3574007003591158,
+     "acc": 0.224609375
+    }
+   ],
+   "elapsed_s": 3.1,
+   "eliminated": false
+  }
+ ],
+ "A_softmax_win": [
+  {
+   "arm": "A_softmax_win",
+   "seed": 0,
+   "params": 10240,
+   "guards": null,
+   "rho_theta_frozen": true,
+   "fingerprint_before": null,
+   "fingerprint_after": null,
+   "final_acc": 1.0,
+   "shuffle_acc": 0.998046875,
+   "length_generalization": {},
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.171167553479442,
+     "acc": 0.005859375
+    },
+    {
+     "step": 200,
+     "loss": 1.0838390090564847,
+     "acc": 0.86328125
+    },
+    {
+     "step": 400,
+     "loss": 0.016623749778203512,
+     "acc": 0.998046875
+    },
+    {
+     "step": 600,
+     "loss": 0.006451853045371002,
+     "acc": 0.998046875
+    },
+    {
+     "step": 800,
+     "loss": 0.002212647388430504,
+     "acc": 1.0
+    },
+    {
+     "step": 1000,
+     "loss": 0.001719330885265017,
+     "acc": 1.0
+    },
+    {
+     "step": 1200,
+     "loss": 0.0008401867255223893,
+     "acc": 1.0
+    },
+    {
+     "step": 1400,
+     "loss": 0.0006768700816181614,
+     "acc": 1.0
+    },
+    {
+     "step": 1600,
+     "loss": 0.000711482783689464,
+     "acc": 1.0
+    },
+    {
+     "step": 1800,
+     "loss": 0.0005168580301573103,
+     "acc": 1.0
+    },
+    {
+     "step": 2000,
+     "loss": 0.00028667743089389727,
+     "acc": 1.0
+    },
+    {
+     "step": 2200,
+     "loss": 0.00028755286601468255,
+     "acc": 1.0
+    },
+    {
+     "step": 2400,
+     "loss": 0.00020595280232051384,
+     "acc": 1.0
+    },
+    {
+     "step": 2600,
+     "loss": 0.00017178475551977271,
+     "acc": 1.0
+    },
+    {
+     "step": 2800,
+     "loss": 0.0001916878551938772,
+     "acc": 1.0
+    },
+    {
+     "step": 3000,
+     "loss": 0.00014426627970991684,
+     "acc": 1.0
+    }
+   ],
+   "elapsed_s": 4.5,
+   "eliminated": false
+  },
+  {
+   "arm": "A_softmax_win",
+   "seed": 1,
+   "params": 10240,
+   "guards": null,
+   "rho_theta_frozen": true,
+   "fingerprint_before": null,
+   "fingerprint_after": null,
+   "final_acc": 0.998046875,
+   "shuffle_acc": 1.0,
+   "length_generalization": {},
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.1460487480625545,
+     "acc": 0.017578125
+    },
+    {
+     "step": 200,
+     "loss": 0.38169761353727216,
+     "acc": 0.927734375
+    },
+    {
+     "step": 400,
+     "loss": 0.011204030256342612,
+     "acc": 0.998046875
+    },
+    {
+     "step": 600,
+     "loss": 0.004320559466015787,
+     "acc": 0.998046875
+    },
+    {
+     "step": 800,
+     "loss": 0.0018967533941665388,
+     "acc": 0.998046875
+    },
+    {
+     "step": 1000,
+     "loss": 0.0013063716739361792,
+     "acc": 0.998046875
+    },
+    {
+     "step": 1200,
+     "loss": 0.0008438844572643265,
+     "acc": 0.998046875
+    },
+    {
+     "step": 1400,
+     "loss": 0.000673216105610456,
+     "acc": 0.998046875
+    },
+    {
+     "step": 1600,
+     "loss": 0.0006193653862156016,
+     "acc": 0.998046875
+    },
+    {
+     "step": 1800,
+     "loss": 0.00042026676689100456,
+     "acc": 0.998046875
+    },
+    {
+     "step": 2000,
+     "loss": 0.0002810244751970164,
+     "acc": 0.998046875
+    },
+    {
+     "step": 2200,
+     "loss": 0.00022060134330982107,
+     "acc": 0.998046875
+    },
+    {
+     "step": 2400,
+     "loss": 0.00021077940142467358,
+     "acc": 0.998046875
+    },
+    {
+     "step": 2600,
+     "loss": 0.00018521333850950362,
+     "acc": 0.998046875
+    },
+    {
+     "step": 2800,
+     "loss": 0.00014417521864118032,
+     "acc": 0.998046875
+    },
+    {
+     "step": 3000,
+     "loss": 0.00013474441582315245,
+     "acc": 0.998046875
+    }
+   ],
+   "elapsed_s": 4.4,
+   "eliminated": false
+  },
+  {
+   "arm": "A_softmax_win",
+   "seed": 2,
+   "params": 10240,
+   "guards": null,
+   "rho_theta_frozen": true,
+   "fingerprint_before": null,
+   "fingerprint_after": null,
+   "final_acc": 0.998046875,
+   "shuffle_acc": 1.0,
+   "length_generalization": {},
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.18030096230844,
+     "acc": 0.017578125
+    },
+    {
+     "step": 200,
+     "loss": 0.45647723228731163,
+     "acc": 0.951171875
+    },
+    {
+     "step": 400,
+     "loss": 0.011374911318657302,
+     "acc": 0.998046875
+    },
+    {
+     "step": 600,
+     "loss": 0.0033075149877175736,
+     "acc": 0.998046875
+    },
+    {
+     "step": 800,
+     "loss": 0.0019415757910332433,
+     "acc": 0.998046875
+    },
+    {
+     "step": 1000,
+     "loss": 0.0012362943574464051,
+     "acc": 0.998046875
+    },
+    {
+     "step": 1200,
+     "loss": 0.0009115321823570558,
+     "acc": 0.998046875
+    },
+    {
+     "step": 1400,
+     "loss": 0.0006628162535753368,
+     "acc": 0.998046875
+    },
+    {
+     "step": 1600,
+     "loss": 0.00044535122547673426,
+     "acc": 0.998046875
+    },
+    {
+     "step": 1800,
+     "loss": 0.0004244021428564984,
+     "acc": 0.998046875
+    },
+    {
+     "step": 2000,
+     "loss": 0.0003268696460094466,
+     "acc": 0.998046875
+    },
+    {
+     "step": 2200,
+     "loss": 0.0002159089185901987,
+     "acc": 0.998046875
+    },
+    {
+     "step": 2400,
+     "loss": 0.00022556209791586173,
+     "acc": 0.998046875
+    },
+    {
+     "step": 2600,
+     "loss": 0.00015305455933924638,
+     "acc": 0.998046875
+    },
+    {
+     "step": 2800,
+     "loss": 9.651118821197981e-05,
+     "acc": 0.998046875
+    },
+    {
+     "step": 3000,
+     "loss": 0.00012908215840869969,
+     "acc": 0.998046875
+    }
+   ],
+   "elapsed_s": 4.5,
+   "eliminated": false
+  }
+ ],
+ "S8_softgate": [
+  {
+   "arm": "S8_softgate",
+   "seed": 0,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.570736694436011e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.3390262604135042e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.1640625,
+   "shuffle_acc": 0.19921875,
+   "length_generalization": {
+    "L9": 0.1484375,
+    "L17": 0.08203125,
+    "L25": 0.0703125,
+    "L33": 0.0390625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158847706960406,
+     "acc": 0.033203125
+    },
+    {
+     "step": 200,
+     "loss": 3.75932220176887,
+     "acc": 0.0703125
+    },
+    {
+     "step": 400,
+     "loss": 2.9063006683455623,
+     "acc": 0.12890625
+    },
+    {
+     "step": 600,
+     "loss": 2.5399643828666507,
+     "acc": 0.166015625
+    },
+    {
+     "step": 800,
+     "loss": 2.0049433416251348,
+     "acc": 0.12890625
+    },
+    {
+     "step": 1000,
+     "loss": 2.1180877335420023,
+     "acc": 0.142578125
+    },
+    {
+     "step": 1200,
+     "loss": 1.8610407745063027,
+     "acc": 0.1484375
+    },
+    {
+     "step": 1400,
+     "loss": 2.3157170754592333,
+     "acc": 0.17578125
+    },
+    {
+     "step": 1600,
+     "loss": 2.4011880587199848,
+     "acc": 0.154296875
+    },
+    {
+     "step": 1800,
+     "loss": 2.042020391592188,
+     "acc": 0.162109375
+    },
+    {
+     "step": 2000,
+     "loss": 1.715987831844455,
+     "acc": 0.154296875
+    },
+    {
+     "step": 2200,
+     "loss": 2.646250055863739,
+     "acc": 0.1484375
+    },
+    {
+     "step": 2400,
+     "loss": 1.4703977378416222,
+     "acc": 0.169921875
+    },
+    {
+     "step": 2600,
+     "loss": 2.1986442957037324,
+     "acc": 0.1640625
+    },
+    {
+     "step": 2800,
+     "loss": 1.4062595223997874,
+     "acc": 0.185546875
+    },
+    {
+     "step": 3000,
+     "loss": 1.1908587021406178,
+     "acc": 0.1640625
+    }
+   ],
+   "elapsed_s": 5.6,
+   "eliminated": false
+  },
+  {
+   "arm": "S8_softgate",
+   "seed": 1,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.152706946550517e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.793922455458764e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.21875,
+   "shuffle_acc": 0.251953125,
+   "length_generalization": {
+    "L9": 0.2421875,
+    "L17": 0.125,
+    "L25": 0.07421875,
+    "L33": 0.08203125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158836839922742,
+     "acc": 0.015625
+    },
+    {
+     "step": 200,
+     "loss": 3.771816409888604,
+     "acc": 0.07421875
+    },
+    {
+     "step": 400,
+     "loss": 2.8151194915946673,
+     "acc": 0.15625
+    },
+    {
+     "step": 600,
+     "loss": 2.665194730619026,
+     "acc": 0.1796875
+    },
+    {
+     "step": 800,
+     "loss": 2.772641560558745,
+     "acc": 0.2109375
+    },
+    {
+     "step": 1000,
+     "loss": 1.8479293071269733,
+     "acc": 0.224609375
+    },
+    {
+     "step": 1200,
+     "loss": 1.573806074500881,
+     "acc": 0.236328125
+    },
+    {
+     "step": 1400,
+     "loss": 1.0953247688411232,
+     "acc": 0.236328125
+    },
+    {
+     "step": 1600,
+     "loss": 1.0995385210928037,
+     "acc": 0.21484375
+    },
+    {
+     "step": 1800,
+     "loss": 1.2954633886224558,
+     "acc": 0.220703125
+    },
+    {
+     "step": 2000,
+     "loss": 1.2534154238598907,
+     "acc": 0.22265625
+    },
+    {
+     "step": 2200,
+     "loss": 1.265403376287367,
+     "acc": 0.224609375
+    },
+    {
+     "step": 2400,
+     "loss": 1.2432133129679184,
+     "acc": 0.23828125
+    },
+    {
+     "step": 2600,
+     "loss": 1.000953768184107,
+     "acc": 0.224609375
+    },
+    {
+     "step": 2800,
+     "loss": 1.3636750294113138,
+     "acc": 0.224609375
+    },
+    {
+     "step": 3000,
+     "loss": 0.8013833768719892,
+     "acc": 0.21875
+    }
+   ],
+   "elapsed_s": 5.2,
+   "eliminated": false
+  },
+  {
+   "arm": "S8_softgate",
+   "seed": 2,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.5065553469371667e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1091774857120335e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.283203125,
+   "shuffle_acc": 0.296875,
+   "length_generalization": {
+    "L9": 0.28515625,
+    "L17": 0.12890625,
+    "L25": 0.10546875,
+    "L33": 0.07421875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158923837333294,
+     "acc": 0.015625
+    },
+    {
+     "step": 200,
+     "loss": 3.231875001173889,
+     "acc": 0.091796875
+    },
+    {
+     "step": 400,
+     "loss": 2.8266943257004327,
+     "acc": 0.169921875
+    },
+    {
+     "step": 600,
+     "loss": 2.7222457326423886,
+     "acc": 0.224609375
+    },
+    {
+     "step": 800,
+     "loss": 2.149298769684474,
+     "acc": 0.23828125
+    },
+    {
+     "step": 1000,
+     "loss": 1.631776933958521,
+     "acc": 0.26171875
+    },
+    {
+     "step": 1200,
+     "loss": 1.9737466857786563,
+     "acc": 0.291015625
+    },
+    {
+     "step": 1400,
+     "loss": 1.0862094494502617,
+     "acc": 0.287109375
+    },
+    {
+     "step": 1600,
+     "loss": 1.3875484136647613,
+     "acc": 0.2890625
+    },
+    {
+     "step": 1800,
+     "loss": 1.6032998265080216,
+     "acc": 0.279296875
+    },
+    {
+     "step": 2000,
+     "loss": 1.0595095520225173,
+     "acc": 0.298828125
+    },
+    {
+     "step": 2200,
+     "loss": 0.9846086746424795,
+     "acc": 0.3203125
+    },
+    {
+     "step": 2400,
+     "loss": 1.7275539583413664,
+     "acc": 0.302734375
+    },
+    {
+     "step": 2600,
+     "loss": 0.6527258073497639,
+     "acc": 0.30859375
+    },
+    {
+     "step": 2800,
+     "loss": 0.6323581152764148,
+     "acc": 0.3125
+    },
+    {
+     "step": 3000,
+     "loss": 0.8815062742390714,
+     "acc": 0.283203125
+    }
+   ],
+   "elapsed_s": 5.2,
+   "eliminated": false
+  }
+ ],
+ "S9_writegate": [
+  {
+   "arm": "S9_writegate",
+   "seed": 0,
+   "params": 14336,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.570736694436011e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.3390262604135042e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.5703125,
+   "shuffle_acc": 0.490234375,
+   "length_generalization": {
+    "L9": 0.54296875,
+    "L17": 0.25390625,
+    "L25": 0.1484375,
+    "L33": 0.10546875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158825192545205,
+     "acc": 0.013671875
+    },
+    {
+     "step": 200,
+     "loss": 3.215814316572696,
+     "acc": 0.23046875
+    },
+    {
+     "step": 400,
+     "loss": 1.0216705542880307,
+     "acc": 0.416015625
+    },
+    {
+     "step": 600,
+     "loss": 0.9426163703489479,
+     "acc": 0.501953125
+    },
+    {
+     "step": 800,
+     "loss": 0.0678132219961036,
+     "acc": 0.521484375
+    },
+    {
+     "step": 1000,
+     "loss": 0.0535493914509286,
+     "acc": 0.5546875
+    },
+    {
+     "step": 1200,
+     "loss": 0.06875416045718345,
+     "acc": 0.57421875
+    },
+    {
+     "step": 1400,
+     "loss": 0.026079419836524717,
+     "acc": 0.560546875
+    },
+    {
+     "step": 1600,
+     "loss": 0.009557694128099757,
+     "acc": 0.556640625
+    },
+    {
+     "step": 1800,
+     "loss": 0.002646490793571576,
+     "acc": 0.5625
+    },
+    {
+     "step": 2000,
+     "loss": 0.0065930204578530565,
+     "acc": 0.568359375
+    },
+    {
+     "step": 2200,
+     "loss": 0.0029934654610126684,
+     "acc": 0.578125
+    },
+    {
+     "step": 2400,
+     "loss": 0.0013965890790320662,
+     "acc": 0.57421875
+    },
+    {
+     "step": 2600,
+     "loss": 0.0020816931140362474,
+     "acc": 0.56640625
+    },
+    {
+     "step": 2800,
+     "loss": 0.0007247508084867693,
+     "acc": 0.568359375
+    },
+    {
+     "step": 3000,
+     "loss": 0.0009548992351077505,
+     "acc": 0.5703125
+    }
+   ],
+   "elapsed_s": 5.6,
+   "eliminated": false
+  },
+  {
+   "arm": "S9_writegate",
+   "seed": 1,
+   "params": 14336,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.152706946550517e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.793922455458764e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.564453125,
+   "shuffle_acc": 0.52734375,
+   "length_generalization": {
+    "L9": 0.578125,
+    "L17": 0.29296875,
+    "L25": 0.1484375,
+    "L33": 0.1484375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158771281828951,
+     "acc": 0.009765625
+    },
+    {
+     "step": 200,
+     "loss": 3.242572808295683,
+     "acc": 0.171875
+    },
+    {
+     "step": 400,
+     "loss": 0.6949940728579602,
+     "acc": 0.384765625
+    },
+    {
+     "step": 600,
+     "loss": 0.8120279577037736,
+     "acc": 0.4921875
+    },
+    {
+     "step": 800,
+     "loss": 0.6380763735583019,
+     "acc": 0.546875
+    },
+    {
+     "step": 1000,
+     "loss": 0.04848521976176899,
+     "acc": 0.5625
+    },
+    {
+     "step": 1200,
+     "loss": 0.014776534398036239,
+     "acc": 0.556640625
+    },
+    {
+     "step": 1400,
+     "loss": 0.008295283158346621,
+     "acc": 0.56640625
+    },
+    {
+     "step": 1600,
+     "loss": 0.009650136449153383,
+     "acc": 0.556640625
+    },
+    {
+     "step": 1800,
+     "loss": 0.009134895113125973,
+     "acc": 0.556640625
+    },
+    {
+     "step": 2000,
+     "loss": 0.0026732757406105973,
+     "acc": 0.55078125
+    },
+    {
+     "step": 2200,
+     "loss": 0.0012918359964217113,
+     "acc": 0.55859375
+    },
+    {
+     "step": 2400,
+     "loss": 0.0028660033201896003,
+     "acc": 0.560546875
+    },
+    {
+     "step": 2600,
+     "loss": 0.0011154619668162623,
+     "acc": 0.56640625
+    },
+    {
+     "step": 2800,
+     "loss": 0.0009261905521018973,
+     "acc": 0.56640625
+    },
+    {
+     "step": 3000,
+     "loss": 0.0003454653854191008,
+     "acc": 0.564453125
+    }
+   ],
+   "elapsed_s": 5.5,
+   "eliminated": false
+  },
+  {
+   "arm": "S9_writegate",
+   "seed": 2,
+   "params": 14336,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.5065553469371667e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1091774857120335e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.521484375,
+   "shuffle_acc": 0.54296875,
+   "length_generalization": {
+    "L9": 0.55078125,
+    "L17": 0.26953125,
+    "L25": 0.1484375,
+    "L33": 0.1328125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.1589404059073125,
+     "acc": 0.01171875
+    },
+    {
+     "step": 200,
+     "loss": 2.6637146878591693,
+     "acc": 0.146484375
+    },
+    {
+     "step": 400,
+     "loss": 1.6930462761092004,
+     "acc": 0.35546875
+    },
+    {
+     "step": 600,
+     "loss": 0.8331111713890209,
+     "acc": 0.447265625
+    },
+    {
+     "step": 800,
+     "loss": 0.5513401638374676,
+     "acc": 0.4921875
+    },
+    {
+     "step": 1000,
+     "loss": 0.1126397085280654,
+     "acc": 0.521484375
+    },
+    {
+     "step": 1200,
+     "loss": 0.028082640473732927,
+     "acc": 0.521484375
+    },
+    {
+     "step": 1400,
+     "loss": 0.06217777215610424,
+     "acc": 0.525390625
+    },
+    {
+     "step": 1600,
+     "loss": 0.010843926718686735,
+     "acc": 0.513671875
+    },
+    {
+     "step": 1800,
+     "loss": 0.007273895414266224,
+     "acc": 0.525390625
+    },
+    {
+     "step": 2000,
+     "loss": 0.005617566318309895,
+     "acc": 0.51953125
+    },
+    {
+     "step": 2200,
+     "loss": 0.0030696857452689476,
+     "acc": 0.521484375
+    },
+    {
+     "step": 2400,
+     "loss": 0.0022119749220079,
+     "acc": 0.51953125
+    },
+    {
+     "step": 2600,
+     "loss": 0.0018013359526790668,
+     "acc": 0.521484375
+    },
+    {
+     "step": 2800,
+     "loss": 0.00024097766271268081,
+     "acc": 0.521484375
+    },
+    {
+     "step": 3000,
+     "loss": 0.0009876104162530983,
+     "acc": 0.521484375
+    }
+   ],
+   "elapsed_s": 5.9,
+   "eliminated": false
+  }
+ ],
+ "S10_both": [
+  {
+   "arm": "S10_both",
+   "seed": 0,
+   "params": 14336,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.570736694436011e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.3390262604135042e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.294921875,
+   "shuffle_acc": 0.25,
+   "length_generalization": {
+    "L9": 0.296875,
+    "L17": 0.171875,
+    "L25": 0.1015625,
+    "L33": 0.06640625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158879506537655,
+     "acc": 0.013671875
+    },
+    {
+     "step": 200,
+     "loss": 3.4113394617453596,
+     "acc": 0.119140625
+    },
+    {
+     "step": 400,
+     "loss": 2.328007680615505,
+     "acc": 0.20703125
+    },
+    {
+     "step": 600,
+     "loss": 2.863530387584291,
+     "acc": 0.21484375
+    },
+    {
+     "step": 800,
+     "loss": 2.1651234730085736,
+     "acc": 0.2578125
+    },
+    {
+     "step": 1000,
+     "loss": 2.2382742912075013,
+     "acc": 0.275390625
+    },
+    {
+     "step": 1200,
+     "loss": 1.3176868411194629,
+     "acc": 0.2734375
+    },
+    {
+     "step": 1400,
+     "loss": 2.0056228752933185,
+     "acc": 0.275390625
+    },
+    {
+     "step": 1600,
+     "loss": 1.3996681102197324,
+     "acc": 0.279296875
+    },
+    {
+     "step": 1800,
+     "loss": 0.8718306125119908,
+     "acc": 0.287109375
+    },
+    {
+     "step": 2000,
+     "loss": 0.8210315914798643,
+     "acc": 0.265625
+    },
+    {
+     "step": 2200,
+     "loss": 1.1885607518732932,
+     "acc": 0.271484375
+    },
+    {
+     "step": 2400,
+     "loss": 0.9520660500805634,
+     "acc": 0.296875
+    },
+    {
+     "step": 2600,
+     "loss": 1.4759477540775854,
+     "acc": 0.30078125
+    },
+    {
+     "step": 2800,
+     "loss": 1.2971495601192564,
+     "acc": 0.29296875
+    },
+    {
+     "step": 3000,
+     "loss": 0.7661913013356328,
+     "acc": 0.294921875
+    }
+   ],
+   "elapsed_s": 6.8,
+   "eliminated": false
+  },
+  {
+   "arm": "S10_both",
+   "seed": 1,
+   "params": 14336,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.152706946550517e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.793922455458764e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.279296875,
+   "shuffle_acc": 0.298828125,
+   "length_generalization": {
+    "L9": 0.3125,
+    "L17": 0.17578125,
+    "L25": 0.125,
+    "L33": 0.0859375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.15887619020112,
+     "acc": 0.009765625
+    },
+    {
+     "step": 200,
+     "loss": 3.708056870122987,
+     "acc": 0.072265625
+    },
+    {
+     "step": 400,
+     "loss": 2.151945763954581,
+     "acc": 0.158203125
+    },
+    {
+     "step": 600,
+     "loss": 2.452425053833358,
+     "acc": 0.18359375
+    },
+    {
+     "step": 800,
+     "loss": 1.8814209194725122,
+     "acc": 0.232421875
+    },
+    {
+     "step": 1000,
+     "loss": 1.6660145491735108,
+     "acc": 0.24609375
+    },
+    {
+     "step": 1200,
+     "loss": 1.6817391433611988,
+     "acc": 0.2734375
+    },
+    {
+     "step": 1400,
+     "loss": 0.9662892623762911,
+     "acc": 0.263671875
+    },
+    {
+     "step": 1600,
+     "loss": 2.065422549625752,
+     "acc": 0.291015625
+    },
+    {
+     "step": 1800,
+     "loss": 0.8853492471574538,
+     "acc": 0.294921875
+    },
+    {
+     "step": 2000,
+     "loss": 0.7017393567916884,
+     "acc": 0.2890625
+    },
+    {
+     "step": 2200,
+     "loss": 0.9753110915641227,
+     "acc": 0.28125
+    },
+    {
+     "step": 2400,
+     "loss": 0.8287277941005795,
+     "acc": 0.28515625
+    },
+    {
+     "step": 2600,
+     "loss": 1.3814770647437138,
+     "acc": 0.3046875
+    },
+    {
+     "step": 2800,
+     "loss": 1.0326148420165395,
+     "acc": 0.310546875
+    },
+    {
+     "step": 3000,
+     "loss": 0.8833504515787008,
+     "acc": 0.279296875
+    }
+   ],
+   "elapsed_s": 7.0,
+   "eliminated": false
+  },
+  {
+   "arm": "S10_both",
+   "seed": 2,
+   "params": 14336,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.5065553469371667e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1091774857120335e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.302734375,
+   "shuffle_acc": 0.302734375,
+   "length_generalization": {
+    "L9": 0.29296875,
+    "L17": 0.140625,
+    "L25": 0.12109375,
+    "L33": 0.08984375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158886614258005,
+     "acc": 0.01171875
+    },
+    {
+     "step": 200,
+     "loss": 3.5007930681847883,
+     "acc": 0.087890625
+    },
+    {
+     "step": 400,
+     "loss": 2.6541947422664496,
+     "acc": 0.17578125
+    },
+    {
+     "step": 600,
+     "loss": 2.858697988550966,
+     "acc": 0.21875
+    },
+    {
+     "step": 800,
+     "loss": 1.9424602585722857,
+     "acc": 0.212890625
+    },
+    {
+     "step": 1000,
+     "loss": 1.4970106940615922,
+     "acc": 0.244140625
+    },
+    {
+     "step": 1200,
+     "loss": 1.2307890346238877,
+     "acc": 0.28515625
+    },
+    {
+     "step": 1400,
+     "loss": 1.8099294591900819,
+     "acc": 0.291015625
+    },
+    {
+     "step": 1600,
+     "loss": 1.7063767747582896,
+     "acc": 0.298828125
+    },
+    {
+     "step": 1800,
+     "loss": 1.5951424018704812,
+     "acc": 0.2890625
+    },
+    {
+     "step": 2000,
+     "loss": 1.4288068959517473,
+     "acc": 0.294921875
+    },
+    {
+     "step": 2200,
+     "loss": 1.1409799801044085,
+     "acc": 0.287109375
+    },
+    {
+     "step": 2400,
+     "loss": 1.6579698157816016,
+     "acc": 0.30859375
+    },
+    {
+     "step": 2600,
+     "loss": 0.5797472190994277,
+     "acc": 0.318359375
+    },
+    {
+     "step": 2800,
+     "loss": 0.9409490814086281,
+     "acc": 0.314453125
+    },
+    {
+     "step": 3000,
+     "loss": 0.7802348119744621,
+     "acc": 0.302734375
+    }
+   ],
+   "elapsed_s": 6.1,
+   "eliminated": false
+  }
+ ],
+ "S12_C8": [
+  {
+   "arm": "S12_C8",
+   "seed": 0,
+   "params": 22528,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.4832097179739466e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 5.58722186544138e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 8,
+    "state_bytes": 1024,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.609375,
+   "shuffle_acc": 0.611328125,
+   "length_generalization": {
+    "L9": 0.60546875,
+    "L17": 0.29296875,
+    "L25": 0.18359375,
+    "L33": 0.13671875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.1593752128030985,
+     "acc": 0.017578125
+    },
+    {
+     "step": 200,
+     "loss": 2.770432371348078,
+     "acc": 0.236328125
+    },
+    {
+     "step": 400,
+     "loss": 0.6270769059816226,
+     "acc": 0.46484375
+    },
+    {
+     "step": 600,
+     "loss": 0.36660783617896575,
+     "acc": 0.544921875
+    },
+    {
+     "step": 800,
+     "loss": 0.01173308612490503,
+     "acc": 0.59765625
+    },
+    {
+     "step": 1000,
+     "loss": 0.019380319584410298,
+     "acc": 0.60546875
+    },
+    {
+     "step": 1200,
+     "loss": 0.004284040170329096,
+     "acc": 0.587890625
+    },
+    {
+     "step": 1400,
+     "loss": 0.0030668600243183037,
+     "acc": 0.603515625
+    },
+    {
+     "step": 1600,
+     "loss": 0.0025234092955232334,
+     "acc": 0.59765625
+    },
+    {
+     "step": 1800,
+     "loss": 0.0014159245706676146,
+     "acc": 0.6015625
+    },
+    {
+     "step": 2000,
+     "loss": 0.002202662320112735,
+     "acc": 0.6015625
+    },
+    {
+     "step": 2200,
+     "loss": 0.0013948944313661913,
+     "acc": 0.611328125
+    },
+    {
+     "step": 2400,
+     "loss": 0.00030097033001282605,
+     "acc": 0.607421875
+    },
+    {
+     "step": 2600,
+     "loss": 0.0006178634995185051,
+     "acc": 0.609375
+    },
+    {
+     "step": 2800,
+     "loss": 0.00027243227981625846,
+     "acc": 0.607421875
+    },
+    {
+     "step": 3000,
+     "loss": 0.0004337318091825735,
+     "acc": 0.609375
+    }
+   ],
+   "elapsed_s": 6.7,
+   "eliminated": false
+  },
+  {
+   "arm": "S12_C8",
+   "seed": 1,
+   "params": 22528,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.5013829569369457e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.4005531827747783e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 8,
+    "state_bytes": 1024,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.638671875,
+   "shuffle_acc": 0.6171875,
+   "length_generalization": {
+    "L9": 0.65625,
+    "L17": 0.28515625,
+    "L25": 0.1640625,
+    "L33": 0.16796875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158850641075693,
+     "acc": 0.005859375
+    },
+    {
+     "step": 200,
+     "loss": 1.8063774920739242,
+     "acc": 0.275390625
+    },
+    {
+     "step": 400,
+     "loss": 0.22211424886939213,
+     "acc": 0.517578125
+    },
+    {
+     "step": 600,
+     "loss": 0.2295995215524448,
+     "acc": 0.591796875
+    },
+    {
+     "step": 800,
+     "loss": 0.16415225099968594,
+     "acc": 0.619140625
+    },
+    {
+     "step": 1000,
+     "loss": 0.005036658196383562,
+     "acc": 0.611328125
+    },
+    {
+     "step": 1200,
+     "loss": 0.003529374447328831,
+     "acc": 0.623046875
+    },
+    {
+     "step": 1400,
+     "loss": 0.0021086348734225316,
+     "acc": 0.623046875
+    },
+    {
+     "step": 1600,
+     "loss": 0.0016318557063107497,
+     "acc": 0.630859375
+    },
+    {
+     "step": 1800,
+     "loss": 0.0009466727367869214,
+     "acc": 0.62890625
+    },
+    {
+     "step": 2000,
+     "loss": 0.0005210914430248183,
+     "acc": 0.630859375
+    },
+    {
+     "step": 2200,
+     "loss": 0.0005561681843981312,
+     "acc": 0.630859375
+    },
+    {
+     "step": 2400,
+     "loss": 0.00027550233281392915,
+     "acc": 0.6328125
+    },
+    {
+     "step": 2600,
+     "loss": 0.00020630528479403864,
+     "acc": 0.634765625
+    },
+    {
+     "step": 2800,
+     "loss": 0.00032512899844578096,
+     "acc": 0.63671875
+    },
+    {
+     "step": 3000,
+     "loss": 0.00039193788894455195,
+     "acc": 0.638671875
+    }
+   ],
+   "elapsed_s": 6.5,
+   "eliminated": false
+  },
+  {
+   "arm": "S12_C8",
+   "seed": 2,
+   "params": 22528,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.4636604600307344e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 8.622811610107571e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 8,
+    "state_bytes": 1024,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.625,
+   "shuffle_acc": 0.61328125,
+   "length_generalization": {
+    "L9": 0.6640625,
+    "L17": 0.34765625,
+    "L25": 0.1875,
+    "L33": 0.1796875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.160013055499334,
+     "acc": 0.01171875
+    },
+    {
+     "step": 200,
+     "loss": 2.150938081524094,
+     "acc": 0.267578125
+    },
+    {
+     "step": 400,
+     "loss": 0.3261086891113978,
+     "acc": 0.50390625
+    },
+    {
+     "step": 600,
+     "loss": 0.3540839533962842,
+     "acc": 0.572265625
+    },
+    {
+     "step": 800,
+     "loss": 0.11330940820809014,
+     "acc": 0.59765625
+    },
+    {
+     "step": 1000,
+     "loss": 0.01586929142374449,
+     "acc": 0.591796875
+    },
+    {
+     "step": 1200,
+     "loss": 0.005446411169990525,
+     "acc": 0.6171875
+    },
+    {
+     "step": 1400,
+     "loss": 0.0008895116178500628,
+     "acc": 0.626953125
+    },
+    {
+     "step": 1600,
+     "loss": 0.0021654141553541497,
+     "acc": 0.619140625
+    },
+    {
+     "step": 1800,
+     "loss": 0.0013763820978942472,
+     "acc": 0.6171875
+    },
+    {
+     "step": 2000,
+     "loss": 0.002047017446291077,
+     "acc": 0.619140625
+    },
+    {
+     "step": 2200,
+     "loss": 0.0008194778536177819,
+     "acc": 0.6171875
+    },
+    {
+     "step": 2400,
+     "loss": 0.000684627319975909,
+     "acc": 0.619140625
+    },
+    {
+     "step": 2600,
+     "loss": 0.0005679800144775904,
+     "acc": 0.619140625
+    },
+    {
+     "step": 2800,
+     "loss": 0.00036760776394226355,
+     "acc": 0.619140625
+    },
+    {
+     "step": 3000,
+     "loss": 0.0003573489259034887,
+     "acc": 0.625
+    }
+   ],
+   "elapsed_s": 6.2,
+   "eliminated": false
+  }
+ ],
+ "S13_C16": [
+  {
+   "arm": "S13_C16",
+   "seed": 0,
+   "params": 43008,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.22757609577752e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 7.531010890147548e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 2048,
+       "17": 2048,
+       "25": 2048,
+       "65": 2048
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 16,
+    "state_bytes": 2048,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.701171875,
+   "shuffle_acc": 0.689453125,
+   "length_generalization": {
+    "L9": 0.64453125,
+    "L17": 0.38671875,
+    "L25": 0.2109375,
+    "L33": 0.17578125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.157350097825126,
+     "acc": 0.021484375
+    },
+    {
+     "step": 200,
+     "loss": 1.9967916258372247,
+     "acc": 0.4140625
+    },
+    {
+     "step": 400,
+     "loss": 0.14515815005563135,
+     "acc": 0.591796875
+    },
+    {
+     "step": 600,
+     "loss": 0.009926250699748597,
+     "acc": 0.6640625
+    },
+    {
+     "step": 800,
+     "loss": 0.002203710542399202,
+     "acc": 0.66015625
+    },
+    {
+     "step": 1000,
+     "loss": 0.004646952696532299,
+     "acc": 0.673828125
+    },
+    {
+     "step": 1200,
+     "loss": 0.0016749073370243917,
+     "acc": 0.673828125
+    },
+    {
+     "step": 1400,
+     "loss": 0.00093704002661523,
+     "acc": 0.673828125
+    },
+    {
+     "step": 1600,
+     "loss": 0.0005488871619299149,
+     "acc": 0.67578125
+    },
+    {
+     "step": 1800,
+     "loss": 0.0005894667812650245,
+     "acc": 0.6796875
+    },
+    {
+     "step": 2000,
+     "loss": 0.0005172718019867348,
+     "acc": 0.68359375
+    },
+    {
+     "step": 2200,
+     "loss": 0.0004935316647431486,
+     "acc": 0.685546875
+    },
+    {
+     "step": 2400,
+     "loss": 0.00017037505117497431,
+     "acc": 0.6953125
+    },
+    {
+     "step": 2600,
+     "loss": 0.0002310431528489282,
+     "acc": 0.697265625
+    },
+    {
+     "step": 2800,
+     "loss": 0.00027830333781706987,
+     "acc": 0.69921875
+    },
+    {
+     "step": 3000,
+     "loss": 0.00025895375005419445,
+     "acc": 0.701171875
+    }
+   ],
+   "elapsed_s": 8.3,
+   "eliminated": false
+  },
+  {
+   "arm": "S13_C16",
+   "seed": 1,
+   "params": 43008,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.8869679355576166e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.1187000750285763e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 2048,
+       "17": 2048,
+       "25": 2048,
+       "65": 2048
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 16,
+    "state_bytes": 2048,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.626953125,
+   "shuffle_acc": 0.65234375,
+   "length_generalization": {
+    "L9": 0.66796875,
+    "L17": 0.26953125,
+    "L25": 0.24609375,
+    "L33": 0.15234375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.160112452944666,
+     "acc": 0.017578125
+    },
+    {
+     "step": 200,
+     "loss": 1.3965607134741411,
+     "acc": 0.35546875
+    },
+    {
+     "step": 400,
+     "loss": 0.05698314436655934,
+     "acc": 0.607421875
+    },
+    {
+     "step": 600,
+     "loss": 0.013698636778215617,
+     "acc": 0.609375
+    },
+    {
+     "step": 800,
+     "loss": 0.0183059890611492,
+     "acc": 0.625
+    },
+    {
+     "step": 1000,
+     "loss": 0.0036141377635381675,
+     "acc": 0.625
+    },
+    {
+     "step": 1200,
+     "loss": 0.0016361044166500614,
+     "acc": 0.626953125
+    },
+    {
+     "step": 1400,
+     "loss": 0.0011600054193245106,
+     "acc": 0.62890625
+    },
+    {
+     "step": 1600,
+     "loss": 0.0006038191336313766,
+     "acc": 0.625
+    },
+    {
+     "step": 1800,
+     "loss": 0.0002891643796565329,
+     "acc": 0.625
+    },
+    {
+     "step": 2000,
+     "loss": 0.0003526595179378976,
+     "acc": 0.623046875
+    },
+    {
+     "step": 2200,
+     "loss": 0.00028925432362568996,
+     "acc": 0.625
+    },
+    {
+     "step": 2400,
+     "loss": 0.00019758364007582457,
+     "acc": 0.626953125
+    },
+    {
+     "step": 2600,
+     "loss": 0.00033723205865910185,
+     "acc": 0.625
+    },
+    {
+     "step": 2800,
+     "loss": 0.00019573550227861363,
+     "acc": 0.625
+    },
+    {
+     "step": 3000,
+     "loss": 0.00016511174274508775,
+     "acc": 0.626953125
+    }
+   ],
+   "elapsed_s": 8.9,
+   "eliminated": false
+  },
+  {
+   "arm": "S13_C16",
+   "seed": 2,
+   "params": 43008,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.3430438363070365e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.0543697263381665e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 2048,
+       "17": 2048,
+       "25": 2048,
+       "65": 2048
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 17.69217406252558,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 16,
+    "state_bytes": 2048,
+    "cond_gram": 2.9649947869279245e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 17.69217406252558,
+   "fingerprint_after": 17.69217406252558,
+   "final_acc": 0.6796875,
+   "shuffle_acc": 0.685546875,
+   "length_generalization": {
+    "L9": 0.71484375,
+    "L17": 0.3515625,
+    "L25": 0.25,
+    "L33": 0.1796875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158604712335313,
+     "acc": 0.015625
+    },
+    {
+     "step": 200,
+     "loss": 1.418584114719044,
+     "acc": 0.3984375
+    },
+    {
+     "step": 400,
+     "loss": 0.07288574204873477,
+     "acc": 0.626953125
+    },
+    {
+     "step": 600,
+     "loss": 0.019705802088910214,
+     "acc": 0.638671875
+    },
+    {
+     "step": 800,
+     "loss": 0.014180535687946683,
+     "acc": 0.6796875
+    },
+    {
+     "step": 1000,
+     "loss": 0.0028260377485379686,
+     "acc": 0.671875
+    },
+    {
+     "step": 1200,
+     "loss": 0.002567978474508556,
+     "acc": 0.673828125
+    },
+    {
+     "step": 1400,
+     "loss": 0.0007692036713355932,
+     "acc": 0.671875
+    },
+    {
+     "step": 1600,
+     "loss": 0.0009549441537645981,
+     "acc": 0.673828125
+    },
+    {
+     "step": 1800,
+     "loss": 0.0009284804645004044,
+     "acc": 0.673828125
+    },
+    {
+     "step": 2000,
+     "loss": 0.0002015205828537999,
+     "acc": 0.673828125
+    },
+    {
+     "step": 2200,
+     "loss": 0.0004776661082732407,
+     "acc": 0.673828125
+    },
+    {
+     "step": 2400,
+     "loss": 0.0002908243417620118,
+     "acc": 0.67578125
+    },
+    {
+     "step": 2600,
+     "loss": 0.00022341180021315157,
+     "acc": 0.67578125
+    },
+    {
+     "step": 2800,
+     "loss": 0.0002626360086619867,
+     "acc": 0.6796875
+    },
+    {
+     "step": 3000,
+     "loss": 0.00016569252070351833,
+     "acc": 0.6796875
+    }
+   ],
+   "elapsed_s": 8.8,
+   "eliminated": false
+  }
+ ],
+ "S14_pureacc": [
+  {
+   "arm": "S14_pureacc",
+   "seed": 0,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.4470555349130835e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.202349981421775e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 14.345637008902827,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 5.288700507572559e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 14.345637008902827,
+   "fingerprint_after": 14.345637008902827,
+   "final_acc": 0.431640625,
+   "shuffle_acc": 0.435546875,
+   "length_generalization": {
+    "L9": 0.390625,
+    "L17": 0.15234375,
+    "L25": 0.13671875,
+    "L33": 0.09765625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158883261092657,
+     "acc": 0.025390625
+    },
+    {
+     "step": 200,
+     "loss": 3.4362967768092405,
+     "acc": 0.09375
+    },
+    {
+     "step": 400,
+     "loss": 2.6323082010756673,
+     "acc": 0.22265625
+    },
+    {
+     "step": 600,
+     "loss": 2.617168312123469,
+     "acc": 0.21875
+    },
+    {
+     "step": 800,
+     "loss": 1.437142789652433,
+     "acc": 0.24609375
+    },
+    {
+     "step": 1000,
+     "loss": 1.3088273604605565,
+     "acc": 0.251953125
+    },
+    {
+     "step": 1200,
+     "loss": 1.2766069215855271,
+     "acc": 0.259765625
+    },
+    {
+     "step": 1400,
+     "loss": 1.3395947725570254,
+     "acc": 0.27734375
+    },
+    {
+     "step": 1600,
+     "loss": 0.7420148837278835,
+     "acc": 0.306640625
+    },
+    {
+     "step": 1800,
+     "loss": 0.523629023913623,
+     "acc": 0.32421875
+    },
+    {
+     "step": 2000,
+     "loss": 0.6812180521190817,
+     "acc": 0.3671875
+    },
+    {
+     "step": 2200,
+     "loss": 0.42299255913822975,
+     "acc": 0.375
+    },
+    {
+     "step": 2400,
+     "loss": 0.16655287277157024,
+     "acc": 0.404296875
+    },
+    {
+     "step": 2600,
+     "loss": 0.34982258001394806,
+     "acc": 0.408203125
+    },
+    {
+     "step": 2800,
+     "loss": 0.3400597024711745,
+     "acc": 0.419921875
+    },
+    {
+     "step": 3000,
+     "loss": 0.24092976421674067,
+     "acc": 0.431640625
+    }
+   ],
+   "elapsed_s": 5.4,
+   "eliminated": false
+  },
+  {
+   "arm": "S14_pureacc",
+   "seed": 1,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.808179267308922e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.2657254871162454e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 14.345637008902827,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 5.288700507572559e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 14.345637008902827,
+   "fingerprint_after": 14.345637008902827,
+   "final_acc": 0.482421875,
+   "shuffle_acc": 0.462890625,
+   "length_generalization": {
+    "L9": 0.52734375,
+    "L17": 0.20703125,
+    "L25": 0.203125,
+    "L33": 0.09765625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.1588788386156885,
+     "acc": 0.017578125
+    },
+    {
+     "step": 200,
+     "loss": 3.689103693899742,
+     "acc": 0.048828125
+    },
+    {
+     "step": 400,
+     "loss": 1.5290773629616317,
+     "acc": 0.30078125
+    },
+    {
+     "step": 600,
+     "loss": 1.3832507747304499,
+     "acc": 0.376953125
+    },
+    {
+     "step": 800,
+     "loss": 1.6233416720278546,
+     "acc": 0.423828125
+    },
+    {
+     "step": 1000,
+     "loss": 0.9297791885888761,
+     "acc": 0.45703125
+    },
+    {
+     "step": 1200,
+     "loss": 0.41831357050645185,
+     "acc": 0.462890625
+    },
+    {
+     "step": 1400,
+     "loss": 0.8775139242098767,
+     "acc": 0.455078125
+    },
+    {
+     "step": 1600,
+     "loss": 0.4170599456804955,
+     "acc": 0.451171875
+    },
+    {
+     "step": 1800,
+     "loss": 0.24985003986594936,
+     "acc": 0.451171875
+    },
+    {
+     "step": 2000,
+     "loss": 0.07639416227731385,
+     "acc": 0.462890625
+    },
+    {
+     "step": 2200,
+     "loss": 0.07433124375386832,
+     "acc": 0.453125
+    },
+    {
+     "step": 2400,
+     "loss": 0.05059435418378458,
+     "acc": 0.4609375
+    },
+    {
+     "step": 2600,
+     "loss": 0.06303027287391304,
+     "acc": 0.458984375
+    },
+    {
+     "step": 2800,
+     "loss": 0.023154687029678975,
+     "acc": 0.46484375
+    },
+    {
+     "step": 3000,
+     "loss": 0.014502174792716848,
+     "acc": 0.482421875
+    }
+   ],
+   "elapsed_s": 5.1,
+   "eliminated": false
+  },
+  {
+   "arm": "S14_pureacc",
+   "seed": 2,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.144223121007452e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.0370119649570792e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 14.345637008902827,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 5.288700507572559e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 14.345637008902827,
+   "fingerprint_after": 14.345637008902827,
+   "final_acc": 0.509765625,
+   "shuffle_acc": 0.48828125,
+   "length_generalization": {
+    "L9": 0.5078125,
+    "L17": 0.25390625,
+    "L25": 0.19921875,
+    "L33": 0.1015625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158882283997121,
+     "acc": 0.013671875
+    },
+    {
+     "step": 200,
+     "loss": 3.692952220440998,
+     "acc": 0.078125
+    },
+    {
+     "step": 400,
+     "loss": 2.684494690172632,
+     "acc": 0.26953125
+    },
+    {
+     "step": 600,
+     "loss": 2.1707297667474084,
+     "acc": 0.345703125
+    },
+    {
+     "step": 800,
+     "loss": 1.1198371700713015,
+     "acc": 0.41015625
+    },
+    {
+     "step": 1000,
+     "loss": 0.9167806989953927,
+     "acc": 0.455078125
+    },
+    {
+     "step": 1200,
+     "loss": 1.120784410166145,
+     "acc": 0.443359375
+    },
+    {
+     "step": 1400,
+     "loss": 0.40223275453521334,
+     "acc": 0.462890625
+    },
+    {
+     "step": 1600,
+     "loss": 0.6565668549391317,
+     "acc": 0.474609375
+    },
+    {
+     "step": 1800,
+     "loss": 0.1764962674725849,
+     "acc": 0.498046875
+    },
+    {
+     "step": 2000,
+     "loss": 0.39272787688684,
+     "acc": 0.49609375
+    },
+    {
+     "step": 2200,
+     "loss": 0.13778301796694817,
+     "acc": 0.5
+    },
+    {
+     "step": 2400,
+     "loss": 0.1840753120912407,
+     "acc": 0.517578125
+    },
+    {
+     "step": 2600,
+     "loss": 0.10234766534383773,
+     "acc": 0.515625
+    },
+    {
+     "step": 2800,
+     "loss": 0.021069360115008047,
+     "acc": 0.515625
+    },
+    {
+     "step": 3000,
+     "loss": 0.017692970773706105,
+     "acc": 0.509765625
+    }
+   ],
+   "elapsed_s": 4.9,
+   "eliminated": false
+  }
+ ],
+ "S15_pureacc_M32": [
+  {
+   "arm": "S15_pureacc_M32",
+   "seed": 0,
+   "params": 22528,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.3533673472646893e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.725802721327439e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 28.9471298042857,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 32,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 1024,
+    "cond_gram": 8.21902505858703e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 28.9471298042857,
+   "fingerprint_after": 28.9471298042857,
+   "final_acc": 0.478515625,
+   "shuffle_acc": 0.45703125,
+   "length_generalization": {
+    "L9": 0.4375,
+    "L17": 0.24609375,
+    "L25": 0.140625,
+    "L33": 0.07421875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158879711455311,
+     "acc": 0.01171875
+    },
+    {
+     "step": 200,
+     "loss": 3.370521064307149,
+     "acc": 0.1171875
+    },
+    {
+     "step": 400,
+     "loss": 2.5668406047158148,
+     "acc": 0.27734375
+    },
+    {
+     "step": 600,
+     "loss": 1.5924076221590766,
+     "acc": 0.349609375
+    },
+    {
+     "step": 800,
+     "loss": 1.0905786971992777,
+     "acc": 0.390625
+    },
+    {
+     "step": 1000,
+     "loss": 0.8034963134287806,
+     "acc": 0.4453125
+    },
+    {
+     "step": 1200,
+     "loss": 0.6431539364559453,
+     "acc": 0.455078125
+    },
+    {
+     "step": 1400,
+     "loss": 0.28778172462444906,
+     "acc": 0.447265625
+    },
+    {
+     "step": 1600,
+     "loss": 0.408137751586776,
+     "acc": 0.462890625
+    },
+    {
+     "step": 1800,
+     "loss": 0.1457885120624866,
+     "acc": 0.453125
+    },
+    {
+     "step": 2000,
+     "loss": 0.13322913673461126,
+     "acc": 0.470703125
+    },
+    {
+     "step": 2200,
+     "loss": 0.07326040064090386,
+     "acc": 0.466796875
+    },
+    {
+     "step": 2400,
+     "loss": 0.021728367236921405,
+     "acc": 0.4765625
+    },
+    {
+     "step": 2600,
+     "loss": 0.02502055755845268,
+     "acc": 0.462890625
+    },
+    {
+     "step": 2800,
+     "loss": 0.021195980350830344,
+     "acc": 0.484375
+    },
+    {
+     "step": 3000,
+     "loss": 0.005491807642270776,
+     "acc": 0.478515625
+    }
+   ],
+   "elapsed_s": 8.2,
+   "eliminated": false
+  },
+  {
+   "arm": "S15_pureacc_M32",
+   "seed": 1,
+   "params": 22528,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.884506531383535e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.4999056605323967e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 28.9471298042857,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 32,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 1024,
+    "cond_gram": 8.21902505858703e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 28.9471298042857,
+   "fingerprint_after": 28.9471298042857,
+   "final_acc": 0.60546875,
+   "shuffle_acc": 0.58984375,
+   "length_generalization": {
+    "L9": 0.6484375,
+    "L17": 0.33984375,
+    "L25": 0.25,
+    "L33": 0.1484375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158885999756454,
+     "acc": 0.013671875
+    },
+    {
+     "step": 200,
+     "loss": 3.0366770604946876,
+     "acc": 0.1328125
+    },
+    {
+     "step": 400,
+     "loss": 1.440399430454805,
+     "acc": 0.3828125
+    },
+    {
+     "step": 600,
+     "loss": 0.7531385715974265,
+     "acc": 0.51171875
+    },
+    {
+     "step": 800,
+     "loss": 0.8352890987345737,
+     "acc": 0.53515625
+    },
+    {
+     "step": 1000,
+     "loss": 0.21614090990829007,
+     "acc": 0.5625
+    },
+    {
+     "step": 1200,
+     "loss": 0.09868207661535117,
+     "acc": 0.58203125
+    },
+    {
+     "step": 1400,
+     "loss": 0.026715102976537508,
+     "acc": 0.59765625
+    },
+    {
+     "step": 1600,
+     "loss": 0.021299962367262185,
+     "acc": 0.58984375
+    },
+    {
+     "step": 1800,
+     "loss": 0.009182090862693828,
+     "acc": 0.603515625
+    },
+    {
+     "step": 2000,
+     "loss": 0.0049871774910610085,
+     "acc": 0.599609375
+    },
+    {
+     "step": 2200,
+     "loss": 0.0035956538023419523,
+     "acc": 0.6015625
+    },
+    {
+     "step": 2400,
+     "loss": 0.002197491223556675,
+     "acc": 0.60546875
+    },
+    {
+     "step": 2600,
+     "loss": 0.00267855450062,
+     "acc": 0.607421875
+    },
+    {
+     "step": 2800,
+     "loss": 0.002585564301924188,
+     "acc": 0.60546875
+    },
+    {
+     "step": 3000,
+     "loss": 0.0013281213892038315,
+     "acc": 0.60546875
+    }
+   ],
+   "elapsed_s": 7.9,
+   "eliminated": false
+  },
+  {
+   "arm": "S15_pureacc_M32",
+   "seed": 2,
+   "params": 22528,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.0485307591847995e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.6388246073478396e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 28.9471298042857,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 32,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 1024,
+    "cond_gram": 8.21902505858703e+17
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 28.9471298042857,
+   "fingerprint_after": 28.9471298042857,
+   "final_acc": 0.6328125,
+   "shuffle_acc": 0.611328125,
+   "length_generalization": {
+    "L9": 0.6015625,
+    "L17": 0.328125,
+    "L25": 0.203125,
+    "L33": 0.1796875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158881696482226,
+     "acc": 0.0078125
+    },
+    {
+     "step": 200,
+     "loss": 3.4385948862089624,
+     "acc": 0.13671875
+    },
+    {
+     "step": 400,
+     "loss": 1.8677157536332658,
+     "acc": 0.41796875
+    },
+    {
+     "step": 600,
+     "loss": 1.5456867557502758,
+     "acc": 0.505859375
+    },
+    {
+     "step": 800,
+     "loss": 0.7698567147232476,
+     "acc": 0.57421875
+    },
+    {
+     "step": 1000,
+     "loss": 0.6833345637398922,
+     "acc": 0.5859375
+    },
+    {
+     "step": 1200,
+     "loss": 0.07668996798853298,
+     "acc": 0.609375
+    },
+    {
+     "step": 1400,
+     "loss": 0.13005272565042855,
+     "acc": 0.611328125
+    },
+    {
+     "step": 1600,
+     "loss": 0.07238093395378503,
+     "acc": 0.615234375
+    },
+    {
+     "step": 1800,
+     "loss": 0.013061506721116866,
+     "acc": 0.6171875
+    },
+    {
+     "step": 2000,
+     "loss": 0.006516856301593929,
+     "acc": 0.630859375
+    },
+    {
+     "step": 2200,
+     "loss": 0.005336416704972116,
+     "acc": 0.626953125
+    },
+    {
+     "step": 2400,
+     "loss": 0.0035361670535718976,
+     "acc": 0.6328125
+    },
+    {
+     "step": 2600,
+     "loss": 0.004586782247648816,
+     "acc": 0.62890625
+    },
+    {
+     "step": 2800,
+     "loss": 0.0014610104534458106,
+     "acc": 0.634765625
+    },
+    {
+     "step": 3000,
+     "loss": 0.0018477750773528087,
+     "acc": 0.6328125
+    }
+   ],
+   "elapsed_s": 7.9,
+   "eliminated": false
+  }
+ ],
+ "S16_pureacc_nd": [
+  {
+   "arm": "S16_pureacc_nd",
+   "seed": 0,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.2877208646485064e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.2582464755566786e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 16.006135923151543,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 9.611723638395335e+50
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 16.006135923151543,
+   "fingerprint_after": 16.006135923151543,
+   "final_acc": 0.392578125,
+   "shuffle_acc": 0.412109375,
+   "length_generalization": {
+    "L9": 0.41796875,
+    "L17": 0.2265625,
+    "L25": 0.12890625,
+    "L33": 0.15234375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158884981578488,
+     "acc": 0.015625
+    },
+    {
+     "step": 200,
+     "loss": 3.396525695840944,
+     "acc": 0.111328125
+    },
+    {
+     "step": 400,
+     "loss": 2.636143105128694,
+     "acc": 0.21484375
+    },
+    {
+     "step": 600,
+     "loss": 2.4850663189156785,
+     "acc": 0.267578125
+    },
+    {
+     "step": 800,
+     "loss": 1.5774707547213356,
+     "acc": 0.3359375
+    },
+    {
+     "step": 1000,
+     "loss": 2.0542627509868385,
+     "acc": 0.3515625
+    },
+    {
+     "step": 1200,
+     "loss": 1.4630634378256095,
+     "acc": 0.34765625
+    },
+    {
+     "step": 1400,
+     "loss": 1.7388604977166742,
+     "acc": 0.3828125
+    },
+    {
+     "step": 1600,
+     "loss": 0.9668815526273629,
+     "acc": 0.400390625
+    },
+    {
+     "step": 1800,
+     "loss": 1.2431273798894593,
+     "acc": 0.40625
+    },
+    {
+     "step": 2000,
+     "loss": 0.7434715013716853,
+     "acc": 0.404296875
+    },
+    {
+     "step": 2200,
+     "loss": 0.6587673968984441,
+     "acc": 0.380859375
+    },
+    {
+     "step": 2400,
+     "loss": 0.43121115357152523,
+     "acc": 0.41015625
+    },
+    {
+     "step": 2600,
+     "loss": 0.6947894215780936,
+     "acc": 0.41015625
+    },
+    {
+     "step": 2800,
+     "loss": 0.10411120907397643,
+     "acc": 0.412109375
+    },
+    {
+     "step": 3000,
+     "loss": 0.27874417414454794,
+     "acc": 0.392578125
+    }
+   ],
+   "elapsed_s": 5.4,
+   "eliminated": false
+  },
+  {
+   "arm": "S16_pureacc_nd",
+   "seed": 1,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.5178119690673144e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 8.727418822137057e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 16.006135923151543,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 9.611723638395335e+50
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 16.006135923151543,
+   "fingerprint_after": 16.006135923151543,
+   "final_acc": 0.509765625,
+   "shuffle_acc": 0.482421875,
+   "length_generalization": {
+    "L9": 0.47265625,
+    "L17": 0.29296875,
+    "L25": 0.23828125,
+    "L33": 0.125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158879959180666,
+     "acc": 0.013671875
+    },
+    {
+     "step": 200,
+     "loss": 3.466948676930627,
+     "acc": 0.064453125
+    },
+    {
+     "step": 400,
+     "loss": 1.7430840487492616,
+     "acc": 0.30078125
+    },
+    {
+     "step": 600,
+     "loss": 1.3440061068813554,
+     "acc": 0.373046875
+    },
+    {
+     "step": 800,
+     "loss": 1.771898881560095,
+     "acc": 0.4140625
+    },
+    {
+     "step": 1000,
+     "loss": 0.8887032184444706,
+     "acc": 0.423828125
+    },
+    {
+     "step": 1200,
+     "loss": 0.6675692591277639,
+     "acc": 0.466796875
+    },
+    {
+     "step": 1400,
+     "loss": 0.580283999811013,
+     "acc": 0.458984375
+    },
+    {
+     "step": 1600,
+     "loss": 0.41907843539994616,
+     "acc": 0.484375
+    },
+    {
+     "step": 1800,
+     "loss": 0.20919533062443918,
+     "acc": 0.474609375
+    },
+    {
+     "step": 2000,
+     "loss": 0.04195028575997302,
+     "acc": 0.5
+    },
+    {
+     "step": 2200,
+     "loss": 0.05448905895632063,
+     "acc": 0.521484375
+    },
+    {
+     "step": 2400,
+     "loss": 0.15525621733248446,
+     "acc": 0.50390625
+    },
+    {
+     "step": 2600,
+     "loss": 0.05071497050609865,
+     "acc": 0.517578125
+    },
+    {
+     "step": 2800,
+     "loss": 0.03754152619315351,
+     "acc": 0.50390625
+    },
+    {
+     "step": 3000,
+     "loss": 0.009787346779241878,
+     "acc": 0.509765625
+    }
+   ],
+   "elapsed_s": 5.3,
+   "eliminated": false
+  },
+  {
+   "arm": "S16_pureacc_nd",
+   "seed": 2,
+   "params": 12288,
+   "guards": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1267211292054168e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.7013769033643334e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 16.006135923151543,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 16,
+    "L": 9,
+    "C": 4,
+    "state_bytes": 512,
+    "cond_gram": 9.611723638395335e+50
+   },
+   "rho_theta_frozen": true,
+   "fingerprint_before": 16.006135923151543,
+   "fingerprint_after": 16.006135923151543,
+   "final_acc": 0.462890625,
+   "shuffle_acc": 0.505859375,
+   "length_generalization": {
+    "L9": 0.515625,
+    "L17": 0.234375,
+    "L25": 0.1796875,
+    "L33": 0.1328125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.1588806025709975,
+     "acc": 0.005859375
+    },
+    {
+     "step": 200,
+     "loss": 3.403689751587942,
+     "acc": 0.087890625
+    },
+    {
+     "step": 400,
+     "loss": 2.686038257255812,
+     "acc": 0.3125
+    },
+    {
+     "step": 600,
+     "loss": 1.4836757609077225,
+     "acc": 0.39453125
+    },
+    {
+     "step": 800,
+     "loss": 1.0711941538014624,
+     "acc": 0.41015625
+    },
+    {
+     "step": 1000,
+     "loss": 1.2580558203795102,
+     "acc": 0.451171875
+    },
+    {
+     "step": 1200,
+     "loss": 0.7688298158810036,
+     "acc": 0.451171875
+    },
+    {
+     "step": 1400,
+     "loss": 0.6482242769102039,
+     "acc": 0.447265625
+    },
+    {
+     "step": 1600,
+     "loss": 0.5862971595451923,
+     "acc": 0.46875
+    },
+    {
+     "step": 1800,
+     "loss": 0.5586614014669826,
+     "acc": 0.482421875
+    },
+    {
+     "step": 2000,
+     "loss": 0.11689434437106534,
+     "acc": 0.455078125
+    },
+    {
+     "step": 2200,
+     "loss": 0.10293393100680398,
+     "acc": 0.47265625
+    },
+    {
+     "step": 2400,
+     "loss": 0.08016855247663832,
+     "acc": 0.4765625
+    },
+    {
+     "step": 2600,
+     "loss": 0.08412641918556973,
+     "acc": 0.478515625
+    },
+    {
+     "step": 2800,
+     "loss": 0.016371098885408508,
+     "acc": 0.462890625
+    },
+    {
+     "step": 3000,
+     "loss": 0.02830011670196214,
+     "acc": 0.462890625
+    }
+   ],
+   "elapsed_s": 5.2,
+   "eliminated": false
+  }
+ ]
+}
