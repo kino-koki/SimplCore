@@ -1,0 +1,59 @@
+{
+ "chat_template": "Qwen3-Instruct + no-think prefilled",
+ "nnew_target": 8,
+ "argmax": true,
+ "rows": {
+  "华为是什么公司|teacher": {
+   "text": "华为技术有限公司（Huawei Technologies Co., Ltd",
+   "ids": [
+    104641,
+    99361,
+    103921,
+    9909,
+    81378,
+    37585,
+    24561,
+    3539,
+    2572,
+    12324
+   ],
+   "n": 10,
+   "zh": 0.2162,
+   "rep3": 0.0,
+   "distinct": 10,
+   "has_replacement": false
+  },
+  "华为是什么公司|ck4": {
+   "text": "\nOkay发现\n",
+   "ids": [
+    198,
+    32313,
+    99879,
+    198
+   ],
+   "n": 4,
+   "zh": 0.25,
+   "rep3": 0.0,
+   "distinct": 3,
+   "has_replacement": false
+  },
+  "华为是什么公司|ckcas": {
+   "text": "وع\nOkay�\nOkay�\n",
+   "ids": [
+    124179,
+    198,
+    32313,
+    116,
+    198,
+    32313,
+    116,
+    198
+   ],
+   "n": 8,
+   "zh": 0.0,
+   "rep3": 0.3333,
+   "distinct": 4,
+   "has_replacement": true
+  }
+ }
+}

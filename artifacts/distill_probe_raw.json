@@ -1,0 +1,657 @@
+{
+ "task": "MQAR G=4, 8 classes, chance=0.125, L=96",
+ "question": "SimplCore 原生小模型没问题 / 是迁移脚本的问题？",
+ "fixes_applied": [
+  "目标函数：隐状态对齐 → 只对齐 teacher 冻结输出分布",
+  "初始化：profile LS 拟合当最终权重 → 只作暖启动(emb/head逐位复制)",
+  "冻结策略：只训 mixer → 全参数可训",
+  "蒸馏：单末位 CE/T=1 → 每位置 KL(T=4)+末位 CE，α 0.7→0.3",
+  "主指标：残差流余弦 → 任务 acc / val CE / 收敛曲线"
+ ],
+ "config": {
+  "steps": 600,
+  "seeds": [
+   0,
+   1,
+   2
+  ],
+  "d": 32,
+  "layers": 2,
+  "M": 16,
+  "feat_dim": 32,
+  "L": 96,
+  "batch": 8,
+  "lr": 0.003,
+  "n_eval": 256,
+  "teacher_steps": 1000,
+  "temperature": 4.0,
+  "alpha": [
+   0.7,
+   0.3
+  ]
+ },
+ "teacher_acc": 0.3633,
+ "chance": 0.125,
+ "fairness_note": "四臂同一 teacher、同步数、同 seed、同数据流、同评估集；sgc 用 init_mode='linear' 最强静态网格；参数量不等逐臂记录，不做等参断言。teacher 未调参（统一 lr）。",
+ "honest_boundary": "D=32 / 2 层 / 合成 MQAR / 3 seeds 的小规模前哨，判的是「修脚本能否越过静态核函数类上限」这一机制问题；不等于 1.7B 真实语言生成。本仓从未从零训过 1.7B 语言模型，因此『原生模型在真实汉语上没问题』既未证实也未证伪。",
+ "rows": {
+  "sgc_scratch": {
+   "units": {
+    "0": {
+     "acc": 0.2031,
+     "acc_curve": [
+      [
+       1,
+       0.1094
+      ],
+      [
+       100,
+       0.0625
+      ],
+      [
+       200,
+       0.0938
+      ],
+      [
+       300,
+       0.1875
+      ],
+      [
+       400,
+       0.125
+      ],
+      [
+       500,
+       0.2031
+      ],
+      [
+       600,
+       0.2344
+      ]
+     ],
+     "final_loss": 1.95415,
+     "info": {
+      "state_bytes": 8960,
+      "flops_per_token": 512,
+      "no_NxN": true,
+      "kernel_input_independent": true,
+      "params": 15370,
+      "warm_start": false,
+      "trainable_params": 15370
+     }
+    },
+    "1": {
+     "acc": 0.2773,
+     "acc_curve": [
+      [
+       1,
+       0.2031
+      ],
+      [
+       100,
+       0.1094
+      ],
+      [
+       200,
+       0.2344
+      ],
+      [
+       300,
+       0.25
+      ],
+      [
+       400,
+       0.1719
+      ],
+      [
+       500,
+       0.25
+      ],
+      [
+       600,
+       0.2031
+      ]
+     ],
+     "final_loss": 2.18647,
+     "info": {
+      "state_bytes": 8960,
+      "flops_per_token": 512,
+      "no_NxN": true,
+      "kernel_input_independent": true,
+      "params": 15370,
+      "warm_start": false,
+      "trainable_params": 15370
+     }
+    },
+    "2": {
+     "acc": 0.2227,
+     "acc_curve": [
+      [
+       1,
+       0.2031
+      ],
+      [
+       100,
+       0.0938
+      ],
+      [
+       200,
+       0.1406
+      ],
+      [
+       300,
+       0.1562
+      ],
+      [
+       400,
+       0.1562
+      ],
+      [
+       500,
+       0.2031
+      ],
+      [
+       600,
+       0.1406
+      ]
+     ],
+     "final_loss": 2.0058,
+     "info": {
+      "state_bytes": 8960,
+      "flops_per_token": 512,
+      "no_NxN": true,
+      "kernel_input_independent": true,
+      "params": 15370,
+      "warm_start": false,
+      "trainable_params": 15370
+     }
+    }
+   },
+   "accs": [
+    0.2031,
+    0.2773,
+    0.2227
+   ],
+   "mean": 0.2344,
+   "info": {
+    "state_bytes": 8960,
+    "flops_per_token": 512,
+    "no_NxN": true,
+    "kernel_input_independent": true,
+    "params": 15370,
+    "warm_start": false,
+    "trainable_params": 15370
+   }
+  },
+  "sgc_warm": {
+   "units": {
+    "0": {
+     "acc": 0.2383,
+     "acc_curve": [
+      [
+       1,
+       0.0938
+      ],
+      [
+       100,
+       0.1562
+      ],
+      [
+       200,
+       0.0938
+      ],
+      [
+       300,
+       0.25
+      ],
+      [
+       400,
+       0.125
+      ],
+      [
+       500,
+       0.2344
+      ],
+      [
+       600,
+       0.2969
+      ]
+     ],
+     "final_loss": 1.87615,
+     "info": {
+      "state_bytes": 8960,
+      "flops_per_token": 512,
+      "no_NxN": true,
+      "kernel_input_independent": true,
+      "params": 15370,
+      "warm_start": true,
+      "trainable_params": 15370
+     }
+    },
+    "1": {
+     "acc": 0.293,
+     "acc_curve": [
+      [
+       1,
+       0.1406
+      ],
+      [
+       100,
+       0.0938
+      ],
+      [
+       200,
+       0.1406
+      ],
+      [
+       300,
+       0.2188
+      ],
+      [
+       400,
+       0.1562
+      ],
+      [
+       500,
+       0.125
+      ],
+      [
+       600,
+       0.2344
+      ]
+     ],
+     "final_loss": 1.86353,
+     "info": {
+      "state_bytes": 8960,
+      "flops_per_token": 512,
+      "no_NxN": true,
+      "kernel_input_independent": true,
+      "params": 15370,
+      "warm_start": true,
+      "trainable_params": 15370
+     }
+    },
+    "2": {
+     "acc": 0.2188,
+     "acc_curve": [
+      [
+       1,
+       0.1562
+      ],
+      [
+       100,
+       0.0469
+      ],
+      [
+       200,
+       0.1875
+      ],
+      [
+       300,
+       0.1406
+      ],
+      [
+       400,
+       0.2188
+      ],
+      [
+       500,
+       0.2344
+      ],
+      [
+       600,
+       0.2031
+      ]
+     ],
+     "final_loss": 2.04467,
+     "info": {
+      "state_bytes": 8960,
+      "flops_per_token": 512,
+      "no_NxN": true,
+      "kernel_input_independent": true,
+      "params": 15370,
+      "warm_start": true,
+      "trainable_params": 15370
+     }
+    }
+   },
+   "accs": [
+    0.2383,
+    0.293,
+    0.2188
+   ],
+   "mean": 0.25,
+   "info": {
+    "state_bytes": 8960,
+    "flops_per_token": 512,
+    "no_NxN": true,
+    "kernel_input_independent": true,
+    "params": 15370,
+    "warm_start": true,
+    "trainable_params": 15370
+   }
+  },
+  "sgc_kd": {
+   "units": {
+    "0": {
+     "acc": 0.2578,
+     "acc_curve": [
+      [
+       1,
+       0.1094
+      ],
+      [
+       100,
+       0.125
+      ],
+      [
+       200,
+       0.0781
+      ],
+      [
+       300,
+       0.2031
+      ],
+      [
+       400,
+       0.125
+      ],
+      [
+       500,
+       0.2031
+      ],
+      [
+       600,
+       0.25
+      ]
+     ],
+     "final_loss": 1.67855,
+     "info": {
+      "state_bytes": 8960,
+      "flops_per_token": 512,
+      "no_NxN": true,
+      "kernel_input_independent": true,
+      "params": 15370,
+      "warm_start": true,
+      "trainable_params": 15370
+     }
+    },
+    "1": {
+     "acc": 0.207,
+     "acc_curve": [
+      [
+       1,
+       0.125
+      ],
+      [
+       100,
+       0.125
+      ],
+      [
+       200,
+       0.1562
+      ],
+      [
+       300,
+       0.1719
+      ],
+      [
+       400,
+       0.125
+      ],
+      [
+       500,
+       0.1719
+      ],
+      [
+       600,
+       0.2656
+      ]
+     ],
+     "final_loss": 1.77273,
+     "info": {
+      "state_bytes": 8960,
+      "flops_per_token": 512,
+      "no_NxN": true,
+      "kernel_input_independent": true,
+      "params": 15370,
+      "warm_start": true,
+      "trainable_params": 15370
+     }
+    },
+    "2": {
+     "acc": 0.2227,
+     "acc_curve": [
+      [
+       1,
+       0.1875
+      ],
+      [
+       100,
+       0.1094
+      ],
+      [
+       200,
+       0.1094
+      ],
+      [
+       300,
+       0.1406
+      ],
+      [
+       400,
+       0.2031
+      ],
+      [
+       500,
+       0.2188
+      ],
+      [
+       600,
+       0.1875
+      ]
+     ],
+     "final_loss": 1.7824,
+     "info": {
+      "state_bytes": 8960,
+      "flops_per_token": 512,
+      "no_NxN": true,
+      "kernel_input_independent": true,
+      "params": 15370,
+      "warm_start": true,
+      "trainable_params": 15370
+     }
+    }
+   },
+   "accs": [
+    0.2578,
+    0.207,
+    0.2227
+   ],
+   "mean": 0.2292,
+   "info": {
+    "state_bytes": 8960,
+    "flops_per_token": 512,
+    "no_NxN": true,
+    "kernel_input_independent": true,
+    "params": 15370,
+    "warm_start": true,
+    "trainable_params": 15370
+   }
+  },
+  "cas_kd": {
+   "units": {
+    "0": {
+     "acc": 0.3594,
+     "acc_curve": [
+      [
+       1,
+       0.1875
+      ],
+      [
+       100,
+       0.1719
+      ],
+      [
+       200,
+       0.2969
+      ],
+      [
+       300,
+       0.3125
+      ],
+      [
+       400,
+       0.3594
+      ],
+      [
+       500,
+       0.3438
+      ],
+      [
+       600,
+       0.2812
+      ]
+     ],
+     "final_loss": 1.12464,
+     "info": {
+      "state_bytes": 8448,
+      "flops_per_token": 2048,
+      "no_NxN": true,
+      "kernel_input_independent": false,
+      "params": 18120,
+      "warm_start": true,
+      "trainable_params": 18120
+     }
+    },
+    "1": {
+     "acc": 0.3516,
+     "acc_curve": [
+      [
+       1,
+       0.0938
+      ],
+      [
+       100,
+       0.3281
+      ],
+      [
+       200,
+       0.3125
+      ],
+      [
+       300,
+       0.3281
+      ],
+      [
+       400,
+       0.3125
+      ],
+      [
+       500,
+       0.2969
+      ],
+      [
+       600,
+       0.2656
+      ]
+     ],
+     "final_loss": 1.23789,
+     "info": {
+      "state_bytes": 8448,
+      "flops_per_token": 2048,
+      "no_NxN": true,
+      "kernel_input_independent": false,
+      "params": 18120,
+      "warm_start": true,
+      "trainable_params": 18120
+     }
+    },
+    "2": {
+     "acc": 0.3867,
+     "acc_curve": [
+      [
+       1,
+       0.0938
+      ],
+      [
+       100,
+       0.3281
+      ],
+      [
+       200,
+       0.375
+      ],
+      [
+       300,
+       0.4219
+      ],
+      [
+       400,
+       0.375
+      ],
+      [
+       500,
+       0.4062
+      ],
+      [
+       600,
+       0.4062
+      ]
+     ],
+     "final_loss": 1.03754,
+     "info": {
+      "state_bytes": 8448,
+      "flops_per_token": 2048,
+      "no_NxN": true,
+      "kernel_input_independent": false,
+      "params": 18120,
+      "warm_start": true,
+      "trainable_params": 18120
+     }
+    }
+   },
+   "accs": [
+    0.3594,
+    0.3516,
+    0.3867
+   ],
+   "mean": 0.3659,
+   "info": {
+    "state_bytes": 8448,
+    "flops_per_token": 2048,
+    "no_NxN": true,
+    "kernel_input_independent": false,
+    "params": 18120,
+    "warm_start": true,
+    "trainable_params": 18120
+   }
+  }
+ },
+ "paired_vs_scratch": {
+  "sgc_warm - sgc_scratch": {
+   "diff": 0.0157,
+   "ci95": [
+    -0.0039,
+    0.0352
+   ],
+   "significant": false
+  },
+  "sgc_kd - sgc_scratch": {
+   "diff": -0.0052,
+   "ci95": [
+    -0.0703,
+    0.0547
+   ],
+   "significant": false
+  },
+  "cas_kd - sgc_scratch": {
+   "diff": 0.1315,
+   "ci95": [
+    0.0743,
+    0.164
+   ],
+   "significant": true
+  }
+ }
+}

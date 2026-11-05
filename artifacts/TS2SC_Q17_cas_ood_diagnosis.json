@@ -1,0 +1,398 @@
+{
+ "华为是什么公司": [
+  {
+   "layer": 0,
+   "base": 0.8431,
+   "joint": 0.8398,
+   "delta": -0.0033,
+   "amp_ratio": 0.0858
+  },
+  {
+   "layer": 1,
+   "base": 0.7471,
+   "joint": 0.7291,
+   "delta": -0.018,
+   "amp_ratio": 0.3959
+  },
+  {
+   "layer": 2,
+   "base": 0.7609,
+   "joint": 0.8156,
+   "delta": 0.0547,
+   "amp_ratio": 0.3267
+  },
+  {
+   "layer": 3,
+   "base": 0.4666,
+   "joint": 0.51,
+   "delta": 0.0434,
+   "amp_ratio": 0.4613
+  },
+  {
+   "layer": 4,
+   "base": 0.5052,
+   "joint": 0.5475,
+   "delta": 0.0422,
+   "amp_ratio": 0.4526
+  },
+  {
+   "layer": 5,
+   "base": 0.5374,
+   "joint": 0.5963,
+   "delta": 0.0589,
+   "amp_ratio": 0.2968
+  },
+  {
+   "layer": 6,
+   "base": 0.5605,
+   "joint": 0.6288,
+   "delta": 0.0684,
+   "amp_ratio": 0.2947
+  },
+  {
+   "layer": 7,
+   "base": 0.4158,
+   "joint": 0.4769,
+   "delta": 0.0611,
+   "amp_ratio": 0.2736
+  },
+  {
+   "layer": 8,
+   "base": 0.4332,
+   "joint": 0.502,
+   "delta": 0.0688,
+   "amp_ratio": 0.3225
+  },
+  {
+   "layer": 9,
+   "base": 0.5207,
+   "joint": 0.6336,
+   "delta": 0.1129,
+   "amp_ratio": 0.4501
+  },
+  {
+   "layer": 10,
+   "base": 0.5237,
+   "joint": 0.629,
+   "delta": 0.1053,
+   "amp_ratio": 0.4801
+  },
+  {
+   "layer": 11,
+   "base": 0.718,
+   "joint": 0.7394,
+   "delta": 0.0214,
+   "amp_ratio": 0.1764
+  },
+  {
+   "layer": 12,
+   "base": 0.4378,
+   "joint": 0.6661,
+   "delta": 0.2283,
+   "amp_ratio": 0.8742
+  },
+  {
+   "layer": 13,
+   "base": 0.426,
+   "joint": 0.5231,
+   "delta": 0.0971,
+   "amp_ratio": 0.3768
+  },
+  {
+   "layer": 14,
+   "base": 0.5621,
+   "joint": 0.6377,
+   "delta": 0.0756,
+   "amp_ratio": 0.5062
+  },
+  {
+   "layer": 15,
+   "base": 0.5711,
+   "joint": 0.6602,
+   "delta": 0.0892,
+   "amp_ratio": 0.2657
+  },
+  {
+   "layer": 16,
+   "base": 0.5225,
+   "joint": 0.6534,
+   "delta": 0.1309,
+   "amp_ratio": 0.3744
+  },
+  {
+   "layer": 17,
+   "base": 0.6136,
+   "joint": 0.6788,
+   "delta": 0.0652,
+   "amp_ratio": 0.3029
+  },
+  {
+   "layer": 18,
+   "base": 0.5828,
+   "joint": 0.6732,
+   "delta": 0.0904,
+   "amp_ratio": 0.3117
+  },
+  {
+   "layer": 19,
+   "base": 0.4156,
+   "joint": 0.4715,
+   "delta": 0.0559,
+   "amp_ratio": 0.385
+  },
+  {
+   "layer": 20,
+   "base": 0.4926,
+   "joint": 0.543,
+   "delta": 0.0504,
+   "amp_ratio": 0.4603
+  },
+  {
+   "layer": 21,
+   "base": 0.4893,
+   "joint": 0.5227,
+   "delta": 0.0333,
+   "amp_ratio": 0.5143
+  },
+  {
+   "layer": 22,
+   "base": 0.488,
+   "joint": 0.522,
+   "delta": 0.0339,
+   "amp_ratio": 0.4295
+  },
+  {
+   "layer": 23,
+   "base": 0.4251,
+   "joint": 0.4394,
+   "delta": 0.0143,
+   "amp_ratio": 0.4222
+  },
+  {
+   "layer": 24,
+   "base": 0.3905,
+   "joint": 0.3842,
+   "delta": -0.0063,
+   "amp_ratio": 0.2465
+  },
+  {
+   "layer": 25,
+   "base": 0.5051,
+   "joint": 0.5155,
+   "delta": 0.0104,
+   "amp_ratio": 0.3756
+  },
+  {
+   "layer": 26,
+   "base": 0.6114,
+   "joint": 0.6152,
+   "delta": 0.0037,
+   "amp_ratio": 0.1367
+  },
+  {
+   "layer": 27,
+   "base": 0.4929,
+   "joint": 0.5158,
+   "delta": 0.0229,
+   "amp_ratio": 0.2625
+  }
+ ],
+ "中国的首都是": [
+  {
+   "layer": 0,
+   "base": 0.8415,
+   "joint": 0.838,
+   "delta": -0.0035,
+   "amp_ratio": 0.0819
+  },
+  {
+   "layer": 1,
+   "base": 0.7549,
+   "joint": 0.7346,
+   "delta": -0.0203,
+   "amp_ratio": 0.4058
+  },
+  {
+   "layer": 2,
+   "base": 0.7587,
+   "joint": 0.8165,
+   "delta": 0.0578,
+   "amp_ratio": 0.3293
+  },
+  {
+   "layer": 3,
+   "base": 0.4592,
+   "joint": 0.499,
+   "delta": 0.0398,
+   "amp_ratio": 0.4069
+  },
+  {
+   "layer": 4,
+   "base": 0.5276,
+   "joint": 0.5574,
+   "delta": 0.0298,
+   "amp_ratio": 0.387
+  },
+  {
+   "layer": 5,
+   "base": 0.5331,
+   "joint": 0.5762,
+   "delta": 0.0432,
+   "amp_ratio": 0.2402
+  },
+  {
+   "layer": 6,
+   "base": 0.5473,
+   "joint": 0.6121,
+   "delta": 0.0648,
+   "amp_ratio": 0.2868
+  },
+  {
+   "layer": 7,
+   "base": 0.4248,
+   "joint": 0.473,
+   "delta": 0.0482,
+   "amp_ratio": 0.2516
+  },
+  {
+   "layer": 8,
+   "base": 0.471,
+   "joint": 0.5271,
+   "delta": 0.0561,
+   "amp_ratio": 0.3232
+  },
+  {
+   "layer": 9,
+   "base": 0.5109,
+   "joint": 0.6244,
+   "delta": 0.1135,
+   "amp_ratio": 0.4309
+  },
+  {
+   "layer": 10,
+   "base": 0.5221,
+   "joint": 0.6163,
+   "delta": 0.0942,
+   "amp_ratio": 0.4555
+  },
+  {
+   "layer": 11,
+   "base": 0.7111,
+   "joint": 0.7342,
+   "delta": 0.023,
+   "amp_ratio": 0.1848
+  },
+  {
+   "layer": 12,
+   "base": 0.4498,
+   "joint": 0.662,
+   "delta": 0.2122,
+   "amp_ratio": 0.8844
+  },
+  {
+   "layer": 13,
+   "base": 0.4081,
+   "joint": 0.5209,
+   "delta": 0.1128,
+   "amp_ratio": 0.4015
+  },
+  {
+   "layer": 14,
+   "base": 0.5633,
+   "joint": 0.6409,
+   "delta": 0.0775,
+   "amp_ratio": 0.4507
+  },
+  {
+   "layer": 15,
+   "base": 0.5694,
+   "joint": 0.6519,
+   "delta": 0.0825,
+   "amp_ratio": 0.2621
+  },
+  {
+   "layer": 16,
+   "base": 0.5175,
+   "joint": 0.6322,
+   "delta": 0.1147,
+   "amp_ratio": 0.3434
+  },
+  {
+   "layer": 17,
+   "base": 0.6119,
+   "joint": 0.6732,
+   "delta": 0.0613,
+   "amp_ratio": 0.2687
+  },
+  {
+   "layer": 18,
+   "base": 0.563,
+   "joint": 0.6455,
+   "delta": 0.0825,
+   "amp_ratio": 0.2924
+  },
+  {
+   "layer": 19,
+   "base": 0.3983,
+   "joint": 0.4477,
+   "delta": 0.0495,
+   "amp_ratio": 0.3321
+  },
+  {
+   "layer": 20,
+   "base": 0.4699,
+   "joint": 0.5137,
+   "delta": 0.0438,
+   "amp_ratio": 0.3573
+  },
+  {
+   "layer": 21,
+   "base": 0.4637,
+   "joint": 0.4913,
+   "delta": 0.0277,
+   "amp_ratio": 0.4389
+  },
+  {
+   "layer": 22,
+   "base": 0.4659,
+   "joint": 0.491,
+   "delta": 0.0251,
+   "amp_ratio": 0.3904
+  },
+  {
+   "layer": 23,
+   "base": 0.4185,
+   "joint": 0.4378,
+   "delta": 0.0193,
+   "amp_ratio": 0.361
+  },
+  {
+   "layer": 24,
+   "base": 0.3624,
+   "joint": 0.3525,
+   "delta": -0.0099,
+   "amp_ratio": 0.2339
+  },
+  {
+   "layer": 25,
+   "base": 0.4908,
+   "joint": 0.5013,
+   "delta": 0.0105,
+   "amp_ratio": 0.3468
+  },
+  {
+   "layer": 26,
+   "base": 0.593,
+   "joint": 0.5966,
+   "delta": 0.0036,
+   "amp_ratio": 0.1183
+  },
+  {
+   "layer": 27,
+   "base": 0.4895,
+   "joint": 0.5152,
+   "delta": 0.0257,
+   "amp_ratio": 0.2279
+  }
+ ]
+}
