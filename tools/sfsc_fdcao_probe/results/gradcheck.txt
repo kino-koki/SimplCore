@@ -1,0 +1,8 @@
+=== fp64 梯度检验 ===
+  [static  ] 最坏相对误差 1.43e-08 (Wo), 超差 0/30
+  [sfsc    ] 最坏相对误差 1.46e-05 (P.W_rho), 超差 0/50
+  [fdcao   ] 最坏相对误差 8.06e-08 (P.w_phi), 超差 0/41
+  [fdcao_p ] 最坏相对误差 1.16e-07 (P.w_phi), 超差 0/41
+  [attn    ] 最坏相对误差 3.19e-04 (P.Wq), 超差 0/50
+  [attn_lr ] 最坏相对误差 2.50e-04 (P.Wka), 超差 0/70
+==> PASS {'static': True, 'sfsc': True, 'fdcao': True, 'fdcao_p': True, 'attn': True, 'attn_lr': True}
