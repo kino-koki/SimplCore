@@ -58,7 +58,7 @@ h[τ] = Σ_{j=0}^{τ} r1^{τ−j} r2^{j}
 | `fusion_probe.py`（三方案融合，依赖 hybrid 网格） | **已移入 `legacy/` 并删除代码文件**，仅留 `README.md` 与历史结果 JSON |
 | `README_fusion.md` / `results/fusion_results.json` | 保留为历史证据，标注「已停用」 |
 
-`grep -rn hybrid --include='*.py' .` → **零命中**。
+`grep -rn hybrid --include='*.py' .` → **零命中**；活跃代码中亦无任何 attention / softmax 实现。
 
 保留 `softmax attention` 的**数字**作为上界标尺（0.9987 @ 10,240），
 但不在活跃代码里实现它。没有标尺就无法证伪，这与「走 Transformer 路线」是两回事。
@@ -195,7 +195,8 @@ L=33 上从 0.10 → 0.38，**相对改善随 L 增大**。但绝对精度仍掉
 |---|---|
 | `mini_autograd.py` | 极简 fp64 反向模式自动微分 |
 | `sgc_fixed.py` | 固定核 + 六条守恒断言（hybrid 已删） |
-| `super_probe.py` | 核外叠加码、容量消融、网格扫描、注意力上界（历史） |
+| `task_utils.py` | 共享任务与配置（纯数据层） |
+| `legacy/` | 已停用的融合探针与历史对照探针说明 |
 | `native_probe.py` | 第一步：可学时不变谱字典 LTISD |
 | `general_probe.py` | 第二步：一般二阶 IIR 字典（本轮主角） |
 | `README_fusion.md` | 三方案融合历史结论（反协同），标注已停用 |

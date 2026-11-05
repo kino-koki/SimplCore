@@ -180,13 +180,6 @@ def const(a):
     return T(np.asarray(a, dtype=np.float64))
 
 
-def log_softmax(z):
-    m = z.d.max(axis=-1, keepdims=True)
-    e = np.exp(z.d - m)
-    s = e.sum(axis=-1, keepdims=True)
-    return z - const(m) - (T(e) * 0 + const(np.log(s)))
-
-
 def nll_from_logits(logits, targets):
     """logits: T (B, C)；targets: (B,) int。返回标量 T。"""
     B, C = logits.d.shape

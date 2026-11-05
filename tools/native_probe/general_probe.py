@@ -40,7 +40,7 @@ import numpy as np
 
 from mini_autograd import T, const, nll_from_logits
 import sgc_fixed as S
-import super_probe as SP
+import task_utils as SP
 
 OUT = "results"
 SEEDS = (0, 1, 2)

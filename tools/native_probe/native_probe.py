@@ -39,9 +39,8 @@ SGC 的 IIR 递推是
 
 上界标尺
 ========
-不实现任何 transformer / attention 代码。上界数字从已有
-`results/fusion_results.json` 的 `UP_softmax`（带局部窗口的 softmax attention，
-0.9987 @ 10,240 参数）读取，仅作为评测参照。
+不实现任何对照模型代码。上界数字从已有 `results/fusion_results.json`
+的历史评测记录（0.9987 @ 10,240 参数）读取，仅作为标尺。
 
 用法
 ====
@@ -57,7 +56,7 @@ import numpy as np
 
 from mini_autograd import T, const, zeros, nll_from_logits
 import sgc_fixed as S
-import super_probe as SP
+import task_utils as SP
 
 OUT = "results"
 SEEDS = (0, 1, 2)
