@@ -1,0 +1,9 @@
+{
+ "group": "CAS + purity + linear-grid 回归组",
+ "returncode": 0,
+ "stdout_tail": [
+  "..................................................                       [100%]"
+ ],
+ "note": "全量 pytest 在本沙箱 python3.10 下因 test_impl_isolation.py 依赖 tomllib 收集失败，且全量运行耗时触发沙箱 502；此处为与 CAS 改动直接相关的回归组，复验 50 passed。",
+ "cas_guard_items": 8
+}
