@@ -1,0 +1,24 @@
+{
+ "V": 64,
+ "n_pairs": 4,
+ "n_layers": 3,
+ "toeplitz": true,
+ "max_kernel_dev": 0.0,
+ "fft_iir_rel_error": 2.2742564715962124e-16,
+ "duality_pass": true,
+ "last_time_vs_forward_dev": 1.1371282357981062e-16,
+ "last_time_pass": true,
+ "strict_causality": true,
+ "state_bytes_by_L": {
+  "9": 1024,
+  "17": 1024,
+  "33": 1024,
+  "65": 1024,
+  "1025": 1024
+ },
+ "o1_state_pass": true,
+ "no_nxn_matrix": true,
+ "no_kv_cache": true,
+ "no_softmax_over_tokens": true,
+ "all_passed": true
+}
