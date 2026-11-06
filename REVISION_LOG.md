@@ -153,6 +153,25 @@ cond 三个具体值、`1127 通过`、`1.948 GiB vs 120 GiB`、
 `verify_smm_sgc.py` 的 bootstrap 模拟显式标 `ILLUSTRATION ONLY`，
 不参与证明。**防「空定理」**：`NONVAC` 为每条新定理给出满足前提的实例。
 
+## 6.4 v4.1：渲染修复（乱码）与 TS2SC 真实权重验证
+
+| 项 | 处理 |
+|---|---|
+| PDF 乱码 | `&lt;/&gt;/-&gt;` 实体双重解码；`_{...}/^{...}`/`\mathbb{R}` 等 TeX 碎片规范化；非 ASCII 过滤后仅剩 `·` |
+| 口径残留 | 「Fifteen Theorems」「all 15 theorems」「附录 A NT01-NT15」→ 30 / NT01-NT30 |
+| 重建校验 | 实体/旧口径/TeX 残留全 0；19 页，主文 6 页；A.1–A.30 与 30/30 引用齐全 |
+
+**TS2SC 验证口径（重要）**：账号下**没有 Qwen3-0.6B 权重本体**；真实权重来自
+`Qwen3-1.7B-Instruct`。PyPI / HF / Release asset 403、无 torch ⇒
+**端到端迁移与语言建模指标未跑，未伪造**。本轮真实完成：Stage-0 provenance
+（311 张量 100% 覆盖）、独立参数对账（663,544,832 精确吻合历史值）、真实
+BF16 权重逐位复制、在真实 embedding 上的 SGC 对偶/因果/O(1) 验证。
+详见 `TS2SC_QWEN3_VERIFY.md`。
+
+**新增撤回/修正**：`ts2sc_verify.json` 中 `COPY+DERIVE fraction=1.162` 为错误口径
+（DERIVE 按 teacher 原始 shape 计数、未扣 o_proj 切片），已由
+`ts2sc_final.py::fixed_accounting()` 修正为 0.998401，并以独立推导与历史值精确吻合。
+
 ## 6.3 v4：30 定理与 49 项判定（定理通胀的显式拒绝）
 
 | 项 | 处理 |

@@ -9,6 +9,7 @@ import io
 import json
 import re
 import os
+import html
 import numpy as np
 from PIL import Image
 from matplotlib.mathtext import math_to_image
@@ -75,8 +76,50 @@ GAP = 18
 CW = (W - ML - MR - GAP) / 2.0
 
 
+def clean_math(text):
+    """Render inline ASCII/LaTeX math in the body as readable plain text.
+
+    Small Times-metric type makes raw TeX fragments like ``_{j*}`` or
+    ``^{tau-j}`` look like mojibake.  We keep every symbol but make grouping
+    explicit with parentheses and expand the few LaTeX macros we use.
+    """
+    macros = {
+        r"\mathbb{R}": "R", r"\mathcal{R}": "R", r"\mathbf{v}": "v",
+        r"\ker": "ker", r"\dim": "dim", r"\sum": "sum", r"\prod": "prod",
+        r"\Theta": "Theta", r"\Omega": "Omega", r"\rho": "rho",
+        r"\theta": "theta", r"\tau": "tau", r"\alpha": "alpha",
+        r"\le": "<=", r"\ge": ">=", r"\neq": "!=", r"\to": "->",
+        r"\otimes": " x ", r"\cdot": ".", r"\ast": "*",
+        r"\left": "", r"\right": "", r"\quad": " ",
+        r"\ln": "ln", r"\log": "log", r"\exp": "exp",
+    }
+    for k, v in macros.items():
+        text = text.replace(k, v)   # 字面替换：宏串含反斜杠，不做正则解析
+    for _ in range(4):
+        text = re.sub(r"_\{([^{}]*)\}", r"_(\1)", text)
+        text = re.sub(r"\^\{([^{}]*)\}", r"^(\1)", text)
+    text = re.sub(r"\\[A-Za-z]+", "", text)     # 残余命令
+    text = text.replace("$", "").replace(chr(92)+"{", "(").replace(chr(92)+"}", ")")
+    # 兜底：任何残留花括号都是数学分组，统一成圆括号，避免小字号下像乱码
+    text = text.replace("{", "(").replace("}", ")")
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
 def tokenize(text):
-    """Split inline <b>/<i> markup into (word, font) tokens."""
+    """Split inline <b>/<i> markup into (word, font) tokens.
+
+    All source text is plain ASCII plus HTML entities (&lt; &gt; &amp;), which
+    MUST be decoded before drawing: otherwise reportlab paints the literal
+    string "rho&lt;1" into the PDF.  We also guard against nested entities and
+    strip any residual non-ASCII glyph that the embedded serif font cannot draw.
+    """
+    text = html.unescape(html.unescape(text))
+    # 防御：历史补丁可能留下 "&hlt;" / "&hgt;" 之类的双转义残片
+    text = text.replace("&hlt;", "<").replace("&hgt;", ">")
+    text = text.replace("&amp;", "&")
+    text = "".join(ch if (ord(ch) < 128 or ch == "\u00b7") else " " for ch in text)
+    text = clean_math(text)
     out = []
     pos = 0
     bold = ital = False
@@ -408,10 +451,10 @@ def build():
     P("The state register is finite and its size is independent of L (an asymptotic "
       "statement with a possibly large constant). Theorem statements are analytic; "
       "numerical values appear only as finite-sample observations with provenance in "
-      "Appendix D. Complete proofs of all 15 theorems are in Appendix A.")
+      "Appendix D. Complete proofs of all 30 theorems are in Appendix A.")
 
     # ---------------------------------------------------------------- 3 theorems
-    Hh("3  Fifteen Theorems")
+    Hh("3  Thirty Theorems in Six Groups")
     P("Each theorem below states its hypotheses, its universal claim and the proof "
       "route; the full derivation is in Appendix A. Machine-checkable finite "
       "identities in the supplementary artifact verify that each statement is "
@@ -660,7 +703,7 @@ def back(d):
       "attention-free architectures for tasks that structurally require content "
       "addressing. Its main risk is interpretive: a reader may take 'no significant "
       "difference detected' on one synthetic binding task as general language-model "
-      "parity, or read 15 theorems as 15 independent new discoveries. We have therefore "
+      "parity, or read 30 theorems as 30 independent new discoveries. We have therefore "
       "stated every premise, de-duplicated the theorem set into three groups, listed "
       "the missing large-scale experiments, and declined every superiority claim. A "
       "second risk is dismissing an entire architecture family from a negative result; "
@@ -671,7 +714,7 @@ def back(d):
 
     # ---------------------------------------------------------------- appendix A
     d.newpage()
-    Hh("Appendix A  Complete Proofs of NT01-NT15", size=11.5, before=0.0, after=5.0)
+    Hh("Appendix A  Complete Proofs of NT01-NT30", size=11.5, before=0.0, after=5.0)
     P("All 15 proofs are analytic. The finite-identity checks in the supplementary "
       "artifact verify statement formation and non-empty premises only; they are not "
       "part of any proof. Symbol convention: t = time index, tau = lag, d = t - s.",

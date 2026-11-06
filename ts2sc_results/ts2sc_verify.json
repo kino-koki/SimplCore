@@ -1,0 +1,102 @@
+{
+ "mode": "TS2SC Stage-0 provenance verification (NO weight values, NO training)",
+ "sources": {
+  "ts2sc_mapping": "github:kino-koki/TS2SC/docs/01-架构映射.md",
+  "ts2sc_script": "github:kino-koki/TS2SC/scripts/migrate_real.py",
+  "qwen17_config": "github:kino-koki/Qwen3-1.7B-Instruct/config.json",
+  "qwen17_index": "github:kino-koki/Qwen3-1.7B-Instruct/model.safetensors.index.json"
+ },
+ "qwen06_config": {
+  "D": 1024,
+  "FF": 3072,
+  "L": 28,
+  "H": 16,
+  "KV": 8,
+  "HD": 128,
+  "V": 151936,
+  "BASES": 32
+ },
+ "qwen06_inventory": {
+  "n_tensors": 311,
+  "total_params_including_tied_head": 751632384,
+  "effective_teacher_params": 596049920,
+  "by_verdict_count": {
+   "COPY": 143,
+   "NEW": 84,
+   "DERIVE": 84
+  },
+  "by_verdict_params": {
+   "COPY": 575464448,
+   "NEW": 58727424,
+   "DERIVE": 117440512
+  },
+  "coverage_all_classified": true,
+  "copy_plus_derive_params": 692904960,
+  "copy_plus_derive_fraction": 1.162495
+ },
+ "qwen17_real_index": {
+  "hidden_size": 2048,
+  "intermediate_size": 6144,
+  "num_hidden_layers": 28,
+  "num_attention_heads": 16,
+  "num_key_value_heads": 8,
+  "head_dim": 128,
+  "vocab_size": 151936,
+  "n_tensors": 311,
+  "metadata_total_size": 4063479808,
+  "distinct_shards": [
+   "model-00001-of-00002.safetensors",
+   "model-00002-of-00002.safetensors"
+  ],
+  "by_verdict_count": {
+   "COPY": 143,
+   "NEW": 84,
+   "DERIVE": 84
+  },
+  "by_verdict_params": {
+   "COPY": 1679411200,
+   "NEW": 117447680,
+   "DERIVE": 234881024
+  },
+  "coverage_all_classified": true
+ },
+ "real_shard_header": {
+  "attempted": true,
+  "ok": true,
+  "blob_size": 99614720,
+  "encoding": "base64",
+  "bytes_received": 99614720,
+  "header_bytes": 35648,
+  "n_tensors": 310,
+  "sample": [
+   "model.embed_tokens.weight",
+   "model.layers.0.input_layernorm.weight",
+   "model.layers.0.mlp.down_proj.weight",
+   "model.layers.0.mlp.gate_proj.weight",
+   "model.layers.0.mlp.up_proj.weight"
+  ],
+  "metadata": {
+   "format": "pt"
+  },
+  "elapsed_s": 19.9,
+  "first_tensor": {
+   "name": "model.embed_tokens.weight",
+   "dtype": "BF16",
+   "shape": [
+    151936,
+    2048
+   ],
+   "data_offsets": [
+    0,
+    622329856
+   ]
+  }
+ },
+ "not_done": [
+  "teacher weight VALUES not loaded; no torch / no PyPI / no HF (HTTP 403)",
+  "no bitwise tensor copy performed",
+  "no activation cache, no mixer distillation, no logit-KL training",
+  "no perplexity / generation / capability measurement",
+  "Qwen3-0.6B weights are NOT present in any accessible repository"
+ ]
+}

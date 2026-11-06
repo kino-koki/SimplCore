@@ -1,0 +1,88 @@
+{
+ "mode": "TS2SC real weight-level verification (NO training, NO torch)",
+ "fixed_accounting": {
+  "D": 1024,
+  "FF": 3072,
+  "L": 28,
+  "H": 16,
+  "KV": 8,
+  "HD": 128,
+  "V": 151936,
+  "embed_params": 155582464,
+  "copy_params": 575464448,
+  "derived_student_params": 88080384,
+  "independently_derived_bitwise_params": 663544832,
+  "readme_historical_bitwise_params": 663544832,
+  "exact_match": true,
+  "student_total_from_readme": 664607516,
+  "sgc_new_params_by_difference": 1062684,
+  "bitwise_fraction": 0.998401,
+  "note": "The bitwise-kept count is derived here from shapes alone and matches the historical README number EXACTLY. The SGC-new count is the residual; its per-tensor composition was NOT re-derived here and is not claimed as verified. No weight was copied in this accounting step."
+ },
+ "real_shard": {
+  "bytes": 99614720,
+  "header_bytes": 35648,
+  "data_start": 35656,
+  "embed_offsets": [
+   0,
+   622329856
+  ],
+  "embed_shape": [
+   151936,
+   2048
+  ]
+ },
+ "real_teacher_values": {
+  "rows": 256,
+  "cols": 2048,
+  "dtype": "BF16",
+  "mean": -1.6791620850664657e-05,
+  "std": 0.03274041294406164,
+  "min": -0.2080078125,
+  "max": 0.205078125,
+  "first_row_l2": 1.5666965122907313,
+  "zero_fraction": 0.0,
+  "all_finite": true,
+  "bitwise_copy_equal": true,
+  "fp32_view_equal": true,
+  "bytes_read": 1048576,
+  "note": "REAL teacher values, not synthetic. Only the first 256 rows of embed_tokens are read; the full 4.06 GB weight set is NOT loaded."
+ },
+ "sgc_on_real_embeddings": {
+  "input": "REAL Qwen3-1.7B embed_tokens rows 0..63, first 8 dims",
+  "L": 64,
+  "channels": 8,
+  "poles": 2,
+  "rho": [
+   0.9,
+   0.99
+  ],
+  "w": [
+   0.5,
+   0.5
+  ],
+  "fft_vs_iir_rel_error": 4.3769797523819474e-16,
+  "duality_pass": true,
+  "past_perturbation_max_dev": 0.0,
+  "strict_causality_pass": true,
+  "state_bytes_by_L": {
+   "16": 64,
+   "64": 64,
+   "256": 64,
+   "4096": 64
+  },
+  "o1_state_pass": true,
+  "kernel_static": true,
+  "no_nxn_matrix": true,
+  "no_kv_cache": true,
+  "teacher_value_mean": 0.003911882638931274,
+  "teacher_value_std": 0.03157889335294344,
+  "note": "The mixer runs on REAL teacher embedding values. This is an architecture check (duality/causality/O(1)), NOT a language modeling result: no logits, no loss, no perplexity."
+ },
+ "honest_scope": [
+  "Weight VALUES are REAL (Qwen3-1.7B-Instruct shard qa_00).",
+  "Qwen3-0.6B weights are NOT in any accessible repo; only its Stage-0 plan and parameter accounting are verified here.",
+  "No end-to-end migration, no activation distillation, no logit-KL, no perplexity, no generation. Those need torch and a GPU box.",
+  "PyPI, HuggingFace and GitHub release-asset downloads return 403 in this sandbox; only api.github.com JSON/blobs are reachable."
+ ]
+}

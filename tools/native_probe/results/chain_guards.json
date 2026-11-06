@@ -1,0 +1,402 @@
+[
+ {
+  "arm": "h1_single",
+  "toeplitz": true,
+  "max_kernel_dev": 0.0,
+  "strict_causality": true,
+  "state_scalars": 7680,
+  "state_independent_of_L": true,
+  "no_nxn_matrix": true,
+  "no_kv_cache": true,
+  "gradcheck": {
+   "E": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "Wv": {
+    "max_rel": 1.6225781841794745e-09,
+    "pass_": true
+   },
+   "Wout": {
+    "max_rel": 1.1869728113464602e-08,
+    "pass_": true
+   },
+   "Wq2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "alpha": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w2": {
+    "max_rel": 0.0,
+    "pass_": true
+   }
+  },
+  "all_gradcheck_pass": true,
+  "all_passed": true
+ },
+ {
+  "arm": "single",
+  "toeplitz": true,
+  "max_kernel_dev": 0.0,
+  "strict_causality": true,
+  "state_scalars": 7680,
+  "state_independent_of_L": true,
+  "no_nxn_matrix": true,
+  "no_kv_cache": true,
+  "gradcheck": {
+   "E": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "Wv": {
+    "max_rel": 4.905267835040127e-09,
+    "pass_": true
+   },
+   "Wout": {
+    "max_rel": 1.0778952045482658e-08,
+    "pass_": true
+   },
+   "Wq2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "alpha": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w2": {
+    "max_rel": 0.0,
+    "pass_": true
+   }
+  },
+  "all_gradcheck_pass": true,
+  "all_passed": true
+ },
+ {
+  "arm": "stack2",
+  "toeplitz": true,
+  "max_kernel_dev": 0.0,
+  "strict_causality": true,
+  "state_scalars": 7680,
+  "state_independent_of_L": true,
+  "no_nxn_matrix": true,
+  "no_kv_cache": true,
+  "gradcheck": {
+   "E": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "Wv": {
+    "max_rel": 1.0190804588496237e-07,
+    "pass_": true
+   },
+   "Wout": {
+    "max_rel": 1.976821421095227e-06,
+    "pass_": true
+   },
+   "Wq2": {
+    "max_rel": 1.875784770499225e-07,
+    "pass_": true
+   },
+   "alpha": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w2": {
+    "max_rel": 0.0,
+    "pass_": true
+   }
+  },
+  "all_gradcheck_pass": true,
+  "all_passed": true
+ },
+ {
+  "arm": "delay",
+  "toeplitz": true,
+  "max_kernel_dev": 0.0,
+  "strict_causality": true,
+  "state_scalars": 7680,
+  "state_independent_of_L": true,
+  "no_nxn_matrix": true,
+  "no_kv_cache": true,
+  "gradcheck": {
+   "E": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "Wv": {
+    "max_rel": 1.217774997132454e-09,
+    "pass_": true
+   },
+   "Wout": {
+    "max_rel": 1.3417390305662611e-08,
+    "pass_": true
+   },
+   "Wq2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "alpha": {
+    "max_rel": 2.796030231393945e-10,
+    "pass_": true
+   },
+   "rho1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w2": {
+    "max_rel": 0.0,
+    "pass_": true
+   }
+  },
+  "all_gradcheck_pass": true,
+  "all_passed": true
+ },
+ {
+  "arm": "stack_noq2",
+  "toeplitz": true,
+  "max_kernel_dev": 0.0,
+  "strict_causality": true,
+  "state_scalars": 7680,
+  "state_independent_of_L": true,
+  "no_nxn_matrix": true,
+  "no_kv_cache": true,
+  "gradcheck": {
+   "E": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "Wv": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "Wout": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "Wq2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "alpha": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w2": {
+    "max_rel": 0.0,
+    "pass_": true
+   }
+  },
+  "all_gradcheck_pass": true,
+  "all_passed": true
+ },
+ {
+  "arm": "stack_rand",
+  "toeplitz": true,
+  "max_kernel_dev": 0.0,
+  "strict_causality": true,
+  "state_scalars": 7680,
+  "state_independent_of_L": true,
+  "no_nxn_matrix": true,
+  "no_kv_cache": true,
+  "gradcheck": {
+   "E": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "Wv": {
+    "max_rel": 3.663842387205946e-08,
+    "pass_": true
+   },
+   "Wout": {
+    "max_rel": 1.0636000715371618e-07,
+    "pass_": true
+   },
+   "Wq2": {
+    "max_rel": 7.353241584446839e-08,
+    "pass_": true
+   },
+   "alpha": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w2": {
+    "max_rel": 0.0,
+    "pass_": true
+   }
+  },
+  "all_gradcheck_pass": true,
+  "all_passed": true
+ },
+ {
+  "arm": "stack_h3",
+  "toeplitz": true,
+  "max_kernel_dev": 0.0,
+  "strict_causality": true,
+  "state_scalars": 7680,
+  "state_independent_of_L": true,
+  "no_nxn_matrix": true,
+  "no_kv_cache": true,
+  "gradcheck": {
+   "E": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "Wv": {
+    "max_rel": 2.1220663234895463e-07,
+    "pass_": true
+   },
+   "Wout": {
+    "max_rel": 9.616363862738973e-07,
+    "pass_": true
+   },
+   "Wq2": {
+    "max_rel": 3.876648893454617e-07,
+    "pass_": true
+   },
+   "alpha": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w2": {
+    "max_rel": 0.0,
+    "pass_": true
+   }
+  },
+  "all_gradcheck_pass": true,
+  "all_passed": true
+ },
+ {
+  "arm": "single_h3",
+  "toeplitz": true,
+  "max_kernel_dev": 0.0,
+  "strict_causality": true,
+  "state_scalars": 7680,
+  "state_independent_of_L": true,
+  "no_nxn_matrix": true,
+  "no_kv_cache": true,
+  "gradcheck": {
+   "E": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "Wv": {
+    "max_rel": 1.461277938017968e-09,
+    "pass_": true
+   },
+   "Wout": {
+    "max_rel": 1.3792374015570187e-08,
+    "pass_": true
+   },
+   "Wq2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "alpha": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "rho2": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w1": {
+    "max_rel": 0.0,
+    "pass_": true
+   },
+   "w2": {
+    "max_rel": 0.0,
+    "pass_": true
+   }
+  },
+  "all_gradcheck_pass": true,
+  "all_passed": true
+ }
+]

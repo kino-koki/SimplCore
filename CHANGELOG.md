@@ -92,6 +92,46 @@
 - 实测 35.25 µs/token、状态恒 56,320 B，与 L 无关；守恒断言全绿；
   一致性核验 **43/43 PASS**。
 
+## 论文乱码修复 + TS2SC 真实权重级验证 + 多层内容链（本次）
+
+### 1) `simplcore.pdf` 乱码/口径修复
+- HTML 实体 `&lt; &gt; -&gt;` 原样入 PDF → 生成器加 `html.unescape` 双重解码 + 残片清理
+- 内联 TeX 碎片 `_{j*}` / `^{tau-j}` / `\mathbb{R}` → 新增 `clean_math()` 规范化
+- 残留口径「Fifteen Theorems」「all 15 theorems」「附录 A NT01-NT15」→ 全部 30 / NT01-NT30
+- 重建后校验：`&lt;/&gt;/&amp;/Fifteen/NT01-NT15/15 theorems/_{/^{/\tau` 全 0；非 ASCII 仅 49 个 `·`
+- 页数 19，主文 6 页（8 页上限内），A.1–A.30 完整证明与 30/30 引用齐全
+
+### 2) TS2SC 迁移验证（真实执行，无伪造）
+- **私有仓库盘点：账号下没有 Qwen3-0.6B 权重本体**；实际是 `Qwen3-1.7B-Instruct`
+  （hidden 2048 / 28 层 / 16Q 8KV / V=151936 / BF16，311 张量，4,063,479,808 B，41 分片）、
+  MiniCPM5-1B、MiniCPM-V-4.7-1B、TS2SC-VL-1B 等
+- 环境硬限制：PyPI / HuggingFace / GitHub Release asset **全部 403**；无 torch，装不上
+- ✅ Stage-0 provenance：0.6B 规划 311 张量 + 1.7B 真实 index 311 张量，`143 COPY / 84 DERIVE / 84 NEW`，**100% 覆盖**
+- ✅ 独立参数对账：`575,464,448 + 88,080,384 = 663,544,832`，与 TS2SC README 历史值
+  **精确一致**；SGC 新增 1,062,684（差值，构成未核实）；逐位占比 0.998401
+  （修正了上一版 `COPY+DERIVE=1.162` 的错误口径：o_proj 切片到 (D,D)）
+- ✅ **真实权重字节**：经 git-blob 下载 `qa_00` 99,614,720 B，解析真实 safetensors header
+  （35,648 B / 310 张量 / `embed_tokens BF16 [151936,2048]`），读取前 256 行，
+  **逐位复制 True**，mean −1.7e−05 / std 0.03274 / 全有限
+- ✅ **在真实 teacher embedding 上跑 SGC**：FFT/IIR 相对误差 **4.38e−16**、
+  过去扰动偏差 **0.0**、状态恒 **64 B**、核静态、无 N×N / KV cache
+- ❌ 未做且未伪装：0.6B 权重本体加载、端到端迁移落盘、激活缓存、mixer 蒸馏、
+  logit-KL、val ppl、生成质量。README 的 `FFN 余弦 1.0000 / mixer 0.6659` 是历史他机结果
+- 私有权重字节**未上传**公开仓库（`qa00_prefix.bin` 排除）
+
+### 3) 架构深化：单层 → 两层内容链（中间态）
+- 修正上一轮任务缺陷：旧「二跳」是位置跳转，静态延迟线可解；换成
+  **链 k0→k1→k2→k3、pair 位置随机打乱**，H=2 必须两次内容匹配
+- 两层构造：Layer1 `q1·A` 匹配 → `q2 = z1 Wq2` → Layer2 再匹配；每层核静态 Toeplitz
+- 守恒 + gradcheck **8/8 全过**
+- 1000 步 / held-out 512 / **5 seeds** / 参数 4,605：
+  `h1_single 1.0000 | single(H2) 0.0312≈chance | stack2 0.5918±0.0211`
+  （配对差 +0.5605，CI [0.5457, 0.5758] 全正）`| stack_h3 0.2836 | delay 0.2477 |`
+  `stack_noq2 0.0266≈chance | stack_rand 0.6016`
+- 诚实边界：**0.5918 不是 1.0**，3 跳掉点，随机码也行（正交码非必需，与 NT08 一致）；
+  3000 步全臂 / 堆叠到满分 / 语言建模均未做。这是「层下界可达」的部分构造证据
+- 主报告：`TS2SC_QWEN3_VERIFY.md`
+
 ## 30 条定理 + 49 项全量判定（本次，训练/实验全部停止）
 
 > 触发：要求「总数 49，全部不普通、可复现、有用，且符合上下文标准」。
