@@ -1,0 +1,378 @@
+{
+ "mode": "analytic + finite numerical identity, NO TRAINING",
+ "numpy_seed": 20261106,
+ "checks": [
+  {
+   "id": "P01/T07",
+   "name": "tensor-channel Toeplitz + FFT/IIR duality",
+   "verdict": "PASS",
+   "detail": {
+    "impulse_max_dev": 2.220446049250313e-16,
+    "fft_iir_rel": 4.526735660576104e-16
+   }
+  },
+  {
+   "id": "P02/T08",
+   "name": "contraction read-out closed form",
+   "verdict": "PASS",
+   "detail": {
+    "max_abs_diff": 1.3322676295501878e-15,
+    "form": "z_n = sum_tau (q.k_tau) K_n(L-1-tau) v_tau,n"
+   }
+  },
+  {
+   "id": "P03/T09",
+   "name": "orthogonal code zero crosstalk",
+   "verdict": "PASS",
+   "detail": {
+    "shape": [
+     64,
+     64
+    ],
+    "gram_offdiag_max": 0.0,
+    "gram_diag": 64.0,
+    "delta_dev": 0.0
+   }
+  },
+  {
+   "id": "P04/T10",
+   "name": "kernel lower bound + n=1 exception",
+   "verdict": "PASS",
+   "detail": {
+    "rows": [
+     {
+      "n": 1,
+      "nd": 8,
+      "rank": 8,
+      "ker": 0,
+      "bound": 0,
+      "holds": true
+     },
+     {
+      "n": 2,
+      "nd": 16,
+      "rank": 8,
+      "ker": 8,
+      "bound": 8,
+      "holds": true
+     },
+     {
+      "n": 3,
+      "nd": 24,
+      "rank": 8,
+      "ker": 16,
+      "bound": 16,
+      "holds": true
+     },
+     {
+      "n": 4,
+      "nd": 32,
+      "rank": 8,
+      "ker": 24,
+      "bound": 24,
+      "holds": true
+     },
+     {
+      "n": 5,
+      "nd": 40,
+      "rank": 8,
+      "ker": 32,
+      "bound": 32,
+      "holds": true
+     },
+     {
+      "n": 6,
+      "nd": 48,
+      "rank": 8,
+      "ker": 40,
+      "bound": 40,
+      "holds": true
+     }
+    ],
+    "n1_note": "n=1: ker can be 0, so Thm5 premise is necessary"
+   }
+  },
+  {
+   "id": "P05/T11",
+   "name": "P-order Toeplitz iff constant coefficients",
+   "verdict": "PASS",
+   "detail": {
+    "orders": [
+     {
+      "P": 1,
+      "const_dev": 0.0,
+      "varying_dev": 0.1721581576591507,
+      "holds": true
+     },
+     {
+      "P": 2,
+      "const_dev": 0.0,
+      "varying_dev": 0.1278242618152279,
+      "holds": true
+     },
+     {
+      "P": 3,
+      "const_dev": 0.0,
+      "varying_dev": 0.34531469352461164,
+      "holds": true
+     },
+     {
+      "P": 4,
+      "const_dev": 0.0,
+      "varying_dev": 0.08994453837171838,
+      "holds": true
+     },
+     {
+      "P": 5,
+      "const_dev": 0.0,
+      "varying_dev": 0.28503209858849077,
+      "holds": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "P06/T12",
+   "name": "BIBO iff rho<1; rho=1 linear growth",
+   "verdict": "PASS",
+   "detail": {
+    "stable": {
+     "0.5": {
+      "sum_abs": 2.0,
+      "analytic": 2.0,
+      "infinite_limit": 2.0,
+      "finite": true
+     },
+     "0.9": {
+      "sum_abs": 10.000000000000004,
+      "analytic": 10.000000000000002,
+      "infinite_limit": 10.000000000000002,
+      "finite": true
+     },
+     "0.999": {
+      "sum_abs": 981.7209801725097,
+      "analytic": 981.7209801725097,
+      "infinite_limit": 999.9999999999991,
+      "finite": true
+     }
+    },
+    "rho1_slope": 1.0000000000000004,
+    "rho1_R2": 1.0,
+    "note": "rho=1 is critically stable, amplitude ~ L, unbounded stream diverges"
+   }
+  },
+  {
+   "id": "P07/T13",
+   "name": "quantization resolvable radius",
+   "verdict": "PASS",
+   "detail": {
+    "rows": [
+     {
+      "step": "int8-like",
+      "rho": 0.9,
+      "r": 0.00392156862745098,
+      "tau_star": 52.59,
+      "inequality_holds": true,
+      "monotone": true
+     },
+     {
+      "step": "int8-like",
+      "rho": 0.99,
+      "r": 0.00392156862745098,
+      "tau_star": 551.35,
+      "inequality_holds": true,
+      "monotone": true
+     },
+     {
+      "step": "int8-like",
+      "rho": 0.999,
+      "r": 0.00392156862745098,
+      "tau_star": 5538.49,
+      "inequality_holds": true,
+      "monotone": true
+     },
+     {
+      "step": "fp16-like",
+      "rho": 0.9,
+      "r": 0.0004885197850512946,
+      "tau_star": 72.36,
+      "inequality_holds": true,
+      "monotone": true
+     },
+     {
+      "step": "fp16-like",
+      "rho": 0.99,
+      "r": 0.0004885197850512946,
+      "tau_star": 758.59,
+      "inequality_holds": true,
+      "monotone": true
+     },
+     {
+      "step": "fp16-like",
+      "rho": 0.999,
+      "r": 0.0004885197850512946,
+      "tau_star": 7620.32,
+      "inequality_holds": true,
+      "monotone": true
+     },
+     {
+      "step": "fp32-like",
+      "rho": 0.9,
+      "r": 5.960464832810452e-08,
+      "tau_star": 157.89,
+      "inequality_holds": true,
+      "monotone": true
+     },
+     {
+      "step": "fp32-like",
+      "rho": 0.99,
+      "r": 5.960464832810452e-08,
+      "tau_star": 1655.22,
+      "inequality_holds": true,
+      "monotone": true
+     },
+     {
+      "step": "fp32-like",
+      "rho": 0.999,
+      "r": 5.960464832810452e-08,
+      "tau_star": 16627.21,
+      "inequality_holds": true,
+      "monotone": true
+     }
+    ],
+    "measured": {
+     "rho_090_drop_L": 257,
+     "rho_0999_fp32_ok_to_L": 16385
+    },
+    "note": "tau* ~ 1/|ln rho|; rho->1 makes it diverge. Conservative sufficient radius under a uniform-step quantizer, not an exact drop-point predictor."
+   }
+  },
+  {
+   "id": "P08/T14",
+   "name": "dynamic scale dominates fixed scale",
+   "verdict": "PASS",
+   "detail": {
+    "rows": [
+     {
+      "L": 65,
+      "fixed_levels": 0.255,
+      "dynamic_levels": 4.05,
+      "holds": true
+     },
+     {
+      "L": 257,
+      "fixed_levels": 0.255,
+      "dynamic_levels": 1.1247,
+      "holds": true
+     },
+     {
+      "L": 1025,
+      "fixed_levels": 0.255,
+      "dynamic_levels": 0.3976,
+      "holds": true
+     },
+     {
+      "L": 4097,
+      "fixed_levels": 0.255,
+      "dynamic_levels": 0.2593,
+      "holds": true
+     },
+     {
+      "L": 16385,
+      "fixed_levels": 0.255,
+      "dynamic_levels": 0.255,
+      "holds": true
+     }
+    ],
+    "note": "fixed global scale wastes resolution at short L; dynamic peak scale keeps effective bit-width constant. Direction matches physics_fixedscale.json"
+   }
+  },
+  {
+   "id": "P09/T15",
+   "name": "one-hop vs two-hop tensor-degree separation",
+   "verdict": "PASS",
+   "detail": {
+    "rmse_onehop": 19.430638034250492,
+    "rmse_with_second_order": 1.4518049907399379e-15,
+    "twohop_observed_acc": null,
+    "note": "separation is a polynomial-degree argument; the accuracy is an observation"
+   }
+  },
+  {
+   "id": "P10/(demoted)",
+   "name": "scalar monotonicity + bounded tiers [historical, see CT7]",
+   "verdict": "PASS",
+   "detail": {
+    "steps": 200,
+    "capacity": 16,
+    "final_bank_size": 16,
+    "commits": 103,
+    "rollbacks": 97,
+    "score_start": 0.5,
+    "score_end": 1.0,
+    "monotone": true,
+    "note": "Under the SMM no-regression gate, the verifier score is non-decreasing by induction; the episodic tier is bounded by bank_capacity. Working tier is O(1) by Thm3. Does NOT assert that learning improves on real tasks."
+   }
+  },
+  {
+   "id": "P11",
+   "name": "increasing M lifts content addressing",
+   "verdict": "FALSIFIED",
+   "detail": {
+    "M": 256,
+    "n": 3,
+    "d": 8,
+    "rank": 8,
+    "kernel": 16,
+    "conclusion": "FALSIFIED: rank(L) <= d independent of M; kernel persists"
+   }
+  },
+  {
+   "id": "P12",
+   "name": "rho=1 usable for unbounded stream",
+   "verdict": "FALSIFIED",
+   "detail": {
+    "L": 20000,
+    "final_amplitude": 20000.0,
+    "amplitude_over_L": 1.0,
+    "fp32_max_exponent_bits": 128,
+    "conclusion": "FALSIFIED: amplitude grows linearly in L; no BIBO stability, any finite-precision register eventually overflows"
+   }
+  },
+  {
+   "id": "P13",
+   "name": "nonlinear read-out rescues vector summary",
+   "verdict": "FALSIFIED",
+   "detail": {
+    "d": 4,
+    "n": 2,
+    "rank": 4,
+    "kernel_residual": 6.661338147750939e-16,
+    "summary_collision": 2.220446049250313e-16,
+    "outputs_identical": true,
+    "conclusion": "FALSIFIED: nonlinear f cannot break the collision; cf. Thm5/T10"
+   }
+  },
+  {
+   "id": "P14",
+   "name": "RSI-style self-improvement",
+   "verdict": "CONJECTURE",
+   "reason": "RSI appears in this repository only as an external survey citation (docs/TUAN_1B_TRAINING_PLAN.md:172, L2 policy autonomy). No RSI mechanism is implemented in the architecture, so there is no object to prove a theorem about. Upgrade path: formalize the self-modification operator, then T13/T14 impose a resolvable-radius lower bound on any weight-update loop with a finite-precision state."
+  },
+  {
+   "id": "P15",
+   "name": "scaling: deep multi-hop, V>>64 codes, >=10M-token LM parity",
+   "verdict": "CONJECTURE",
+   "reason": "T15 gives a NECESSARY condition (higher tensor order) but no sufficient construction. Requires experiments that have not been run."
+  }
+ ],
+ "summary": {
+  "theorems_upgraded": 9,
+  "falsified": 3,
+  "conjectures_retained": 2,
+  "withdrawn": 1,
+  "total_propositions": 15,
+  "note": "P10/t16 is a historical check, demoted to lemma; consolidated core set is CT1..CT7 in smm_sgc.py"
+ },
+ "scope": "Verification of theorem statements only. Measured accuracies remain finite-sample observations and are not promoted to theorems."
+}

@@ -23,6 +23,22 @@
 | `docs/SimplCore_Paper_v0.1alpha.md` | 0.1-α 原始技术报告，逐字节归档 |
 | `docs/SimplCore_Paper_v0.2beta.md` | 0.2-β 边界刻画版，逐字节归档 |
 
+## 架构内部理论层（不是稿，不改现有源码逻辑）
+
+| 文件 | 说明 |
+|---|---|
+| `simplcore/core/theory/statements.py` | 15 个历史命题（含 T16 撤销标注） |
+| `simplcore/core/theory/smm_sgc.py` | **CT6/CT7/CT5-L2 完整证明 + CT1–CT7 收束表 + 猜想判定** |
+| `simplcore/core/theory/bridge.py` | SMM×SGC 只读接线规格 + 零阶算子（默认关闭） |
+| `simplcore/core/theory/verify.py` | 15 命题：9 定理 / 3 证伪 / 2 猜想 / 1 撤销 |
+| `simplcore/core/theory/verify_smm_sgc.py` | CT6/CT7/CT5-L2 + 前提非空检查，7/7 |
+| `docs/CONJECTURE_15_THEOREM_UPGRADE.md` | 上一轮 15 命题完整证明与 RSI/SMM 核实 |
+| `docs/SMM_SGC_SELF_EVOLUTION.md` | **本轮主文档：四条审稿意见回应、完整证明、收束表、猜想逐个判定** |
+| `artifacts/theorem15_results.json`、`artifacts/smm_sgc_results.json` | 验证原始结果 |
+
+定理编号：历史 T7–T16 已收束为 **CT1–CT7**（撤销 T16、降级 7 条）；
+**尚未并入 `simplcore.pdf`**；见 `REVISION_LOG.md` §6.1 / §6.2。
+
 ## 证据链（数据与报告，不是稿）
 
 | 类别 | 位置 |
