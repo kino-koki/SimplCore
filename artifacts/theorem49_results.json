@@ -1,0 +1,1134 @@
+{
+ "mode": "49-item audit: 30 theorem finite-identity checks + 19 classifications",
+ "numpy_seed": 20261109,
+ "checks": [
+  {
+   "id": "NT01",
+   "name": "tight order-2 retrieval, zero interference, position-free",
+   "kind": "finite_identity + analytic rank-nullity",
+   "verdict": "PASS",
+   "detail": {
+    "closed_form_max_dev": 8.881784197001252e-16,
+    "argmax_correct": true,
+    "position_independent": true,
+    "kernel_strictly_positive": true,
+    "note": "order 1 impossible by NT13; order 2 attains it => tight"
+   }
+  },
+  {
+   "id": "NT02",
+   "name": "positive real poles vs sign-changing conjugate poles",
+   "kind": "finite_identity + analytic sign argument",
+   "verdict": "PASS",
+   "detail": {
+    "real_h_all_positive": true,
+    "vieta_injective": true,
+    "recovered_roots": [
+     0.7099999999999995,
+     0.9300000000000006
+    ],
+    "sign_checks": [
+     {
+      "theta": 0.05,
+      "ceil_pi_over_theta": 63,
+      "first_nonpositive": 62,
+      "holds": true
+     },
+     {
+      "theta": 0.3,
+      "ceil_pi_over_theta": 11,
+      "first_nonpositive": 10,
+      "holds": true
+     },
+     {
+      "theta": 0.8,
+      "ceil_pi_over_theta": 4,
+      "first_nonpositive": 3,
+      "holds": true
+     },
+     {
+      "theta": 1.4,
+      "ceil_pi_over_theta": 3,
+      "first_nonpositive": 2,
+      "holds": true
+     },
+     {
+      "theta": 2.5,
+      "ceil_pi_over_theta": 2,
+      "first_nonpositive": 1,
+      "holds": true
+     },
+     {
+      "theta": 3.0,
+      "ceil_pi_over_theta": 2,
+      "first_nonpositive": 1,
+      "holds": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "NT03",
+   "name": "rho<1 multi-pole kernel is not the linear-attention constant",
+   "kind": "analytic (limit) + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "F_at_d_end": 4.1683439843704704e-19,
+    "dist_to_constant_tail": 1.0,
+    "horizon": 40000,
+    "rho1_is_constant": true,
+    "note": "strict decay => constant has l^infty distance 1 from the span"
+   }
+  },
+  {
+   "id": "NT04",
+   "name": "arbitrary-V deterministic code is 2-optimal",
+   "kind": "analytic + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "instances": [
+     {
+      "V": 3,
+      "R": 4,
+      "R_over_V": 1.333,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 5,
+      "R": 8,
+      "R_over_V": 1.6,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 7,
+      "R": 8,
+      "R_over_V": 1.143,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 64,
+      "R": 64,
+      "R_over_V": 1.0,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 65,
+      "R": 128,
+      "R_over_V": 1.969,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 100,
+      "R": 128,
+      "R_over_V": 1.28,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 1000,
+      "R": 1024,
+      "R_over_V": 1.024,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 50000,
+      "R": 65536,
+      "R_over_V": 1.311,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "NT05",
+   "name": "Omega(V*N) state lower bound, attained within factor 2",
+   "kind": "analytic + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "instances": [
+     {
+      "V": 64,
+      "P": 1,
+      "N": 32,
+      "R": 64,
+      "state_scalars": 2048,
+      "lower_bound": 2048,
+      "ratio": 1.0,
+      "ok": true
+     },
+     {
+      "V": 65,
+      "P": 2,
+      "N": 16,
+      "R": 128,
+      "state_scalars": 4096,
+      "lower_bound": 2080,
+      "ratio": 1.969,
+      "ok": true
+     },
+     {
+      "V": 1000,
+      "P": 3,
+      "N": 8,
+      "R": 1024,
+      "state_scalars": 24576,
+      "lower_bound": 24000,
+      "ratio": 1.024,
+      "ok": true
+     },
+     {
+      "V": 151936,
+      "P": 1,
+      "N": 1,
+      "R": 262144,
+      "state_scalars": 262144,
+      "lower_bound": 151936,
+      "ratio": 1.725,
+      "ok": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "NT06",
+   "name": "quantitative cond lower bound near theta=0",
+   "kind": "finite_identity (bound certification)",
+   "verdict": "PASS",
+   "detail": {
+    "instances": [
+     {
+      "rho": 0.5,
+      "M": 32,
+      "theta1": 0.0001,
+      "Delta": 0.03871,
+      "cond": 1.644e+301,
+      "lower_bound": 4.505e-06,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.5,
+      "M": 32,
+      "theta1": 0.3,
+      "Delta": 0.02903,
+      "cond": 2.122e+301,
+      "lower_bound": 69.94,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.5,
+      "M": 16,
+      "theta1": 0.6,
+      "Delta": 0.04,
+      "cond": 1.307e+301,
+      "lower_bound": 134.5,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.9,
+      "M": 32,
+      "theta1": 0.0001,
+      "Delta": 0.03871,
+      "cond": 701400000000.0,
+      "lower_bound": 5.059e-08,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.9,
+      "M": 32,
+      "theta1": 0.3,
+      "Delta": 0.02903,
+      "cond": 1757000000.0,
+      "lower_bound": 0.7853,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.9,
+      "M": 16,
+      "theta1": 0.6,
+      "Delta": 0.04,
+      "cond": 2122000.0,
+      "lower_bound": 1.51,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.99,
+      "M": 32,
+      "theta1": 0.0001,
+      "Delta": 0.03871,
+      "cond": 17650.0,
+      "lower_bound": 5.313e-11,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.99,
+      "M": 32,
+      "theta1": 0.3,
+      "Delta": 0.02903,
+      "cond": 4.233,
+      "lower_bound": 0.0008247,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.99,
+      "M": 16,
+      "theta1": 0.6,
+      "Delta": 0.04,
+      "cond": 2.361,
+      "lower_bound": 0.001586,
+      "inequality_holds": true
+     }
+    ],
+    "A_rho_note": "A(rho)=sum rho^{2tau}(tau+1)^2=(1+rho^2)/(1-rho^2)^3"
+   }
+  },
+  {
+   "id": "NT07",
+   "name": "interior optimal rho exists (trilemma)",
+   "kind": "analytic (extreme value theorem) + finite scan",
+   "verdict": "PASS",
+   "detail": {
+    "precision_bits_checked": [
+     8,
+     11,
+     24
+    ],
+    "statement": "g(rho)->0 at both endpoints, positive inside => interior maximum; rho=1 infeasible",
+    "note": "existence is analytic; rho* values are illustrations only"
+   }
+  },
+  {
+   "id": "NT08",
+   "name": "bounded-code-perturbation robustness bound",
+   "kind": "finite_identity (sufficient-condition certification)",
+   "verdict": "PASS",
+   "detail": {
+    "eps": 0.05,
+    "sufficient_threshold": 0.29091,
+    "interference_bound": 0.55,
+    "target_margin_lower": 2.65,
+    "argmax_preserved": true
+   }
+  },
+  {
+   "id": "NT09",
+   "name": "FFT/IIR rounding-order crossover L*",
+   "kind": "analytic (conditional) + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "c1": 1.0,
+    "c2": 1.0,
+    "eps": 5.960464477539063e-08,
+    "instances": [
+     {
+      "rho": 0.5,
+      "Lstar_exponent": 2.0,
+      "Lstar_str": "2^2.0",
+      "fft_at_Lstar": 1.1920928955078125e-07,
+      "iir_bound": 1.1920928955078125e-07,
+      "equality": true,
+      "iir_L_independent": true
+     },
+     {
+      "rho": 0.9,
+      "Lstar_exponent": 10.000000000000002,
+      "Lstar_str": "2^10.0",
+      "fft_at_Lstar": 5.960464477539064e-07,
+      "iir_bound": 5.960464477539064e-07,
+      "equality": true,
+      "iir_L_independent": true
+     },
+     {
+      "rho": 0.99,
+      "Lstar_exponent": 99.99999999999991,
+      "Lstar_str": "2^100.0",
+      "fft_at_Lstar": 5.960464477539057e-06,
+      "iir_bound": 5.960464477539057e-06,
+      "equality": true,
+      "iir_L_independent": true
+     },
+     {
+      "rho": 0.999,
+      "Lstar_exponent": 999.9999999999991,
+      "Lstar_str": "2^1000.0",
+      "fft_at_Lstar": 5.960464477539057e-05,
+      "iir_bound": 5.960464477539057e-05,
+      "equality": true,
+      "iir_L_independent": true
+     }
+    ],
+    "note": "conditional worst-case bounds, NOT measured error"
+   }
+  },
+  {
+   "id": "NT10",
+   "name": "per-channel time-invariance keeps block Toeplitz + duality",
+   "kind": "finite_identity",
+   "verdict": "PASS",
+   "detail": {
+    "toeplitz_dev": 1.6653345369377348e-16,
+    "fft_iir_rel": 4.2606332124101666e-16,
+    "state_scalars": 60,
+    "depends_on_L": false
+   }
+  },
+  {
+   "id": "NT11",
+   "name": "layer lower bound ceil(log_d(H+1)); H=2 needs >=2 layers",
+   "kind": "analytic (degree composition) + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "instances": [
+     {
+      "degree": 2,
+      "hops": 1,
+      "min_layers": 1,
+      "first_reaching": 1,
+      "holds": true
+     },
+     {
+      "degree": 2,
+      "hops": 2,
+      "min_layers": 2,
+      "first_reaching": 2,
+      "holds": true
+     },
+     {
+      "degree": 2,
+      "hops": 3,
+      "min_layers": 2,
+      "first_reaching": 2,
+      "holds": true
+     },
+     {
+      "degree": 2,
+      "hops": 5,
+      "min_layers": 3,
+      "first_reaching": 3,
+      "holds": true
+     },
+     {
+      "degree": 2,
+      "hops": 8,
+      "min_layers": 4,
+      "first_reaching": 4,
+      "holds": true
+     },
+     {
+      "degree": 3,
+      "hops": 1,
+      "min_layers": 1,
+      "first_reaching": 1,
+      "holds": true
+     },
+     {
+      "degree": 3,
+      "hops": 2,
+      "min_layers": 1,
+      "first_reaching": 1,
+      "holds": true
+     },
+     {
+      "degree": 3,
+      "hops": 3,
+      "min_layers": 2,
+      "first_reaching": 2,
+      "holds": true
+     },
+     {
+      "degree": 3,
+      "hops": 5,
+      "min_layers": 2,
+      "first_reaching": 2,
+      "holds": true
+     },
+     {
+      "degree": 3,
+      "hops": 8,
+      "min_layers": 2,
+      "first_reaching": 2,
+      "holds": true
+     }
+    ],
+    "twohop_min_layers": 2,
+    "note": "necessary only; no sufficient construction asserted"
+   }
+  },
+  {
+   "id": "NT12",
+   "name": "Toeplitz iff time-invariant (arbitrary order, per channel)",
+   "kind": "finite_identity + analytic induction",
+   "verdict": "PASS",
+   "detail": {
+    "orders": [
+     {
+      "P": 1,
+      "constant_dev": 0.0,
+      "varying_dev": 0.17123668137411124,
+      "holds": true
+     },
+     {
+      "P": 2,
+      "constant_dev": 0.0,
+      "varying_dev": 0.1604055174481403,
+      "holds": true
+     },
+     {
+      "P": 3,
+      "constant_dev": 0.0,
+      "varying_dev": 0.2036646808924636,
+      "holds": true
+     },
+     {
+      "P": 5,
+      "constant_dev": 0.0,
+      "varying_dev": 0.1809041535218966,
+      "holds": true
+     }
+    ],
+    "note": "c_t != 0 is essential; source theta clamp guarantees it"
+   }
+  },
+  {
+   "id": "NT13",
+   "name": "arbitrary read-out impossible; ker>=nd-d; n=1 exception",
+   "kind": "analytic rank-nullity + finite collision",
+   "verdict": "PASS",
+   "detail": {
+    "rank": 8,
+    "kernel": 16,
+    "bound": 16,
+    "collision_residual": 7.771561172376096e-16,
+    "nonlinear_output_identical": true,
+    "n1_kernel": 0,
+    "premises": [
+     "fixed linear summary",
+     "q at current position only",
+     "independent values",
+     ">=2 distinguishable targets"
+    ]
+   }
+  },
+  {
+   "id": "NT14",
+   "name": "information-gradient duality + softening trap",
+   "kind": "analytic + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "pigeonhole_premise_nonempty": true,
+    "unselected_delta_to_output": 0.0,
+    "soft_aggregate_rank": 16,
+    "soft_kernel": 4080,
+    "note": "softening re-triggers NT13; proofs are analytic"
+   }
+  },
+  {
+   "id": "NT15",
+   "name": "zero-order gate validity + T*w*b rate bound",
+   "kind": "analytic (coverage + data processing) + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "coverage_inequality_holds": true,
+    "union_bound": 0.15000000000000002,
+    "bonferroni_bound": 0.05,
+    "T": 1000,
+    "w": 8,
+    "b": 32,
+    "rate_bound_bits": 256000,
+    "bandwidth_bits": 128,
+    "independent_of_L_and_C": true,
+    "example_round_accepted": true,
+    "note": "(a) conditional on CI coverage + non-default verifier; Monte-Carlo never used as proof; T16 withdrawn"
+   }
+  },
+  {
+   "id": "NT16",
+   "name": "exact Turan identity; real-pole log-convex, conjugate not",
+   "kind": "analytic identity + finite certification",
+   "verdict": "PASS",
+   "detail": {
+    "turan_max_dev": 2.0886070650760757e-15,
+    "double_root_dev": 3.3306690738754696e-15,
+    "real_all_positive": true,
+    "conjugate_has_nonpositive": true,
+    "identity": "h(t)^2-h(t-1)h(t+1)=(r1 r2)^t"
+   }
+  },
+  {
+   "id": "NT17",
+   "name": "O(1) three-sample identifiability + discriminant sign",
+   "kind": "finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "recovered_a": 1.6400000000000001,
+    "recovered_b": -0.6602999999999999,
+    "hankel_det": -0.6602999999999999,
+    "discriminant_real": 0.04840000000000089,
+    "discriminant_conjugate": -1.936747661066565,
+    "roots_real": [
+     0.930000000000001,
+     0.7099999999999991
+    ],
+    "hankel_rank2": true
+   }
+  },
+  {
+   "id": "NT18",
+   "name": "linear grid uniquely maximizes min spacing",
+   "kind": "analytic pigeonhole + finite scan",
+   "verdict": "PASS",
+   "detail": {
+    "linear_min_gap": 0.12857142857142856,
+    "upper_bound": 0.12857142857142856,
+    "logfreq_min_gap": 0.065704,
+    "hybrid_min_gap": 0.097138,
+    "all_2000_random_grids_below_bound": true
+   }
+  },
+  {
+   "id": "NT19",
+   "name": "two-tap state is MINIMAL (rank 2, no 1-scalar realization)",
+   "kind": "finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "hankel_violation": 0.6603,
+    "one_scalar_impossible": true,
+    "two_register_reproduces_h": true,
+    "two_register_max_dev": 2.220446049250313e-15,
+    "note": "min 2M registers per channel, tight"
+   }
+  },
+  {
+   "id": "NT20",
+   "name": "min-rule gate is the UNIQUE axiom-satisfying aggregation",
+   "kind": "exhaustive Boolean enumeration (2^8=256 rules)",
+   "verdict": "PASS",
+   "detail": {
+    "boolean_gates_checked": 256,
+    "valid_gates": 1,
+    "unique_is_AND": true,
+    "weighted_sum_compensates_regressed_metric": true
+   }
+  },
+  {
+   "id": "NT21",
+   "name": "constant verifier trivializes the gate (source guard proved)",
+   "kind": "analytic (zero-difference identity) + finite illustration",
+   "verdict": "PASS",
+   "detail": {
+    "constant_verifier_ci_lower": 0.0,
+    "gate_accepts_every_round": true,
+    "independent_verifier_ci_lower": -0.1823,
+    "gate_can_reject": true,
+    "source": "hooks.py default_verifier=0.0; loop.py:335"
+   }
+  },
+  {
+   "id": "NT22",
+   "name": "hidden-state alignment has an L-independent irreducible gap",
+   "kind": "finite identity (NT13 kernel collision)",
+   "verdict": "PASS",
+   "detail": {
+    "summary_collision_residual": 2.6645352591003757e-15,
+    "teacher_answer_gap": 1.599552501601445,
+    "layer_checks": [
+     {
+      "layers": 1,
+      "student_output_identical": true,
+      "gap_present": true
+     },
+     {
+      "layers": 4,
+      "student_output_identical": true,
+      "gap_present": true
+     },
+     {
+      "layers": 16,
+      "student_output_identical": true,
+      "gap_present": true
+     },
+     {
+      "layers": 28,
+      "student_output_identical": true,
+      "gap_present": true
+     }
+    ],
+    "gap_independent_of_L": true
+   }
+  },
+  {
+   "id": "NT23",
+   "name": "output-KL objective separates from internal alignment (conditional)",
+   "kind": "conditional finite illustration",
+   "verdict": "PASS",
+   "detail": {
+    "dense_logit_class_toy_kl": 6.819180189755491e-17,
+    "internal_alignment_gap": 0.25,
+    "infima_differ": true,
+    "premise": "H1 density is ASSUMED, not proved; conditional theorem"
+   }
+  },
+  {
+   "id": "NT24",
+   "name": "hard stagnation: T_min >= ceil(I_task/(w b))",
+   "kind": "analytic data-processing inequality + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "I_task_bits": 1000,
+    "w": 8,
+    "b": 32,
+    "T_min": 4,
+    "rounds": [
+     {
+      "T": 1,
+      "rate_bits": 256,
+      "sufficient": false,
+      "stagnated": true
+     },
+     {
+      "T": 2,
+      "rate_bits": 512,
+      "sufficient": false,
+      "stagnated": true
+     },
+     {
+      "T": 3,
+      "rate_bits": 768,
+      "sufficient": false,
+      "stagnated": true
+     },
+     {
+      "T": 4,
+      "rate_bits": 1024,
+      "sufficient": true,
+      "stagnated": false
+     },
+     {
+      "T": 9,
+      "rate_bits": 2304,
+      "sufficient": true,
+      "stagnated": false
+     }
+    ],
+    "L_and_C_absent": true
+   }
+  },
+  {
+   "id": "NT25",
+   "name": "resolvable radius is TIGHT (single-pulse witness)",
+   "kind": "analytic + finite witness (tightness)",
+   "verdict": "PASS",
+   "detail": {
+    "m": 8,
+    "step": 0.0009765625,
+    "r": 0.00048828125,
+    "rho": 0.9,
+    "tau_star": 72,
+    "all_delays_le_taustar_resolvable": true,
+    "first_unresolvable": 73,
+    "asymptotic_rate_matches": true
+   }
+  },
+  {
+   "id": "NT26",
+   "name": "per-step peak calibration is causally optimal",
+   "kind": "finite identity (pointwise minimal scale)",
+   "verdict": "PASS",
+   "detail": {
+    "sum_peak_scales": 88.49553490371126,
+    "L_times_fixed": 255.58710894555756,
+    "pointwise_minimal": true,
+    "strictly_better": true,
+    "envelope_nonconstant": true,
+    "note": "causal: Delta_t uses only s_{t-1},u_t,rho"
+   }
+  },
+  {
+   "id": "NT27",
+   "name": "optimal decay phase-transitions with precision (1-rho*~2^-m)",
+   "kind": "analytic asymptotics + finite scan cross-check",
+   "verdict": "PASS",
+   "detail": {
+    "observed_1_minus_rhostar": {
+     "8": 0.01056,
+     "11": 0.001326,
+     "24": 1.62e-07
+    },
+    "analytic_c_e_2m1": {
+     "8": 0.01062,
+     "11": 0.001327,
+     "24": 1.62e-07
+    },
+    "ratio_8_to_11": 0.1256,
+    "expected_2pow_minus3": 0.125,
+    "monotone": true,
+    "scale_ok": true,
+    "closed_form_ok": true
+   }
+  },
+  {
+   "id": "NT28",
+   "name": "o^L >= H+1; pole count P cannot compensate order/depth",
+   "kind": "analytic degree composition + finite check",
+   "verdict": "PASS",
+   "detail": {
+    "P_does_not_change_degree": true,
+    "L1_H2_requires_order": 3,
+    "cases_sampled": 30
+   }
+  },
+  {
+   "id": "NT29",
+   "name": "exact retrieval FORCES a discontinuous hard pointer",
+   "kind": "topological argument + finite witness",
+   "verdict": "PASS",
+   "detail": {
+    "jump_across_bisector": 1.4142135623730951,
+    "discontinuous": true,
+    "neighborhood_points": 41,
+    "surrogate_misselection": 41,
+    "independent_of_NT14_iii": true
+   }
+  },
+  {
+   "id": "NT30",
+   "name": "end-to-end tightness chain: all four bounds attained",
+   "kind": "analytic chain + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "chain": {
+     "tensor_order": 2,
+     "code_R": 64,
+     "code_lower": 64,
+     "state_lower": 4096,
+     "tsc_state": 4096,
+     "ratio": 1.0,
+     "ratio_lt_4": true,
+     "kernel_positive": true,
+     "H1_layers_needed": 1
+    },
+    "jointly_tight": true,
+    "note": "order 2 / R<2V / 2M*R*N<4M*V*N / real poles; each forced by a DIFFERENT theorem"
+   }
+  },
+  {
+   "id": "F1",
+   "name": "FALSIFIED: Increasing rho_max extends the effective window",
+   "kind": "classification / falsified",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "Increasing rho_max extends the effective window",
+    "verdict": "FALSIFIED",
+    "reason": "counterexample: NT07's g(rho)->0 as rho->1-c*delta/U; adding decay past the interior optimum SHORTENS resolvable length",
+    "reproducible_witness": "g(rho) non-monotone; interior rho* (NT07/NT27)",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "F2",
+   "name": "FALSIFIED: SFSC time-varying rho_t/theta_t preserves FFT duality",
+   "kind": "classification / falsified",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "SFSC time-varying rho_t/theta_t preserves FFT duality",
+    "verdict": "FALSIFIED",
+    "reason": "counterexample: time-varying a_t makes h(s+1,s)=a_{s+1}c_s depend on s (NT12); FFT-proxy relative error 0.9720",
+    "reproducible_witness": "h(s+1,s)=a_{s+1}c_s varies with s (NT12)",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "F3",
+   "name": "FALSIFIED: Phase-resonance slots exceed equal-parameter attention",
+   "kind": "classification / falsified",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "Phase-resonance slots exceed equal-parameter attention",
+    "verdict": "FALSIFIED",
+    "reason": "witness: 0.8672 < 1.0000 at 5,217 vs 5,152 params (O2)",
+    "reproducible_witness": "0.8672 < 1.0000",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "F4",
+   "name": "FALSIFIED: Content addressing and FFT/IIR duality are mutually exclus",
+   "kind": "classification / falsified",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "Content addressing and FFT/IIR duality are mutually exclusive",
+    "verdict": "FALSIFIED",
+    "reason": "counterexample: NT01/NT10 construction attains both; WITHDRAWN as a core contribution (Appendix F)",
+    "reproducible_witness": "NT01 closed-form dev < 1e-10 (TSC construction)",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "F5",
+   "name": "FALSIFIED: The oscillatory basis itself provides the advantage",
+   "kind": "classification / falsified",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "The oscillatory basis itself provides the advantage",
+    "verdict": "FALSIFIED",
+    "reason": "counterexample: random orthogonal code also reaches 1.0000 (NT08); NT16/NT02 show conjugate-pole kernels are NOT strictly positive",
+    "reproducible_witness": "NT08 robustness + NT16 strict positivity",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "F6",
+   "name": "FALSIFIED: Dynamic quantization scaling causes spurious artifacts",
+   "kind": "classification / falsified",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "Dynamic quantization scaling causes spurious artifacts",
+    "verdict": "FALSIFIED",
+    "reason": "counterexample: same-sample prefix controls; NT26 proves per-step peak is causally pointwise-minimal and fixed scale is strictly worse",
+    "reproducible_witness": "NT26 pointwise minimality, strict on varying envelope",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "F7",
+   "name": "FALSIFIED: Shannon capacity limits long-length retrieval here",
+   "kind": "classification / falsified",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "Shannon capacity limits long-length retrieval here",
+    "verdict": "FALSIFIED",
+    "reason": "witness: 1,280 required bits vs 225,280-bit state (176x headroom); input noise 0.20 leaves accuracy unchanged (O6)",
+    "reproducible_witness": "176x capacity headroom",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "F8",
+   "name": "FALSIFIED: Monotone verifier score implies monotone self-improvement ",
+   "kind": "classification / falsified",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "Monotone verifier score implies monotone self-improvement (T16)",
+    "verdict": "FALSIFIED",
+    "reason": "counterexample: gate is multi-metric paired-bootstrap (NT20/NT21); a scalar monotone score is not the implemented gate",
+    "reproducible_witness": "NT20 unique gate is AND over m metrics, not a scalar",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "W1",
+   "name": "WITHDRAWN: Unconditional fp32 bitwise duality",
+   "kind": "classification / withdrawn",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "Unconditional fp32 bitwise duality",
+    "verdict": "WITHDRAWN",
+    "reason": "different rounding orders; real-field only (NT09)",
+    "reproducible_witness": "Appendix F register entry; Thm1 real-field only",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "W2",
+   "name": "WITHDRAWN: Periodic-axis superiority over attention",
+   "kind": "classification / withdrawn",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "Periodic-axis superiority over attention",
+    "verdict": "WITHDRAWN",
+    "reason": "not replicated in-repository (O4)",
+    "reproducible_witness": "O4 seven grids 0.1094-0.1354 < copy-last 0.1575",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "W3",
+   "name": "WITHDRAWN: Equivalent 4-7B parameter claim",
+   "kind": "classification / withdrawn",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "Equivalent 4-7B parameter claim",
+    "verdict": "WITHDRAWN",
+    "reason": "no supporting measurement",
+    "reproducible_witness": "no measurement in any provenance file",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "W4",
+   "name": "WITHDRAWN: NT13 holds for any read-out with no premise restriction",
+   "kind": "classification / withdrawn",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "NT13 holds for any read-out with no premise restriction",
+    "verdict": "WITHDRAWN",
+    "reason": "exactly four premises; stated in abstract and conclusion",
+    "reproducible_witness": "NT13 four-premise contract",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "W5",
+   "name": "WITHDRAWN: Dynamic scaling causes spurious effects",
+   "kind": "classification / withdrawn",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "Dynamic scaling causes spurious effects",
+    "verdict": "WITHDRAWN",
+    "reason": "same-sample prefix controls (O6); distinct from F6's stronger claim",
+    "reproducible_witness": "O6 same-sample prefix controls",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "C1",
+   "name": "CONJECTURE: Stacking TSC layers restores multi-hop retrieval",
+   "kind": "classification / conjecture",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "Stacking TSC layers restores multi-hop retrieval",
+    "verdict": "CONJECTURE",
+    "reason": "no proof; sufficient construction open; falsify by running L=2,3 stacks on H=2,3 with >=5 seeds",
+    "reproducible_witness": "no stacking experiment exists; NT11/NT28 give only a lower bound",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "C3",
+   "name": "CONJECTURE: NT13 extends to deep stacks with per-position nonlineariti",
+   "kind": "classification / conjecture",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "NT13 extends to deep stacks with per-position nonlinearities",
+    "verdict": "CONJECTURE",
+    "reason": "no proof; cross-terms leave the fixed-summary premise; falsify with a 2-layer FFN-mixed counterexample",
+    "reproducible_witness": "per-position nonlinearity leaves NT13 premise",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "C7",
+   "name": "CONJECTURE: TSC is outside EVERY gated linear-attention variant",
+   "kind": "classification / conjecture",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "TSC is outside EVERY gated linear-attention variant",
+    "verdict": "CONJECTURE",
+    "reason": "no proof; NT03 settles only rho<1 multi-pole vs rho=1 single-pole; falsify by exhibiting a gated variant with the same kernel family",
+    "reproducible_witness": "NT03 scope explicitly limited to kernel families",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "E1",
+   "name": "EMPIRICAL_NOT_TESTABLE: >=10M-token equal-compute LM parity",
+   "kind": "classification / empirical_not_testable",
+   "verdict": "PASS",
+   "detail": {
+    "statement": ">=10M-token equal-compute LM parity",
+    "verdict": "EMPIRICAL_NOT_TESTABLE",
+    "reason": "cannot be a theorem; requires >=10M tokens, >=5 seeds, paired CI, Mamba-2/GLA/DeltaNet/Hyena/TS same-run baselines",
+    "reproducible_witness": "O3 is a 3.07M-token pilot",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "E2",
+   "name": "EMPIRICAL_NOT_TESTABLE: RSI reaches SOTA / general-language superiority",
+   "kind": "classification / empirical_not_testable",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "RSI reaches SOTA / general-language superiority",
+    "verdict": "EMPIRICAL_NOT_TESTABLE",
+    "reason": "cannot be a theorem; NT24 gives a necessary rate bound, not capability",
+    "reproducible_witness": "NT24 rate bound is necessary, not capability",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  },
+  {
+   "id": "E3",
+   "name": "EMPIRICAL_NOT_TESTABLE: Absolute throughput advantage over attention",
+   "kind": "classification / empirical_not_testable",
+   "verdict": "PASS",
+   "detail": {
+    "statement": "Absolute throughput advantage over attention",
+    "verdict": "EMPIRICAL_NOT_TESTABLE",
+    "reason": "cannot be a theorem; O6 is an unoptimized reference implementation, only scaling is informative; requires measured same-run comparison",
+    "reproducible_witness": "35.25 us/token is a reference-implementation measurement",
+    "note": "CLASSIFICATION check only; NOT a proof of this statement"
+   }
+  }
+ ],
+ "passed": 49,
+ "total": 49,
+ "theorem_count": 30,
+ "non_theorem_count": 19,
+ "verdict_distribution": {
+  "new_theorems": 30,
+  "falsified": 8,
+  "withdrawn": 5,
+  "conjectures": 3,
+  "empirical_not_testable": 3
+ },
+ "roadmap": {
+  "delivered": 30,
+  "target": 49,
+  "remaining": 19,
+  "groups": {
+   "I: TSC construction and optimality": 5,
+   "II: grid, precision and length": 5,
+   "III: multi-hop, self-evolution, equivalence": 5,
+   "IV: algebraic structure and identifiability": 4,
+   "V: self-evolution and transfer objectives": 5,
+   "VI: numerical frontier and multi-hop duality": 6
+  },
+  "ids": [
+   "NT01",
+   "NT02",
+   "NT03",
+   "NT04",
+   "NT05",
+   "NT06",
+   "NT07",
+   "NT08",
+   "NT09",
+   "NT10",
+   "NT11",
+   "NT12",
+   "NT13",
+   "NT14",
+   "NT15",
+   "NT16",
+   "NT17",
+   "NT18",
+   "NT19",
+   "NT20",
+   "NT21",
+   "NT22",
+   "NT23",
+   "NT24",
+   "NT25",
+   "NT26",
+   "NT27",
+   "NT28",
+   "NT29",
+   "NT30"
+  ]
+ },
+ "discipline": "The 30 theorem checks are NOT proofs (proofs are analytic, in the two theorem modules). The 19 non-theorem checks are CLASSIFICATIONS with explicit witnesses / falsification specs, NOT proofs that the statements are true. NO measured value is a theorem. NO TRAINING, NO GRADIENTS, NO GPU, NO NEW EXPERIMENT DATA.",
+ "honest_note": "49 statements cannot all be new non-trivial theorems: 8 are demonstrably false, 5 were formally withdrawn, 3 are unproved conjectures, 3 are empirical claims no theorem can establish. Promoting them would be exactly the theorem inflation / 'numerical verification as proof' the review warned against."
+}

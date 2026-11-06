@@ -33,11 +33,21 @@
 | `simplcore/core/theory/verify.py` | 15 命题：9 定理 / 3 证伪 / 2 猜想 / 1 撤销 |
 | `simplcore/core/theory/verify_smm_sgc.py` | CT6/CT7/CT5-L2 + 前提非空检查，7/7 |
 | `docs/CONJECTURE_15_THEOREM_UPGRADE.md` | 上一轮 15 命题完整证明与 RSI/SMM 核实 |
-| `docs/SMM_SGC_SELF_EVOLUTION.md` | **本轮主文档：四条审稿意见回应、完整证明、收束表、猜想逐个判定** |
+| `docs/SMM_SGC_SELF_EVOLUTION.md` | 上一轮：四条审稿意见回应、CT6/CT7 完整证明、收束表 |
+| `docs/THEOREM_30_AUDIT_49.md` | **本轮主文档：30 条定理（6 组）、19 项定级、49 项全量判定** |
+| `simplcore/core/theory/new_theorems15.py` | NT01–NT15 完整解析证明 |
+| `simplcore/core/theory/new_theorems30.py` | **NT16–NT30 完整解析证明 + THEOREMS30** |
+| `simplcore/core/theory/verify15.py` | 第一梯队一致性检查 15/15 |
+| `simplcore/core/theory/verify49.py` | **49 项全量审计 49/49** |
+| `simplcore/core/theory/ledger49.py` | 49 项判定台账（单一真源） |
+| `artifacts/theorem49_results.json` | 49 项判定原始结果 |
+| `docs/simplcore_v0.2beta.pdf` | 0.2-β 旧稿归档 |
+| `docs/build_simplcore_pdf_v3.py` | v3 生成器归档 |
 | `artifacts/theorem15_results.json`、`artifacts/smm_sgc_results.json` | 验证原始结果 |
 
-定理编号：历史 T7–T16 已收束为 **CT1–CT7**（撤销 T16、降级 7 条）；
-**尚未并入 `simplcore.pdf`**；见 `REVISION_LOG.md` §6.1 / §6.2。
+定理编号：历史 T7–T16 已收束为 CT1–CT7，并进一步演进为投稿稿的
+**NT01–NT30**（6 组）；`simplcore.pdf` v4 **已并入**，附录 A 给全部 30 条完整证明，
+附录 G 给 49 项判定台账。见 `REVISION_LOG.md` §6.1 / §6.2 / §6.3。
 
 ## 证据链（数据与报告，不是稿）
 

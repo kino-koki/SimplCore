@@ -1,0 +1,589 @@
+{
+ "mode": "finite-identity consistency checks ONLY; proofs in new_theorems15.py",
+ "numpy_seed": 20261108,
+ "checks": [
+  {
+   "id": "NT01",
+   "name": "tight order-2 retrieval, zero interference, position-free",
+   "kind": "finite_identity + analytic rank-nullity",
+   "verdict": "PASS",
+   "detail": {
+    "closed_form_max_dev": 8.881784197001252e-16,
+    "argmax_correct": true,
+    "position_independent": true,
+    "kernel_strictly_positive": true,
+    "note": "order 1 impossible by NT13; order 2 attains it => tight"
+   }
+  },
+  {
+   "id": "NT02",
+   "name": "positive real poles vs sign-changing conjugate poles",
+   "kind": "finite_identity + analytic sign argument",
+   "verdict": "PASS",
+   "detail": {
+    "real_h_all_positive": true,
+    "vieta_injective": true,
+    "recovered_roots": [
+     0.7099999999999995,
+     0.9300000000000006
+    ],
+    "sign_checks": [
+     {
+      "theta": 0.05,
+      "ceil_pi_over_theta": 63,
+      "first_nonpositive": 62,
+      "holds": true
+     },
+     {
+      "theta": 0.3,
+      "ceil_pi_over_theta": 11,
+      "first_nonpositive": 10,
+      "holds": true
+     },
+     {
+      "theta": 0.8,
+      "ceil_pi_over_theta": 4,
+      "first_nonpositive": 3,
+      "holds": true
+     },
+     {
+      "theta": 1.4,
+      "ceil_pi_over_theta": 3,
+      "first_nonpositive": 2,
+      "holds": true
+     },
+     {
+      "theta": 2.5,
+      "ceil_pi_over_theta": 2,
+      "first_nonpositive": 1,
+      "holds": true
+     },
+     {
+      "theta": 3.0,
+      "ceil_pi_over_theta": 2,
+      "first_nonpositive": 1,
+      "holds": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "NT03",
+   "name": "rho<1 multi-pole kernel is not the linear-attention constant",
+   "kind": "analytic (limit) + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "F_at_d_end": 4.1683439843704704e-19,
+    "dist_to_constant_tail": 1.0,
+    "horizon": 40000,
+    "rho1_is_constant": true,
+    "note": "strict decay => constant has l^infty distance 1 from the span"
+   }
+  },
+  {
+   "id": "NT04",
+   "name": "arbitrary-V deterministic code is 2-optimal",
+   "kind": "analytic + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "instances": [
+     {
+      "V": 3,
+      "R": 4,
+      "R_over_V": 1.333,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 5,
+      "R": 8,
+      "R_over_V": 1.6,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 7,
+      "R": 8,
+      "R_over_V": 1.143,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 64,
+      "R": 64,
+      "R_over_V": 1.0,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 65,
+      "R": 128,
+      "R_over_V": 1.969,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 100,
+      "R": 128,
+      "R_over_V": 1.28,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 1000,
+      "R": 1024,
+      "R_over_V": 1.024,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     },
+     {
+      "V": 50000,
+      "R": 65536,
+      "R_over_V": 1.311,
+      "lower_bound_R_ge_V": true,
+      "ratio_lt_2": true,
+      "gram_ok": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "NT05",
+   "name": "Omega(V*N) state lower bound, attained within factor 2",
+   "kind": "analytic + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "instances": [
+     {
+      "V": 64,
+      "P": 1,
+      "N": 32,
+      "R": 64,
+      "state_scalars": 2048,
+      "lower_bound": 2048,
+      "ratio": 1.0,
+      "ok": true
+     },
+     {
+      "V": 65,
+      "P": 2,
+      "N": 16,
+      "R": 128,
+      "state_scalars": 4096,
+      "lower_bound": 2080,
+      "ratio": 1.969,
+      "ok": true
+     },
+     {
+      "V": 1000,
+      "P": 3,
+      "N": 8,
+      "R": 1024,
+      "state_scalars": 24576,
+      "lower_bound": 24000,
+      "ratio": 1.024,
+      "ok": true
+     },
+     {
+      "V": 151936,
+      "P": 1,
+      "N": 1,
+      "R": 262144,
+      "state_scalars": 262144,
+      "lower_bound": 151936,
+      "ratio": 1.725,
+      "ok": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "NT06",
+   "name": "quantitative cond lower bound near theta=0",
+   "kind": "finite_identity (bound certification)",
+   "verdict": "PASS",
+   "detail": {
+    "instances": [
+     {
+      "rho": 0.5,
+      "M": 32,
+      "theta1": 0.0001,
+      "Delta": 0.03871,
+      "cond": 1.644e+301,
+      "lower_bound": 4.505e-06,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.5,
+      "M": 32,
+      "theta1": 0.3,
+      "Delta": 0.02903,
+      "cond": 2.122e+301,
+      "lower_bound": 69.94,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.5,
+      "M": 16,
+      "theta1": 0.6,
+      "Delta": 0.04,
+      "cond": 1.307e+301,
+      "lower_bound": 134.5,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.9,
+      "M": 32,
+      "theta1": 0.0001,
+      "Delta": 0.03871,
+      "cond": 701400000000.0,
+      "lower_bound": 5.059e-08,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.9,
+      "M": 32,
+      "theta1": 0.3,
+      "Delta": 0.02903,
+      "cond": 1757000000.0,
+      "lower_bound": 0.7853,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.9,
+      "M": 16,
+      "theta1": 0.6,
+      "Delta": 0.04,
+      "cond": 2122000.0,
+      "lower_bound": 1.51,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.99,
+      "M": 32,
+      "theta1": 0.0001,
+      "Delta": 0.03871,
+      "cond": 17650.0,
+      "lower_bound": 5.313e-11,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.99,
+      "M": 32,
+      "theta1": 0.3,
+      "Delta": 0.02903,
+      "cond": 4.233,
+      "lower_bound": 0.0008247,
+      "inequality_holds": true
+     },
+     {
+      "rho": 0.99,
+      "M": 16,
+      "theta1": 0.6,
+      "Delta": 0.04,
+      "cond": 2.361,
+      "lower_bound": 0.001586,
+      "inequality_holds": true
+     }
+    ],
+    "A_rho_note": "A(rho)=sum rho^{2tau}(tau+1)^2=(1+rho^2)/(1-rho^2)^3"
+   }
+  },
+  {
+   "id": "NT07",
+   "name": "interior optimal rho exists (trilemma)",
+   "kind": "analytic (extreme value theorem) + finite scan",
+   "verdict": "PASS",
+   "detail": {
+    "precision_bits_checked": [
+     8,
+     11,
+     24
+    ],
+    "statement": "g(rho)->0 at both endpoints, positive inside => interior maximum; rho=1 infeasible",
+    "note": "existence is analytic; rho* values are illustrations only"
+   }
+  },
+  {
+   "id": "NT08",
+   "name": "bounded-code-perturbation robustness bound",
+   "kind": "finite_identity (sufficient-condition certification)",
+   "verdict": "PASS",
+   "detail": {
+    "eps": 0.05,
+    "sufficient_threshold": 0.29091,
+    "interference_bound": 0.55,
+    "target_margin_lower": 2.65,
+    "argmax_preserved": true
+   }
+  },
+  {
+   "id": "NT09",
+   "name": "FFT/IIR rounding-order crossover L*",
+   "kind": "analytic (conditional) + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "c1": 1.0,
+    "c2": 1.0,
+    "eps": 5.960464477539063e-08,
+    "instances": [
+     {
+      "rho": 0.5,
+      "Lstar_exponent": 2.0,
+      "Lstar_str": "2^2.0",
+      "fft_at_Lstar": 1.1920928955078125e-07,
+      "iir_bound": 1.1920928955078125e-07,
+      "equality": true,
+      "iir_L_independent": true
+     },
+     {
+      "rho": 0.9,
+      "Lstar_exponent": 10.000000000000002,
+      "Lstar_str": "2^10.0",
+      "fft_at_Lstar": 5.960464477539064e-07,
+      "iir_bound": 5.960464477539064e-07,
+      "equality": true,
+      "iir_L_independent": true
+     },
+     {
+      "rho": 0.99,
+      "Lstar_exponent": 99.99999999999991,
+      "Lstar_str": "2^100.0",
+      "fft_at_Lstar": 5.960464477539057e-06,
+      "iir_bound": 5.960464477539057e-06,
+      "equality": true,
+      "iir_L_independent": true
+     },
+     {
+      "rho": 0.999,
+      "Lstar_exponent": 999.9999999999991,
+      "Lstar_str": "2^1000.0",
+      "fft_at_Lstar": 5.960464477539057e-05,
+      "iir_bound": 5.960464477539057e-05,
+      "equality": true,
+      "iir_L_independent": true
+     }
+    ],
+    "note": "conditional worst-case bounds, NOT measured error"
+   }
+  },
+  {
+   "id": "NT10",
+   "name": "per-channel time-invariance keeps block Toeplitz + duality",
+   "kind": "finite_identity",
+   "verdict": "PASS",
+   "detail": {
+    "toeplitz_dev": 1.6653345369377348e-16,
+    "fft_iir_rel": 4.2606332124101666e-16,
+    "state_scalars": 60,
+    "depends_on_L": false
+   }
+  },
+  {
+   "id": "NT11",
+   "name": "layer lower bound ceil(log_d(H+1)); H=2 needs >=2 layers",
+   "kind": "analytic (degree composition) + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "instances": [
+     {
+      "degree": 2,
+      "hops": 1,
+      "min_layers": 1,
+      "first_reaching": 1,
+      "holds": true
+     },
+     {
+      "degree": 2,
+      "hops": 2,
+      "min_layers": 2,
+      "first_reaching": 2,
+      "holds": true
+     },
+     {
+      "degree": 2,
+      "hops": 3,
+      "min_layers": 2,
+      "first_reaching": 2,
+      "holds": true
+     },
+     {
+      "degree": 2,
+      "hops": 5,
+      "min_layers": 3,
+      "first_reaching": 3,
+      "holds": true
+     },
+     {
+      "degree": 2,
+      "hops": 8,
+      "min_layers": 4,
+      "first_reaching": 4,
+      "holds": true
+     },
+     {
+      "degree": 3,
+      "hops": 1,
+      "min_layers": 1,
+      "first_reaching": 1,
+      "holds": true
+     },
+     {
+      "degree": 3,
+      "hops": 2,
+      "min_layers": 1,
+      "first_reaching": 1,
+      "holds": true
+     },
+     {
+      "degree": 3,
+      "hops": 3,
+      "min_layers": 2,
+      "first_reaching": 2,
+      "holds": true
+     },
+     {
+      "degree": 3,
+      "hops": 5,
+      "min_layers": 2,
+      "first_reaching": 2,
+      "holds": true
+     },
+     {
+      "degree": 3,
+      "hops": 8,
+      "min_layers": 2,
+      "first_reaching": 2,
+      "holds": true
+     }
+    ],
+    "twohop_min_layers": 2,
+    "note": "necessary only; no sufficient construction asserted"
+   }
+  },
+  {
+   "id": "NT12",
+   "name": "Toeplitz iff time-invariant (arbitrary order, per channel)",
+   "kind": "finite_identity + analytic induction",
+   "verdict": "PASS",
+   "detail": {
+    "orders": [
+     {
+      "P": 1,
+      "constant_dev": 0.0,
+      "varying_dev": 0.17123668137411124,
+      "holds": true
+     },
+     {
+      "P": 2,
+      "constant_dev": 0.0,
+      "varying_dev": 0.1604055174481403,
+      "holds": true
+     },
+     {
+      "P": 3,
+      "constant_dev": 0.0,
+      "varying_dev": 0.2036646808924636,
+      "holds": true
+     },
+     {
+      "P": 5,
+      "constant_dev": 0.0,
+      "varying_dev": 0.1809041535218966,
+      "holds": true
+     }
+    ],
+    "note": "c_t != 0 is essential; source theta clamp guarantees it"
+   }
+  },
+  {
+   "id": "NT13",
+   "name": "arbitrary read-out impossible; ker>=nd-d; n=1 exception",
+   "kind": "analytic rank-nullity + finite collision",
+   "verdict": "PASS",
+   "detail": {
+    "rank": 8,
+    "kernel": 16,
+    "bound": 16,
+    "collision_residual": 7.771561172376096e-16,
+    "nonlinear_output_identical": true,
+    "n1_kernel": 0,
+    "premises": [
+     "fixed linear summary",
+     "q at current position only",
+     "independent values",
+     ">=2 distinguishable targets"
+    ]
+   }
+  },
+  {
+   "id": "NT14",
+   "name": "information-gradient duality + softening trap",
+   "kind": "analytic + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "pigeonhole_premise_nonempty": true,
+    "unselected_delta_to_output": 0.0,
+    "soft_aggregate_rank": 16,
+    "soft_kernel": 4080,
+    "note": "softening re-triggers NT13; proofs are analytic"
+   }
+  },
+  {
+   "id": "NT15",
+   "name": "zero-order gate validity + T*w*b rate bound",
+   "kind": "analytic (coverage + data processing) + finite identity",
+   "verdict": "PASS",
+   "detail": {
+    "coverage_inequality_holds": true,
+    "union_bound": 0.15000000000000002,
+    "bonferroni_bound": 0.05,
+    "T": 1000,
+    "w": 8,
+    "b": 32,
+    "rate_bound_bits": 256000,
+    "bandwidth_bits": 128,
+    "independent_of_L_and_C": true,
+    "example_round_accepted": true,
+    "note": "(a) conditional on CI coverage + non-default verifier; Monte-Carlo never used as proof; T16 withdrawn"
+   }
+  }
+ ],
+ "passed": 15,
+ "total": 15,
+ "roadmap": {
+  "delivered": 15,
+  "target": 49,
+  "remaining": 34,
+  "groups": {
+   "I: TSC construction and optimality": 5,
+   "II: grid, precision and length": 5,
+   "III: multi-hop, self-evolution, equivalence": 5
+  },
+  "ids": [
+   "NT01",
+   "NT02",
+   "NT03",
+   "NT04",
+   "NT05",
+   "NT06",
+   "NT07",
+   "NT08",
+   "NT09",
+   "NT10",
+   "NT11",
+   "NT12",
+   "NT13",
+   "NT14",
+   "NT15"
+  ]
+ },
+ "discipline": "No numerical run is a proof. No measured accuracy is promoted to a theorem. NO TRAINING, NO GRADIENTS, NO GPU, NO NEW DATA."
+}

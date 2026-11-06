@@ -14,9 +14,15 @@ Contents
 * verify.py     : pure-numpy verification, fixed seed, NO TRAINING.
                    Run: python -m simplcore.core.theory.verify
 
-Theorem numbering continues the six theorems of the submission manuscript
-(simplcore.pdf): T7..T16 are defined here.  They are NOT yet merged into that
-PDF; see docs/CONJECTURE_15_THEOREM_UPGRADE.md section 6.
+CURRENT SUBMISSION STATE (v4):
+  simplcore.pdf now carries 30 de-duplicated theorems NT01..NT30 in six
+  groups, complete proofs in Appendix A, and a 49-item audit ledger in
+  Appendix G (30 theorems + 8 falsified + 5 withdrawn + 3 conjectures +
+  3 empirical claims).  The historical T7..T16 ids in statements.py are
+  retained ONLY as an audit trail; T16 is WITHDRAWN (W7).
+
+  19 statements are deliberately NOT theorems.  Promoting them would be
+  theorem inflation; see verify49.py / ledger49.py.
 
 Architecture mapping
 --------------------
@@ -49,6 +55,9 @@ from .smm_sgc import (
     summary as core_summary,
 )
 from .bridge import ZeroOrderBridge, coupling_spec
+from .new_theorems15 import NT as THEOREMS15, Thm
+from .new_theorems30 import THEOREMS30, NT16_30
+from .ledger49 import ITEMS, NON_THEOREM, items, by_verdict, summary as ledger_summary
 
 __all__ = [
     "Proposition", "PROPOSITIONS", "THEOREMS", "BY_MODULE", "summary",
@@ -56,4 +65,6 @@ __all__ = [
     "CORE_THEOREMS", "DEMOTED_TO_LEMMA", "WITHDRAWN", "FALSIFIED",
     "CONJECTURE_DISPOSITION", "core_summary",
     "ZeroOrderBridge", "coupling_spec",
+    "Thm", "THEOREMS15", "THEOREMS30", "NT16_30",
+    "ITEMS", "NON_THEOREM", "items", "by_verdict", "ledger_summary",
 ]

@@ -4,7 +4,10 @@
 > `docs/SMM_SGC_SELF_EVOLUTION.md` 收束为 **CT1–CT7 七条核心定理**：
 > **T16 已撤销**（由 CT7 替换，见 `REVISION_LOG.md` §6.2 / 附录 F 待补 W7），
 > T7/T8/T9/T12/T13/T14/T15 降级为引理。本文保留作**完整证据链与逐条判定记录**，
-> 不再是当前定理清单。当前清单以 `core/theory/smm_sgc.py::CORE_THEOREMS` 为准。
+> 不再是当前定理清单。演进链：T7–T16 → CT1–CT7 → **NT01–NT30**（投稿稿
+> `simplcore.pdf` v4 的 30 条定理，6 组），49 项全量判定见
+> `docs/THEOREM_30_AUDIT_49.md` 与附录 G。当前清单以
+> `core/theory/new_theorems30.py::THEOREMS30` 为准。
 
 ---
 
