@@ -55,7 +55,7 @@ import task_utils as U
 import sgc_fixed as S
 
 OUT = "results"
-SEEDS = (0, 1, 2)
+SEEDS = (0, 1, 2, 3, 4)
 STEPS = 3000
 RHO_MIN = 0.05
 BUDGET = 10240
@@ -80,6 +80,10 @@ def _fixed_code(R, V=64, kind="hadamard"):
         H = _hadamard(V)
     C = H[:, :R] * np.sqrt(V / R)
     return C
+
+
+def _vocab(cfg): return int(cfg.get("vocab", U.VOCAB))
+def _hops(cfg): return int(cfg.get("hops", 1))
 
 
 def _sig(z): return 1.0 / (1.0 + np.exp(-z))
@@ -139,17 +143,52 @@ ARMS = {
                         fixed_code=True, code_kind="random", lr=6e-3, schedule="cosine"),
     "W7_more_pairs":dict(kind="tensor", D=16, R=64, N=110, P=2, tied=False, gate=False,
                         fixed_code=True, lr=6e-3, schedule="cosine", n_pairs=8),
+    # 第八轮：参数效率 3× —— 目标 < 10240/3 = 3414 参数
+    # c = VOCAB*D + D*N + N*VOCAB + 2*P*N = 64D + N(D+64+2P)
+    "M0_d4n43":    dict(kind="tensor", D=4, R=64, N=43, P=2, tied=False, gate=False,
+                        fixed_code=True, lr=6e-3, schedule="cosine"),
+    "M1_d2n46":    dict(kind="tensor", D=2, R=64, N=46, P=2, tied=False, gate=False,
+                        fixed_code=True, lr=6e-3, schedule="cosine"),
+    "M2_d1n48":    dict(kind="tensor", D=1, R=64, N=48, P=2, tied=False, gate=False,
+                        fixed_code=True, lr=6e-3, schedule="cosine"),
+    "M3_d4n40":    dict(kind="tensor", D=4, R=64, N=40, P=2, tied=False, gate=False,
+                        fixed_code=True, lr=6e-3, schedule="cosine"),
+    "M4_d4n44_P1": dict(kind="tensor", D=4, R=64, N=44, P=1, tied=False, gate=False,
+                        fixed_code=True, lr=6e-3, schedule="cosine"),
+    "M5_d8n30":    dict(kind="tensor", D=8, R=64, N=30, P=2, tied=False, gate=False,
+                        fixed_code=True, lr=6e-3, schedule="cosine"),
+    # 5-seed 复核主臂
+    "M6_W1_5seed": dict(kind="tensor", D=16, R=16, N=107, P=2, tied=False, gate=False,
+                        shared_kq=True, orth=True, lr=6e-3, schedule="cosine"),
+    # 第九轮：Mamba 级别协议 —— 大词表（Hadamard 要求 2^k）、多跳
+    "H0_v256":     dict(kind="tensor", D=16, R=256, N=22, P=2, tied=False, gate=False,
+                        fixed_code=True, lr=6e-3, schedule="cosine", vocab=256),
+    "H1_v256_R64": dict(kind="tensor", D=16, R=64,  N=22, P=2, tied=False, gate=False,
+                        fixed_code=True, lr=6e-3, schedule="cosine", vocab=256),
+    "H2_v512":     dict(kind="tensor", D=8,  R=512, N=11, P=2, tied=False, gate=False,
+                        fixed_code=True, lr=6e-3, schedule="cosine", vocab=512),
+    "H3_v1024":    dict(kind="tensor", D=2,  R=64,  N=7,  P=2, tied=False, gate=False,
+                        fixed_code=True, lr=6e-3, schedule="cosine", vocab=1024),
+    "H4_multihop": dict(kind="tensor", D=16, R=64,  N=110, P=2, tied=False, gate=False,
+                        fixed_code=True, lr=6e-3, schedule="cosine", hops=2),
+    "H5_v256_np16":dict(kind="tensor", D=16, R=256, N=22, P=2, tied=False, gate=False,
+                        fixed_code=True, lr=6e-3, schedule="cosine",
+                        vocab=256, n_pairs=16),
+    "H6_v256_rand":dict(kind="tensor", D=16, R=256, N=22, P=2, tied=False, gate=False,
+                        fixed_code=True, code_kind="random", lr=6e-3,
+                        schedule="cosine", vocab=256),
 }
 
 def _count(cfg):
     D, R, N, P = cfg["D"], cfg["R"], cfg["N"], cfg["P"]
+    V = _vocab(cfg)
     if cfg["kind"] == "vector":
-        c = U.VOCAB * D + 2 * D * N + D * N
-        if not cfg["tied"]: c += N * U.VOCAB
+        c = V * D + 2 * D * N + D * N
+        if not cfg["tied"]: c += N * V
         c += 2 * N * P
         if cfg["gate"]: c += D * N
         return int(c)
-    c = U.VOCAB * D            # E（value 编码用）
+    c = V * D                  # E（value 编码用）
     if not cfg.get("fixed_code"):
         c += D * R             # Wk（前驱 key 编码）
     c += D * N                 # Wv（当前 value 编码）
@@ -158,7 +197,7 @@ def _count(cfg):
     if cfg["kind"] == "tensor_nok":
         c += D * R             # 额外：当前 token 也投到 R（消融用）
     if not cfg["tied"]:
-        c += N * U.VOCAB       # Wout
+        c += N * V             # Wout
     c += 2 * P * N             # ρ(p) + w(p)   —— 与 R 无关（共享）
     if cfg["gate"]:
         c += D * N
@@ -169,10 +208,10 @@ def make_params(cfg, seed):
     r = np.random.default_rng(seed + 4242)
     def W(a, b, s=0.15): return T(r.standard_normal((a, b)) * s)
     D, R, N, P = cfg["D"], cfg["R"], cfg["N"], cfg["P"]
-    Pm = {"E": T(r.standard_normal((U.VOCAB, D)) * 0.15)}
+    Pm = {"E": T(r.standard_normal((_vocab(cfg), D)) * 0.15)}
     if cfg["kind"] == "vector":
         Pm.update(Wa=W(D, N), Wb=W(D, N), Wq=W(D, N))
-        if not cfg["tied"]: Pm["Wout"] = W(N, U.VOCAB)
+        if not cfg["tied"]: Pm["Wout"] = W(N, _vocab(cfg))
         if cfg["gate"]: Pm["Wg"] = W(D, N, s=0.02)
         rp = np.exp(np.linspace(np.log(0.30), np.log(0.995), P))
         p0 = np.repeat(_logit((rp - RHO_MIN) / (1 - RHO_MIN))[:, None], N, axis=1)
@@ -193,7 +232,7 @@ def make_params(cfg, seed):
     if cfg["kind"] == "tensor_nok":
         Pm["Wk2"] = W(D, R)
     if not cfg["tied"]:
-        Pm["Wout"] = W(N, U.VOCAB)
+        Pm["Wout"] = W(N, _vocab(cfg))
     if cfg["gate"]:
         Pm["Wg"] = W(D, N, s=0.02)
     # ρ 形状 (P,N)：每个 value 通道 P 个极点；对 R 共享（LTI 逐通道相同）
@@ -229,7 +268,7 @@ def forward(arm, P, X, Xp, L):
     xx = const(X) @ P["E"]          # (B,L,D)
     xp = const(Xp) @ P["E"]         # (B,L,D) 前驱
     if cfg.get("fixed_code"):
-        Code = const(_fixed_code(R, U.VOCAB, cfg.get("code_kind", "hadamard")))
+        Code = const(_fixed_code(R, _vocab(cfg), cfg.get("code_kind", "hadamard")))
         q = const(X[:, L - 1, :]) @ Code          # (B,R) 固定正交码
     else:
         q = xx[:, L - 1, :] @ (P["Wk"] if cfg.get("shared_kq") else P["Wq"])
@@ -323,18 +362,20 @@ def guards(arm, P, seed=0, verbose=False):
 
 
 # ---------------- 判别性对照：未见过的 value 置换 ----------------
-def permute_values(X, Xp, Y, seed):
+def permute_values(X, Xp, Y, seed, vocab=None):
     """保持 key→位置映射，把 value id 做固定置换。
     若模型靠 key→value 记忆 ⇒ 掉到 chance；若真的从输入读出 value ⇒ 保持。"""
-    perm = np.random.default_rng(seed).permutation(U.V_VAL)
+    V = vocab or U.VOCAB
+    vk, vv, v0 = U.split_vocab(V)
+    perm = np.random.default_rng(seed).permutation(vv)
     X2 = X.copy(); Y2 = Y.copy()
     for b in range(X.shape[0]):
         for t in range(X.shape[1]):
             idx = int(np.argmax(X[b, t]))
-            if idx >= U.V_KEY:
+            if idx >= v0:
                 X2[b, t] = 0
-                X2[b, t, U.V_KEY + perm[idx - U.V_KEY]] = 1.0
-        Y2[b] = U.V_KEY + perm[int(Y[b]) - U.V_KEY]
+                X2[b, t, v0 + perm[idx - v0]] = 1.0
+        Y2[b] = v0 + perm[int(Y[b]) - v0]
     Xp2 = np.zeros_like(Xp); Xp2[:, 1:] = X2[:, :-1]
     return X2, Xp2, Y2
 
@@ -357,8 +398,13 @@ def run_train(arm, seed, steps=STEPS):
     P = make_params(cfg, seed)
     g0 = guards(arm, P, seed)
     npairs = cfg.get("n_pairs", U.N_PAIRS)
-    Xtr, Xptr, Ytr, _ = U.build(npairs, 2000, seed=1000 + seed)
-    Xte, Xpte, Yte, _ = U.build(npairs, 512, seed=9000 + seed)
+    V = _vocab(cfg); hp = _hops(cfg)
+    def mk(n, ns, sd):
+        if hp > 1:
+            return U.build_multihop(n, ns, seed=sd, vocab=V, hops=hp)[:3]
+        return U.build(n, ns, seed=sd, vocab=V)[:3]
+    Xtr, Xptr, Ytr = mk(npairs, 2000, 1000 + seed)
+    Xte, Xpte, Yte = mk(npairs, 512, 9000 + seed)
     ADAM = {}
     t0 = time.time()
     curve = []
@@ -389,11 +435,12 @@ def run_train(arm, seed, steps=STEPS):
     g1 = guards(arm, P, seed)
     corr = eval_correct(arm, P, Xte, Xpte, Yte)
     # 判别性对照：训练时从未见过的 value 置换
-    Xpv, Xppv, Ypv = permute_values(Xte, Xpte, Yte, seed=20261105 + seed)
+    Xpv, Xppv, Ypv = permute_values(Xte, Xpte, Yte,
+                                    seed=20261105 + seed, vocab=V)
     perm_acc = float(eval_correct(arm, P, Xpv, Xppv, Ypv).mean())
     gen = {}
     for n in (4, 8, 12, 16):
-        Xg, Xpg, Yg, _ = U.build(n, 256, seed=7000 + seed + n)
+        Xg, Xpg, Yg = mk(n, 256, 7000 + seed + n)
         gen[f"L{2*n+1}"] = float(eval_correct(arm, P, Xg, Xpg, Yg).mean())
     global _LAST_P
     _LAST_P = P
@@ -408,9 +455,13 @@ def run_train(arm, seed, steps=STEPS):
 
 def gradcheck(arm, seed=0):
     cfg = ARMS[arm]; P = make_params(cfg, seed)
-    X, Xp, Y, _ = U.build(U.N_PAIRS, 4, seed=42)
+    V = _vocab(cfg); hp = _hops(cfg)
+    if hp > 1:
+        X, Xp, Y, _ = U.build_multihop(U.N_PAIRS, 4, seed=42, vocab=V, hops=hp)
+    else:
+        X, Xp, Y, _ = U.build(U.N_PAIRS, 4, seed=42, vocab=V)
     for v in P.values(): v.g[...] = 0.0
-    nll_from_logits(forward(arm, P, X, Xp, U.L_TRAIN)[0], Y).backward()
+    nll_from_logits(forward(arm, P, X, Xp, X.shape[1])[0], Y).backward()
     analytic = {k: v.g.ravel().copy() for k, v in P.items()}
     r = np.random.default_rng(321); eps = 1e-6; worst = 0.0; ok_all = True
     for name in list(P):
@@ -418,9 +469,9 @@ def gradcheck(arm, seed=0):
         for i in r.choice(flat.size, size=min(3, flat.size), replace=False):
             old = flat[i]
             flat[i] = old + eps
-            lp = nll_from_logits(forward(arm, P, X, Xp, U.L_TRAIN)[0], Y).d
+            lp = nll_from_logits(forward(arm, P, X, Xp, X.shape[1])[0], Y).d
             flat[i] = old - eps
-            lm = nll_from_logits(forward(arm, P, X, Xp, U.L_TRAIN)[0], Y).d
+            lm = nll_from_logits(forward(arm, P, X, Xp, X.shape[1])[0], Y).d
             flat[i] = old
             num = float((lp - lm) / (2 * eps)); ana = float(gf[i])
             rel = abs(num - ana) / max(abs(num), abs(ana), 1e-8)

@@ -3,6 +3,7 @@
 > 执行口径：不走 Transformer；活跃代码零对照模型实现、零混合折中网格、
 > 零 N×N 序列矩阵、零 KV cache、零 softmax。
 > 上界数字仅从历史结果文件读取作为评测标尺。
+> **后续工作**：物理约束下的 Pareto 前沿见 `README_physics_frontier.md`
 > 复现命令见 §9。
 
 ## 0. 结论先行

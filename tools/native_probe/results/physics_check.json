@@ -1,0 +1,184 @@
+{
+ "checks": [
+  {
+   "name": "checkpoint acc=1.0 且守恒通过",
+   "passed": true,
+   "detail": "acc=1.0 perm=1.0"
+  },
+  {
+   "name": "forward ↔ 解析式逐样本一致",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "fp64/fp32 全长度满分",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "bf16 在 L=2049 首次掉落",
+   "passed": true,
+   "detail": "0.53125"
+  },
+  {
+   "name": "int8 在 L=2049 首次掉落",
+   "passed": true,
+   "detail": "0.53125"
+  },
+  {
+   "name": "fp16 掉点晚于 bf16",
+   "passed": true,
+   "detail": "0.62 > 0.50"
+  },
+  {
+   "name": "fp16 L=2049 仍满分",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "n_pairs=128 仍满分",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "信息下界 << 状态容量",
+   "passed": true,
+   "detail": "1280 vs 225280"
+  },
+  {
+   "name": "噪声 0.20 仍满分",
+   "passed": true,
+   "detail": "1.0"
+  },
+  {
+   "name": "噪声 0.30 开始掉",
+   "passed": true,
+   "detail": "0.94140625"
+  },
+  {
+   "name": "ρ=0.90 早期崩",
+   "passed": true,
+   "detail": "0.5"
+  },
+  {
+   "name": "ρ=0.999 全长满分（fp16 L≤4097）",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "补偿单独不足以救 ρ=0.995",
+   "passed": true,
+   "detail": "0.8333333333333334"
+  },
+  {
+   "name": "fp16 base 在 L=4097 掉",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "fp16 ρ→1 把 L=4097 救回 1.0",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "compensate / renorm 单独无效",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "int8 硬界：最优加固 L=4097 仍 <0.6",
+   "passed": true,
+   "detail": "0.5"
+  },
+  {
+   "name": "fp32 ρ=0.999 在 L=16385 仍 1.0",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "fp32 ρ=0.995 在 L=16385 已掉",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "fp16 ρ=0.9999 推到 L=8193",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "fp16 ρ=0.9999 在 L=16385 掉",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "ρ=1 明确标为非 BIBO",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "ρ=0.999 BIBO 稳定",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "全部守恒断言通过",
+   "passed": true,
+   "detail": "4/4"
+  },
+  {
+   "name": "状态字节与 L 无关",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "每 token 耗时不随 L 增长（±30%）",
+   "passed": true,
+   "detail": "43.21/35.20=1.23"
+  },
+  {
+   "name": "状态字节 = 56320",
+   "passed": true,
+   "detail": "56320"
+  },
+  {
+   "name": "重训 ρ_eff=0.999",
+   "passed": true,
+   "detail": "0.9990000000000004"
+  },
+  {
+   "name": "重训同分布四种精度全 1.0",
+   "passed": true,
+   "detail": "{'fp64': 1.0, 'fp32': 1.0, 'fp16': 1.0, 'int8': 1.0}"
+  },
+  {
+   "name": "重训 fp32 L=16385 仍 1.0",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "重训 int8 L=2049 优于后验覆盖",
+   "passed": true,
+   "detail": "0.94 > 0.50"
+  },
+  {
+   "name": "重训 int8 硬界仍在（L=16385 <0.3）",
+   "passed": true,
+   "detail": "0.0625"
+  },
+  {
+   "name": "重训 fp16 非单调如实记录（8193<1.0）",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "活跃 .py 无对照/混合实现",
+   "passed": true,
+   "detail": "[]"
+  }
+ ],
+ "summary": {
+  "passed": 35,
+  "total": 35,
+  "failed": []
+ }
+}

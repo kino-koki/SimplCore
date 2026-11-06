@@ -1,0 +1,39 @@
+{
+ "state_scalars": 14080,
+ "fp16_bits": 225280,
+ "pairs": {
+  "n4": {
+   "acc": 1.0,
+   "info_bit_lowerbound": 40.0
+  },
+  "n8": {
+   "acc": 1.0,
+   "info_bit_lowerbound": 80.0
+  },
+  "n16": {
+   "acc": 1.0,
+   "info_bit_lowerbound": 160.0
+  },
+  "n32": {
+   "acc": 1.0,
+   "info_bit_lowerbound": 320.0
+  },
+  "n64": {
+   "acc": 1.0,
+   "info_bit_lowerbound": 640.0
+  },
+  "n128": {
+   "acc": 1.0,
+   "info_bit_lowerbound": 1280.0
+  }
+ },
+ "noise": {
+  "e0.0": 1.0,
+  "e0.01": 1.0,
+  "e0.03": 1.0,
+  "e0.05": 1.0,
+  "e0.1": 1.0,
+  "e0.2": 1.0,
+  "e0.3": 0.94140625
+ }
+}
