@@ -1,0 +1,132 @@
+{
+ "parity": {
+  "W1": "1536/1536=1.000000",
+  "scale": "~1534/1536=0.998698",
+  "fisher_p": 0.4998371865841746,
+  "verdict": "统计不可区分"
+ },
+ "efficiency": {
+  "params": 4920,
+  "ratio": 0.48046875,
+  "acc": 1.0
+ },
+ "length": {
+  "L9": 1.0,
+  "L17": 1.0,
+  "L25": 1.0,
+  "L33": 1.0,
+  "L41": 1.0,
+  "L65": 1.0,
+  "L129": 1.0,
+  "L257": 1.0,
+  "L513": 1.0,
+  "L1025": 1.0
+ },
+ "checks": [
+  {
+   "name": "W1 三 seed 全 1.0000",
+   "passed": true,
+   "detail": "1536/1536"
+  },
+  {
+   "name": "标尺非满分",
+   "passed": true,
+   "detail": "1534/1536"
+  },
+  {
+   "name": "Fisher p>0.05（追平）",
+   "passed": true,
+   "detail": "p=0.4998"
+  },
+  {
+   "name": "W1 与标尺参数 ±3%",
+   "passed": true,
+   "detail": "10264 vs 10240"
+  },
+  {
+   "name": "W4_half 参数 < 标尺一半",
+   "passed": true,
+   "detail": "0.480"
+  },
+  {
+   "name": "W4_half 三 seed 全 1.0000",
+   "passed": true,
+   "detail": "1536/1536"
+  },
+  {
+   "name": "W4_half acc > 标尺 acc",
+   "passed": true,
+   "detail": "1.0000 > 0.9987"
+  },
+  {
+   "name": "forward 与解析式逐样本一致",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "L=1025 仍 1.0000",
+   "passed": true,
+   "detail": "1.0"
+  },
+  {
+   "name": "所有外推长度均 1.0000",
+   "passed": true,
+   "detail": "10 个长度"
+  },
+  {
+   "name": "训练长度 L=17 在外推集合内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "T7_noK 掉到 chance 附近",
+   "passed": true,
+   "detail": "0.2331"
+  },
+  {
+   "name": "T0_vector 显著低于 W1",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "W6 随机正交码也满分",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "W7 硬任务 8 对满分",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "W 系列 value 置换对照全 1.0000",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "全部臂训练前后守恒全绿",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "张量探针 gradcheck 全过",
+   "passed": true,
+   "detail": "30/30"
+  },
+  {
+   "name": "活跃 .py 无混合网格/对照实现",
+   "passed": true,
+   "detail": "[]"
+  },
+  {
+   "name": "全部 acc 有限",
+   "passed": true,
+   "detail": ""
+  }
+ ],
+ "summary": {
+  "passed": 20,
+  "total": 20,
+  "failed": []
+ }
+}

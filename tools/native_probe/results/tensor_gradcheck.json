@@ -1,0 +1,152 @@
+[
+ {
+  "arm": "T0_vector",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T1_P1",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T2_P2",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T3_P4",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T4_lowD",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T5_gate",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T6_rho1",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T7_noK",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T8_bigR",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T10_long",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U0_kq",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U1_kq_lr6",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U2_kq_R16",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U3_kq_orth",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U4_kq_long",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U5_kq_P1",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U6_kq_nl",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "V0_combo",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "V1_cosine",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "V2_R24",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "V3_batch32",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "V4_R32",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W0_code64",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W1_code64_lr",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W2_code64_P1",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W3_code32",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W4_half",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W5_rho1",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W6_code_rand",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W7_more_pairs",
+  "worst_rel": 0.0,
+  "passed": true
+ }
+]

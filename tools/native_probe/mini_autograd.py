@@ -6,6 +6,34 @@ mini_autograd.py — 极简反向模式自动微分（fp64，纯 NumPy）。
 import numpy as np
 
 
+def free_graph(root):
+    """显式断开计算图。
+
+    T 的 _b 闭包捕获父节点，会形成循环引用；纯前向评测（不调 backward）
+    时 CPython 的循环 GC 来不及回收，多 chunk 会让 RSS 线性膨胀。
+    训练/评测每步结束后调用一次，可把峰值内存压回常量级。
+    """
+    topo, seen = [], set()
+
+    def dfs(v):
+        k = id(v)
+        if k in seen:
+            return
+        seen.add(k)
+        for p in v._p:
+            dfs(p)
+        topo.append(v)
+
+    if isinstance(root, (list, tuple)):
+        for r in root:
+            dfs(r)
+    else:
+        dfs(root)
+    for v in topo:
+        v._p = []
+        v._b = None
+
+
 def _unbroadcast(g, shape):
     """把广播后的梯度求和回目标形状。"""
     if g.shape == shape:
@@ -46,6 +74,12 @@ class T:
         for v in reversed(topo):
             if v._b is not None:
                 v._b()
+        # backward 闭包会捕获父节点，形成循环引用；scan 结构每步都建图，
+        # 若不主动断开，CPython 的循环 GC 来不及回收，RSS 随步数线性增长。
+        # 清理中间节点（叶子参数由外部字典持有，不受影响）。
+        for v in topo:
+            v._p = []
+            v._b = None
 
     # ---- 二元 ----
     def __add__(self, o):

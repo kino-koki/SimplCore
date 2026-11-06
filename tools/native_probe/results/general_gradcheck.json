@@ -33,5 +33,20 @@
   "arm": "G6_mixed_C16",
   "worst_rel": 0.0,
   "passed": true
+ },
+ {
+  "arm": "G7_bipole_C32",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "G8_small",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "G9_M32C4",
+  "worst_rel": 0.0,
+  "passed": true
  }
 ]
