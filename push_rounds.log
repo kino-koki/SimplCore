@@ -1,0 +1,46 @@
+base = 8dab898d1339 | uploading 41 files (v7.1: 29, v7.2: 12)
+  + paper_main.pdf                                                     163585 B  db6dbe1286
+  + paper_appendix.pdf                                                 132198 B  17ce9157c5
+  + simplcore.pdf                                                      248487 B  37eece21ce
+  + GOVERNANCE_SUMMARY.md                                                7059 B  ae52296d3f
+  + cfp_lock.md                                                          6695 B  b11950ac0c
+  + claim_registry.md                                                    5459 B  6df6617ded
+  + proof_audit.md                                                       8353 B  64394f8860
+  + p0_scan.md                                                           7905 B  bc0dfdc470
+  + number_freeze.md                                                     6333 B  372ea193bb
+  + review_sim.md                                                        6462 B  1138c177bd
+  + rebuttal_prep.md                                                     5986 B  dd2f8fd57e
+  + submit_checklist.md                                                  5708 B  c35e171243
+  + CHANGELOG.md                                                        39007 B  2f1d1dda65
+  + REVISION_LOG.md                                                     25742 B  ffb38f95b9
+  + MANUSCRIPT_INDEX.md                                                  6720 B  caabc05c68
+  + theory_work/governance.py                                           16688 B  e1896a52b4
+  + verify_governance.py                                                 3954 B  e09be7412d
+  + split_submission.py                                                  6229 B  a548084c89
+  + patch_governance.py                                                 10943 B  9bb76eb543
+  + build_simplcore_pdf_v7.py                                          143737 B  385a3b3ec7
+  + tools/eval_baselines/desk_check_v7.py                                9283 B  8bc9ab5ec7
+  + tools/eval_baselines/results/governance_gate.json                    2307 B  48d6d0ceaf
+  + tools/eval_baselines/results/desk_check_v7.json                      5679 B  a477afba94
+  + tools/eval_baselines/results/split_check.json                         843 B  77446d14e6
+  + theory_work/results/governance_s4.json                               8938 B  8d0507213d
+  + theory_work/results/governance_namespace_before.json                  545 B  236bd7561b
+  + theory_work/results/governance_namespace_after.json                   141 B  12217a9051
+  + theory_work/results/governance_number_freeze.json                    1676 B  e9db6da54a
+  + train/superposition_probe/results/fusion_guard.json                  3990 B  91b9821593
+  + 创世级架构路线图.md                                                         14900 B  5aac9a7453
+  + competitiveness_gate.py                                              7152 B  34196188b3
+  + gate_results.json                                                    5042 B  e00082ce08
+  + bit_allocator_probe.py                                              22495 B  cefb2d356b
+  + bit_allocator_results.json                                          16789 B  ea318766ab
+  + bit_allocator_run.log                                                2462 B  6903dcdc56
+  + SimplCore_竞争力路线与G1填充包.zip                                           27110 B  1fd0060bdc
+  + train/superposition_probe/results/convergence_curve.json            25466 B  10141638eb
+  + train/superposition_probe/results/convergence_matrix.json           12356 B  9c8c31d12d
+  + train/superposition_probe/results/fusion_evolution.json            189820 B  64da8044b6
+  + SMM_SGC_FUSION_THEORY.md                                            11702 B  707e0a466b
+  + SMM_SGC_SELF_EVOLUTION.md                                           19653 B  80ab8e97a9
+
+PUSHED 3428d8e963d7741314ce744b3e6537e4844affaa
+https://github.com/kino-koki/SimplCore/commit/3428d8e963d7741314ce744b3e6537e4844affaa
+remote tree verified: True | files: 41 | bytes: 1245599

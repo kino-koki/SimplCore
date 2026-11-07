@@ -1,0 +1,262 @@
+{
+  "pushed_at": "2026-11-07T21:38:49",
+  "repository": "kino-koki/SimplCore",
+  "base": "8dab898d1339c764e9e1778277b44432279f88bd",
+  "commit": "3428d8e963d7741314ce744b3e6537e4844affaa",
+  "commit_url": "https://github.com/kino-koki/SimplCore/commit/3428d8e963d7741314ce744b3e6537e4844affaa",
+  "n_files": 41,
+  "n_v71": 29,
+  "n_v72": 12,
+  "total_bytes": 1245599,
+  "remote_tree_verified": true,
+  "mismatches": [],
+  "credential_in_commit": false,
+  "files": [
+    {
+      "path": "paper_main.pdf",
+      "bytes": 163585,
+      "git_blob": "db6dbe1286e11b7d36660effa15aba109a2013da",
+      "sha256": "e4a30350053c48fd37919525c663163e21502c11ded453ce37a6a37c8e96afef"
+    },
+    {
+      "path": "paper_appendix.pdf",
+      "bytes": 132198,
+      "git_blob": "17ce9157c59d609d998e0ee305bfa317f3a22686",
+      "sha256": "dbf64c6665dcbc5a255b43718d36d4404e4060b183f583bd55ace8a2032de69f"
+    },
+    {
+      "path": "simplcore.pdf",
+      "bytes": 248487,
+      "git_blob": "37eece21ce8ca276b30cd099cf17e5a07965d5c1",
+      "sha256": "9d44c9ceca849776a000b388dc267715ae5da62e1c9f441ea7a54f45c5c96c1b"
+    },
+    {
+      "path": "GOVERNANCE_SUMMARY.md",
+      "bytes": 7059,
+      "git_blob": "ae52296d3f323b16f9edb63ec4eefd24ce4bba76",
+      "sha256": "0776828ec463a8c2ee588d4e406e9e053f9d59bbfa5230c2ca8ffd52107d7115"
+    },
+    {
+      "path": "cfp_lock.md",
+      "bytes": 6695,
+      "git_blob": "b11950ac0ce06642f0d17cedd4b07d2b07e3dea3",
+      "sha256": "96353f6b01e99077a2ea3472348a44dc3cc6c4a31997c7abe2a455bff6de157c"
+    },
+    {
+      "path": "claim_registry.md",
+      "bytes": 5459,
+      "git_blob": "6df6617dedc3655416c1fc620c921a7e95a8a66b",
+      "sha256": "77f09c57bd74e3b95a5fe075f12a248714bf08629930c758823b86168714c679"
+    },
+    {
+      "path": "proof_audit.md",
+      "bytes": 8353,
+      "git_blob": "64394f8860e3d806f5d893bb1af8285b6b9be36b",
+      "sha256": "703568d5cbca999508de07e9e4a088480543034296650b2e248ecf9fe261ba15"
+    },
+    {
+      "path": "p0_scan.md",
+      "bytes": 7905,
+      "git_blob": "bc0dfdc470436f7f32fa4dae22c0786e74c748ff",
+      "sha256": "0bc9d8ef211efda8ff4224e24033a844ee5768f2de93b2ddc664e83dd2a9b570"
+    },
+    {
+      "path": "number_freeze.md",
+      "bytes": 6333,
+      "git_blob": "372ea193bb4c3ecbf2c583084155dafb7aa03b60",
+      "sha256": "5403c67fd9d1885c966a6ff178ae53dbebae7d770241f38c940c042710737dde"
+    },
+    {
+      "path": "review_sim.md",
+      "bytes": 6462,
+      "git_blob": "1138c177bd117c93bbadc87c0af8d1c391ce09c9",
+      "sha256": "e285ddd44abeb25b1d2f0d5a69598adfa61adfa86b73b4872803b7e98c4ca4bc"
+    },
+    {
+      "path": "rebuttal_prep.md",
+      "bytes": 5986,
+      "git_blob": "dd2f8fd57e43e79f6838537ae7f0c3727aa5475e",
+      "sha256": "8f9ff40f06e112b563fe756c29d14baf89133814418ebe2669e68664cd77a9f9"
+    },
+    {
+      "path": "submit_checklist.md",
+      "bytes": 5708,
+      "git_blob": "c35e17124391d85aba9cea62d8b15ba8d1ca8a71",
+      "sha256": "43b1b56ab08227cb5e24b44cd6331fb1a07380249010b1b0813976c1a968a9d3"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 39007,
+      "git_blob": "2f1d1dda658df0b20acf31df2ea22ec355260207",
+      "sha256": "8e51d5feef7a074b629791a1eb45692e86ebff61161cce4f73dee012ffed3283"
+    },
+    {
+      "path": "REVISION_LOG.md",
+      "bytes": 25742,
+      "git_blob": "ffb38f95b9f679c7f3d26c52fdf3ea47d078ee87",
+      "sha256": "255592be4c9ea49bef9895aa11a0fbceb5647827ee703b1d3e168e07ce13a23d"
+    },
+    {
+      "path": "MANUSCRIPT_INDEX.md",
+      "bytes": 6720,
+      "git_blob": "caabc05c68f026ba1f019a6bb20e2f2e6abb998c",
+      "sha256": "017fec5e0987122ad925eca5155cf09510a126df4c985632bdc44b865786c938"
+    },
+    {
+      "path": "theory_work/governance.py",
+      "bytes": 16688,
+      "git_blob": "e1896a52b4ce26042805cc85b4eb170a66fd817c",
+      "sha256": "cc0b7ee4d04682fda562be477483b7fd217e7e29aee6340770966f43eb8d228f"
+    },
+    {
+      "path": "verify_governance.py",
+      "bytes": 3954,
+      "git_blob": "e09be7412dbcc89f285d661485c9095c5f111e75",
+      "sha256": "a87cbcf6df26f9684f2ea353a2fde7c605b9747847fc67d43f536e6c7e1164a3"
+    },
+    {
+      "path": "split_submission.py",
+      "bytes": 6229,
+      "git_blob": "a548084c898f854d16ee660e3f8569c532d84cf7",
+      "sha256": "1abefc15df02acdbb7cbc16e482eab3bc3d50eb0f543166fa0480357e229489e"
+    },
+    {
+      "path": "patch_governance.py",
+      "bytes": 10943,
+      "git_blob": "9bb76eb543b07e9d9f009d79fb772796ca36950f",
+      "sha256": "aafea3b1c78402a412e136c3f6e1680f4b08b9864ceed6e81780d11bee20a5fd"
+    },
+    {
+      "path": "build_simplcore_pdf_v7.py",
+      "bytes": 143737,
+      "git_blob": "385a3b3ec735012914cfaec2c085e5c9c2e360f9",
+      "sha256": "332bec6e0102f1e534b178e46b8cd19987f5f753778b3b279d09b860715e192b"
+    },
+    {
+      "path": "tools/eval_baselines/desk_check_v7.py",
+      "bytes": 9283,
+      "git_blob": "8bc9ab5ec7f7a0a92fa0f56a937d0b9e1905e697",
+      "sha256": "bf15ad56dbbfddf48f1e33b719d48737e35c06b89a709694206735b9a6cb14cd"
+    },
+    {
+      "path": "tools/eval_baselines/results/governance_gate.json",
+      "bytes": 2307,
+      "git_blob": "48d6d0ceaf5ae5eb3cc26b9a3a55845f3ceeb3bf",
+      "sha256": "fa346201fecb7355d895b7e3441f7276064eef63c573875b1a785fead52296c6"
+    },
+    {
+      "path": "tools/eval_baselines/results/desk_check_v7.json",
+      "bytes": 5679,
+      "git_blob": "a477afba948ee0a3bed8f4eaf8b22796cfaf59b9",
+      "sha256": "6ead091b99d814635a58791a694f604deeb3393cc81ee787de7b24f7b6270332"
+    },
+    {
+      "path": "tools/eval_baselines/results/split_check.json",
+      "bytes": 843,
+      "git_blob": "77446d14e6767d60db216b890a913f7c7efae24f",
+      "sha256": "ded7d7b7bde3d6df5eabbfdca9477879ae12e5725dea6701a948f2483515e3c0"
+    },
+    {
+      "path": "theory_work/results/governance_s4.json",
+      "bytes": 8938,
+      "git_blob": "8d0507213d83ae8726a3108062e0ce2d91a57ca0",
+      "sha256": "6d8a60255551daf743931426a65016dbc4ba76c5158fa3624387416985946d3a"
+    },
+    {
+      "path": "theory_work/results/governance_namespace_before.json",
+      "bytes": 545,
+      "git_blob": "236bd7561b42ba886932795cb3af70429f3849ac",
+      "sha256": "aeca1dd9d57a7c46c1fa065e9451a495b1eba76fe9f0da4e9e56cdb0eef72dd1"
+    },
+    {
+      "path": "theory_work/results/governance_namespace_after.json",
+      "bytes": 141,
+      "git_blob": "12217a90518cad24b8a229d510a5beb6aa591edd",
+      "sha256": "b7ed36b2e0738248c9542d630b8e2d21cdb36d818015d2e3d997000554ae0cb5"
+    },
+    {
+      "path": "theory_work/results/governance_number_freeze.json",
+      "bytes": 1676,
+      "git_blob": "e9db6da54a4c3b03ec4574bd2e20c01de9a7a72b",
+      "sha256": "87df428b28fe1f9c1de85eff99c922376d6e2ec4e2966fb643b9845b57b2e8d6"
+    },
+    {
+      "path": "train/superposition_probe/results/fusion_guard.json",
+      "bytes": 3990,
+      "git_blob": "91b98215935d2dcbdcdb6d516f788fd5ad1c16b2",
+      "sha256": "162ffa18f086622580e7efa2fa414fcb14d67b96cf51cdcd860a0cb18e4048cc"
+    },
+    {
+      "path": "创世级架构路线图.md",
+      "bytes": 14900,
+      "git_blob": "5aac9a7453ee3355585c3771c7ef6c0dfb05dc36",
+      "sha256": "0453bb537dd4456f138d047abcda0b12c7ff522be54701756b29a19d8a5ca8aa"
+    },
+    {
+      "path": "competitiveness_gate.py",
+      "bytes": 7152,
+      "git_blob": "34196188b3592f8e133cae23208e99f82a47125e",
+      "sha256": "50a91faae90a99ec278571866f6ef1e398f4a9ae0349b8beaf1e77772ded7172"
+    },
+    {
+      "path": "gate_results.json",
+      "bytes": 5042,
+      "git_blob": "e00082ce083bb697f31b3e2598d7dc91f0d4d5a8",
+      "sha256": "0dea321088656aecf91818a72e41b77dd5f7604cc5eba245944e259521285356"
+    },
+    {
+      "path": "bit_allocator_probe.py",
+      "bytes": 22495,
+      "git_blob": "cefb2d356b568db65812c75d2360e4fca85f5ac2",
+      "sha256": "18d53f7d6889589d3c8af12798d4929f81eae25eea95bca5f92547e2d1e5de19"
+    },
+    {
+      "path": "bit_allocator_results.json",
+      "bytes": 16789,
+      "git_blob": "ea318766ab93bae2396ddec667223f1a2245ab4c",
+      "sha256": "c70bf361cd23d0365a55b6bb1c0b339fa4a69aff534dbe496707d8d46b987dff"
+    },
+    {
+      "path": "bit_allocator_run.log",
+      "bytes": 2462,
+      "git_blob": "6903dcdc565af2f347d79a5b0d3b9fd30d1abf75",
+      "sha256": "722ce21647370a1950320848eee0575453ca77c4dcd2e3c67614b32131da8c0d"
+    },
+    {
+      "path": "SimplCore_竞争力路线与G1填充包.zip",
+      "bytes": 27110,
+      "git_blob": "1fd0060bdc2756054aeebbab49d71a65c9347ebc",
+      "sha256": "048f11865ecd79907eebf8805714ddfef9447af9f47666f84841436a7c2f206a"
+    },
+    {
+      "path": "train/superposition_probe/results/convergence_curve.json",
+      "bytes": 25466,
+      "git_blob": "10141638ebee35407125ef8868659a8adac61f36",
+      "sha256": "618458be64695fb4eaa818ee3f0e796fae2ad27a2577c4466fc5ecb837ec32ec"
+    },
+    {
+      "path": "train/superposition_probe/results/convergence_matrix.json",
+      "bytes": 12356,
+      "git_blob": "9c8c31d12df756752208219fdf1da3c2eb91aa38",
+      "sha256": "12c3a1c6709d84aeaeb594f56a482bb85802c07ddcea6c60c7df181677bfa8d2"
+    },
+    {
+      "path": "train/superposition_probe/results/fusion_evolution.json",
+      "bytes": 189820,
+      "git_blob": "64da8044b64851e3b51860ae0cc4277e0a380832",
+      "sha256": "33390b3f2d2d27e4479b7503f5032057ddd2470b46a15ee776606ca65c0ba21f"
+    },
+    {
+      "path": "SMM_SGC_FUSION_THEORY.md",
+      "bytes": 11702,
+      "git_blob": "707e0a466b0347bcf60f023fa1178a61dcd475eb",
+      "sha256": "35e0f1b06651c41e25eb139984547083a87de260feb00f2344b23d6776dee36a"
+    },
+    {
+      "path": "SMM_SGC_SELF_EVOLUTION.md",
+      "bytes": 19653,
+      "git_blob": "80ab8e97a94e53e07b766b16a3437280c5d3b56b",
+      "sha256": "95e8ab354ab5bdc7903f080e20aa635d5b1b5a471ea0c17ef02c048430b486ad"
+    }
+  ]
+}
