@@ -128,7 +128,13 @@ R1 = Lemma(
         "(iii) The 1-bit tag is minimal among SIDE-CHANNELS but we do NOT prove "
         "that no architecture outside P1-P4 (e.g. learned input-dependent gates, "
         "extra recurrence, or retaining intermediate outputs) could work without "
-        "it. (iv) 'KEY / VALUE / FILLER' is a SYMBOL-TYPE annotation, not an "
+        "it.  THIS RESERVATION HAS NOW BEEN EXERCISED: Corollary R2 changes P1 "
+        "itself by splitting the input alphabet into two orthogonal codebook "
+        "halves, so key and value symbols are DIFFERENT ids. R2 attains 1.0000 "
+        "with NO side-channel at all. R1(c) is therefore NOT overturned -- it "
+        "remains valid for the flat encoding it assumes -- but its conclusion "
+        "must NOT be read as 'no architecture can work without a role tag'. "
+        "(iv) 'KEY / VALUE / FILLER' is a SYMBOL-TYPE annotation, not an "
         "answer leak: it does not reveal which key is queried or what k_H is. "
         "(v) Filler tokens are zero one-hots; their presence is itself structural "
         "information, which is precisely why (d) refuses an unconditional "
@@ -150,7 +156,8 @@ R1 = Lemma(
         "Analytic proof above. Empirical witnesses (NOT the proof): "
         "results/stress_format_prior.json, stress_five_seed.json, "
         "stress_duplicate.json, stress_precision.json, stress_throughput.json, "
-        "stress_adjudication.json. Code: tools/native_probe/chain_stress_probe.py."),
+        "stress_adjudication.json. Code: tools/native_probe/chain_stress_probe.py. "
+        "R2 (which exercises SCOPE (iii)): theory_work/results/codebook_corollary.json."),
 )
 
 

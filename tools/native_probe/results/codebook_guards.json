@@ -1,0 +1,25 @@
+{
+ "V": 64,
+ "L": 17,
+ "n_layers": 3,
+ "toeplitz": true,
+ "max_kernel_dev": 0.0,
+ "fft_iir_rel_error": 2.892054960323659e-16,
+ "duality_pass": true,
+ "last_time_vs_forward_dev": 1.4460274801618295e-16,
+ "last_time_pass": true,
+ "strict_causality": true,
+ "state_bytes_by_L": {
+  "9": 1024,
+  "65": 1024,
+  "1025": 1024,
+  "4097": 1024
+ },
+ "o1_state_pass": true,
+ "no_nxn_matrix": true,
+ "no_kv_cache": true,
+ "no_softmax_over_tokens": true,
+ "no_external_role_tag": true,
+ "no_absolute_position_gate": true,
+ "all_passed": true
+}

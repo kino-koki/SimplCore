@@ -376,6 +376,31 @@ S_TH = json.load(open(R + "stress_throughput.json"))
 S_AD = json.load(open(R + "stress_adjudication.json"))
 RL1 = json.load(open("/data/workspace/theory_work/results/role_lemma.json"))
 RL1C = json.load(open("/data/workspace/theory_work/results/role_lemma_check.json"))
+CB_E = json.load(open(R + "codebook_encodings.json"))
+CB_G = json.load(open(R + "codebook_grid.json"))
+CB_C = json.load(open(R + "codebook_five_seed.json"))
+CB_S = json.load(open(R + "codebook_scope.json"))
+CB_T = json.load(open(R + "codebook_throughput.json"))
+CB_U = json.load(open(R + "codebook_guards.json"))
+CB_F = json.load(open(R + "codebook_fwht.json"))
+CB_A = json.load(open(R + "codebook_adjudication.json"))
+R2 = json.load(open("/data/workspace/theory_work/results/codebook_corollary.json"))
+R2C = json.load(open("/data/workspace/theory_work/results/codebook_corollary_check.json"))
+
+
+def cbe(encoding, gate, layout="gapped"):
+    return next(x["acc"] for x in CB_E if x["encoding"] == encoding
+                and x["gate"] == gate and x["layout"] == layout)
+
+
+def cbp(name):
+    return next(x for x in CB_C if isinstance(x, dict)
+                and x.get("paired") == name)
+
+
+def cb_diag(nl, hp):
+    return next(x["acc"] for x in CB_G
+                if x["n_layers"] == nl and x["hops"] == hp)
 
 
 def sfp(layout, mask):
@@ -510,9 +535,11 @@ def build():
       "most 0.10 elsewhere with ZERO training, extrapolates unchanged to V=512 and "
       "L=129, preserves FFT/IIR duality to %.2e, drops to %.4f when the role basis "
       "is removed, and reaches 1.0000 from random initialization on all 5 seeds. "
-      "Under arbitrary pair spacing a one-bit ROLE TAG carried by each input "
-      "symbol is necessary and sufficient; we RETRACT the absolute-position "
-      "parity mask as a hidden format prior (withdrawal W9). "
+      "We RETRACT the absolute-position parity mask as a hidden format prior "
+      "(W9) and then remove the remaining 1-bit role tag altogether: splitting "
+      "SGC's OWN orthogonal codebook into key and value halves makes the role "
+      "distinction intrinsic to the token identity, so NO side-channel, NO "
+      "position rule and NO run-time annotation are needed (Corollary R2). "
       "Significance: this closes a corner of the constant-state search space -- "
       "content addressing and spectral duality are NOT mutually exclusive -- and "
       "retracts our own earlier mutual-exclusivity claim. It is a "
@@ -636,9 +663,12 @@ def build():
        "strict key/value alternation, arbitrary pair-position permutation. H2: "
        "query k_0 at t=L-1. H3: fixed code C with C C^T = I on the key range. "
        "H4: H_L layers, each with static kernel K_h(d)=sum_p w_hp rho_hp^d > 0. "
-       "H5: each input symbol carries a deterministic 1-bit ROLE tag; "
-       "r[t]=1[role(x_(t-1))=KEY] multiplies the INPUT signal. Absolute-position "
-       "parity is ONLY its special case under a strict alternating format (W9). "
+       "H5 (RELAXED): the INPUT ENCODING supplies a key/value role distinction. "
+       "Weakest sufficient form (R2): key symbol k uses C[k] and value symbol k "
+       "uses C[V_K+k] from two ORTHOGONAL halves of the codebook; no gate at all. "
+       "Stronger alternatives: an external 1-bit role tag, or absolute-position "
+       "parity (sufficient ONLY under strict alternation, W9). The conclusion is "
+       "identical under all three; R2 proves the weakest form suffices. "
        "H6: layer interface q_(h+1)=z_h/||z_h||; LAST-layer readout only, no stop "
        "mechanism. H7: 1<=H<=n.", size=SMALL, lead=SLEAD, after=1.5)
     P("<b>Claim.</b> (a) If H_L < H the answer is at most chance. (b) If H_L = H "
@@ -742,7 +772,7 @@ def build():
       "is meaningful, not its absolute rate." % ("all_passed=True"
        if G31["all_passed"] else "all_passed=False"), size=SMALL, lead=SLEAD)
 
-    Hh("4.4  Adversarial Stress Test: the Parity Mask Was a Format Prior",
+    Hh("4.4  Adversarial Stress: a Hidden Format Prior",
        size=9.4, before=5.0, after=2.0)
     P("We actively tried to falsify T2. The most damaging potential objection "
        "is that r[t]=1[(t-1) even] smuggles in the convention 'keys always sit "
@@ -804,6 +834,78 @@ def build():
        "Appendix A.32, deliberately NOT promoted to a 32nd headline theorem." %
        (RL1C["n_pass"], RL1C["n_checks"]), size=SMALL, lead=SLEAD, after=3.0)
 
+    Hh("4.5  The Last Side-Channel: Codebook Roles",
+       size=9.4, before=5.0, after=2.0)
+    P("Section 4.4 removed the format prior but left an EXTERNAL 1-bit "
+       "KEY/VALUE tag. A reviewer can still ask whether that annotation is "
+       "itself a task prior. We therefore remove it too, using only SGC's own "
+       "codebook. Let C be a Sylvester Hadamard matrix with V=2 V_K rows, "
+       "split into C_key (first V_K) and C_val (last V_K). Emit a KEY symbol as "
+       "id k and a VALUE symbol as id V_K+k; filler is the zero code. Because "
+       "<C[i],C[j]>=delta_ij, a query C[k] is orthogonal to EVERY value-half "
+       "code, so the two-peak chain ambiguity vanishes WITHOUT ANY MASKING. "
+       "The layer interface is the fixed change of basis "
+       "q_(h+1) = (z_h @ C_val^T) @ C_key -- no learned weights, no gate.",
+       size=SMALL, lead=SLEAD, after=2.0)
+    rows = [["layout", "codebook", "+tag", "no role", "+parity"]]
+    for lay in ("alternating", "gapped", "dense", "padded"):
+        rows.append([lay, f"{cbe('codebook','none',lay):.4f}",
+                     f"{cbe('flat','tag',lay):.4f}",
+                     f"{cbe('flat','none',lay):.4f}",
+                     f"{cbe('codebook','parity',lay):.4f}"])
+    d.table(rows, [66, 46, 40, 44, 44], size=7.2, lead=8.8, after=2.5)
+    pa, pg = cbp("codebook_minus_flat_norole_on_alternating"), cbp("codebook_minus_flat_norole_on_gapped")
+    P("<b>Reading.</b> The codebook encoding is 1.0000 on ALL FOUR layouts with "
+       "zero training and no side-channel, matching the v5.1 tagged baseline "
+       "exactly. The clean paired contrast is on the tight alternating layout: "
+       "%+.4f, CI [%.4f, %.4f], 5/5 seeds positive (flat/no-role %.4f). On the "
+       "gapped layout the paired difference is only %+.4f because zero fillers "
+       "already suppress the spurious peak implicitly (%.4f) -- we report this "
+       "rather than quoting the larger number." %
+       (pa["mean"], pa["ci95"][0], pa["ci95"][1], cbe("flat", "none", "alternating"),
+        pg["mean"], cbe("flat", "none", "gapped")),
+       size=SMALL, lead=SLEAD, after=2.0)
+    P("<b>Non-obvious finding: adding a role gate back is HARMFUL.</b> "
+       "codebook + parity on gapped = %.4f versus %.4f with no gate. R2(d) "
+       "proves it: any position-only gate can only DELETE the single true peak; "
+       "when it deletes the key-successor position, z_h = 0 and accuracy is "
+       "chance. So the gate is not merely unnecessary, it is strictly worse." %
+       (cbe("codebook", "parity"), cbe("codebook", "none")),
+       size=SMALL, lead=SLEAD, after=2.0)
+    P("<b>All prior conclusions survive.</b> The 5 x 5 layer x hop grid under "
+       "the codebook encoding is 1.0000 on the diagonal (H=1..4) and <= 0.10 "
+       "off it; duplicate keys give %.4f (distinctness premise); fp64/fp32/fp16/"
+       "bf16/int8 are 1.0000 to L=128; measured %.1f-%.1f us/token with state "
+       "1024*H_L bytes, both independent of L up to 4097. Conservation: "
+       "Toeplitz deviation 0.0, FFT/IIR %.2e, strict causality, no N x N, no KV "
+       "cache, no softmax over tokens, NO external tag and NO position gate." %
+       (next(x["acc"] for x in CB_S if x.get("tag") == "dup=True"),
+        min(x["us_per_token"] for x in CB_T),
+        max(x["us_per_token"] for x in CB_T),
+        CB_U["fft_iir_rel_error"]), size=SMALL, lead=SLEAD, after=2.0)
+    big = next(x for x in CB_F if x.get("V") == 262144)
+    P("<b>Scale is not an objection.</b> A dense V x V codebook is never "
+       "materialized: the fast Walsh-Hadamard transform applies C in O(V log V) "
+       "time and O(V) memory, the same structural advantage as the FFT path. "
+       "At V=2^18 (Qwen3 vocabulary scale, explicit matrix %.1f GB) one FWHT "
+       "takes %.3f s with relative error %.2e; exactness is verified against "
+       "the explicit matrix for V=64..1024." %
+       (big["explicit_matrix_bytes"] / 1e9, big["fwht_time_s"],
+        big["fwht_rel_error"]), size=SMALL, lead=SLEAD, after=2.0)
+    P("<b>Theoretical disposition: NO new headline theorem.</b> R2 is a "
+       "PREMISE RELAXATION of NT31 (Appendix A.33, %d/%d checks), not a 32nd "
+       "theorem and not a new ledger item. The six core theorems and the "
+       "51-item ledger are unchanged. H5 has been weakened monotonically: "
+       "parity (format prior, W9) -> external 1-bit tag -> intrinsic codebook "
+       "partition. Lemma R1 is NOT overturned: R2 changes the INPUT ENCODING, "
+       "which is exactly the escape R1 SCOPE (iii) reserves." %
+       (R2C["n_pass"], R2C["n_checks"]), size=SMALL, lead=SLEAD, after=2.0)
+    P("<b>Honest residual.</b> The alphabet convention is still an "
+       "ENCODING-LEVEL inductive bias: a KEY symbol and a VALUE symbol are "
+       "different ids. We claim no run-time annotation, no absolute-position "
+       "rule and no format prior -- NOT 'no structural convention whatsoever'. "
+       "R2 SCOPE (iii) states this openly.", size=SMALL, lead=SLEAD, after=3.0)
+
     # ------------------------------------------------------------ 5 NOT ESTABLISH
     Hh("5  What This Does NOT Establish", size=10.2, before=6.0, after=3.0)
     It("<b>Not equivalence.</b> On the synthetic single-hop parity run the "
@@ -821,11 +923,13 @@ def build():
        "with linear attention explicitly. The contribution is a tight JOINT "
        "characterization under static kernels, not a claim of leaving that family.",
        size=SMALL, lead=SLEAD)
-    It("<b>Role necessity is layout-conditional.</b> With no role tag the "
-       "tight alternating layout fails (%.4f) while a gapped layout reaches "
-       "%.4f because zero fillers implicitly suppress the spurious peak. We do "
-       "NOT claim an unconditional 'role information is necessary' theorem; "
-       "Lemma R1(d) states the condition explicitly." %
+    It("<b>Role necessity is layout-conditional, and no side-channel is "
+       "needed.</b> With no role tag the tight alternating layout fails (%.4f) "
+       "while a gapped layout reaches %.4f because zero fillers implicitly "
+       "suppress the spurious peak; Lemma R1(d) states the condition. Under the "
+       "codebook partition of Section 4.5, neither a tag nor a position rule is "
+       "needed at all. What remains is an ENCODING-LEVEL alphabet convention, "
+       "not a run-time annotation." %
        (sfp("alternating", "none"), sfp("gapped", "none")),
        size=SMALL, lead=SLEAD)
     It("<b>Not a SOTA model.</b> Positioning: boundary-characterization paper + "
@@ -960,6 +1064,23 @@ def back(d):
     P("<b>Architectural use.</b> " + RL1["use"], size=SMALL, lead=SLEAD, after=1.5)
     P("<b>Witnesses (not the proof).</b> " + RL1["source"],
       size=SMALL, lead=SLEAD, after=4.0)
+    d.sub("A.33  Corollary R2 - Codebook-intrinsic role separation")
+    P("<b>Status.</b> COROLLARY of NT31 (premise relaxation), NOT a new "
+      "headline theorem and NOT a new ledger item. Derived from: %s. "
+      "Verifier: %d/%d checks (witness agreement only)." %
+      (R2["derived_from"], R2C["n_pass"], R2C["n_checks"]),
+      size=SMALL, lead=SLEAD, after=1.5)
+    P("<b>Premises Q1-Q5.</b> " + R2["hypothesis"],
+      size=SMALL, lead=SLEAD, after=1.5)
+    P("<b>Claim.</b> " + R2["claim"], size=SMALL, lead=SLEAD, after=1.5)
+    for chunk in R2["proof"].replace(". QED.", ". QED.\n").split("\n"):
+        P(chunk.strip(), size=SMALL, lead=SLEAD, after=1.2)
+    P("<b>Boundary / scope.</b> " + R2["boundary"],
+      size=SMALL, lead=SLEAD, after=1.5)
+    P("<b>Architectural use.</b> " + R2["use"],
+      size=SMALL, lead=SLEAD, after=1.5)
+    P("<b>Witnesses (not the proof).</b> " + R2["source"],
+      size=SMALL, lead=SLEAD, after=4.0)
     P("<b>A.1-A.30  Retained full ledger (NT01-NT30).</b> Each entry below states "
       "its premises, universal claim, complete proof, boundary and architectural "
       "use. These are the supporting evidence chain behind T1/T3-T6 and P1-P8.",
@@ -1086,7 +1207,7 @@ def back(d):
         ["W7: monotone score => self-improvement (T16)", "Trivial induction + mismatched source gate; replaced by NT15"],
         ["F8: scalar monotone score as gate", "NT20 proves the gate is the unique multi-metric AND rule"],
         ["W8: content addressing needs input-dependent coefficients", "WITHDRAWN, second core contribution: NT31 attains H-hop retrieval with STRICTLY static kernels"],
-        ["W9: absolute-position parity is a general role basis", "WITHDRAWN: hidden format prior; 1.0000 -> 0.3438+/-0.0314 under arbitrary spacing. Replaced by a 1-bit role tag (Lemma R1)."],
+        ["W9: absolute-position parity is a general role basis", "WITHDRAWN: hidden format prior; 1.0000 -> 0.3438+/-0.0314 under arbitrary spacing. CONVERGENCE (not a new withdrawal): parity -> 1-bit tag -> codebook partition (R2), a monotone weakening of assumptions."],
     ], [130, 108], size=7.6, lead=9.4)
 
     # ---------------------------------------------------------------- appendix G
@@ -1119,6 +1240,13 @@ def back(d):
         It("<b>%s.</b> %s" % (gname, ", ".join(ids)),
            size=SMALL, lead=SLEAD, after=2.0)
 
+    P("<b>Why Corollary R2 does not add a 52nd item.</b> R2 is a premise "
+      "relaxation of NT31 under the SAME conclusion, so it is recorded as part "
+      "of NT31 (Appendix A.33) rather than as an independent statement. The "
+      "three H5 implementations (parity, 1-bit tag, codebook partition) are "
+      "sufficient conditions of decreasing strength, not three discoveries. "
+      "Promoting them would be exactly the theorem inflation this ledger exists "
+      "to prevent.", size=SMALL, lead=SLEAD, after=3.0)
     Hh("G.2  The 19 non-theorem statements", size=9.8, before=8.0, after=3.0)
     nonthm = [
       ("F1", "FALSIFIED", "Increasing rho_max extends the window; NT07/NT27 show the optimum is interior and rho->1 shortens resolvable length."),
