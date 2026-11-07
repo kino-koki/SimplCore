@@ -708,8 +708,12 @@ def build():
       "earlier 'exactly one bit' claim into a general total-bit bound. Two tight "
       "structural bounds (an order-2 state for one hop; exactly H static-LTI "
       "layers for H hops under last-layer read-out) are attained by the same "
-      "Toeplitz, O(1) construction. We make no language-modeling, perplexity or "
-      "throughput claim." % (max(q["max_X_dev"] for q in IB_P2),
+      "Toeplitz, O(1) construction, and the H-layer bound now also holds after "
+      "end-to-end training from random initialisation (five seeds). A same-run "
+      "audit failed to reproduce an earlier stored attention baseline, so that "
+      "parity claim is withdrawn (W12). We make no language-modeling, "
+      "perplexity, throughput, equivalence or superiority claim." %
+      (max(q["max_X_dev"] for q in IB_P2),
                              ibcar("explicit_tag")["acc"],
                              ibcar("codebook_partition")["acc"],
                              ibcar("position_format_prior")["acc"]),
@@ -1535,56 +1539,36 @@ def build():
       "versions; every failure is retained in the record rather than deleted.",
        size=SMALL, lead=SLEAD, after=2.0)
     ar = [["attack", "old result", "diagnosis / resolution"]]
-    ar.append(["parity mask under", "1.0000 -> %.4f" % sfp("gapped", "parity"),
+    ar.append(["parity mask under filler", "1.0000 -> %.4f" % sfp("gapped", "parity"),
                "hidden format prior; WITHDRAWN W9"])
-    ar.append(["arbitrary filler", "5-seed CI excludes 0",
-               "replaced by 1-bit role tag, then codebook"])
-    ar.append(["explicit 1-bit tag", "1.0000 all 4 layouts",
-               "still a run-time annotation; removed in v5.2"])
-    ar.append(["two orthogonal", "0.8691 = no-role baseline",
-               "code subspaces cannot replace the bit (R1(c))"])
-    ar.append(["code subspaces", "dimension bug found+fixed",
-               "wrong 0.0215 was NOT used as evidence"])
+    ar.append(["two orthogonal code subspaces", "0.8691 = no-role",
+               "cannot replace the bit; dimension bug found and fixed (R1(c))"])
     ar.append(["extra parity gate", "%.4f vs 1.0000" % sfp("gapped", "parity"),
-               "STRICTLY HARMFUL (R2(d)); bit count is tight"])
-    ar.append(["duplicate keys", "%.4f" % next(x["acc"] for x in S_DUP
-               if x["dup"] and x["mask"] == "explicit"),
-               "quantifies the distinctness premise of T2"])
-    ar.append(["no role gate, tight", "%.4f" % sfp("alternating", "none"),
-               "role necessity is LAYOUT-CONDITIONAL, not universal"])
-    ar.append(["no role gate, gapped", "%.4f" % sfp("gapped", "none"),
-               "fillers implicitly zero the spurious peak"])
-    ar.append(["0 bits + learned T", "%.4f tight / %.4f dense" %
-               (fc_layout("flat", "alternating"), fc_layout("flat", "dense")),
-               "R3: worst-case failure, not uniform failure"])
-    d.table(ar, [72, 62, 110], size=6.8, lead=8.1, after=2.5)
-    P("<b>What this buys.</b> The paper no longer asks a reviewer to trust a "
-      "premise we chose. W9 is a registered withdrawal; R1 states exactly "
-      "which premise its impossibility needs; R2 and R3 show respectively "
-      "how to escape it and why the escape is minimal. The remaining "
-      "convention -- two symbol classes in the alphabet -- is proved to be "
-      "the MINIMUM, so it is a contribution, not an erratum.",
-       size=SMALL, lead=SLEAD, after=2.0)
-    P("<b>Finite precision and throughput, kept in scope.</b> The earlier "
-      "long-decay frontier is unchanged: bf16/int8 degrade near L=2049 while "
-      "fp32 holds to L=16385 with rho=0.999. The 1-bit construction emits a "
-      "rank-1 sparse direction, so quantization cannot change argmax up to "
-      "L=128; this is a DIFFERENT regime and does not overturn that frontier. "
-      "Measured reference throughput is %.1f-%.1f us/token with state "
-      "constant in L (H_L=1..4, L=9..4097); an UN-OPTIMIZED NumPy "
-      "implementation supports SCALING claims only, never absolute speed." %
+               "STRICTLY HARMFUL (R2(d))"])
+    ar.append(["0 bits + learned T", "%.4f tight" % fc_layout("flat", "alternating"),
+               "R3: worst-case, not uniform failure"])
+    d.table(ar, [72, 62, 110], size=6.8, lead=8.1, after=2.0)
+    P("<b>Scope kept.</b> W9 is a registered withdrawal; R1 states the exact "
+      "premise of its impossibility, R2 gives the minimal escape, and the "
+      "remaining alphabet convention is proved MINIMUM at the information "
+      "level by Theorem A. The earlier long-decay frontier (bf16/int8 degrade "
+      "near L=2049, fp32 holds to L=16385 at rho=0.999) is a DIFFERENT regime: "
+      "the 1-bit construction emits a rank-1 sparse direction, so "
+      "quantization cannot change argmax up to L=128. Reference throughput is "
+      "%.1f-%.1f us/token with state constant in L; an unoptimised NumPy "
+      "implementation supports SCALING claims only." %
       (min(x["us_per_token"] for x in CB_T),
        max(x["us_per_token"] for x in CB_T)),
-       size=SMALL, lead=SLEAD, after=3.0)
+       size=SMALL, lead=SLEAD, after=2.0)
 
     Hh("4.9  Five-seed paired statistics (Table 4)",
        size=9.4, before=5.0, after=2.0)
     P("Every entry below is a 5-seed mean with a 10,000-resample paired "
       "bootstrap CI over 512 held-out samples per seed. We report "
-      "'no significant difference' as what the statistic supports; p-values "
-      "are NOT equivalence proofs. The baseline for the earlier parity run "
-      "came from a historical record file, not a same-run re-execution, and "
-      "we keep that limitation visible.", size=SMALL, lead=SLEAD, after=2.0)
+      "'no significant difference' only for comparisons WITHIN this table; "
+      "p-values are NOT equivalence proofs. The earlier attention-parity "
+      "claim that relied on a stored record is WITHDRAWN (W12, Sec 4.13).",
+      size=SMALL, lead=SLEAD, after=2.0)
     st = [["configuration", "mean", "std", "CI95"]]
     for lab, vals in [
         ("1 bit / alternating", arm_seeds("learned_T", "codebook", "alternating")),
@@ -1788,17 +1772,110 @@ def build():
       "O(1) in L, and strict causality. Synthetic chains only; no LM, ppl, "
       "generation or equal-compute claim.", size=SMALL, lead=SLEAD, after=3.0)
 
+
+    # --------------------------------------------------------- SEC 4.13 (v6.2)
+    _FAIR = _json.load(open(_os.path.join(_os.path.dirname(__file__),
+        "tools/eval_baselines/results/fair_baselines.json")))
+    _DEG = _json.load(open(_os.path.join(_os.path.dirname(__file__),
+        "tools/eval_baselines/results/degradation.json")))
+    _BUD = _json.load(open(_os.path.join(_os.path.dirname(__file__),
+        "tools/eval_baselines/results/baseline_budget.json")))
+
+    def _ms(v):
+        m = sum(v) / len(v)
+        return m, (sum((x - m) ** 2 for x in v) / len(v)) ** 0.5
+
+    def _arm(hops, name):
+        v = [r["acc"] for r in _FAIR["rows"]
+             if r["hops"] == hops and r["arm"] == name]
+        p = [r["params"] for r in _FAIR["rows"]
+             if r["hops"] == hops and r["arm"] == name]
+        return _ms(v)[0], _ms(v)[1], p[0]
+
+    def _deg(name):
+        return next(r["mean"] for r in _DEG["summary"]
+                    if r["condition"] == name)
+
+    Hh("4.13  Same-run training evidence and a withdrawn claim",
+       size=9.6, before=5.0, after=2.0)
+    P("<b>One protocol, same visible ids.</b> Seven mechanisms are trained "
+      "with ONE self-contained autodiff, Adam, %d steps, batch %d, lr %.2f, "
+      "width d=%d, five seeds (train 1000+s / test 7000+s, 512+512 samples). "
+      "Every arm receives exactly the same one-hot visible ids and the same "
+      "external query. Parameter counts are recorded, NOT forced equal. The "
+      "baseline implementations are MINIMAL MECHANISM REFERENCES kept in a "
+      "separate evaluation directory: they are not part of the SimplCore "
+      "architecture and are NOT reproductions of published systems." %
+      (_FAIR["protocol"]["steps"], _FAIR["protocol"]["batch"],
+       _FAIR["protocol"]["lr"], _FAIR["protocol"]["dim"]),
+      size=SMALL, lead=SLEAD, after=2.0)
+    _rows = [["hops", "arm", "params", "acc (5 seeds)"]]
+    for _h in (1, 2):
+        for _a in ("tsc_h1", "tsc_h2", "linear_attn", "attn2l"):
+            _m, _s, _p = _arm(_h, _a)
+            _rows.append([str(_h), _a, str(_p), "%.4f +/- %.4f" % (_m, _s)])
+    d.table(_rows, [26, 78, 40, 82], size=7.0, lead=8.4, after=2.0)
+    _c = _FAIR["paired_ci_h2"]["tsc_h2_minus_tsc_h1"]
+    P("<b>Trained layer bound (main evidence).</b> From RANDOM "
+      "INITIALISATION, one static-LTI layer reaches %.4f on H=1 but only "
+      "%.4f on H=2; two layers reach %.4f on H=2. The paired difference is "
+      "%+.4f with 95%% CI [%+.4f, %+.4f] over %d seeds. The exactly-H-layer "
+      "bound of T2 / Theorem B is therefore NOT an artifact of the "
+      "zero-training analytic construction: it survives end-to-end training. "
+      "Overshoot (two layers on H=1, %.4f) is the last-layer read-out effect "
+      "described in Theorem A(f)." %
+      (_arm(1, "tsc_h1")[0], _arm(2, "tsc_h1")[0], _arm(2, "tsc_h2")[0],
+       _c["mean"], _c["ci95"][0], _c["ci95"][1], _c["n_seeds"],
+       _arm(1, "tsc_h2")[0]),
+      size=SMALL, lead=SLEAD, after=2.0)
+    P("<b>Degradation (five seeds).</b> Corrupting the input-side role bit "
+      "with probability p gives %.4f / %.4f / %.4f / %.4f / %.4f for "
+      "p = 0 / .05 / .10 / .20 / .40 (monotone, non-increasing). Duplicate "
+      "keys give %.4f; duplicate keys plus 10%% noise give %.4f. Non-"
+      "orthogonal codes with Gram off-diagonal up to %.3f still give %.4f, "
+      "whereas RANK COLLAPSE to 16 gives %.4f and to 4 gives %.4f "
+      "(chance %.4f). The failure mode is therefore RANK LOSS, not loss of "
+      "orthogonality: a full-rank merely non-orthogonal code is learnable. "
+      "We report this as an observation with a measured Gram diagnostic, "
+      "not as a new theorem." %
+      (_deg("clean"), _deg("tag_noise_005"), _deg("tag_noise_010"),
+       _deg("tag_noise_020"), _deg("tag_noise_040"),
+       _deg("duplicate_keys"), _deg("dup_plus_noise"),
+       max(g["max_offdiag"] for g in _DEG["gram_diagnostics"]
+           if g["condition"].startswith("code_eps")),
+       _deg("code_eps_400"), _deg("rank_16"), _deg("rank_04"),
+       1.0 / 32.0),
+      size=SMALL, lead=SLEAD, after=2.0)
+    _lo = min(r["acc"] for r in _BUD["rows"])
+    _hi = max(r["acc"] for r in _BUD["rows"])
+    P("<b>W12: the stored parity claim is WITHDRAWN.</b> An earlier draft "
+      "reported Fisher p = %.4f for 1.0000 vs 0.9987 on a single-hop task, "
+      "with the attention number taken from a STORED RECORD rather than a "
+      "same-run execution. We re-ran six mechanisms here. The attention "
+      "references did not converge: across 400 / 1200 / 3000 steps and "
+      "lr 0.02 / 0.10 they stay in [%.4f, %.4f], near the four-pair chance "
+      "level. That stored number did NOT reproduce. We therefore withdraw "
+      "the parity statement entirely and make NO claim of equivalence, "
+      "superiority or inferiority with respect to attention. These toy "
+      "references are unoptimised; their low numbers are a LIMITATION OF "
+      "THIS AUDIT, not evidence about published models. All rows are "
+      "released so the audit itself can be falsified." %
+      (FP, _lo, _hi), size=SMALL, lead=SLEAD, after=2.5)
+
     Hh("5  What This Does NOT Establish", size=10.2, before=6.0, after=3.0)
-    It("<b>Not equivalence.</b> On the synthetic single-hop parity run the "
-       "Fisher p-value was %.4f. We say 'no significant difference was DETECTED "
-       "in this configuration'. A non-significant p is NOT an equivalence proof, "
-       "and the baseline came from a historical record file rather than a "
-       "same-run re-execution." % FP, size=SMALL, lead=SLEAD)
-    It("<b>Not language modeling.</b> There is no >=10M-token equal-compute run, "
-       "no val perplexity, no generation readability, no Mamba-2 / GLA / DeltaNet "
-       "/ Hyena / Transformer same-condition baseline, and no measured throughput "
-       "comparison. O1-O4 lack >=5-seed paired CIs. These are the four experiments "
-       "that would be needed for an architecture claim; we did not run them.",
+    It("<b>Parity claim WITHDRAWN (W12).</b> The earlier 'no significant "
+       "difference detected' statement (Fisher p = %.4f) relied on a stored "
+       "attention record. The same-run audit of Section 4.13 did not "
+       "reproduce it, so the statement is withdrawn. We make NO claim of "
+       "equivalence, superiority or inferiority relative to attention." % FP,
+       size=SMALL, lead=SLEAD)
+    It("<b>Not language modeling, and not an architecture comparison.</b> "
+       "There is no >=10M-token equal-compute run, no val perplexity, no "
+       "generation readability and no measured throughput comparison. "
+       "Section 4.13 supplies same-condition TOY mechanism references, not "
+       "full reproductions of GLA / DeltaNet / Mamba-2 / Transformer; they "
+       "are a reproduction audit, not a performance ranking. Earlier O1-O4 "
+       "lack >=5-seed paired CIs; the Section 4.13 results do have them.",
        size=SMALL, lead=SLEAD)
     It("<b>Not a new paradigm.</b> T6 states the rho=1 single-pole isomorphism "
        "with linear attention explicitly. The contribution is a tight JOINT "
@@ -1859,8 +1936,10 @@ def build():
        "for others to test, not a request to forgive a missing experiment.",
        size=SMALL, lead=SLEAD)
     P("<b>What we deliberately did NOT do.</b> We did not add a >=10M-token "
-       "equal-compute comparison, same-run Mamba-2 / GLA / DeltaNet / Hyena / "
-       "Transformer baselines, or a throughput comparison. An unfair "
+       "equal-compute comparison or a throughput comparison. Section 4.13 "
+       "adds small same-run TOY mechanism references for a reproduction "
+       "audit; they are NOT reproductions of Mamba-2 / GLA / DeltaNet / "
+       "Hyena / Transformer and are NOT a performance ranking. An unfair "
        "large-scale baseline would be worse than none for a theory paper. "
        "Small, clean, seeded comparisons plus an explicit 'no LM claim' are "
        "the honest scope here.", size=SMALL, lead=SLEAD)
@@ -1877,7 +1956,10 @@ def build():
        "construction. The practical rule is simple: budget the bits at the input "
        "or relax exactness. This is an information-bound paper with a "
        "constructive counterexample, not a claim of language-model parity or a "
-       "new SOTA sequence model.", size=SMALL, lead=SLEAD)
+       "new SOTA sequence model. The H-layer bound also survives end-to-end "
+       "training from random initialisation; the earlier attention-parity "
+       "claim is withdrawn because it did not reproduce (W12). No claim "
+       "of equivalence or superiority is made.", size=SMALL, lead=SLEAD)
 
     d.end_main()
     return d
@@ -1897,9 +1979,9 @@ def back(d):
       "input, or relax exactness. This can discourage over-engineering "
       "attention-free architectures for tasks that structurally require "
       "content addressing. Its main risk is interpretive: a reader may take "
-      "'no significant difference detected' on one synthetic task as general "
-      "language-model parity, or read the supporting ledger as a list of "
-      "independent discoveries. We have therefore stated every premise, "
+      "the withdrawn parity claim as a performance result, or read the "
+      "supporting ledger as a list of independent discoveries. We have "
+      "therefore stated every premise, "
       "sharpened the contribution to one main theorem plus two tight bounds, "
       "listed the missing large-scale experiments, and declined every "
       "superiority claim. Generative AI tools were used for implementation "
@@ -2159,7 +2241,9 @@ def back(d):
         ["W7: monotone score => self-improvement (T16)", "Trivial induction and inconsistent with the multi-metric gate"],
         ["F8: scalar monotone score as gate", "The gate is the unique multi-metric AND rule"],
         ["W8: content addressing needs input-dependent coefficients", "WITHDRAWN, second core contribution: NT31 attains H-hop retrieval with STRICTLY static kernels"],
-        ["W9: absolute-position parity is a general role basis", "WITHDRAWN: hidden format prior; 1.0000 -> 0.3438+/-0.0314 under arbitrary spacing. v6 CONVERGENCE COMPLETE: parity -> 1-bit tag -> endogenous codebook -> learned interface; R3 proves the single remaining bit NECESSARY and MINIMAL."],
+        ["W9: absolute-position parity is a general role basis", "WITHDRAWN: hidden format prior; 1.0000 -> 0.3438+/-0.0314 under arbitrary spacing. Convergence: parity -> 1-bit tag -> endogenous codebook -> learned interface."],
+        ["W10/W11: 'exactly one bit per token is necessary and sufficient'", "SCOPE CORRECTION: one bit/token is a sufficient carrier; the necessary quantity is total B >= log2|A| (Theorem A(b)). R3 is the |A|=2 worst-case special case."],
+        ["W12: single-hop parity with attention (Fisher p=0.4998)", "WITHDRAWN: the 0.9987 baseline came from a stored record and did not reproduce in the same-run audit of Sec 4.13. No equivalence or superiority claim is made."],
     ], [130, 108], size=7.6, lead=9.4)
 
     # ---------------------------------------------------------------- appendix G
