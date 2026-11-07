@@ -1,0 +1,21 @@
+{
+ "lemma": "R1",
+ "checks": {
+  "(a)_parity_drops_under_gapped": true,
+  "(a)_bound_respected": true,
+  "(b)_explicit_all_layouts": true,
+  "(b)_paired_CI_excludes_zero": true,
+  "(c)_subspace_partition_fails": true,
+  "(d)_necessity_is_layout_dependent": true,
+  "(e)_precision_all_pass": true,
+  "(e)_o1_state_and_scaling": true,
+  "adjudication_all_pass": true,
+  "statement_has_full_proof": true,
+  "statement_has_boundary": true,
+  "non_vacuous_instance": true
+ },
+ "n_checks": 12,
+ "n_pass": 12,
+ "all_pass": true,
+ "note": "Checks certify witness agreement; the proof is analytic."
+}

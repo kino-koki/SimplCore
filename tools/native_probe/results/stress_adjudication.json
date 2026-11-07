@@ -1,0 +1,25 @@
+{
+ "checks": {
+  "parity_is_format_prior": true,
+  "explicit_role_channel_restores": true,
+  "role_information_necessary_in_tight_layout": true,
+  "role_necessity_is_layout_dependent": true,
+  "orthogonal_subspace_alone_insufficient": true,
+  "duplicate_keys_break_uniqueness": true,
+  "o1_state_all": true
+ },
+ "all_pass": true,
+ "witnesses": {
+  "alternating_parity": 1.0,
+  "alternating_explicit": 1.0,
+  "gapped_parity": 0.296875,
+  "gapped_explicit": 1.0,
+  "dense_explicit": 1.0,
+  "padded_explicit": 1.0,
+  "alternating_none": 0.869140625,
+  "gapped_none": 0.9609375,
+  "alternating_partitioned": 0.869140625,
+  "duplicate_explicit": 0.931640625
+ },
+ "note": "The parity mask is SUFFICIENT ONLY under the strict alternating format.  A 1-bit explicit role channel is format-independent and is the minimal sufficient statistic. This is a scope correction to NT31, NOT a new claim that the architecture beats any baseline.  Two extra honest findings: (i) with no role mask, filler tokens IMPLICITLY suppress the spurious peak, so role necessity is layout dependent, not unconditional; (ii) putting A and b in two orthogonal code subspaces with a fixed linear layer projection does NOT remove the ambiguity and fails."
+}

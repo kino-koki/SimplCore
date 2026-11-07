@@ -50,8 +50,11 @@ NT31 = Theorem(
         "H4. Each of H_L layers is a static LTI tensor spectral convolution with "
         "kernel K_h(d)=sum_{p=1..P} w_{h,p} rho_{h,p}^d, w_{h,p}>0, 0<rho_{h,p}<1, "
         "so K_h(d)>0 for every d>=0. "
-        "H5. A deterministic role basis r[t]=1[(t-1) even] multiplies the INPUT signal "
-        "A_t=C[x_{t-1}] (kernel-external, content-independent). "
+        "H5. Each input symbol carries a deterministic 1-bit ROLE tag "
+        "(KEY / VALUE / FILLER).  r[t] = 1[role(x_{t-1}) = KEY] multiplies the "
+        "INPUT signal A_t = C[x_{t-1}] (kernel-external, content-independent). "
+        "Absolute-position parity r[t]=1[(t-1) even] is ONLY the special case of "
+        "H5 under the strict alternating format and is NOT a general premise (W9). "
         "H6. Layer interface q_{h+1}=z_h/||z_h||; the final layer output z_{H_L} is "
         "decoded by logits_j = <z_{H_L}, C_j> over the key range. "
         "H7. 1<=H<=n, and the readout is the LAST layer (no stop/select mechanism)."),
@@ -77,7 +80,7 @@ NT31 = Theorem(
         "Proof (a),(b). Induction on h. "
         "Base h=1: m_1[t] = <q_1, r[t] C[x_{t-1}]> = <C[k_0], r[t] C[x_{t-1}]>. "
         "By H3 the inner product is delta_{k_0,x_{t-1}}; by H5 the factor r[t] retains "
-        "only positions whose predecessor is a KEY (even index). All keys are distinct "
+        "only positions whose predecessor carries the KEY role tag. All keys are distinct "
         "(H1), so k_0 occurs as a key exactly once, at some even index 2p; therefore "
         "m_1[t]=1 at the unique t_1=2p+1 and 0 elsewhere. At t_1 the current token is "
         "v_{pi(p)}=k_1, so z_1 = K_1(L-1-t_1) C[k_1] = c_1 C[k_1] with c_1>0 (H4). "
@@ -116,9 +119,13 @@ NT31 = Theorem(
         "dominance is needed, which is why a Gaussian i.i.d. code also attains 1.0 in "
         "the ablation. (iv) Layer normalization q=z/||z|| is a KERNEL-EXTERNAL "
         "nonlinearity: rho and theta remain time-invariant, so B4 does not apply. "
-        "(v) The role basis r[t] depends on absolute parity, i.e. on t; it is a fixed "
-        "deterministic modulation of the INPUT SIGNAL, not of the kernel. Toeplitz is "
-        "preserved for the resulting LTI operator on the modulated signal. "
+        "(v) SCOPE CORRECTION (W9). An earlier draft used the absolute-position "
+        "parity mask r[t]=1[(t-1) even] as H5. That is a HIDDEN FORMAT PRIOR: it is "
+        "sufficient ONLY when keys always sit at even positions. With arbitrary "
+        "filler spacing it drops from 1.0 to 0.3438 +/- 0.0314 (5 seeds). H5 is now "
+        "the explicit 1-bit role tag carried by the input symbol; parity is its "
+        "special case. The role tag is a fixed deterministic modulation of the INPUT "
+        "SIGNAL, not of the kernel, so Toeplitz / FFT-IIR duality are preserved. "
         "(vi) RELATION TO LINEAR ATTENTION: at rho=1 with a single pole, "
         "z_h = q_h^T (sum_t r[t] C[x_{t-1}] C[x_t]^T), which is isomorphic to a "
         "linear-attention state; with rho<1 and multiple poles K_h(d)=sum_p w_p rho_p^d "
@@ -140,7 +147,8 @@ NT31 = Theorem(
         "results/chain_analytic_matrix.json (5x5 layer x hop grid), "
         "results/chain_analytic_ablation.json, "
         "results/chain_analytic_guards.json, "
-        "results/chain_analytic_learned.json (5 seeds)."),
+        "results/chain_analytic_learned.json (5 seeds); "
+        "results/stress_format_prior.json, stress_five_seed.json (W9 correction)."),
 )
 
 

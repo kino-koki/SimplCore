@@ -368,6 +368,30 @@ G31 = json.load(open(R + "chain_analytic_guards.json"))
 L31 = json.load(open(R + "chain_analytic_learned.json"))
 N31 = json.load(open("/data/workspace/theory_work/results/nt31_check.json"))
 CHAIN = json.load(open(R + "chain_summary.json"))
+S_FP = json.load(open(R + "stress_format_prior.json"))
+S_CI = json.load(open(R + "stress_five_seed.json"))
+S_DUP = json.load(open(R + "stress_duplicate.json"))
+S_PR = json.load(open(R + "stress_precision.json"))
+S_TH = json.load(open(R + "stress_throughput.json"))
+S_AD = json.load(open(R + "stress_adjudication.json"))
+RL1 = json.load(open("/data/workspace/theory_work/results/role_lemma.json"))
+RL1C = json.load(open("/data/workspace/theory_work/results/role_lemma_check.json"))
+
+
+def sfp(layout, mask):
+    return next(x["acc"] for x in S_FP
+                if x["layout"] == layout and x["mask"] == mask)
+
+
+def paired():
+    return next(x for x in S_CI
+                if isinstance(x, dict) and x.get("paired") ==
+                "explicit_minus_parity_on_gapped")
+
+
+def five(mask, layout):
+    return next(x for x in S_CI if isinstance(x, dict)
+                and x.get("mask") == mask and x.get("layout") == layout)
 
 
 def grid_acc(nl, hops):
@@ -486,6 +510,9 @@ def build():
       "most 0.10 elsewhere with ZERO training, extrapolates unchanged to V=512 and "
       "L=129, preserves FFT/IIR duality to %.2e, drops to %.4f when the role basis "
       "is removed, and reaches 1.0000 from random initialization on all 5 seeds. "
+      "Under arbitrary pair spacing a one-bit ROLE TAG carried by each input "
+      "symbol is necessary and sufficient; we RETRACT the absolute-position "
+      "parity mask as a hidden format prior (withdrawal W9). "
       "Significance: this closes a corner of the constant-state search space -- "
       "content addressing and spectral duality are NOT mutually exclusive -- and "
       "retracts our own earlier mutual-exclusivity claim. It is a "
@@ -609,7 +636,9 @@ def build():
        "strict key/value alternation, arbitrary pair-position permutation. H2: "
        "query k_0 at t=L-1. H3: fixed code C with C C^T = I on the key range. "
        "H4: H_L layers, each with static kernel K_h(d)=sum_p w_hp rho_hp^d > 0. "
-       "H5: deterministic role basis r[t]=1[(t-1) even] multiplies the INPUT signal. "
+       "H5: each input symbol carries a deterministic 1-bit ROLE tag; "
+       "r[t]=1[role(x_(t-1))=KEY] multiplies the INPUT signal. Absolute-position "
+       "parity is ONLY its special case under a strict alternating format (W9). "
        "H6: layer interface q_(h+1)=z_h/||z_h||; LAST-layer readout only, no stop "
        "mechanism. H7: 1<=H<=n.", size=SMALL, lead=SLEAD, after=1.5)
     P("<b>Claim.</b> (a) If H_L < H the answer is at most chance. (b) If H_L = H "
@@ -713,6 +742,68 @@ def build():
       "is meaningful, not its absolute rate." % ("all_passed=True"
        if G31["all_passed"] else "all_passed=False"), size=SMALL, lead=SLEAD)
 
+    Hh("4.4  Adversarial Stress Test: the Parity Mask Was a Format Prior",
+       size=9.4, before=5.0, after=2.0)
+    P("We actively tried to falsify T2. The most damaging potential objection "
+       "is that r[t]=1[(t-1) even] smuggles in the convention 'keys always sit "
+       "at even positions' -- the same task-prior injection we criticised in "
+       "our own earlier work. It is CORRECT, and we retracted it (W9). We "
+       "inserted zero FILLER tokens before/after pairs so key parity becomes "
+       "random, while preserving the binding edge (key immediately followed "
+       "by value).", size=SMALL, lead=SLEAD, after=2.0)
+    rows = [["layout", "parity", "1-bit role", "no role", "subspace-only"]]
+    for lay in ("alternating", "gapped", "dense", "padded"):
+        rows.append([lay, f"{sfp(lay,'parity'):.4f}", f"{sfp(lay,'explicit'):.4f}",
+                     f"{sfp(lay,'none'):.4f}", f"{sfp(lay,'partitioned'):.4f}"])
+    d.table(rows, [68, 45, 45, 45, 45], size=7.3, lead=8.9, after=2.5)
+    pv = five("parity", "gapped"); pr = paired()
+    P("<b>Reading.</b> Parity is 1.0000 only under the strict alternating "
+       "format and collapses to %.4f +/- %.4f (5-seed CI [%.4f, %.4f]) once "
+       "spacing is arbitrary. The explicit 1-bit role tag is %.4f on ALL FOUR "
+       "layouts with zero training. The paired difference is %+.4f with CI "
+       "[%.4f, %.4f] and all 5 seeds positive. Lemma R1(a) proves an expected "
+       "upper bound of 1/2 + 1/(2 V_K) for any position-only gate; the witness "
+       "sits below it." % (pv["mean"], pv["std"], pv["ci95"][0], pv["ci95"][1],
+                           sfp("gapped", "explicit"), pr["mean"],
+                           pr["ci95"][0], pr["ci95"][1]),
+       size=SMALL, lead=SLEAD, after=2.0)
+    P("<b>Two further honest findings.</b> (i) With NO role gate, accuracy is "
+       "%.4f in the tight layout but %.4f in the gapped layout: filler tokens "
+       "implicitly zero the spurious peak, so role necessity is "
+       "LAYOUT-CONDITIONAL, not an unconditional law. (ii) We also tried a "
+       "seemingly more elegant alternative -- put the queried and retrieved "
+       "codes in two ORTHOGONAL subspaces with a fixed linear layer interface "
+       "and no role tag at all. It gives %.4f, identical to the no-role "
+       "baseline: because a chain symbol appears TWICE (previous value and "
+       "next key), no fixed linear interface can disambiguate the two peaks "
+       "(Lemma R1(c)). A first implementation of this candidate contained a "
+       "code-projection dimension bug; it was found, fixed, and the corrected "
+       "number is reported here." % (sfp("alternating", "none"),
+                                     sfp("gapped", "none"),
+                                     sfp("alternating", "partitioned")),
+       size=SMALL, lead=SLEAD, after=2.0)
+    dup = next(x["acc"] for x in S_DUP if x["dup"] and x["mask"] == "explicit")
+    P("<b>Scope, measured.</b> Duplicate keys (outside H1) give %.4f rather "
+       "than 1.0, quantifying the distinctness premise. Finite precision "
+       "fp64/fp32/fp16/bf16/int8 is 1.0000 up to L=128 for every dtype -- but "
+       "this construction emits a RANK-1 sparse direction, so quantization "
+       "cannot change argmax; it does NOT extend the earlier long-decay "
+       "precision frontier (bf16/int8 degrade near L=2049). Measured reference "
+       "throughput is %.1f-%.1f us/token with state 1024*H_L bytes, both "
+       "independent of L for L=9..4097. Absolute rates come from an "
+       "UN-OPTIMIZED NumPy implementation; only the SCALING is meaningful." %
+       (dup, min(x["us_per_token"] for x in S_TH),
+        max(x["us_per_token"] for x in S_TH)),
+       size=SMALL, lead=SLEAD, after=2.5)
+    P("<b>Why this is a contribution, not an erratum.</b> We replaced a "
+       "format-dependent premise with a format-independent one, proved that "
+       "one bit is the minimal sufficient side-channel under our hypotheses, "
+       "proved that the natural code-subspace escape cannot work, and recorded "
+       "the withdrawal W9. The theorem's conclusion is unchanged; its premise "
+       "is now honest. Lemma R1 (%d/%d checks) is a SUPPORTING LEMMA in "
+       "Appendix A.32, deliberately NOT promoted to a 32nd headline theorem." %
+       (RL1C["n_pass"], RL1C["n_checks"]), size=SMALL, lead=SLEAD, after=3.0)
+
     # ------------------------------------------------------------ 5 NOT ESTABLISH
     Hh("5  What This Does NOT Establish", size=10.2, before=6.0, after=3.0)
     It("<b>Not equivalence.</b> On the synthetic single-hop parity run the "
@@ -729,6 +820,13 @@ def build():
     It("<b>Not a new paradigm.</b> T6 states the rho=1 single-pole isomorphism "
        "with linear attention explicitly. The contribution is a tight JOINT "
        "characterization under static kernels, not a claim of leaving that family.",
+       size=SMALL, lead=SLEAD)
+    It("<b>Role necessity is layout-conditional.</b> With no role tag the "
+       "tight alternating layout fails (%.4f) while a gapped layout reaches "
+       "%.4f because zero fillers implicitly suppress the spurious peak. We do "
+       "NOT claim an unconditional 'role information is necessary' theorem; "
+       "Lemma R1(d) states the condition explicitly." %
+       (sfp("alternating", "none"), sfp("gapped", "none")),
        size=SMALL, lead=SLEAD)
     It("<b>Not a SOTA model.</b> Positioning: boundary-characterization paper + "
        "constructive counterexample + auditable negative results. We decline every "
@@ -847,6 +945,20 @@ def back(d):
     P("<b>Architectural use.</b> " + N31D["use"], size=SMALL, lead=SLEAD, after=1.5)
     P("<b>Witnesses (not the proof).</b> " + N31D["source"] +
       "  Verifier: %d/%d checks pass." % (N31["n_pass"], N31["n_checks"]),
+      size=SMALL, lead=SLEAD, after=4.0)
+    d.sub("A.32  Lemma R1 - Minimality and irreducibility of the one-bit role tag")
+    P("<b>Status.</b> SUPPORTING LEMMA, not a promoted core theorem. "
+      "Hypotheses P1-P4 are stated in full below; the proof is analytic. "
+      "Verifier: %d/%d checks (witness agreement only)." %
+      (RL1C["n_pass"], RL1C["n_checks"]),
+      size=SMALL, lead=SLEAD, after=1.5)
+    P("<b>Premises.</b> " + RL1["hypothesis"], size=SMALL, lead=SLEAD, after=1.5)
+    P("<b>Claim.</b> " + RL1["claim"], size=SMALL, lead=SLEAD, after=1.5)
+    for chunk in RL1["proof"].replace(". QED.", ". QED.\n").split("\n"):
+        P(chunk.strip(), size=SMALL, lead=SLEAD, after=1.2)
+    P("<b>Boundary / scope.</b> " + RL1["boundary"], size=SMALL, lead=SLEAD, after=1.5)
+    P("<b>Architectural use.</b> " + RL1["use"], size=SMALL, lead=SLEAD, after=1.5)
+    P("<b>Witnesses (not the proof).</b> " + RL1["source"],
       size=SMALL, lead=SLEAD, after=4.0)
     P("<b>A.1-A.30  Retained full ledger (NT01-NT30).</b> Each entry below states "
       "its premises, universal claim, complete proof, boundary and architectural "
@@ -974,13 +1086,15 @@ def back(d):
         ["W7: monotone score => self-improvement (T16)", "Trivial induction + mismatched source gate; replaced by NT15"],
         ["F8: scalar monotone score as gate", "NT20 proves the gate is the unique multi-metric AND rule"],
         ["W8: content addressing needs input-dependent coefficients", "WITHDRAWN, second core contribution: NT31 attains H-hop retrieval with STRICTLY static kernels"],
+        ["W9: absolute-position parity is a general role basis", "WITHDRAWN: hidden format prior; 1.0000 -> 0.3438+/-0.0314 under arbitrary spacing. Replaced by a 1-bit role tag (Lemma R1)."],
     ], [130, 108], size=7.6, lead=9.4)
 
     # ---------------------------------------------------------------- appendix G
     d.newpage()
-    Hh("Appendix G  The 50-Item Audit Ledger", size=11.5, before=0.0, after=5.0)
+    Hh("Appendix G  The 51-Item Audit Ledger", size=11.5, before=0.0, after=5.0)
     P("Every statement in this project is adjudicated exactly once. The 31 theorem "
-      "items have complete analytic proofs in Appendix A; their finite-identity "
+      "items plus ONE supporting lemma (R1) have complete analytic proofs in "
+      "Appendix A; their finite-identity "
       "checks only certify correct formation and non-empty premises. The 19 "
       "non-theorem items are CLASSIFIED with a reproducible witness or an explicit "
       "falsification / experiment specification; PASS for those means 'correctly "
@@ -988,7 +1102,8 @@ def back(d):
       size=SMALL, lead=SLEAD, after=5.0)
     d.table([
         ["Class", "Count", "Why it is NOT a theorem (if applicable)"],
-        ["New theorems NT01-NT31", "31", "NT31 added this revision; 6 promoted to core"],
+        ["New theorems NT01-NT31", "31", "NT31 H5 revised by W9; 6 promoted to core"],
+        ["Supporting lemma R1", "1", "Analytic, non-trivial; deliberately NOT a headline theorem"],
         ["Falsified F1-F8", "8", "Explicit counterexamples / witness values"],
         ["Withdrawn W1-W5, W7", "5", "Formally retracted earlier working claims"],
         ["Conjectures C1, C3, C7", "3", "Unproved; falsification experiment specified"],
@@ -1030,12 +1145,12 @@ def back(d):
     for qid, v, txt in nonthm:
         It("<b>%s [%s].</b> %s" % (qid, v, txt), size=SMALL, lead=SLEAD, after=2.0)
 
-    P("<b>Why 50 statements is not the target.</b> Eight statements are demonstrably "
+    P("<b>Why 51 statements is not the target.</b> Eight statements are demonstrably "
       "false, five were formally retracted, three have no proof, and three are "
       "empirical claims about scale and capability. Promoting any of them would "
       "reintroduce exactly the theorem inflation and 'numerical verification "
       "posing as proof' that the withdrawn-claims register (Appendix F) exists "
-      "to prevent. The competitive contribution is 6 core theorems, 31 audited proofs, plus "
+      "to prevent. The competitive contribution is 6 core theorems, 31 audited proofs, 1 supporting lemma, plus "
       "an auditable account of the 19 statements that must NOT be theorems.",
       size=SMALL, lead=SLEAD, after=4.0)
 
