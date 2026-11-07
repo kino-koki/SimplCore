@@ -1,0 +1,221 @@
+{
+ "verified": "2026-11-07",
+ "source": "https://arxiv.org/abs/<id> — HTML meta tags citation_author / citation_title",
+ "note": "Only the first author plus 'et al.' is printed in the manuscript; full lists are kept here for audit.",
+ "entries": [
+  {
+   "arxiv_id": "2111.00396",
+   "authors": [
+    "Gu, Albert",
+    "Goel, Karan",
+    "Ré, Christopher"
+   ],
+   "title": "Efficiently Modeling Long Sequences with Structured State Spaces"
+  },
+  {
+   "arxiv_id": "2208.04933",
+   "authors": [
+    "Smith, Jimmy T. H.",
+    "Warrington, Andrew",
+    "Linderman, Scott W."
+   ],
+   "title": "Simplified State Space Layers for Sequence Modeling"
+  },
+  {
+   "arxiv_id": "2302.10866",
+   "authors": [
+    "Poli, Michael",
+    "Massaroli, Stefano",
+    "Nguyen, Eric",
+    "Fu, Daniel Y.",
+    "Dao, Tri",
+    "Baccus, Stephen",
+    "Bengio, Yoshua",
+    "Ermon, Stefano",
+    "Ré, Christopher"
+   ],
+   "title": "Hyena Hierarchy: Towards Larger Convolutional Language Models"
+  },
+  {
+   "arxiv_id": "2312.00752",
+   "authors": [
+    "Gu, Albert",
+    "Dao, Tri"
+   ],
+   "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces"
+  },
+  {
+   "arxiv_id": "2405.21060",
+   "authors": [
+    "Dao, Tri",
+    "Gu, Albert"
+   ],
+   "title": "Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality"
+  },
+  {
+   "arxiv_id": "2312.06635",
+   "authors": [
+    "Yang, Songlin",
+    "Wang, Bailin",
+    "Shen, Yikang",
+    "Panda, Rameswar",
+    "Kim, Yoon"
+   ],
+   "title": "Gated Linear Attention Transformers with Hardware-Efficient Training"
+  },
+  {
+   "arxiv_id": "2406.06484",
+   "authors": [
+    "Yang, Songlin",
+    "Wang, Bailin",
+    "Zhang, Yu",
+    "Shen, Yikang",
+    "Kim, Yoon"
+   ],
+   "title": "Parallelizing Linear Transformers with the Delta Rule over Sequence Length"
+  },
+  {
+   "arxiv_id": "2006.16236",
+   "authors": [
+    "Katharopoulos, Angelos",
+    "Vyas, Apoorv",
+    "Pappas, Nikolaos",
+    "Fleuret, François"
+   ],
+   "title": "Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention"
+  },
+  {
+   "arxiv_id": "2305.13048",
+   "authors": [
+    "Peng, Bo",
+    "Alcaide, Eric",
+    "Anthony, Quentin",
+    "Albalak, Alon",
+    "Arcadinho, Samuel",
+    "Biderman, Stella",
+    "Cao, Huanqi",
+    "Cheng, Xin",
+    "Chung, Michael",
+    "Grella, Matteo",
+    "GV, Kranthi Kiran",
+    "He, Xuzheng",
+    "Hou, Haowen",
+    "Lin, Jiaju",
+    "Kazienko, Przemyslaw",
+    "Kocon, Jan",
+    "Kong, Jiaming",
+    "Koptyra, Bartlomiej",
+    "Lau, Hayden",
+    "Mantri, Krishna Sri Ipsit",
+    "Mom, Ferdinand",
+    "Saito, Atsushi",
+    "Song, Guangyu",
+    "Tang, Xiangru",
+    "Wang, Bolun",
+    "Wind, Johan S.",
+    "Wozniak, Stanislaw",
+    "Zhang, Ruichong",
+    "Zhang, Zhenyuan",
+    "Zhao, Qihang",
+    "Zhou, Peng",
+    "Zhou, Qinghua",
+    "Zhu, Jian",
+    "Zhu, Rui-Jie"
+   ],
+   "title": "RWKV: Reinventing RNNs for the Transformer Era"
+  },
+  {
+   "arxiv_id": "2407.04620",
+   "authors": [
+    "Sun, Yu",
+    "Li, Xinhao",
+    "Dalal, Karan",
+    "Xu, Jiarui",
+    "Vikram, Arjun",
+    "Zhang, Genghan",
+    "Dubois, Yann",
+    "Chen, Xinlei",
+    "Wang, Xiaolong",
+    "Koyejo, Sanmi",
+    "Hashimoto, Tatsunori",
+    "Guestrin, Carlos"
+   ],
+   "title": "Learning to (Learn at Test Time): RNNs with Expressive Hidden States"
+  },
+  {
+   "arxiv_id": "2307.02486",
+   "authors": [
+    "Ding, Jiayu",
+    "Ma, Shuming",
+    "Dong, Li",
+    "Zhang, Xingxing",
+    "Huang, Shaohan",
+    "Wang, Wenhui",
+    "Zheng, Nanning",
+    "Wei, Furu"
+   ],
+   "title": "LongNet: Scaling Transformers to 1,000,000,000 Tokens"
+  },
+  {
+   "arxiv_id": "2403.19887",
+   "authors": [
+    "Lieber, Opher",
+    "Lenz, Barak",
+    "Bata, Hofit",
+    "Cohen, Gal",
+    "Osin, Jhonathan",
+    "Dalmedigos, Itay",
+    "Safahi, Erez",
+    "Meirom, Shaked",
+    "Belinkov, Yonatan",
+    "Shalev-Shwartz, Shai",
+    "Abend, Omri",
+    "Alon, Raz",
+    "Asida, Tomer",
+    "Bergman, Amir",
+    "Glozman, Roman",
+    "Gokhman, Michael",
+    "Manevich, Avashalom",
+    "Ratner, Nir",
+    "Rozen, Noam",
+    "Shwartz, Erez",
+    "Zusman, Mor",
+    "Shoham, Yoav"
+   ],
+   "title": "Jamba: A Hybrid Transformer-Mamba Language Model"
+  },
+  {
+   "arxiv_id": "2312.04927",
+   "authors": [
+    "Arora, Simran",
+    "Eyuboglu, Sabri",
+    "Timalsina, Aman",
+    "Johnson, Isys",
+    "Poli, Michael",
+    "Zou, James",
+    "Rudra, Atri",
+    "Ré, Christopher"
+   ],
+   "title": "Zoology: Measuring and Improving Recall in Efficient Language Models"
+  },
+  {
+   "arxiv_id": "2402.01032",
+   "authors": [
+    "Jelassi, Samy",
+    "Brandfonbrener, David",
+    "Kakade, Sham M.",
+    "Malach, Eran"
+   ],
+   "title": "Repeat After Me: Transformers are Better than State Space Models at Copying"
+  },
+  {
+   "arxiv_id": "2404.08819",
+   "authors": [
+    "Merrill, William",
+    "Petty, Jackson",
+    "Sabharwal, Ashish"
+   ],
+   "title": "The Illusion of State in State-Space Models"
+  }
+ ]
+}

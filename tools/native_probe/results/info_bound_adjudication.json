@@ -1,0 +1,20 @@
+{
+ "checks": {
+  "P2_X_is_bit_identical_across_all_role_assignments": true,
+  "(a)_B0_accuracy_le_1_over_A": true,
+  "(b)_step_exactly_at_B_equals_m": true,
+  "(b)_bound_never_exceeded": true,
+  "(c)_output_is_function_of_Vis_only": true,
+  "(e)_depth_1_to_8_cannot_compensate": true,
+  "(e)_sufficient_depth_exactly_H": true,
+  "(f)_select_H_makes_geq_H_sufficient": true,
+  "(d)_all_carriers_exactly_one_bit": true,
+  "(d)_tag_and_codebook_attain": true,
+  "(d)_codebook_preserves_duality": true,
+  "(d)_format_prior_collapses": true
+ },
+ "n_checks": 12,
+ "n_pass": 12,
+ "all_pass": true,
+ "note": "Witnesses are exhaustive enumeration, a real static-LTI forward invariance check, and measured carrier data. They CERTIFY the theorem's structural predictions; they are NOT the proof (which is analytic). No model performance claim is made."
+}

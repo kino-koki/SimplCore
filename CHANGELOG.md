@@ -10,6 +10,20 @@
 
 ---
 
+
+## v6.1：Theorem B 三维守恒 + 完结上一轮中断项（最新）
+
+- **Theorem B**（主文 §4.12，自含完整证明）：输入侧 bit 只能把 H 次内容匹配
+  从「层栈」搬到「读出链」，不能消除；把串行深度压到 1 需要 (H+1) 阶状态
+  （d^(H+1) 元素，指数爆炸）。(B, 串行深度, 状态阶) 前沿是离散阶跃。
+  判别性 witness 127/127，5 seeds、H=1..4、四种 regime，纯 NumPy 合成链。
+- 主文扩到 **8 页**（无注水：定理 B 的前提/断言/证明/表格/witness/边界全进正文）。
+- 修掉中断轮留下的真实硬伤：§3.7 与 §4.8 **重复编号**、附录仍写
+  「exactly one bit, necessary and sufficient」与 Theorem A(b) 冲突、
+  Theorem A(b) 显式族证明表述含糊（改为二叉链构造）、PDF metadata 旧标题。
+- References 15 条补 **arXiv 官方页面核验过的真实作者**，格式规范；
+  双盲不要求省略被引用作者。
+- Theorem A 验证器 18/18 重跑通过；未新增任何实验数据、未跑 LM 训练。
 ## 2026-11-04 · 上游基线
 
 - `kino-koki/SimplCore` main @ `e00b550`，Apache-2.0，860 条目。
