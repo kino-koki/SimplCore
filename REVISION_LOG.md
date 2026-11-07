@@ -2,10 +2,47 @@
 
 > 记录从 0.1-α 到投稿稿 `simplcore.pdf` 的**每一次口径变更与撤回**。
 > 实验进展与实测数字见 `CHANGELOG.md`；稿件与证据链索引见
-> `docs/MANUSCRIPT_INDEX.md`。
+> `MANUSCRIPT_INDEX.md`。
 > 本文件是修订记录，不是论文正文。
 
 ---
+
+## 7.0 v7：从「补丁」改为「重写」，七类硬伤一次性收口
+
+| 维度 | v6.2 | v7 |
+|---|---|---|
+| 生成器 | `build_simplcore_pdf_v5.py`（层层打补丁） | `build_simplcore_pdf_v7.py`（自包含重写） |
+| 核心结果计数 | FOUR / SIX / 八 混用 | **恰好 4**（A / B / C / E） |
+| 定理命名 | Theorem 1/5/6、T1–T6、NT*、A.31+ | 仅 `Theorem A` / `Theorem B`，其余 P1–P8 / L1–L3 |
+| B 的定义 | `Σ b_t` 只算显式 side channel | `Σ_t log₂ |π⁻¹(v_t)|`，分区 bit 计入 B |
+| A(a) | 无条件 `≤ 1/|A| ≤ 1/2` | per-fibre `acc(F|v) ≤ 2^B/|A(v)|` + 两种统计量定义 |
+| A(c) | "duality FORCES" | 类 M 内、IF 保持对偶时的设计选择 |
+| P2 证明 | kernel 维数 ⇒ 存在目标扰动 | 显式三情形构造，明写不再用该推断 |
+| 层接口 | 四套互斥写法 | H6 唯一 + 核家族分离说明 |
+| 数字 | 四处漂移 | Table 2 单表 + Table 10 溯源审计 |
+| 页数 | 25 页 | **10 页**（主文 7 页） |
+
+**新增撤回/口径修订登记**：
+
+- **W13（口径修订）**：`B = Σ b_t` 的旧定义不覆盖 alphabet partition 折进 symbol id 的
+  1 bit，导致 tightness 形式不成立；本版重定义 B，tightness 恢复成立。
+- **W14（口径修订）**：A(a) 的无条件 `accuracy ≤ 1/|A| ≤ 1/2` 被 §4.9 的 marginal
+  0.8023 / 1.0000 反证；本版改为 per-fibre 条件界，并定义两种统计量。
+- **W15（措辞统一）**：「free of run-time annotation」与「supplies the required
+  information」读起来像无 bit；统一为「not bit-free, it is annotation-free」。
+- **W16（编号统一）**：Theorem 1 = 最小张量阶 / Theorem 1 = Z 变换对偶、
+  T6 三种描述、FOUR / SIX 计数冲突，全部收束。
+- **W17（证明自洽）**：`dim ker > 0 ⇒ 存在改变目标坐标的 Δv` 与 §3.1 显式构造并存；
+  本版全篇只用显式构造。
+- **W18（数字统一）**：0.2969 / 0.2711、0.9316 / 0.9414 / 0.9328、四种 FFT/IIR 误差、
+  0.0313 与 0.25 并列 —— 见 Table 10 溯源审计，本稿每个配置只有一个值。
+
+**格式**：ICML 2027 官方 `.sty` 与 CFP 截稿日仍未公布；本版按 ICML 2026 已公布规则排版
+（双栏、匿名、主文 8 页上限、Broader Impact 在 References 之前、影响声明不限页）。
+待模板发布需重核页数、LLM 使用披露与互审提名 —— 写进 Appendix C，不冒充已合规。
+
+**明确未做**：不承诺过稿率；不把 7 页主文灌成 8 页（再填满只能复制附录证明，
+与「无注水」冲突）；不改任何实验数字；不重启训练。
 
 
 

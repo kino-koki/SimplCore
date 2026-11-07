@@ -6,7 +6,12 @@
 
 | 文件 | 说明 |
 |---|---|
-| `simplcore.pdf` | 英文、匿名、ICML 版式。主文 8 页上限内，References / Broader Impact / Appendix 单列。**只有这一份是稿。** |
+| `simplcore.pdf` | **v7**：英文、匿名、ICML 版式。10 页，主文 7 页（8 页上限内），Broader Impact / References / 精简附录单列。**只有这一份是稿。** |
+| `build_simplcore_pdf_v7.py` | v7 的**唯一当前生成器**，自包含；所有数字由原始 JSON 注入。 |
+| `build_simplcore_pdf_v5.py` | v6.2 及更早的历史生成器，已归档，**不再产生当前稿**。 |
+| `V7_REPORT.md` | v7 修订总报告：七类硬伤逐条对应、P0/P1 落地、45 项预演与诚实边界。 |
+| `tools/eval_baselines/desk_check_v7.py` + `results/desk_check_v7.json` | 自动化预演（45/45），**不是真人评审、不是数学证明**。 |
+| `tools/eval_baselines/fibre_probe.py` + `results/fibre.json` | P1 桥接：原 content-chain 任务的 \|A(v)\| 枚举。 |
 
 ## 日志类文档（由原 markdown 论文稿整合而来）
 
@@ -69,3 +74,12 @@
 2. 任何「已验证 / 猜想 / 撤回」的口径问题，查 `REVISION_LOG.md`。
 3. 新实验只往 `CHANGELOG.md` 追加，不改动历史条目。
 4. 不把脚本断言计数当作定理编号；不把有限样本观察写成定理。
+
+
+## v7 起的结构说明
+
+v7 是一次**重写**而非补丁：核心结果恰好四条（Theorem A 六部分 / Theorem B 两界 /
+Construction C / Empirical E），其余一律 P1–P8 或 L1–L3。
+旧附录 A.31 之后的 ledger（NT01–NT31、A.32/A.33、130/130、23/23、51 项台账）
+已整包删除；附录只保留 A（完整证明）、B（6 行撤回登记）、C（复现说明）。
+`CHANGELOG.md` 记录实测进展，`REVISION_LOG.md` 记录口径变更与撤回，两者都不是论文正文。

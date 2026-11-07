@@ -3,12 +3,36 @@
 > 本文件记录项目各阶段的**实际进展与实测结论**，不是论文正文。
 > 唯一投稿稿为仓库根目录的 `simplcore.pdf`。
 > 论文口径变更、撤回记录与定理重标见 `REVISION_LOG.md`。
-> 稿件与证据链索引见 `docs/MANUSCRIPT_INDEX.md`。
+> 稿件与证据链索引见 `MANUSCRIPT_INDEX.md`。
 
 记录口径：每条只写「已运行且留有原始结果」的事项；未验证事项统一标注为
 `[猜想]` 或 `[待补]`，不写成结论。所有数字来自仓库内原始 JSON / 报告。
 
 ---
+
+## v7：一次性重构投稿稿（最新）
+
+- **`simplcore.pdf` 替换为 v7**：10 页，主文 7 页（8 页上限内）；
+  新生成器 `build_simplcore_pdf_v7.py` 是**唯一当前稿源**，旧 v5 生成器降为历史。
+- **七类硬伤全部修完**：B 重定义为字母表相对 flat 参考的超出位数（分区的 1 bit 正式计入 B）、
+  A(c) 降级为类内设计选择、A(a) 改为 per-fibre 条件界并定义两种统计量、
+  统一「not bit-free, it is annotation-free」措辞、编号收束为 **4 条核心结果**
+  （Theorem A / Theorem B / Construction C / Empirical E，其余 P1–P8 / L1–L3）、
+  P2 换成显式三情形构造、H6 层接口唯一化并分离两个核家族、
+  一张统一数字表 + Table 10 数字溯源审计。
+- **呈现/合规**：删掉首页 meta 话术与全部审稿人喊话；References 14 条统一 venue
+  （Zoology 修回 ICLR 2024）、删自证句；Broader Impact 在 References 之前；
+  **旧附录 ledger 整包删除**（25 页 → 10 页）。
+- **P1 收尾**：新增 `fibre_probe.py` 枚举原任务 |A|（flat/H=4：max 5，
+  log₂|A| ≤ 2.3219；分区提供 8 bits，充分但不紧），桥接 tight witness 与主任务；
+  P5 状态阶下界升为带完整证明的**条件**定理并写出分支因子 2 时的退化。
+- **新增硬核内容**：状态记账推导、P1–P8 完整陈述、线性注意力精确关系、
+  bit/depth/order 前沿、完整 5×5 网格、carrier 守恒、深度不变性、
+  5-seed 全统计、消融账本、逐条前提—边界—非空洞实例总表、逐条可证伪条件、复现协议。
+- **自动化预演 `desk_check_v7.py`：45/45 PASS**（不是真人评审，只验证陈述自洽与口径）。
+- W12 撤回不变；六类硬实验（≥10M token LM、同算力强基线、真实 MQAR、
+  可学习码本、收敛的公平对照、TS2SC 端到端迁移）仍 `[待补]`。
+- 训练/迁移任务继续冻结，零私有权重字节。
 
 
 
@@ -442,7 +466,7 @@ m_h 只有一个非零峰，任何位置门只能**删掉**它；删到 key 后�
 - 6 个定理、2 个条件命题、1 个明确标注「非定理」的解释性推论、
   8 条猜想、7 条已证伪猜想、6 条撤回声明全部归档入稿。
 - 原 markdown 论文稿统一转为日志类文档（`CHANGELOG.md` / `REVISION_LOG.md` /
-  `docs/MANUSCRIPT_INDEX.md`），0.2-β 全文归档到 `docs/`。
+  `MANUSCRIPT_INDEX.md`），0.2-β 全文归档到 `docs/`。
 
 ---
 

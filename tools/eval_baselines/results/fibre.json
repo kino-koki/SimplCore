@@ -1,0 +1,110 @@
+{
+ "status": "reachability enumeration on the original content-chain task",
+ "scope": "A(v) is the set of terminal ids reachable by H successor steps from the external query under the layer's matching rule. It is NOT an enumeration over all conceivable binding graphs. The tight binary-chain witness of Theorem A(d) is a DIFFERENT construction with |A| = 2^m.",
+ "task": {
+  "V": 64,
+  "VK": 32,
+  "n_pairs": 4,
+  "layout": "gapped",
+  "filler_max": 3,
+  "distinct_keys": true,
+  "seeds": 5,
+  "samples_per_seed": 256
+ },
+ "rows": [
+  {
+   "H": 1,
+   "encoding": "flat",
+   "n_samples": 1280,
+   "mean_A": 1.0,
+   "max_A": 1,
+   "min_A": 1,
+   "mean_log2A": 0.0,
+   "max_log2A": 0.0,
+   "frac_A_gt_1": 0.0
+  },
+  {
+   "H": 1,
+   "encoding": "codebook",
+   "n_samples": 1280,
+   "mean_A": 1.0,
+   "max_A": 1,
+   "min_A": 1,
+   "mean_log2A": 0.0,
+   "max_log2A": 0.0,
+   "frac_A_gt_1": 0.0
+  },
+  {
+   "H": 2,
+   "encoding": "flat",
+   "n_samples": 1280,
+   "mean_A": 1.51953125,
+   "max_A": 2,
+   "min_A": 1,
+   "mean_log2A": 0.51953125,
+   "max_log2A": 1.0,
+   "frac_A_gt_1": 0.51953125
+  },
+  {
+   "H": 2,
+   "encoding": "codebook",
+   "n_samples": 1280,
+   "mean_A": 1.0,
+   "max_A": 1,
+   "min_A": 1,
+   "mean_log2A": 0.0,
+   "max_log2A": 0.0,
+   "frac_A_gt_1": 0.0
+  },
+  {
+   "H": 3,
+   "encoding": "flat",
+   "n_samples": 1280,
+   "mean_A": 2.3578125,
+   "max_A": 4,
+   "min_A": 1,
+   "mean_log2A": 1.091003330389687,
+   "max_log2A": 2.0,
+   "frac_A_gt_1": 0.75078125
+  },
+  {
+   "H": 3,
+   "encoding": "codebook",
+   "n_samples": 1280,
+   "mean_A": 1.0,
+   "max_A": 1,
+   "min_A": 1,
+   "mean_log2A": 0.0,
+   "max_log2A": 0.0,
+   "frac_A_gt_1": 0.0
+  },
+  {
+   "H": 4,
+   "encoding": "flat",
+   "n_samples": 1280,
+   "mean_A": 3.25078125,
+   "max_A": 5,
+   "min_A": 1,
+   "mean_log2A": 1.6016209212374037,
+   "max_log2A": 2.321928094887362,
+   "frac_A_gt_1": 0.965625
+  },
+  {
+   "H": 4,
+   "encoding": "codebook",
+   "n_samples": 1280,
+   "mean_A": 1.0,
+   "max_A": 1,
+   "min_A": 1,
+   "mean_log2A": 0.0,
+   "max_log2A": 0.0,
+   "frac_A_gt_1": 0.0
+  }
+ ],
+ "carriers": {
+  "explicit_tag_bits": 4,
+  "alphabet_partition_bits": 8,
+  "note": "The partition supplies 2*n_pairs bits, one per non-empty token, whereas log2|A| in the original task is bounded by log2(H+1). The budget is SUFFICIENT but NOT TIGHT on this task. Tightness is established on the binary-chain witness, where |A| = 2^m and B = m."
+ },
+ "conclusion": "On the original content-chain task the necessary input-side information is at most log2(H+1) bits, and the codebook partition supplies far more. We do NOT claim the original task is tight; we state the gap explicitly."
+}
