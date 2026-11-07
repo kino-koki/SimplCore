@@ -390,3 +390,22 @@ BF16 权重逐位复制、在真实 embedding 上的 SGC 对偶/因果/O(1) 验�
 
 见 `CHANGELOG.md` 末节「仍未完成」。1.0 稿把「不宜投稿」从自评文字改为
 结构化的 Limitations 一节，但**没有**把未跑的实验写成已跑。
+
+## v7.1（投稿技能包治理轮，2026-11-07）
+
+| 项 | v6.5 | v7.1 |
+|---|---|---|
+| Theorem A 前提命名空间 | `P1–P5`（与支撑命题 `P1–P8` 冲突） | **`TAP1–TAP5`**，§3.1 明写 disjoint 规则 |
+| `Theorem B` | 5 处，两个互斥含义 | **0**；Result 2 唯一命名 |
+| Toeplitz 等价引用 | §3.1(c)/Table 1 错引 `P1` | **`P6`** |
+| 正文完整证明 | §3.1.1/3.1.2/3.2.1/§3.4 四段，与附录重复 | 移除 5.9k 字符，改为三段 proof intuition |
+| 主文页数 | 8 | **7**（技能包 §4.4：页数不是质量指标，未注水） |
+| 提交包 | 单 `simplcore.pdf` 16 页 | **`paper_main.pdf` 8 页 + `paper_appendix.pdf` 9 页** |
+| S4 同量检查 | 仅文字声明 | `governance_s4.json` 机器验证 + v6 反事实 4 矛盾 |
+| 数字冻结 | Table 10 + Table 30 | 16 条 `unique: true` + Table 28 口径补齐 |
+
+**新增撤回/更正**：无新撤回。W1/W12/W13/W15 保持。更正 3 处错引与 1 处命名空间冲突，均登记在 `claim_registry.md` C1–C4。
+
+**检查器修订（不放宽语义）**：`desk_check_v7.py` 的 `has()` 增加空白归一化副本匹配，修双栏断行漏判；`governance.py` 命名空间判定改用负向断言，避免 `TAP5:` / `Supporting proposition P5` 被误报。修后 45/45。
+
+**Phase 7 挂起项**：2027 `.sty` 替换与页数复核、LLM 使用披露、reciprocal reviewer 提名、concurrent submission 自查、References 逐条核验、双 PDF→单 PDF 重打包、3 名独立 blind review。

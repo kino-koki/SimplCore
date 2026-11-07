@@ -1,0 +1,815 @@
+{
+ "status": "G1 first real fill: learned input-side bit allocator",
+ "question": "Can the 1 bit required by Theorem A be learned from the flat input sequence itself, instead of being supplied by our codebook partition convention?",
+ "falsification_conditions": [
+  "F1: if tok ~= none, a single flat token id cannot carry the role bit (expected; information-theoretic).",
+  "F2: if ctx fails to approach oracle, the input-side bit cannot be learned from context either => G1 FALSIFIED, move to G2.",
+  "F3: if ctx ~= oracle AND I(role; binarize(g)) ~= 1 bit, then G1 PASS and the learned bit saturates Theorem A's lower bound log2|A|=1.",
+  "F4: if any conservation assertion fails, the allocator changed the SYSTEM OPERATOR rather than the input signal => REJECT the change."
+ ],
+ "protocol": {
+  "steps": 500,
+  "lr": 0.05,
+  "batch": 64,
+  "V": 64,
+  "VK": 32,
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "hops": [
+   1,
+   2
+  ],
+  "n_pairs": 4,
+  "layout": "gapped",
+  "filler_max": 3,
+  "n_train": 512,
+  "n_test": 512,
+  "optimizer": "Adam",
+  "embedding": "fixed Sylvester-Hadamard, NOT learned",
+  "learned_parameters": "allocator w only; Wout fixed; K static",
+  "role_label_used_for": "analysis + ORACLE arm ONLY"
+ },
+ "architecture": "g_t = sigmoid(w . phi_t); A_t = g_t * A_t, b_t = (1-g_t) * b_t. The SYSTEM OPERATOR is unchanged; only the INPUT SIGNAL is modulated (LTI-compatible).",
+ "rows": [
+  {
+   "arm": "none",
+   "hops": 1,
+   "seed": 0,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 0,
+   "curve": {
+    "0": 1.0
+   },
+   "sep_key_minus_value": null,
+   "I_role_gate_bit": null,
+   "wall_s": 0.04
+  },
+  {
+   "arm": "none",
+   "hops": 1,
+   "seed": 1,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 0,
+   "curve": {
+    "0": 1.0
+   },
+   "sep_key_minus_value": null,
+   "I_role_gate_bit": null,
+   "wall_s": 0.03
+  },
+  {
+   "arm": "none",
+   "hops": 1,
+   "seed": 2,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 0,
+   "curve": {
+    "0": 1.0
+   },
+   "sep_key_minus_value": null,
+   "I_role_gate_bit": null,
+   "wall_s": 0.02
+  },
+  {
+   "arm": "none",
+   "hops": 1,
+   "seed": 3,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 0,
+   "curve": {
+    "0": 1.0
+   },
+   "sep_key_minus_value": null,
+   "I_role_gate_bit": null,
+   "wall_s": 0.02
+  },
+  {
+   "arm": "none",
+   "hops": 1,
+   "seed": 4,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 0,
+   "curve": {
+    "0": 1.0
+   },
+   "sep_key_minus_value": null,
+   "I_role_gate_bit": null,
+   "wall_s": 0.02
+  },
+  {
+   "arm": "tok",
+   "hops": 1,
+   "seed": 0,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 64,
+   "curve": {
+    "0": 1.0,
+    "250": 1.0,
+    "500": 1.0
+   },
+   "sep_key_minus_value": -0.004945808409941244,
+   "I_role_gate_bit": 6.287236107294092e-07,
+   "wall_s": 1.37
+  },
+  {
+   "arm": "tok",
+   "hops": 1,
+   "seed": 1,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 64,
+   "curve": {
+    "0": 1.0,
+    "250": 1.0,
+    "500": 1.0
+   },
+   "sep_key_minus_value": -0.011647198259307157,
+   "I_role_gate_bit": 2.220446049250313e-16,
+   "wall_s": 1.43
+  },
+  {
+   "arm": "tok",
+   "hops": 1,
+   "seed": 2,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 64,
+   "curve": {
+    "0": 1.0,
+    "250": 1.0,
+    "500": 1.0
+   },
+   "sep_key_minus_value": 0.0072875578023556264,
+   "I_role_gate_bit": 3.3842479504997414e-05,
+   "wall_s": 1.32
+  },
+  {
+   "arm": "tok",
+   "hops": 1,
+   "seed": 3,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 64,
+   "curve": {
+    "0": 1.0,
+    "250": 1.0,
+    "500": 1.0
+   },
+   "sep_key_minus_value": -0.0027075624250323393,
+   "I_role_gate_bit": 0.0,
+   "wall_s": 1.38
+  },
+  {
+   "arm": "tok",
+   "hops": 1,
+   "seed": 4,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 64,
+   "curve": {
+    "0": 1.0,
+    "250": 1.0,
+    "500": 1.0
+   },
+   "sep_key_minus_value": -0.011306989940756018,
+   "I_role_gate_bit": 9.841044551928135e-05,
+   "wall_s": 1.46
+  },
+  {
+   "arm": "ctx",
+   "hops": 1,
+   "seed": 0,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 128,
+   "curve": {
+    "0": 1.0,
+    "250": 1.0,
+    "500": 1.0
+   },
+   "sep_key_minus_value": 0.35027000942841074,
+   "I_role_gate_bit": 0.08170485522444348,
+   "wall_s": 1.74
+  },
+  {
+   "arm": "ctx",
+   "hops": 1,
+   "seed": 1,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 128,
+   "curve": {
+    "0": 1.0,
+    "250": 1.0,
+    "500": 1.0
+   },
+   "sep_key_minus_value": 0.40773017607398115,
+   "I_role_gate_bit": 0.12014631264541231,
+   "wall_s": 1.93
+  },
+  {
+   "arm": "ctx",
+   "hops": 1,
+   "seed": 2,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 128,
+   "curve": {
+    "0": 1.0,
+    "250": 1.0,
+    "500": 1.0
+   },
+   "sep_key_minus_value": 0.4888000178541285,
+   "I_role_gate_bit": 0.19934978439660722,
+   "wall_s": 1.68
+  },
+  {
+   "arm": "ctx",
+   "hops": 1,
+   "seed": 3,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 128,
+   "curve": {
+    "0": 1.0,
+    "250": 1.0,
+    "500": 1.0
+   },
+   "sep_key_minus_value": 0.3546191770585102,
+   "I_role_gate_bit": 0.11422057312197342,
+   "wall_s": 1.75
+  },
+  {
+   "arm": "ctx",
+   "hops": 1,
+   "seed": 4,
+   "encoding": "flat",
+   "acc": 1.0,
+   "params": 128,
+   "curve": {
+    "0": 1.0,
+    "250": 1.0,
+    "500": 1.0
+   },
+   "sep_key_minus_value": 0.3606081020123152,
+   "I_role_gate_bit": 0.09145494642176777,
+   "wall_s": 1.79
+  },
+  {
+   "arm": "oracle",
+   "hops": 1,
+   "seed": 0,
+   "encoding": "codebook",
+   "acc": 0.259765625,
+   "params": 0,
+   "curve": {
+    "0": 0.259765625
+   },
+   "sep_key_minus_value": 1.0,
+   "I_role_gate_bit": 0.0,
+   "wall_s": 0.02
+  },
+  {
+   "arm": "oracle",
+   "hops": 1,
+   "seed": 1,
+   "encoding": "codebook",
+   "acc": 0.22265625,
+   "params": 0,
+   "curve": {
+    "0": 0.22265625
+   },
+   "sep_key_minus_value": 1.0,
+   "I_role_gate_bit": 1.0,
+   "wall_s": 0.01
+  },
+  {
+   "arm": "oracle",
+   "hops": 1,
+   "seed": 2,
+   "encoding": "codebook",
+   "acc": 0.228515625,
+   "params": 0,
+   "curve": {
+    "0": 0.228515625
+   },
+   "sep_key_minus_value": 1.0,
+   "I_role_gate_bit": 0.0,
+   "wall_s": 0.01
+  },
+  {
+   "arm": "oracle",
+   "hops": 1,
+   "seed": 3,
+   "encoding": "codebook",
+   "acc": 0.224609375,
+   "params": 0,
+   "curve": {
+    "0": 0.224609375
+   },
+   "sep_key_minus_value": 1.0,
+   "I_role_gate_bit": 1.0,
+   "wall_s": 0.01
+  },
+  {
+   "arm": "oracle",
+   "hops": 1,
+   "seed": 4,
+   "encoding": "codebook",
+   "acc": 0.25,
+   "params": 0,
+   "curve": {
+    "0": 0.25
+   },
+   "sep_key_minus_value": 1.0,
+   "I_role_gate_bit": 0.0,
+   "wall_s": 0.01
+  },
+  {
+   "arm": "none",
+   "hops": 2,
+   "seed": 0,
+   "encoding": "flat",
+   "acc": 0.9765625,
+   "params": 0,
+   "curve": {
+    "0": 0.9765625
+   },
+   "sep_key_minus_value": null,
+   "I_role_gate_bit": null,
+   "wall_s": 0.02
+  },
+  {
+   "arm": "none",
+   "hops": 2,
+   "seed": 1,
+   "encoding": "flat",
+   "acc": 0.974609375,
+   "params": 0,
+   "curve": {
+    "0": 0.974609375
+   },
+   "sep_key_minus_value": null,
+   "I_role_gate_bit": null,
+   "wall_s": 0.02
+  },
+  {
+   "arm": "none",
+   "hops": 2,
+   "seed": 2,
+   "encoding": "flat",
+   "acc": 0.955078125,
+   "params": 0,
+   "curve": {
+    "0": 0.955078125
+   },
+   "sep_key_minus_value": null,
+   "I_role_gate_bit": null,
+   "wall_s": 0.03
+  },
+  {
+   "arm": "none",
+   "hops": 2,
+   "seed": 3,
+   "encoding": "flat",
+   "acc": 0.96875,
+   "params": 0,
+   "curve": {
+    "0": 0.96875
+   },
+   "sep_key_minus_value": null,
+   "I_role_gate_bit": null,
+   "wall_s": 0.02
+  },
+  {
+   "arm": "none",
+   "hops": 2,
+   "seed": 4,
+   "encoding": "flat",
+   "acc": 0.984375,
+   "params": 0,
+   "curve": {
+    "0": 0.984375
+   },
+   "sep_key_minus_value": null,
+   "I_role_gate_bit": null,
+   "wall_s": 0.02
+  },
+  {
+   "arm": "tok",
+   "hops": 2,
+   "seed": 0,
+   "encoding": "flat",
+   "acc": 0.927734375,
+   "params": 128,
+   "curve": {
+    "0": 0.970703125,
+    "250": 0.921875,
+    "500": 0.927734375
+   },
+   "sep_key_minus_value": -4.2678924739636415e-05,
+   "I_role_gate_bit": 0.000364314021125578,
+   "wall_s": 2.77
+  },
+  {
+   "arm": "tok",
+   "hops": 2,
+   "seed": 1,
+   "encoding": "flat",
+   "acc": 0.947265625,
+   "params": 128,
+   "curve": {
+    "0": 0.974609375,
+    "250": 0.943359375,
+    "500": 0.947265625
+   },
+   "sep_key_minus_value": 8.412081560893458e-05,
+   "I_role_gate_bit": 0.0,
+   "wall_s": 2.86
+  },
+  {
+   "arm": "tok",
+   "hops": 2,
+   "seed": 2,
+   "encoding": "flat",
+   "acc": 0.939453125,
+   "params": 128,
+   "curve": {
+    "0": 0.953125,
+    "250": 0.939453125,
+    "500": 0.939453125
+   },
+   "sep_key_minus_value": 8.96602466124996e-05,
+   "I_role_gate_bit": 3.444827822707275e-05,
+   "wall_s": 2.63
+  },
+  {
+   "arm": "tok",
+   "hops": 2,
+   "seed": 3,
+   "encoding": "flat",
+   "acc": 0.9375,
+   "params": 128,
+   "curve": {
+    "0": 0.9609375,
+    "250": 0.939453125,
+    "500": 0.9375
+   },
+   "sep_key_minus_value": 6.493135183105458e-05,
+   "I_role_gate_bit": 6.881541882286513e-05,
+   "wall_s": 2.5
+  },
+  {
+   "arm": "tok",
+   "hops": 2,
+   "seed": 4,
+   "encoding": "flat",
+   "acc": 0.958984375,
+   "params": 128,
+   "curve": {
+    "0": 0.982421875,
+    "250": 0.958984375,
+    "500": 0.958984375
+   },
+   "sep_key_minus_value": -1.3416567693158576e-05,
+   "I_role_gate_bit": 2.6878524403972648e-06,
+   "wall_s": 2.7
+  },
+  {
+   "arm": "ctx",
+   "hops": 2,
+   "seed": 0,
+   "encoding": "flat",
+   "acc": 0.94140625,
+   "params": 256,
+   "curve": {
+    "0": 0.970703125,
+    "250": 0.939453125,
+    "500": 0.94140625
+   },
+   "sep_key_minus_value": -0.00040493371190919447,
+   "I_role_gate_bit": 0.002085995780627403,
+   "wall_s": 3.47
+  },
+  {
+   "arm": "ctx",
+   "hops": 2,
+   "seed": 1,
+   "encoding": "flat",
+   "acc": 0.962890625,
+   "params": 256,
+   "curve": {
+    "0": 0.962890625,
+    "250": 0.962890625,
+    "500": 0.962890625
+   },
+   "sep_key_minus_value": -0.0007490670448399017,
+   "I_role_gate_bit": 0.001860964656126285,
+   "wall_s": 3.4
+  },
+  {
+   "arm": "ctx",
+   "hops": 2,
+   "seed": 2,
+   "encoding": "flat",
+   "acc": 0.943359375,
+   "params": 256,
+   "curve": {
+    "0": 0.943359375,
+    "250": 0.947265625,
+    "500": 0.943359375
+   },
+   "sep_key_minus_value": 0.0009804731999165095,
+   "I_role_gate_bit": 0.0007517174502786883,
+   "wall_s": 3.23
+  },
+  {
+   "arm": "ctx",
+   "hops": 2,
+   "seed": 3,
+   "encoding": "flat",
+   "acc": 0.962890625,
+   "params": 256,
+   "curve": {
+    "0": 0.962890625,
+    "250": 0.966796875,
+    "500": 0.962890625
+   },
+   "sep_key_minus_value": -0.00016453899192636623,
+   "I_role_gate_bit": 9.906427437078591e-05,
+   "wall_s": 3.26
+  },
+  {
+   "arm": "ctx",
+   "hops": 2,
+   "seed": 4,
+   "encoding": "flat",
+   "acc": 0.962890625,
+   "params": 256,
+   "curve": {
+    "0": 0.9765625,
+    "250": 0.96484375,
+    "500": 0.962890625
+   },
+   "sep_key_minus_value": -0.0005651570294278319,
+   "I_role_gate_bit": 0.00039783851272812143,
+   "wall_s": 3.47
+  },
+  {
+   "arm": "oracle",
+   "hops": 2,
+   "seed": 0,
+   "encoding": "codebook",
+   "acc": 0.115234375,
+   "params": 0,
+   "curve": {
+    "0": 0.115234375
+   },
+   "sep_key_minus_value": 1.0,
+   "I_role_gate_bit": 0.0,
+   "wall_s": 0.03
+  },
+  {
+   "arm": "oracle",
+   "hops": 2,
+   "seed": 1,
+   "encoding": "codebook",
+   "acc": 0.154296875,
+   "params": 0,
+   "curve": {
+    "0": 0.154296875
+   },
+   "sep_key_minus_value": 1.0,
+   "I_role_gate_bit": 1.0,
+   "wall_s": 0.02
+  },
+  {
+   "arm": "oracle",
+   "hops": 2,
+   "seed": 2,
+   "encoding": "codebook",
+   "acc": 0.1328125,
+   "params": 0,
+   "curve": {
+    "0": 0.1328125
+   },
+   "sep_key_minus_value": 1.0,
+   "I_role_gate_bit": 0.0,
+   "wall_s": 0.03
+  },
+  {
+   "arm": "oracle",
+   "hops": 2,
+   "seed": 3,
+   "encoding": "codebook",
+   "acc": 0.181640625,
+   "params": 0,
+   "curve": {
+    "0": 0.181640625
+   },
+   "sep_key_minus_value": 1.0,
+   "I_role_gate_bit": 1.0,
+   "wall_s": 0.02
+  },
+  {
+   "arm": "oracle",
+   "hops": 2,
+   "seed": 4,
+   "encoding": "codebook",
+   "acc": 0.158203125,
+   "params": 0,
+   "curve": {
+    "0": 0.158203125
+   },
+   "sep_key_minus_value": 1.0,
+   "I_role_gate_bit": 0.0,
+   "wall_s": 0.02
+  }
+ ],
+ "summary": [
+  {
+   "hops": 1,
+   "arm": "none",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5,
+   "I_bit_mean": null
+  },
+  {
+   "hops": 1,
+   "arm": "tok",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5,
+   "I_bit_mean": 2.6576329727046045e-05
+  },
+  {
+   "hops": 1,
+   "arm": "ctx",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5,
+   "I_bit_mean": 0.12137529436204084
+  },
+  {
+   "hops": 1,
+   "arm": "oracle",
+   "mean": 0.237109375,
+   "sd": 0.01495639821802863,
+   "n": 5,
+   "I_bit_mean": 0.4
+  },
+  {
+   "hops": 2,
+   "arm": "none",
+   "mean": 0.971875,
+   "sd": 0.009773434377497503,
+   "n": 5,
+   "I_bit_mean": null
+  },
+  {
+   "hops": 2,
+   "arm": "tok",
+   "mean": 0.9421875,
+   "sd": 0.010452412625202852,
+   "n": 5,
+   "I_bit_mean": 9.405311412318263e-05
+  },
+  {
+   "hops": 2,
+   "arm": "ctx",
+   "mean": 0.9546875,
+   "sd": 0.010065702130254003,
+   "n": 5,
+   "I_bit_mean": 0.0010391161348262568
+  },
+  {
+   "hops": 2,
+   "arm": "oracle",
+   "mean": 0.1484375,
+   "sd": 0.022710065396482237,
+   "n": 5,
+   "I_bit_mean": 0.4
+  }
+ ],
+ "paired": {
+  "H1_tok_minus_none": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "n_seeds": 5,
+   "oracle_minus_arm": -0.762890625
+  },
+  "H1_ctx_minus_none": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "n_seeds": 5,
+   "oracle_minus_arm": -0.762890625
+  },
+  "H2_tok_minus_none": {
+   "mean": -0.0296875,
+   "ci95": [
+    -0.040234375,
+    -0.02109375
+   ],
+   "n_seeds": 5,
+   "oracle_minus_arm": -0.79375
+  },
+  "H2_ctx_minus_none": {
+   "mean": -0.0171875,
+   "ci95": [
+    -0.026953125,
+    -0.009375
+   ],
+   "n_seeds": 5,
+   "oracle_minus_arm": -0.80625
+  }
+ },
+ "protocol_validity": {
+  "valid": false,
+  "none_H1": 1.0,
+  "oracle_H1": 0.237109375,
+  "none_H2": 0.971875,
+  "oracle_H2": 0.1484375,
+  "validity_gate": "none must be < 0.5 AND oracle must be >= 0.99",
+  "finding": "The flat alphabet did NOT create the ambiguity fibre |A|>=2 that Theorem A needs: with no allocator at all, H=1 already reaches 1.0000 and H=2 reaches 0.9719. In the flat alphabet a VALUE id is itself a valid KEY id, so the chain closes by itself and the required bit is never demanded. The oracle arm is also invalid: the fixed role gate under codebook encoding erases the value code needed as the next hop's key (no codebook-swap M), so it falls to 0.2371. Therefore THIS PROBE CANNOT test bit internalisation; any PASS here would be vacuous.",
+  "next_version_validity_gate": "G1-v2 must first construct a fibre with |A|>=2 (role ambiguity) WITHOUT baking the answer into the alphabet, verify none<0.5 and oracle>=0.99, and only then measure I(role; learned gate).",
+  "falsification_outcome": "F3 NOT SATISFIED (no valid oracle to compare against). F1 NOT APPLICABLE (none already solves H=1). F2 NOT EVALUABLE (upper bound invalid). F4 NOT TRIGGERED (all conservation assertions pass)."
+ },
+ "guards": {
+  "none": {
+   "toeplitz_dev": 0.0,
+   "fft_vs_toeplitz_rel_err": 4.2207033617763686e-16,
+   "future_perturbation_changed_bits": 0,
+   "state_bytes": 98304,
+   "state_independent_of_L": true,
+   "kernel_is_static": true,
+   "has_NxN_score": false,
+   "has_kv_cache": false,
+   "gradcheck_pass": true,
+   "gradcheck_rel_err": null,
+   "gradcheck_epsilon": null,
+   "analytic_grad_magnitude": null
+  },
+  "tok": {
+   "toeplitz_dev": 0.0,
+   "fft_vs_toeplitz_rel_err": 4.325189091092453e-16,
+   "future_perturbation_changed_bits": 0,
+   "state_bytes": 98304,
+   "state_independent_of_L": true,
+   "kernel_is_static": true,
+   "has_NxN_score": false,
+   "has_kv_cache": false,
+   "gradcheck_pass": true,
+   "gradcheck_rel_err": 5.006986799928527e-05,
+   "gradcheck_epsilon": 0.0001,
+   "analytic_grad_magnitude": 5.006986799928527e-13
+  },
+  "ctx": {
+   "toeplitz_dev": 0.0,
+   "fft_vs_toeplitz_rel_err": 2.9350273447171414e-16,
+   "future_perturbation_changed_bits": 0,
+   "state_bytes": 98304,
+   "state_independent_of_L": true,
+   "kernel_is_static": true,
+   "has_NxN_score": false,
+   "has_kv_cache": false,
+   "gradcheck_pass": true,
+   "gradcheck_rel_err": 0.00022888422707132097,
+   "gradcheck_epsilon": 0.0001,
+   "analytic_grad_magnitude": 6.890444654063287e-14
+  },
+  "oracle": {
+   "toeplitz_dev": 0.0,
+   "fft_vs_toeplitz_rel_err": 4.2207033617763686e-16,
+   "future_perturbation_changed_bits": 0,
+   "state_bytes": 98304,
+   "state_independent_of_L": true,
+   "kernel_is_static": true,
+   "has_NxN_score": false,
+   "has_kv_cache": false,
+   "gradcheck_pass": true,
+   "gradcheck_rel_err": null,
+   "gradcheck_epsilon": null,
+   "analytic_grad_magnitude": null
+  }
+ },
+ "guards_all_pass": true,
+ "honest_scope": "V=64 synthetic content chain, H<=2, 5 seeds. No LM, no MQAR, no throughput, no published baseline. This is a G1 falsification test, not an architecture superiority claim."
+}

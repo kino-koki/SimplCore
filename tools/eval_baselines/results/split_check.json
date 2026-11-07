@@ -1,0 +1,23 @@
+{
+ "split_point_merged_page": 9,
+ "paper_main_pages": 8,
+ "paper_appendix_pages": 9,
+ "banned_fragments_found": [],
+ "checks": {
+  "two_pdfs_exist": true,
+  "main_has_conclusion": true,
+  "main_has_broader_impact": true,
+  "main_has_references": true,
+  "broader_impact_before_references": true,
+  "main_has_no_appendix_a": true,
+  "appendix_has_all_A_to_J": true,
+  "appendix_has_cover": true,
+  "no_self_identifying_paths": true,
+  "main_pages_within_8": true,
+  "no_entity_or_tex_fragments": true
+ },
+ "n_pass": 11,
+ "n_checks": 11,
+ "all_pass": true,
+ "note": "The 2027 Call for Papers and author instructions are not yet published. A single combined PDF plus supplementary material is the 2026 convention; this two-PDF split is the skill pack's internal deliverable and must be repacked to whatever the 2027 submission system requires."
+}

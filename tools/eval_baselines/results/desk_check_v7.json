@@ -1,7 +1,7 @@
 {
  "status": "automated desk-check; NOT a human reviewer simulation",
  "pdf": "/data/workspace/simplcore.pdf",
- "total_pages": 10,
+ "total_pages": 16,
  "main_pages": 8,
  "n_checks": 45,
  "n_pass": 45,

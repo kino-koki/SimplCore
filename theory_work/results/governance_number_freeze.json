@@ -1,0 +1,73 @@
+{
+ "frozen": {
+  "chance": {
+   "value": 0.03125,
+   "definition": "1/V_K, V_K=32",
+   "scope": "this task only"
+  },
+  "H2_L2_1500": {
+   "value": 1.0,
+   "statistic": "mean acc, 5 seeds, 512 held-out/seed"
+  },
+  "H2_L1_1500": {
+   "value": 0.1809,
+   "statistic": "mean acc, 5 seeds, 512 held-out/seed"
+  },
+  "SE2_predicted_cover": {
+   "value": 129.87,
+   "statistic": "analytic n H_n / (1-beta)"
+  },
+  "SE2_measured_cover": {
+   "value": 130.0,
+   "statistic": "mean over 5 seeds"
+  },
+  "SE3_exact_expectation": {
+   "value": 0.709375,
+   "statistic": "analytic, p=0.30"
+  },
+  "SE3_enumeration_mean": {
+   "value": 0.709102,
+   "statistic": "20000 runs x 32 keys"
+  },
+  "SE5_K_star": {
+   "value": 6904,
+   "statistic": "floor(log eps / log 0.999)"
+  },
+  "fused_gated": {
+   "value": 1.0,
+   "statistic": "5 seeds, 320 rounds"
+  },
+  "ungated_corrupt": {
+   "value": 0.6438,
+   "statistic": "5 seeds, p=0.30"
+  },
+  "break_alignment": {
+   "value": 0.025,
+   "statistic": "5 seeds"
+  },
+  "rho_fast": {
+   "value": 0.1313,
+   "statistic": "5 seeds, rho=0.90"
+  },
+  "core_state_bytes": {
+   "value": 32768,
+   "statistic": "exact, d=64 fp64"
+  },
+  "parity_gapped_5seed": {
+   "value": 0.3438,
+   "statistic": "5-seed mean, Table 2"
+  },
+  "duplicate_keys_5seed": {
+   "value": 0.9328,
+   "statistic": "5-seed trained, Table 2"
+  },
+  "fft_iir_bound": {
+   "value": "<= 3e-16",
+   "statistic": "max over 3 conservation probes"
+  }
+ },
+ "n_entries": 16,
+ "duplicate_value_entries": [],
+ "unique": true,
+ "rule": "Each configuration has exactly one frozen value; superseded single-seed values are recorded only in the provenance table, never quoted as conclusions."
+}

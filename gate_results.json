@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-11-07T21:33:41",
+  "definition": "创世级 = 正交自由度 + 真实算力下可换能力 + 可迁移；判据 C1-C5",
+  "rules": [
+    "只读已有原始结果文件；NOT MET 不包装成 PARTIAL",
+    "60% 门是内部质量代理指标，不是录用概率，不换算百分数",
+    "合成任务满分不升级为『架构更强』"
+  ],
+  "gates": [
+    {
+      "id": "G1",
+      "claim": "bit 内生化（可学输入侧分配器，满足下界且守恒）",
+      "status": "NOT MET",
+      "evidence": {
+        "n_rows": 40,
+        "seeds": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "guards_all_pass": false,
+        "learned_arms": [
+          "ctx",
+          "tok"
+        ],
+        "oracle_mean": 0.1927734375,
+        "ctx_mean": 0.97734375,
+        "falsification_conditions": [
+          "F1: if tok ~= none, a single flat token id cannot carry the role bit (expected; information-theoretic).",
+          "F2: if ctx fails to approach oracle, the input-side bit cannot be learned from context either => G1 FALSIFIED, move to G2.",
+          "F3: if ctx ~= oracle AND I(role; binarize(g)) ~= 1 bit, then G1 PASS and the learned bit saturates Theorem A's lower bound log2|A|=1.",
+          "F4: if any conservation assertion fails, the allocator changed the SYSTEM OPERATOR rather than the input signal => REJECT the change."
+        ],
+        "protocol_valid": false,
+        "protocol_finding": "The flat alphabet did NOT create the ambiguity fibre |A|>=2 that Theorem A needs: with no allocator at all, H=1 already reaches 1.0000 and H=2 reaches 0.9719. In the flat alphabet a VALUE id is itself a valid KEY id, so the chain closes by itself and the required bit is never demanded. The oracle arm is also invalid: the fixed role gate under codebook encoding erases the value code needed as the next hop's key (no codebook-swap M), so it falls to 0.2371. Therefore THIS PROBE CANNOT test bit internalisation; any PASS here would be vacuous.",
+        "falsification_outcome": "F3 NOT SATISFIED (no valid oracle to compare against). F1 NOT APPLICABLE (none already solves H=1). F2 NOT EVALUABLE (upper bound invalid). F4 NOT TRIGGERED (all conservation assertions pass)."
+      },
+      "falsification_condition": "若只依赖当前 token id 必然失败、且依赖上下文仍达不到 oracle，则内生化被证伪，转 G2"
+    },
+    {
+      "id": "G2",
+      "claim": "bit 可调度（按层/按 hop 的预算前沿）",
+      "status": "NOT MET",
+      "evidence": "无 per-layer / per-hop 的 B 预算分配实验（前沿曲线）",
+      "falsification_condition": "预算与能力无单调关系 → 该轴不可调度"
+    },
+    {
+      "id": "G3",
+      "claim": "标准 MQAR / Zoology 协议，同参数 ≥5 seed 配对 CI",
+      "status": "NOT MET",
+      "evidence": "无 V>=8192 / L>=512 / 同参数 GDN·DeltaNet·Mamba-2·Transformer·KATA 的配对 CI",
+      "falsification_condition": "等参数下显著落后且无理论解释 → 停止架构叙事"
+    },
+    {
+      "id": "G4",
+      "claim": "≥10M token 等算力语言建模",
+      "status": "NOT MET",
+      "evidence": "无 >=10M token 等算力 LM（ppl + 检索探针）；TS2SC 权重本体/torch/GPU 均缺",
+      "falsification_condition": "ppl 差距不可由 B 预算解释 → C3 证伪"
+    },
+    {
+      "id": "G5",
+      "claim": "fused kernel + 与 FlashAttention-2 同场实测吞吐",
+      "status": "NOT MET",
+      "evidence": {
+        "files": [
+          "train/superposition_probe/results/codebook_throughput.json",
+          "train/superposition_probe/results/physics_throughput.json"
+        ],
+        "note": "现有吞吐是未优化 NumPy 参考实现，只能看标度；无 Triton/CUDA fused kernel"
+      },
+      "falsification_condition": "常数状态在真实硬件无优势 → C4 证伪"
+    },
+    {
+      "id": "G6",
+      "claim": "SMM 自进化在真实 token 序列上单调且守速率界",
+      "status": "PARTIAL",
+      "evidence": {
+        "fused_gated_mean": 1.0,
+        "monotone_all_seeds": true,
+        "protocol": "No gradient passes through retrieval; CT7 holds.",
+        "scope": "有限合成巩固过程，非真实 token 序列"
+      },
+      "falsification_condition": "真实序列不单调或违反 CT7 速率界 → 收敛为理论边界"
+    },
+    {
+      "id": "G7",
+      "claim": "论文换贡献类型（bit-budgeted architecture）",
+      "status": "NOT MET",
+      "evidence": {
+        "title_is_boundary_characterization": true,
+        "title_is_bit_budgeted_architecture": true,
+        "note": "C1-C5 至少 3 条实证后才换贡献类型"
+      },
+      "falsification_condition": "G3–G5 任一不成立则不换，走 workshop / TMLR"
+    }
+  ],
+  "counts": {
+    "NOT MET": 6,
+    "PARTIAL": 1
+  },
+  "headline": "当前定位：C5 通过（紧界+构造+scope），C1 部分，C2/C3/C4 未通过。不是创世级，是『一条尚未离开实验室的正交轴』。"
+}

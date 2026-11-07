@@ -83,3 +83,23 @@ Construction C / Empirical E），其余一律 P1–P8 或 L1–L3。
 旧附录 A.31 之后的 ledger（NT01–NT31、A.32/A.33、130/130、23/23、51 项台账）
 已整包删除；附录只保留 A（完整证明）、B（6 行撤回登记）、C（复现说明）。
 `CHANGELOG.md` 记录实测进展，`REVISION_LOG.md` 记录口径变更与撤回，两者都不是论文正文。
+
+## v7.1 稿件与证据链索引（2026-11-07）
+
+**提交包（仅此两项可随稿提交）**
+- `paper_main.pdf` — 8 页：§1–§8 + Broader Impact + References
+- `paper_appendix.pdf` — 9 页：封面 + Appendix A–J，全部完整解析证明与 34 张原始数据表
+
+**本地阅读副本（不进提交包）**
+- `simplcore.pdf` — 16 页合并版
+
+**治理工作文件（不进提交包，技能包 §0.5）**
+`cfp_lock.md`(01) · `claim_registry.md`(02) · `proof_audit.md`(03) · `p0_scan.md`(04) · `number_freeze.md`(05) · `review_sim.md`(08) · `rebuttal_prep.md`(09) · `submit_checklist.md`(010) · `GOVERNANCE_SUMMARY.md`（总览）
+
+**机器证据**
+`tools/eval_baselines/results/governance_gate.json`(12/12) · `desk_check_v7.json`(45/45) · `split_check.json`(11/11) · `theory_work/results/governance_s4.json` · `governance_namespace_before/after.json` · `governance_number_freeze.json` · `train/superposition_probe/results/fusion_guard.json`(27/27)
+
+**架构自检入口**
+`verify_governance.py`（一键） · `theory_work/governance.py`（B 可计算化 / 命名空间 / 数字冻结） · `split_submission.py`（双轨拆分） · `build_simplcore_pdf_v7.py`（唯一当前生成器；`_pregov.py` / `_pre65.py` 为历史归档）
+
+**状态**：Phase 0–5 PASS；Phase 6 门 `NOT EVALUABLE`；Phase 7 挂起。2027 CFP 未发布，不构成合规承诺。

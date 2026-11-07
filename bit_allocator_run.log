@@ -1,0 +1,59 @@
+== G1: learned input-side bit allocator ==
+  H=1 none    s=0 acc=1.0000 I=-1.000 p=0
+  H=1 none    s=1 acc=1.0000 I=-1.000 p=0
+  H=1 none    s=2 acc=1.0000 I=-1.000 p=0
+  H=1 none    s=3 acc=1.0000 I=-1.000 p=0
+  H=1 none    s=4 acc=1.0000 I=-1.000 p=0
+  H=1 tok     s=0 acc=1.0000 I=0.000 p=64
+  H=1 tok     s=1 acc=1.0000 I=0.000 p=64
+  H=1 tok     s=2 acc=1.0000 I=0.000 p=64
+  H=1 tok     s=3 acc=1.0000 I=0.000 p=64
+  H=1 tok     s=4 acc=1.0000 I=0.000 p=64
+  H=1 ctx     s=0 acc=1.0000 I=0.082 p=128
+  H=1 ctx     s=1 acc=1.0000 I=0.120 p=128
+  H=1 ctx     s=2 acc=1.0000 I=0.199 p=128
+  H=1 ctx     s=3 acc=1.0000 I=0.114 p=128
+  H=1 ctx     s=4 acc=1.0000 I=0.091 p=128
+  H=1 oracle  s=0 acc=0.2598 I=0.000 p=0
+  H=1 oracle  s=1 acc=0.2227 I=1.000 p=0
+  H=1 oracle  s=2 acc=0.2285 I=0.000 p=0
+  H=1 oracle  s=3 acc=0.2246 I=1.000 p=0
+  H=1 oracle  s=4 acc=0.2500 I=0.000 p=0
+  H=2 none    s=0 acc=0.9766 I=-1.000 p=0
+  H=2 none    s=1 acc=0.9746 I=-1.000 p=0
+  H=2 none    s=2 acc=0.9551 I=-1.000 p=0
+  H=2 none    s=3 acc=0.9688 I=-1.000 p=0
+  H=2 none    s=4 acc=0.9844 I=-1.000 p=0
+  H=2 tok     s=0 acc=0.9277 I=0.000 p=128
+  H=2 tok     s=1 acc=0.9473 I=0.000 p=128
+  H=2 tok     s=2 acc=0.9395 I=0.000 p=128
+  H=2 tok     s=3 acc=0.9375 I=0.000 p=128
+  H=2 tok     s=4 acc=0.9590 I=0.000 p=128
+  H=2 ctx     s=0 acc=0.9414 I=0.002 p=256
+  H=2 ctx     s=1 acc=0.9629 I=0.002 p=256
+  H=2 ctx     s=2 acc=0.9434 I=0.001 p=256
+  H=2 ctx     s=3 acc=0.9629 I=0.000 p=256
+  H=2 ctx     s=4 acc=0.9629 I=0.000 p=256
+  H=2 oracle  s=0 acc=0.1152 I=0.000 p=0
+  H=2 oracle  s=1 acc=0.1543 I=1.000 p=0
+  H=2 oracle  s=2 acc=0.1328 I=0.000 p=0
+  H=2 oracle  s=3 acc=0.1816 I=1.000 p=0
+  H=2 oracle  s=4 acc=0.1582 I=0.000 p=0
+== conservation ==
+  none    toe=0.00e+00 fft=4.22e-16 causal=0 grad=True
+  tok     toe=0.00e+00 fft=4.33e-16 causal=0 grad=True
+  ctx     toe=0.00e+00 fft=2.94e-16 causal=0 grad=True
+  oracle  toe=0.00e+00 fft=4.22e-16 causal=0 grad=True
+
+== summary ==
+  H=1 none    mean=1.0000 sd=0.0000 I=-1.000
+  H=1 tok     mean=1.0000 sd=0.0000 I=0.000
+  H=1 ctx     mean=1.0000 sd=0.0000 I=0.121
+  H=1 oracle  mean=0.2371 sd=0.0150 I=0.400
+  H=2 none    mean=0.9719 sd=0.0098 I=-1.000
+  H=2 tok     mean=0.9422 sd=0.0105 I=0.000
+  H=2 ctx     mean=0.9547 sd=0.0101 I=0.001
+  H=2 oracle  mean=0.1484 sd=0.0227 I=0.400
+protocol_valid = False (none_H1=1.0000 oracle_H1=0.2371)
+guards_all_pass = True
+-> /data/workspace/bit_allocator_results.json

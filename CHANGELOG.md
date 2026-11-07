@@ -478,3 +478,58 @@ m_h 只有一个非零峰，任何位置门只能**删掉**它；删到 key 后�
 - V ≫ 64 的固定正交码构造
 - 与 attention 的实测吞吐对标
 - B1 向深层 + 逐位置非线性 FFN 的形式化推广
+
+## v7.1 — 投稿技能包治理 + 架构自检内建（2026-11-07）
+
+按《ICML2027_SimplCore_投稿技能包》执行 Phase 0–7。无新增定理、无新增实验、无新增数字；训练仍冻结。
+
+**架构完善（治理规则变成可计算对象）**
+- `theory_work/governance.py`：把 `B = Σ_t log₂|π⁻¹(v_t)|` 实现为 `budget_B()`；在 3 载体 × m=1..4 上做 S4 同量断言 → `S4 PASS`，紧见证 `key_only_tag`；按 v6 旧定义反事实重跑产生 4 条矛盾（`|A|=2^m > 2^B=1`）。
+- 命名空间唯一性校验（修复前基线只采一次）、16 条数字冻结表 `unique: true`。
+- `verify_governance.py` 串起 5 个脚本 → `governance_gate.json` **12/12 PASS**；`split_submission.py` 按内容动态切分 → 11/11 PASS。
+
+**稿件硬错修复（真实 P0）**
+1. Theorem A 前提 `P1–P5` 与支撑命题 `P1–P8` 双重占用 → 前提改名 `TAP1–TAP5`，§3.1 写明 namespace 规则。
+2. `Theorem B` 同名不同义（Result 2 vs 并入 (e) 的状态阶陈述）→ 全文归零。
+3. §3.1(c) 与 Table 1 错引 `P1`（Toeplitz 等价）→ 改 `P6`。
+4. 正文 §3.1.1/§3.1.2/§3.2.1/§3.4 四段完整证明与附录重复 → 移出正文，只留 proof intuition；附录保留唯一完整版。
+5. Table 28 的 `0.2969` 补「单 seed / 不同配置」口径，值由原始 JSON 注入。
+
+**结果**：主文 8→7 页（+1 页 Broader Impact/References），总 16 页；`paper_main.pdf` 8 页 + `paper_appendix.pdf` 9 页；desk-check 45/45、fusion guard 27/27、拆分 11/11、治理总检 12/12；自识别路径 0、元话术 0、乱码 0。
+
+**挂起**：60% 内部质量门 `NOT EVALUABLE`（缺 3 名独立真人 blind review）；Phase 7 挂起（2027 CFP / Author Instructions 未发布，References 待逐条核验，reciprocal reviewer 待提名）。不承诺录用概率。
+
+产物：`cfp_lock.md` / `claim_registry.md` / `proof_audit.md` / `p0_scan.md` / `number_freeze.md` / `review_sim.md` / `rebuttal_prep.md` / `submit_checklist.md` / `GOVERNANCE_SUMMARY.md` + 两个提交 PDF。
+
+---
+
+## v7.2 — 竞争力路线图 + G1 第一次真实填充（2026-11-07）
+
+本轮目标从「再打磨边界刻画」改为「规划并逐步真实填充」。训练/迁移仍冻结，无新增定理、无大规模实验、无 LLM 权重读写。
+
+**外部格局核对（联网，非记忆）**
+- 2026 产业格局是混合化：softmax attention 层占比压到 10–25%（Qwen3-Next / Kimi Linear 3:1，MiniMax-01 7:1，Jamba 1:7）。
+- Impossibility Triangle（2605.05066）证明 Efficiency + Compactness + Recall 三者不可兼得，Recall 上界 `O(poly(d)/log V)`，52 架构无一逃逸。
+- Zoology：recall 失败占门控卷积 ppl 差距约 82%，MQAR 是标准协议；KATA（2607.17419）用球面码 + Welch 界在 340M LM 与长程 MQAR 上做对照；Log-Linear Attention（ICLR 2026）以 O(log T) 状态换 recall。
+- ICML 2027 官网：会议日期/地点已确认，**CFP、Author Instructions、截稿日、`.sty` 仍未发布**（原文 "will appear here once they are confirmed"）；第三方截稿汇总与官网状态冲突，不采信。
+
+**新增产物**
+- `创世级架构路线图.md`：把「创世级」定义成 C1–C5 五条可证伪判据；归纳出「信息在序列里的放置位置 / 输入侧 bit 预算」这条与现有四条优化轴正交的自由度；列 G1–G7 七个 gate（每个带机器判定式与证伪条件）、倒排时间线、不承诺清单。
+- `competitiveness_gate.py` + `gate_results.json`：只读已有原始结果判定，**6 NOT MET / 1 PARTIAL（G6）**；60% 门仍按技能包定义为内部质量代理，不换算录用概率。
+- `bit_allocator_probe.py` + `bit_allocator_results.json`：G1 第一刀，5 seeds × 4 臂 × 2 跳，把必需 bit 从外部码本分区改成输入侧可学分配器 `g_t=σ(w·φ_t)`。
+
+**G1 实跑结果（诚实记录，不挑数字）**
+| 臂 | H=1 | H=2 |
+|---|---:|---:|
+| `none` flat 无门 | 1.0000 | 0.9719 |
+| `tok` 门看当前 token | 1.0000 | 0.9422 |
+| `ctx` 门看当前+前驱 | 1.0000 | 0.9547 |
+| `oracle` codebook+固定角色门 | 0.2371 | 0.1484 |
+
+`protocol_valid=False`，**G1 判 NOT MET**：flat 字母表里 VALUE id 本身就是合法 KEY id，链条自闭合，未造出 `|A|≥2` 歧义纤维，必需的 bit 根本没被索取；oracle 臂因缺码本交换 M 也无效。第一版还存在门控索引错位（用当前位置门加权前驱信号），已修并留痕。学到门与角色互信息 ≈0 却满分，是对「bit 内生化」的反例线索。F3 未满足，F1 不适用，F2 不可判，F4 未触发。
+
+**站得住的正结果**：调制只加在输入信号、系统算子未改时，Toeplitz 偏差 0、FFT↔Toeplitz 2.9e−16~4.3e−16、未来扰动改变位 0、状态与 L 无关、gradcheck 全过（`guards_all_pass=True`）。ctx 臂 gradcheck 曾报 0.0217，查明是解析梯度 ~1e-8 时 e=1e-6 中心差分的舍入噪声（e=1e-4 为 2e-4），阈值未放宽、量级已记录。
+
+**G1-v2 前置条件（写死）**：先造 `|A|≥2` 纤维且不把答案烘进字母表 → 校验 `none<0.5 && oracle≥0.99` → 才测 `I(role;g)` 与 `B_eff≥log₂|A|`；否则 G1 正式证伪，转 G2 把 B 当外部可调度资源。
+
+**仍未完成**：G2–G7 全部未填；≥10M token LM、同算力强基线、真实 MQAR、fused kernel、真实序列自进化、论文换贡献类型，一项没补。不承诺过稿率、SOTA、LM parity。

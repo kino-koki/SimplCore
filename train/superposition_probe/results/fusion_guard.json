@@ -1,0 +1,223 @@
+{
+ "checks": {
+  "theory_7of7": true,
+  "theory_SE1": true,
+  "theory_SE2": true,
+  "theory_SE3": true,
+  "theory_SE4": true,
+  "theory_SE5": true,
+  "theory_nonvacuous_SE2": true,
+  "theory_SE3_concentration": true,
+  "theory_SE3_exact_expectation": true,
+  "evolution_all_invariants": true,
+  "evolution_monotone": true,
+  "fused_above_0.90": true,
+  "all_key_paired_positive": true,
+  "core_state_bytes_constant_across_rounds": true,
+  "slot_count_bounded_by_capacity": true,
+  "SE5_capacity_predicts_rho_fast_loss": true,
+  "ablation_clean_gate_configs_saturate": true,
+  "ablation_noisy_gate_necessary": true,
+  "ablation_rho_decay_matches_SE5": true,
+  "SE2_prediction_matches_measurement": true,
+  "SE3_concentration_holds": true,
+  "SE3_enumeration_within_4sigma": true,
+  "no_gradient_through_retrieval": true,
+  "no_NxN_score": true,
+  "no_kv_cache": true,
+  "v64_stack_invariants": true,
+  "v64_interface_identities": true
+ },
+ "n_pass": 27,
+ "n_checks": 27,
+ "all_pass": true,
+ "fused_summary": {
+  "arm": "fused_gated",
+  "mean": 1.0,
+  "sd": 0.0,
+  "n": 5
+ },
+ "paired": {
+  "fused_minus_no_consolidation": {
+   "mean": 1.0,
+   "ci95": [
+    1.0,
+    1.0
+   ],
+   "all_positive": true,
+   "n": 5
+  },
+  "fused_minus_ungated_clean": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "all_positive": false,
+   "n": 5
+  },
+  "fused_minus_ungated_corrupt": {
+   "mean": 0.35625,
+   "ci95": [
+    0.2875,
+    0.425
+   ],
+   "all_positive": true,
+   "n": 5
+  },
+  "fused_minus_random_write": {
+   "mean": 0.3125,
+   "ci95": [
+    0.25,
+    0.375
+   ],
+   "all_positive": true,
+   "n": 5
+  },
+  "fused_minus_break_alignment": {
+   "mean": 0.975,
+   "ci95": [
+    0.9375,
+    1.0
+   ],
+   "all_positive": true,
+   "n": 5
+  },
+  "fused_minus_rho_fast": {
+   "mean": 0.86875,
+   "ci95": [
+    0.85,
+    0.8875
+   ],
+   "all_positive": true,
+   "n": 5
+  }
+ },
+ "ablation_summary": [
+  {
+   "corruption": 0.0,
+   "config": "gate_off",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.10",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.05",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.01",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "tau_positive",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "sigma_0.30",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.90",
+   "mean": 0.13125,
+   "sd": 0.023385358667337132,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.999",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "gate_off",
+   "mean": 0.64375,
+   "sd": 0.07806247497997998,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.10",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.05",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.01",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "tau_positive",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "sigma_0.30",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.90",
+   "mean": 0.1,
+   "sd": 0.036443449342783124,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.999",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  }
+ ],
+ "theory_experiment_agreement": {
+  "SE2_predicted_E_T_cover": 129.87184625396864,
+  "SE2_measured_mean_first_cover": 130.0,
+  "SE2_per_seed_first_cover": [
+   170,
+   100,
+   90,
+   120,
+   170
+  ],
+  "SE2_relative_gap": 0.0009867708031250269
+ },
+ "note": "All conservation checks use the FINAL post-evolution state. Registration is a partial isometry OUTSIDE the recurrence: the kernel stays static/Toeplitz, FFT/IIR duality, strict causality and O(1) state are intact."
+}

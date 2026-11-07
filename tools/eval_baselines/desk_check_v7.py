@@ -22,7 +22,13 @@ full = "\n".join(pages)
 
 
 def has(pat, where=full):
-    return bool(re.search(pat, where, re.I))
+    # Two-column PDFs break phrases across lines. Match on the raw text
+    # first, then on a whitespace-flattened copy, so a line break can
+    # never hide a required sentence. This tightens `absent` as well.
+    if re.search(pat, where, re.I):
+        return True
+    flat = " ".join(where.split())
+    return bool(re.search(pat, flat, re.I))
 
 
 def absent(pat, where=full):
@@ -146,9 +152,14 @@ add("P", "no_internal_ids_or_counts",
          r"Statement [Cc]lassification"]))
 add("P", "no_html_entities_or_tex_fragments",
     all(absent(m) for m in [r"&lt;", r"&gt;", r"_\{", r"\^\{"]))
+# The deleted ledger was identified by its CONTENT, not by a letter. A new
+# Appendix G of raw curve tables is legitimate; only the old
+# "Statement Classification" ledger (with NT*/A.3x IDs) is forbidden.
 add("P", "no_old_appendix_ledger",
-    absent(r"Appendix G") and absent(r"NT01") and absent(r"NT31") and
-    absent(r"A\.32") and absent(r"A\.33"))
+    absent(r"Statement [Cc]lassification") and
+    absent(r"NT01") and absent(r"NT31") and
+    absent(r"A\.32") and absent(r"A\.33") and
+    absent(r"49 items") and absent(r"51 items"))
 _rs = full[full.find("References"):]
 _rs = _rs[:_rs.find("Appendix A")]
 _refs = re.findall(r"\[\d+\][\s\S]*?(?=\[\d+\]|Appendix|$)", _rs)
