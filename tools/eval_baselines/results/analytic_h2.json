@@ -1,0 +1,101 @@
+{
+ "status": "H=2 zero-training witnesses on corrected data",
+ "claim": "On the SAME corrected data, BOTH the static-LTI two-layer stack AND the two-layer cross-attention stack admit an explicit analytic solution with accuracy 1.0. Therefore the v6.3 training gap (tsc_h2 0.3625 vs attn_x2 0.9543) is an OPTIMISATION / INDUCTIVE-BIAS gap, NOT a function-class or expressivity gap. Theorem B (the exactly-H-layer bound under its stated premises) is a constructive existence statement and is NOT withdrawn; what is withdrawn is v6.2's claim that the bound was ALSO verified by end-to-end training.",
+ "witness": "M = C[V_K:,:]^T C[:V_K,:] maps C[V_K+k] -> C[k]. hop(q) = sum_s (q . Up_s) U_s K(tau) [TSC] or the sharpened softmax of the same scores [attention]. q2 = normalise(hop(q) @ M); answer = argmax hop(q2) @ CVAL^T. No learned parameter appears.",
+ "rows": [
+  {
+   "mode": "tsc",
+   "seed": 0,
+   "acc": 1.0,
+   "steps": 0,
+   "hops": 2,
+   "params": 0
+  },
+  {
+   "mode": "attention",
+   "seed": 0,
+   "acc": 1.0,
+   "steps": 0,
+   "hops": 2,
+   "params": 0
+  },
+  {
+   "mode": "tsc",
+   "seed": 1,
+   "acc": 1.0,
+   "steps": 0,
+   "hops": 2,
+   "params": 0
+  },
+  {
+   "mode": "attention",
+   "seed": 1,
+   "acc": 1.0,
+   "steps": 0,
+   "hops": 2,
+   "params": 0
+  },
+  {
+   "mode": "tsc",
+   "seed": 2,
+   "acc": 1.0,
+   "steps": 0,
+   "hops": 2,
+   "params": 0
+  },
+  {
+   "mode": "attention",
+   "seed": 2,
+   "acc": 1.0,
+   "steps": 0,
+   "hops": 2,
+   "params": 0
+  },
+  {
+   "mode": "tsc",
+   "seed": 3,
+   "acc": 1.0,
+   "steps": 0,
+   "hops": 2,
+   "params": 0
+  },
+  {
+   "mode": "attention",
+   "seed": 3,
+   "acc": 1.0,
+   "steps": 0,
+   "hops": 2,
+   "params": 0
+  },
+  {
+   "mode": "tsc",
+   "seed": 4,
+   "acc": 1.0,
+   "steps": 0,
+   "hops": 2,
+   "params": 0
+  },
+  {
+   "mode": "attention",
+   "seed": 4,
+   "acc": 1.0,
+   "steps": 0,
+   "hops": 2,
+   "params": 0
+  }
+ ],
+ "summary": [
+  {
+   "mode": "tsc",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "mode": "attention",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  }
+ ]
+}
