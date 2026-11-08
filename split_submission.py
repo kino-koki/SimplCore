@@ -49,32 +49,33 @@ app = fitz.open()
 cover = app.new_page(width=612, height=792)
 lines = [
     ("Supplementary Material", 16, 72),
-    ("Where the Bits Must Live: A Tight Input-Side Information Bound", 11, 108),
-    ("for Fixed-State Spectral Models", 11, 126),
+    ("Exact Content Addressing Needs an Order-2 State:", 11, 108),
+    ("Restated Premises, Complete Proofs and Raw Measurements", 11, 126),
     ("", 10, 150),
     ("Anonymous submission. This document contains the appendices to the", 9.5, 176),
-    ("main paper. It is self-contained: each proof restates the final", 9.5, 192),
-    ("premises and the identifier of the claim it establishes, and proofs", 9.5, 208),
-    ("cross-reference those identifiers rather than referring to 'the", 9.5, 224),
-    ("proof above'. Numerical witnesses certify non-vacuity and", 9.5, 240),
-    ("agreement; they are never used as premises.", 9.5, 256),
-    ("", 10, 280),
-    ("Contents", 11, 300),
-    ("Appendix A   Complete analytic proofs (A.1-A.11)", 9.5, 322),
-    ("Appendix B   Withdrawn statements", 9.5, 340),
-    ("Appendix C   Reproducibility", 9.5, 358),
-    ("Appendix D   All raw fusion measurements", 9.5, 376),
-    ("Appendix E   Premise, boundary and non-vacuity ledger", 9.5, 394),
-    ("Appendix F   All 1500-step convergence curves", 9.5, 412),
-    ("Appendix G   All fusion evolution curves", 9.5, 430),
-    ("Appendix H   Exhaustive information-bound enumeration", 9.5, 448),
-    ("Appendix I   Complete numeric provenance and witness detail", 9.5, 466),
-    ("Appendix J   Per-seed raw curves at key steps", 9.5, 484),
-    ("", 10, 510),
-    ("The main paper states four core results. SE1-SE5 in Appendix A.7-A.11", 9.5, 532),
-    ("are supporting statements about an exactly-defined finite", 9.5, 548),
-    ("consolidation process; P1-P8 and L1-L3 are propositions and lemmas.", 9.5, 564),
-    ("No theorem is introduced in the supplementary material.", 9.5, 580),
+    ("main paper. It is self-contained: Appendix A.0 restates every", 9.5, 192),
+    ("premise (A1-A5), the unique layer interface H6, all four core", 9.5, 208),
+    ("results and the complete CT7 statement. Each proof then restates", 9.5, 224),
+    ("the premises it uses and the identifier of the claim it proves;", 9.5, 240),
+    ("numerical witnesses certify non-vacuity and agreement, and are", 9.5, 256),
+    ("never used as premises.", 9.5, 272),
+    ("", 10, 292),
+    ("Contents", 11, 312),
+    ("Appendix A   Restated premises (A.0) and complete proofs (A.1-A.11)", 9.5, 334),
+    ("Appendix B   Withdrawn statements", 9.5, 352),
+    ("Appendix C   Reproducibility", 9.5, 370),
+    ("Appendix D   All raw fusion measurements", 9.5, 388),
+    ("Appendix E   Premise, boundary and non-vacuity ledger", 9.5, 406),
+    ("Appendix F   All 1500-step convergence curves", 9.5, 424),
+    ("Appendix G   Fusion evolution curves at checkpoints", 9.5, 442),
+    ("Appendix H   Exhaustive information-bound enumeration", 9.5, 460),
+    ("Appendix I   Complete numeric provenance and witness detail", 9.5, 478),
+    ("Appendix J   Per-seed raw curves at key steps", 9.5, 496),
+    ("", 10, 522),
+    ("The main paper states four core results, all restated in A.0.", 9.5, 544),
+    ("SE1-SE5 (A.7-A.11) are supporting statements about an exactly", 9.5, 560),
+    ("defined finite consolidation process; P1-P8 and L1-L3 are", 9.5, 576),
+    ("propositions and lemmas. No theorem is introduced here.", 9.5, 592),
 ]
 for text, size, y in lines:
     if not text:
@@ -123,11 +124,8 @@ out = dict(split_point_merged_page=cut + 1,
            banned_fragments_found=found, checks=checks,
            n_pass=int(sum(checks.values())), n_checks=len(checks),
            all_pass=bool(all(checks.values())),
-           note=("The 2027 Call for Papers and author instructions are not "
-                 "yet published. A single combined PDF plus supplementary "
-                 "material is the 2026 convention; this two-PDF split is "
-                 "the skill pack's internal deliverable and must be "
-                 "repacked to whatever the 2027 submission system requires."))
+           note=("This two-PDF split is an internal deliverable and must "
+                 "be repacked to whatever the submission system requires."))
 json.dump(out, open(OUT, "w"), indent=1)
 print("paper_main.pdf:", mn, "pages | paper_appendix.pdf:", an, "pages")
 print("banned fragments:", found)

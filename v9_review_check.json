@@ -1,0 +1,223 @@
+{
+  "version": "v9",
+  "n_checks": 42,
+  "n_pass": 42,
+  "all_pass": true,
+  "checks": [
+    {
+      "name": "title no longer overclaims",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "abstract: counting condition + LOOSE",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "intro: increment is placement, not inequality",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "conclusion: no tight numerical claim on task",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "supplement cover title unified",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "design rule no longer says order-(H+1) state",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "one central reconciliation section",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "Result 2 flagged as tensor ORDER",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "A.5 unified on D, no o*d",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "A.5 kernel condition in full",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "A.5 D>=1 / independence stated as premise",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "A(e) broken sentence removed",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "depth bound called interface-dependent",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "H_L >= H sufficiency stated",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "abstract: inter-layer map FIXED",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "Table 14 reports learned-random number",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "SE2 CI width quantified",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "SE2 agreement has no discriminative power",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "SE2 premise-fixed direction kept",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "Table 0 rebuilt as clean two columns",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "Tables 18-19 now point to Appendix D",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "no stale A.7-A.11 xref in 4.13",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "W10/W11 split into two rows",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "sparse withdrawal IDs explained",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "no CFP / author to-do",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "no reviewer-directed meta",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "A.0 restates A1-A5",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "A.0 restates H6",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "A.0 restates four core results",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "A.0 gives complete CT7 (a)(b)(c)",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "cover claims only what is true",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "Appendix G compressed to checkpoints",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "all appendices A-J present",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "no self-identifying paths",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "no entities / TeX fragments",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "no credential literal",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "main paper within 8 text pages",
+      "pass_": true,
+      "detail": ""
+    },
+    {
+      "name": "merged PDF pages",
+      "pass_": true,
+      "detail": "18"
+    },
+    {
+      "name": "appendix PDF pages",
+      "pass_": true,
+      "detail": "10"
+    },
+    {
+      "name": "geometry: 0 out-of-page spans",
+      "pass_": true,
+      "detail": "0"
+    },
+    {
+      "name": "geometry: 0 sub-6pt spans",
+      "pass_": true,
+      "detail": "0"
+    },
+    {
+      "name": "Table 0 bottom rule below last row",
+      "pass_": true,
+      "detail": "rule 491.5 vs text 489.0"
+    }
+  ],
+  "pages": {
+    "merged": 18,
+    "main": 9,
+    "appendix": 10
+  }
+}
