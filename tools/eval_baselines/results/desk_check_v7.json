@@ -1,10 +1,10 @@
 {
  "status": "automated desk-check; NOT a human reviewer simulation",
  "pdf": "/data/workspace/simplcore.pdf",
- "total_pages": 16,
- "main_pages": 8,
- "n_checks": 45,
- "n_pass": 45,
+ "total_pages": 17,
+ "main_pages": 9,
+ "n_checks": 46,
+ "n_pass": 46,
  "all_pass": true,
  "checks": {
   "B_redefined_as_alphabet_excess": true,
@@ -43,7 +43,8 @@
   "no_internal_ids_or_counts": true,
   "no_html_entities_or_tex_fragments": true,
   "no_old_appendix_ledger": true,
-  "references_have_venues": true,
+  "references_have_verifiable_identifier": true,
+  "reference_4_is_S5_not_S4D": true,
   "zoology_is_ICLR_2024": true,
   "no_self_certifying_reference_sentence": true,
   "broader_impact_before_references": true,
@@ -213,7 +214,11 @@
     "pass": true,
     "detail": ""
    },
-   "references_have_venues": {
+   "references_have_verifiable_identifier": {
+    "pass": true,
+    "detail": ""
+   },
+   "reference_4_is_S5_not_S4D": {
     "pass": true,
     "detail": ""
    },

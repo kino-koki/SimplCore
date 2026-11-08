@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "n_checks": 16,
+  "n_pass": 16,
+  "pages": 17,
+  "checks": {
+    "F1: 2^B/|A| general bound": true,
+    "F1: <=1/2 conditioned": true,
+    "F1: counterexample 2/3": true,
+    "F2: abstract conditioned": true,
+    "F2: premises list": true,
+    "F2: not architecture-independent": true,
+    "F3: SE2 95% CI": true,
+    "F3: CI bounds": true,
+    "F3: no precision claim": true,
+    "F4: notation table": true,
+    "F4: state bytes header": true,
+    "F4: 32768 config note": true,
+    "F5: superseded NOT USED": true,
+    "F5: bold warning": true,
+    "F5: CSV pointer": true,
+    "F5: T* unified": true
+  }
+}

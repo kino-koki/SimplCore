@@ -489,7 +489,7 @@ m_h 只有一个非零峰，任何位置门只能**删掉**它；删到 key 后�
 - `verify_governance.py` 串起 5 个脚本 → `governance_gate.json` **12/12 PASS**；`split_submission.py` 按内容动态切分 → 11/11 PASS。
 
 **稿件硬错修复（真实 P0）**
-1. Theorem A 前提 `P1–P5` 与支撑命题 `P1–P8` 双重占用 → 前提改名 `TAP1–TAP5`，§3.1 写明 namespace 规则。
+1. Theorem A 前提 `P1–P5` 与支撑命题 `P1–P8` 双重占用 → 前提改名 `A1–A5`，§3.1 写明 namespace 规则。
 2. `Theorem B` 同名不同义（Result 2 vs 并入 (e) 的状态阶陈述）→ 全文归零。
 3. §3.1(c) 与 Table 1 错引 `P1`（Toeplitz 等价）→ 改 `P6`。
 4. 正文 §3.1.1/§3.1.2/§3.2.1/§3.4 四段完整证明与附录重复 → 移出正文，只留 proof intuition；附录保留唯一完整版。
@@ -533,3 +533,34 @@ m_h 只有一个非零峰，任何位置门只能**删掉**它；删到 key 后�
 **G1-v2 前置条件（写死）**：先造 `|A|≥2` 纤维且不把答案烘进字母表 → 校验 `none<0.5 && oracle≥0.99` → 才测 `I(role;g)` 与 `B_eff≥log₂|A|`；否则 G1 正式证伪，转 G2 把 B 当外部可调度资源。
 
 **仍未完成**：G2–G7 全部未填；≥10M token LM、同算力强基线、真实 MQAR、fused kernel、真实序列自进化、论文换贡献类型，一项没补。不承诺过稿率、SOTA、LM parity。
+
+## v7.2 — 实验收紧 / TS2SC 设备友好迁移 / 按指令单 N1–N7 改稿（2026-11-07）
+
+按用户给定顺序执行，训练仍冻结，无新增定理、无 LM 训练、无私有权重上传。
+
+**① 实验收到最紧**：`tighten_experiments.py` 重跑 18 行信息界穷举（全 hold）、SGC 守恒（FFT/IIR 9.05e−16 / Toeplitz / 因果偏差 0.0）、配对 bootstrap（+0.8191，CI [0.8000, 0.8375]，5/5 正）、载体核算（恰好 2 个计入 B）；21 条冻结表 + **14/14 审计**。只把「chance 0.0312」标注改成 0.0313，其余 22 处 0.0312 是 16/512 的真实实测 acc，一字未动。
+
+**② TS2SC 迁移**：`ts2sc_numpy_migrate.py` 纯 NumPy、无 torch/GPU，在真实 2,000,000 B Qwen3 teacher 前缀上跑通 COPY（逐位相等）/ DERIVE（确定性逐位相等）/ SGC 对偶（Toeplitz、因果 0.0、O(1) 状态）。fp32 视图误差 1.87e−8、显式 fp64 提升后 1.14e−15，两个值都记录。`MiniCPM-V-4.7-1B`（用户写的「MiniCMP-V 4.7」）是私有 VL 仓库：匿名 404、出口凭据 401、GH_TOKEN 空、沙盒内权重字节 0 ⇒ **只交 Stage-0 provenance PLAN，端到端迁移未做**，三项缺失已列明。
+
+**③ 改论文**：按《ICML2027_v7_详细改稿指令单》N1–N7 逐条。N1 前提 TAP→**A1–A5**（按指令单）、P1–P8 留给命题；N2 两载体 + 一个 support restriction；N3 标题/摘要/§8 明写「binary-chain 上紧、content-chain 上 loose」；N4 [4] 改回真 S5（Smith/Warrington/Linderman），**额外发现并修正 [11] CKConv arXiv 2102.02611**；N5 唯一 T*；N6 d→D/c；N7 十项。联网核验 6 条，[10] Hyena venue 未取得独立权威页面，保留待复核、不声称已核验。
+
+**结果**：17 页，正文 8 页；`paper_main.pdf` 9 页 + `paper_appendix.pdf` 9 页。desk-check **46/46**、治理 **12/12**、拆分 **11/11**、收紧审计 **14/14**、fusion guard 27/27；P0=0、一票否决=0、命名空间唯一。
+
+**挂起**：内部质量门仍 `NOT EVALUABLE`（缺 3 名独立 blind review）；2027 CFP/模板、reciprocal reviewer、双 PDF 重打包、[10] 复核、TS2SC 端到端迁移、≥10M token LM 与强基线。`push_v72.py` 已备，GH_TOKEN 为空故本轮推送未执行。
+
+
+## 2026-11-08 — v8.1：五处审稿硬伤一次性修正（无新增定理、无新增实验）
+
+来源：用户对 Theorem A(a)、Result 2(ii) 条件化、SE2 统计口径、记号统一、表格/转置一致性提出的 5 条意见。
+
+| # | 修正 | 影响面 |
+|---|---|---|
+| 1 | A(a) 主文改为 `acc(F|v) ≤ 2^B/|A(v)|`；`≤1/2` 限定为 `B ≤ log₂|A(v)|−1`；附录 A.1 补推论条件并写入 `|A|=3,B=1 ⇒ 2/3` 反例 | 定理陈述收紧，A(b) 不受影响 |
+| 2 | Result 2(ii)「exactly H layers」在摘要/贡献/引言/A(e)/§3.3.2/§4.12/结论/附录 A.3 共 10 处条件化：H6 接口、A4 末层读出、不同键、每层至多一个内容匹配、分支因子与接口秩 c；明写「不是架构无关定律」 | 消除与 P5 条件化陈述的张力 |
+| 3 | SE2 的 0.10% 降级为均值巧合：5 seed cover time `170,100,90,120,170`，mean 130.00，SD 38.08，SEM 17.03，95% t-CI **[82.72, 177.28]**（跨度 73% 均值）；Table 16 / A.8 / Table 28 三处改口「不是精度验证」 | 数字未改，统计解释改严 |
+| 4 | 新增附录 A.0 记号与单位表；Table 8 表头 `state B`→`state bytes`；明确 32768 B 是 d=64 fp64 融合配置，与 Table 8 不同配置不可比较 | 消除 B/b/字节混用 |
+| 5 | 附录 D 指向 `appendix_D_fusion_long.csv`（105 行长表，无 OCR）；Table 10 第二列改 `superseded (NOT USED)` 并加粗警示只五种子列入主张；`T*` 全文统一 `C_val^T C_key`；删 §2 重复句 | 转置歧义与误读风险清零 |
+
+校验：生成器 py_compile PASS；PDF **17 页 / 主文 8 页**；五项修正文本核验 **16/16**；desk-check **46/46**；拆分 **11/11**。
+未新增定理、命题、实验数字；未跑训练；未推仓。
+

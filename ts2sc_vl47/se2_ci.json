@@ -1,0 +1,22 @@
+{
+  "n_seeds": 5,
+  "per_seed_first_cover": [
+    170,
+    100,
+    90,
+    120,
+    170
+  ],
+  "mean": 130.0,
+  "sample_sd": 38.07886552931954,
+  "sem": 17.029386365926403,
+  "t_crit_df4_975": 2.7764451051977987,
+  "ci95": [
+    82.72,
+    177.28
+  ],
+  "prediction": 129.87,
+  "prediction_inside_ci": true,
+  "relative_gap_percent": 0.1001,
+  "interpretation": "The 0.10% gap is a coincidence of the MEAN, not a precision claim: with 5 seeds the 95% t-CI spans ~95 rounds (73% of the mean). Agreement of the mean with the prediction is weak evidence; more seeds would be needed to narrow it."
+}

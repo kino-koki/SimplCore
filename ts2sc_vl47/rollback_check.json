@@ -1,0 +1,21 @@
+{
+  "rolled_back_to": "v8.0 (pre 5-fix)",
+  "ok": true,
+  "restored": {
+    "v8.0 <=1/2": true,
+    "v8.0 exactly H abstract": true,
+    "v8.0 C_key^T C_val (\u00a72)": true,
+    "v8.0 state B header": true,
+    "v8.0 \u00a74.12 C_val^T C_key": true
+  },
+  "removed": {
+    "no 95% t-CI": true,
+    "no A.0 notation": true,
+    "no NOT USED column": true,
+    "no CSV pointer": true,
+    "no 'NOT a precision claim'": true,
+    "no se2 CI numbers": true
+  },
+  "pages": 17,
+  "sha256_match_original": true
+}

@@ -1,0 +1,32 @@
+{
+  "shard_99_6MB_seconds": 20.8,
+  "shard_MBps": 4.8,
+  "speak_probe_seconds": 155.2,
+  "speak_probe_GB": 1.463987872,
+  "staged": [
+    [
+      "stage0",
+      157.2,
+      0.897,
+      9
+    ],
+    [
+      "stage1",
+      84.7,
+      0.468,
+      5
+    ],
+    [
+      "stage2",
+      71.1,
+      0.398,
+      4
+    ],
+    [
+      "stage3",
+      104.7,
+      0.567,
+      6
+    ]
+  ]
+}

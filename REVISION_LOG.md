@@ -395,7 +395,7 @@ BF16 权重逐位复制、在真实 embedding 上的 SGC 对偶/因果/O(1) 验�
 
 | 项 | v6.5 | v7.1 |
 |---|---|---|
-| Theorem A 前提命名空间 | `P1–P5`（与支撑命题 `P1–P8` 冲突） | **`TAP1–TAP5`**，§3.1 明写 disjoint 规则 |
+| Theorem A 前提命名空间 | `P1–P5`（与支撑命题 `P1–P8` 冲突） | **`A1–A5`**，§3.1 明写 disjoint 规则 |
 | `Theorem B` | 5 处，两个互斥含义 | **0**；Result 2 唯一命名 |
 | Toeplitz 等价引用 | §3.1(c)/Table 1 错引 `P1` | **`P6`** |
 | 正文完整证明 | §3.1.1/3.1.2/3.2.1/§3.4 四段，与附录重复 | 移除 5.9k 字符，改为三段 proof intuition |
@@ -406,6 +406,45 @@ BF16 权重逐位复制、在真实 embedding 上的 SGC 对偶/因果/O(1) 验�
 
 **新增撤回/更正**：无新撤回。W1/W12/W13/W15 保持。更正 3 处错引与 1 处命名空间冲突，均登记在 `claim_registry.md` C1–C4。
 
-**检查器修订（不放宽语义）**：`desk_check_v7.py` 的 `has()` 增加空白归一化副本匹配，修双栏断行漏判；`governance.py` 命名空间判定改用负向断言，避免 `TAP5:` / `Supporting proposition P5` 被误报。修后 45/45。
+**检查器修订（不放宽语义）**：`desk_check_v7.py` 的 `has()` 增加空白归一化副本匹配，修双栏断行漏判；`governance.py` 命名空间判定改用负向断言，避免 `A5:` / `Supporting proposition P5` 被误报。修后 45/45。
 
 **Phase 7 挂起项**：2027 `.sty` 替换与页数复核、LLM 使用披露、reciprocal reviewer 提名、concurrent submission 自查、References 逐条核验、双 PDF→单 PDF 重打包、3 名独立 blind review。
+
+## v7.2（指令单逐处改稿轮，2026-11-07）
+
+| 项 | v7.1 | v7.2 |
+|---|---|---|
+| Theorem A 前提命名空间 | `TAP1–TAP5` | **`A1–A5`**（按指令单 N1，非沿用上一轮 TAP） |
+| 载体口径 | 三载体混写 | **两个计入 B 的 bit carrier + 一个 support restriction** |
+| 标题 | `A Tight Input-Side...` | `An Input-Side... Tight on a Constructible Family` |
+| 摘要/§8 | 笼统「tight」 | 明写 content-chain 上 loose（\|A\|≤5, log2\|A(v)\|≤2.3219） |
+| References [4] | Gu et al. / S4D 标题 / S5 编号（张冠李戴） | **Smith / Warrington / Linderman, S5, arXiv:2208.04933** |
+| References [11] | arXiv:2202.06037 | **arXiv:2102.02611**（额外发现并修正） |
+| 层接口 T* | 附「unnormalised product」反向句 | 删反向句，只留 `T* = C_key^T C_val` |
+| 符号 d | 三义复用 | `D`（接口/宽度/秩）、`c`（分支因子） |
+| chance 标注 | 0.0312 | **0.0313**（实测 0.0312 值不动） |
+| Table 12 | 两行重复 `explicit/gapped` | 去重，不改任何值 |
+| Broader Impact | 无 AI 披露句 | 补中性句 + 「须按 2027 CFP 复核」 |
+| §4.10 | `7/7 gates pass` 计数 | 删计数，保留「不是数学证明」 |
+| 页数 | 16（正文 7） | **17（正文 8）**，增加仅来自指令单要求的句子 |
+
+**检查器修订**：desk-check 的引用判定改为「每条有可核验标识符」并新增 `[4] 必须是真 S5` 断言；§4.3 量化正则接受 `log2|A(v)|`；governance 命名空间判定切到 A1–A5。语义条件未放宽，修后 46/46 + 12/12。
+
+**未核验**：[10] Hyena venue；3 名独立 blind review；2027 CFP。不写「已核验」自证句。
+
+
+## 2026-11-08 — v8.1：五处审稿硬伤一次性修正（无新增定理、无新增实验）
+
+来源：用户对 Theorem A(a)、Result 2(ii) 条件化、SE2 统计口径、记号统一、表格/转置一致性提出的 5 条意见。
+
+| # | 修正 | 影响面 |
+|---|---|---|
+| 1 | A(a) 主文改为 `acc(F|v) ≤ 2^B/|A(v)|`；`≤1/2` 限定为 `B ≤ log₂|A(v)|−1`；附录 A.1 补推论条件并写入 `|A|=3,B=1 ⇒ 2/3` 反例 | 定理陈述收紧，A(b) 不受影响 |
+| 2 | Result 2(ii)「exactly H layers」在摘要/贡献/引言/A(e)/§3.3.2/§4.12/结论/附录 A.3 共 10 处条件化：H6 接口、A4 末层读出、不同键、每层至多一个内容匹配、分支因子与接口秩 c；明写「不是架构无关定律」 | 消除与 P5 条件化陈述的张力 |
+| 3 | SE2 的 0.10% 降级为均值巧合：5 seed cover time `170,100,90,120,170`，mean 130.00，SD 38.08，SEM 17.03，95% t-CI **[82.72, 177.28]**（跨度 73% 均值）；Table 16 / A.8 / Table 28 三处改口「不是精度验证」 | 数字未改，统计解释改严 |
+| 4 | 新增附录 A.0 记号与单位表；Table 8 表头 `state B`→`state bytes`；明确 32768 B 是 d=64 fp64 融合配置，与 Table 8 不同配置不可比较 | 消除 B/b/字节混用 |
+| 5 | 附录 D 指向 `appendix_D_fusion_long.csv`（105 行长表，无 OCR）；Table 10 第二列改 `superseded (NOT USED)` 并加粗警示只五种子列入主张；`T*` 全文统一 `C_val^T C_key`；删 §2 重复句 | 转置歧义与误读风险清零 |
+
+校验：生成器 py_compile PASS；PDF **17 页 / 主文 8 页**；五项修正文本核验 **16/16**；desk-check **46/46**；拆分 **11/11**。
+未新增定理、命题、实验数字；未跑训练；未推仓。
+
