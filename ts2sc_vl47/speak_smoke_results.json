@@ -1,0 +1,222 @@
+{
+  "status": "REAL_FORWARD_PASS",
+  "claim": "single full-depth forward pass; next-token distribution only",
+  "not": [
+    "autoregressive generation",
+    "downstream task evaluation",
+    "LM parity",
+    "throughput benchmark"
+  ],
+  "model": {
+    "repo": "MiniCPM5-1B",
+    "architecture": [
+      "LlamaForCausalLM"
+    ],
+    "layers": 24,
+    "hidden": 1536,
+    "vocab": 130560,
+    "dtype": "BF16->fp32"
+  },
+  "device": {
+    "torch": false,
+    "transformers": false,
+    "gpu": false,
+    "numpy": "2.2.6",
+    "cpu_count": 2
+  },
+  "weights": {
+    "parts": 22,
+    "bytes_fetched": 1463987872,
+    "api_calls": 15,
+    "virtual_data_bytes": 2161265664,
+    "disk_model_materialised": false
+  },
+  "elapsed_s": 155.2,
+  "prompts": [
+    {
+      "prompt": "中国的首都是",
+      "n_tokens": 4,
+      "ids": [
+        0,
+        28898,
+        5217,
+        4759
+      ],
+      "roundtrip": "中国的首都是",
+      "top": [
+        {
+          "id": 8573,
+          "logit": 12.341930389404297,
+          "text": ";++",
+          "raw": ";++"
+        },
+        {
+          "id": 90774,
+          "logit": 11.528158187866211,
+          "text": "VILLE",
+          "raw": "VILLE"
+        },
+        {
+          "id": 61552,
+          "logit": 11.147035598754883,
+          "text": " geared",
+          "raw": "Ġgeared"
+        },
+        {
+          "id": 77770,
+          "logit": 10.73562240600586,
+          "text": " nong",
+          "raw": "Ġnong"
+        },
+        {
+          "id": 7888,
+          "logit": 10.399348258972168,
+          "text": "基础",
+          "raw": "åŁºç¡Ģ"
+        },
+        {
+          "id": 23070,
+          "logit": 10.366458892822266,
+          "text": "Non",
+          "raw": "Non"
+        },
+        {
+          "id": 81770,
+          "logit": 10.317231178283691,
+          "text": "xFF",
+          "raw": "xFF"
+        },
+        {
+          "id": 9505,
+          "logit": 10.250414848327637,
+          "text": " Non",
+          "raw": "ĠNon"
+        }
+      ]
+    },
+    {
+      "prompt": "今天天气很好，",
+      "n_tokens": 5,
+      "ids": [
+        0,
+        9051,
+        38478,
+        21541,
+        337
+      ],
+      "roundtrip": "今天天气很好，",
+      "top": [
+        {
+          "id": 104,
+          "logit": 11.431416511535645,
+          "text": "s",
+          "raw": "s"
+        },
+        {
+          "id": 116529,
+          "logit": 10.16263484954834,
+          "text": "自然不会",
+          "raw": "èĩªçĦ¶ä¸įä¼ļ"
+        },
+        {
+          "id": 71582,
+          "logit": 10.124966621398926,
+          "text": "formerly",
+          "raw": "formerly"
+        },
+        {
+          "id": 119239,
+          "logit": 9.68100357055664,
+          "text": " nullptr",
+          "raw": "Ġnullptr"
+        },
+        {
+          "id": 106266,
+          "logit": 9.434216499328613,
+          "text": "feldt",
+          "raw": "feldt"
+        },
+        {
+          "id": 95076,
+          "logit": 9.417878150939941,
+          "text": " règ",
+          "raw": "ĠrÃ¨g"
+        },
+        {
+          "id": 59056,
+          "logit": 9.203537940979004,
+          "text": "ITICAL",
+          "raw": "ITICAL"
+        },
+        {
+          "id": 122600,
+          "logit": 9.086359024047852,
+          "text": " 见",
+          "raw": "Ġè§ģ"
+        }
+      ]
+    },
+    {
+      "prompt": "水的化学式是",
+      "n_tokens": 5,
+      "ids": [
+        0,
+        33271,
+        19256,
+        2600,
+        519
+      ],
+      "roundtrip": "水的化学式是",
+      "top": [
+        {
+          "id": 50040,
+          "logit": 12.053606033325195,
+          "text": "窍",
+          "raw": "çªį"
+        },
+        {
+          "id": 43640,
+          "logit": 11.185741424560547,
+          "text": "ACY",
+          "raw": "ACY"
+        },
+        {
+          "id": 8573,
+          "logit": 11.123420715332031,
+          "text": ";++",
+          "raw": ";++"
+        },
+        {
+          "id": 111007,
+          "logit": 10.775586128234863,
+          "text": "/MA",
+          "raw": "/MA"
+        },
+        {
+          "id": 56327,
+          "logit": 10.721964836120605,
+          "text": "++;",
+          "raw": "++;"
+        },
+        {
+          "id": 106520,
+          "logit": 10.505460739135742,
+          "text": "Whoever",
+          "raw": "Whoever"
+        },
+        {
+          "id": 122600,
+          "logit": 10.382857322692871,
+          "text": " 见",
+          "raw": "Ġè§ģ"
+        },
+        {
+          "id": 735,
+          "logit": 10.247957229614258,
+          "text": "ite",
+          "raw": "ite"
+        }
+      ]
+    }
+  ]
+}

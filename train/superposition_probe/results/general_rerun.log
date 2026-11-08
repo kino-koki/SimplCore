@@ -1,0 +1,43 @@
+  [G0_osc           s0] skip
+  [G0_osc           s1] skip
+  [G0_osc           s2] skip
+  [G1_osc_learn     s0] skip
+  [G1_osc_learn     s1] skip
+  [G1_osc_learn     s2] skip
+  [G2_bipole        s0] skip
+  [G2_bipole        s1] skip
+  [G2_bipole        s2] skip
+  [G3_mixed         s0] skip
+  [G3_mixed         s1] skip
+  [G3_mixed         s2] skip
+  [G4_bipole_C8     s0] skip
+  [G4_bipole_C8     s1] skip
+  [G4_bipole_C8     s2] skip
+  [G5_bipole_C16    s0] skip
+  [G5_bipole_C16    s1] skip
+  [G5_bipole_C16    s2] skip
+  [G6_mixed_C16     s0] skip
+  [G6_mixed_C16     s1] skip
+  [G6_mixed_C16     s2] skip
+  [G7_bipole_C32    s0] skip
+  [G7_bipole_C32    s1] skip
+  [G7_bipole_C32    s2] acc=0.9082 shuffle=0.9082 params=84992 guards=True 52.0s
+  [G8_small         s0] skip
+  [G8_small         s1] skip
+  [G8_small         s2] skip
+  [G9_M32C4         s0] skip
+  [G9_M32C4         s1] skip
+  [G9_M32C4         s2] skip
+
+写入 results/general_results.json
+.9082 params=84992 guards=True 50.5s
+  [G7_bipole_C32    s1] acc=0.8926 shuffle=0.8926 params=84992 guards=True 53.1s
+  [G7_bipole_C32    s2] acc=0.9082 shuffle=0.9082 params=84992 guards=True 54.7s
+  [G8_small         s0] skip
+  [G8_small         s1] skip
+  [G8_small         s2] skip
+  [G9_M32C4         s0] skip
+  [G9_M32C4         s1] skip
+  [G9_M32C4         s2] skip
+
+写入 results/general_results.json

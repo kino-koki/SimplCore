@@ -251,10 +251,29 @@ def wpt(s, f, size):
     return pdfmetrics.stringWidth(s, f, size)
 
 
+def break_words(toks, size, width):
+    """Split tokens whose glyph width exceeds a column into character chunks."""
+    out = []
+    for word, f in toks:
+        if wpt(word, f, size) <= width - 2:
+            out.append((word, f))
+            continue
+        chunk = ""
+        for ch in word:
+            if chunk and wpt(chunk + ch, f, size) > width - 2:
+                out.append((chunk, f))
+                chunk = ch
+            else:
+                chunk += ch
+        if chunk:
+            out.append((chunk, f))
+    return out
+
+
 class Doc:
     def __init__(self, path):
         self.c = canvas.Canvas(path, pagesize=(W, H), pageCompression=1)
-        self.c.setTitle("Where the Bits Must Live: An Input-Side Information Bound, Tight on a Constructible Family, for Fixed-State Spectral Models")
+        self.c.setTitle("Exact Content Addressing Needs an Order-2 State: A Tight Joint Bound on Tensor Order, Depth and State Size for Static-LTI Sequence Models")
         self.c.setAuthor("Anonymous")
         self.c.setSubject("ICML submission")
         self.page, self.col = 1, 0
@@ -302,10 +321,10 @@ class Doc:
             self.c.setFont("TB", 15)
             self.c.drawCentredString(W / 2.0, yy - 15, line)
             yy -= 19
-        yy -= 5
+        # 23 pt below the last 15 pt title baseline clears both glyph boxes.
         self.c.setFont("TR", 9.5)
-        self.c.drawCentredString(W / 2.0, yy, "Anonymous submission")
-        yy -= 12
+        self.c.drawCentredString(W / 2.0, yy - 19, "Anonymous submission")
+        yy -= 31
         self.c.setLineWidth(0.4)
         self.c.line(ML, yy, W - MR, yy)
         self.first_top = yy - 12
@@ -316,7 +335,7 @@ class Doc:
         if before:
             self.y -= before
         width = (W - ML - MR) if span else CW
-        toks = tokenize(text)
+        toks = break_words(tokenize(text), size, width - indent)
         lines, cur, curw = [], [], 0.0
         for word, f in toks:
             ww = wpt(word, f, size)
@@ -334,6 +353,7 @@ class Doc:
             x = (ML if span else self.x0()) + indent
             extra = ((width - indent - lw) / (len(line) - 1)
                      if justify and li < len(lines) - 1 and len(line) > 1 else 0.0)
+            extra = min(extra, wpt(" ", "TR", size) * 0.55)
             for word, f in line:
                 self.c.setFont(f, size)
                 self.c.drawString(x, self.y - size * 0.82, word)
@@ -343,10 +363,24 @@ class Doc:
 
     def heading(self, text, size=10.4, before=6.0, after=2.5, span=False):
         self.y -= before
-        self.ensure(size + 5)
-        self.c.setFont("TB", size)
-        self.c.drawString(ML if span else self.x0(), self.y - size * 0.82, text)
-        self.y -= size + after
+        width = (W - ML - MR) if span else CW
+        lines, cur = [], ""
+        for word in text.split():
+            trial = (cur + " " + word).strip()
+            if cur and wpt(trial, "TB", size) > width - 2:
+                lines.append(cur)
+                cur = word
+            else:
+                cur = trial
+        if cur:
+            lines.append(cur)
+        self.ensure(len(lines) * (size + 1.5) + 5)
+        x = ML if span else self.x0()
+        for ln in lines:
+            self.c.setFont("TB", size)
+            self.c.drawString(x, self.y - size * 0.82, ln)
+            self.y -= size + 1.5
+        self.y -= after
 
     def sub(self, text, before=4.0, after=2.0):
         self.y -= before
@@ -370,6 +404,20 @@ class Doc:
         def wrap(txt, f, width):
             lines, cur = [], ""
             for word in txt.split():
+                # Character-level fallback for unbreakable identifiers/URLs.
+                if wpt(word, f, size) > width - 4:
+                    if cur:
+                        lines.append(cur)
+                        cur = ""
+                    chunk = ""
+                    for ch in word:
+                        if chunk and wpt(chunk + ch, f, size) > width - 4:
+                            lines.append(chunk)
+                            chunk = ch
+                        else:
+                            chunk += ch
+                    cur = chunk
+                    continue
                 trial = (cur + " " + word).strip()
                 if cur and wpt(trial, f, size) > width - 3:
                     lines.append(cur)
@@ -379,12 +427,23 @@ class Doc:
             lines.append(cur)
             return lines
 
-        for ri, row in enumerate(rows):
-            cells = [wrap(c, "TB" if ri == 0 else "TR", widths[ci])
-                     for ci, c in enumerate(row)]
+        all_cells = [[wrap(c, "TB" if ri == 0 else "TR", widths[ci])
+                      for ci, c in enumerate(row)]
+                     for ri, row in enumerate(rows)]
+        table_h = sum(max(len(c) for c in cells) * lead
+                      for cells in all_cells) + 8
+        # Keep the whole table in one column whenever it can fit there.
+        if table_h < (self.top() - MB) and self.y - table_h < MB:
+            if self.col == 0:
+                self.col = 1
+                self.y = self.top()
+            else:
+                self.newpage()
+
+        for ri, cells in enumerate(all_cells):
             nlines = max(len(c) for c in cells)
-            self.ensure(nlines * lead + 2)
             for li in range(nlines):
+                self.ensure(lead)
                 x = xbase if (span and xbase is not None) else self.x0()
                 for ci, lines in enumerate(cells):
                     if li < len(lines):
@@ -395,10 +454,10 @@ class Doc:
             if ri == 0:
                 self.c.setLineWidth(0.35)
                 bx = xbase if (span and xbase is not None) else self.x0()
-                self.c.line(bx, self.y + 2, bx + sum(widths), self.y + 2)
+                self.c.line(bx, self.y + 2.5, bx + sum(widths), self.y + 2.5)
         self.c.setLineWidth(0.35)
         bx = xbase if (span and xbase is not None) else self.x0()
-        self.c.line(bx, self.y + 2, bx + sum(widths), self.y + 2)
+        self.c.line(bx, self.y + 2.5, bx + sum(widths), self.y + 2.5)
         self.y -= after
 
     def end_main(self):
@@ -490,13 +549,15 @@ def figure2(d):
         by = y0 - hh * (fy + fh)
         c.setStrokeGray(0.25)
         c.rect(bx, by, ww * fw, hh * fh)
-        c.setFont("TR", 6.2)
+        lab_size = 6.6
+        c.setFont("TR", lab_size)
         c.setFillGray(0)
+        boxw = ww * fw - 6
         words = label.split()
         lines, cur = [], ""
         for w in words:
             t = (cur + " " + w).strip()
-            if len(t) > 34:
+            if cur and wpt(t, "TR", lab_size) > boxw:
                 lines.append(cur)
                 cur = w
             else:
@@ -506,7 +567,7 @@ def figure2(d):
         ty = by + hh * fh - 8
         for ln in lines[:2]:
             c.drawString(bx + 3, ty, ln)
-            ty -= 7
+            ty -= 7.6
     c.setStrokeGray(0.35)
     c.setLineWidth(0.8)
     for a, b in [((0.17, 0.72), (0.24, 0.62)),
@@ -622,16 +683,16 @@ def build():
       "as novel theorems. Table 1 records the exact increment over prior "
       "results.", size=SMALL, lead=SLEAD, after=2.0)
     d.table([
-        ["Known result (specific source and statement)", "Precise increment here"],
-        ["Zoology [1], Repeat After Me [2], Illusion of State [3]: fixed-state models are weak at associative recall",
-         "Sharp bound, not an observation: min tensor order = 2 with a matching construction (Result 2(i))"],
-        ["S5 [4], Z-transform LTI duality: a convolution kernel needs time-invariant coefficients",
-         "P6: Toeplitz iff time-invariance for the FULL second-order family with c_t != 0"],
-        ["Mamba [5], Sec. 3.1: selectivity breaks the convolution view",
-         "Theorem A(c): WITHIN class M, duality-preserving layers cannot manufacture the bits; a conditional design statement"],
+        ["Known result (source / statement)", "Precise increment here"],
+        ["Zoology [1], Repeat After Me [2], Illusion of State [3]: fixed-state recall is weak",
+         "Sharp bound: min tensor order = 2 with a matching construction (Result 2(i))"],
+        ["S5 [4]: LTI duality needs time-invariant coefficients",
+         "P6: Toeplitz iff time-invariance for the full second-order family, c_t != 0"],
+        ["Mamba [5] Sec. 3.1: selectivity breaks the convolution view",
+         "Theorem A(c): within class M, duality-preserving layers cannot create the bits"],
         ["Linear attention [6], GLA [7], DeltaNet [8]: outer-product key-value state",
-         "P4: the rho=1 single-pole isomorphism; Result 2 keeps rho<1 decay and proves the JOINT tight bound"],
-    ], [96, 142], size=6.5, lead=7.6, span=False, after=3.0)
+         "P4: rho = 1 single-pole isomorphism; Result 2 keeps rho < 1 decay and proves the joint tight bound"],
+    ], [112, 131], size=6.9, lead=8.4, span=False, after=5.0)
 
     # ---------------------------------------------------------------- 2
     Hh(d, "2  Preliminaries and One Layer Interface", size=10.2,
@@ -654,7 +715,7 @@ def build():
        "lowercase b (bits per insight per consolidation round) are "
        "different quantities; state bytes is a size in bytes, never a "
        "bit budget. The full notation table is Appendix A.0.",
-       size=SMALL, lead=SLEAD, after=2.0)
+       size=SMALL, lead=SLEAD, after=2.0, justify=False)
     P(d, "<b>One layer interface (H6, unique).</b> Each static-LTI layer "
       "computes m_h[t] = <q_h, e(x_(t-1))> and "
       "z_h = sum_t K_h(L-1-t) m_h[t] e(x_t). For h < H_L the interface is "
@@ -665,9 +726,8 @@ def build():
       "describes the action of T* = C_val^T C_key, not a second "
       "interface. Throughout, T* = C_val^T C_key maps a VALUE code to the "
       "next-hop KEY code; the 1/R scaling is absorbed by the unit "
-      "normalisation in H6. The read-out is last-layer only (A4 / P4). "
-      "absorbed by the unit normalisation in H6.",
-      size=SMALL, lead=SLEAD, after=2.0)
+      "normalisation in H6. The read-out is last-layer only (A4 / P4).",
+      size=SMALL, lead=SLEAD, after=2.0, justify=False)
     P(d, "<b>Kernel families, kept separate.</b> P1 (Z-transform duality) "
       "holds for every stable second-order LTI recurrence, including the "
       "oscillatory family K(lag) = rho^lag sin((lag+1)theta). The retrieval "
@@ -1854,8 +1914,11 @@ def build():
         "[14] Olsson, C. et al. In-context Learning and Induction Heads. "
         "Transformer Circuits Thread, 2022.",
     ]
-    for r in refs:
-        P(d, r, size=SMALL, lead=SLEAD, after=1.0, span=False)
+    for ri, r in enumerate(refs):
+        if ri == 7:                      # balance the last page across columns
+            d.col = 1
+            d.y = d.top()
+        P(d, r, size=8.4, lead=11.0, after=3.0, span=False, justify=False)
 
     # ---------------------------------------------------------------- app A
     d.newpage()

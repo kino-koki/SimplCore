@@ -1,0 +1,160 @@
+{
+ "interface_properties": {
+  "value_to_key_err": 0.0,
+  "col_in_key_half_err": 0.0,
+  "key_annihilated_err": 0.0,
+  "key_projector_err": 0.0,
+  "value_projector_err": 0.0,
+  "rank": 32,
+  "expected_rank": 32,
+  "triple_product_err": 0.0,
+  "note": "M^T M projects onto the key half-space, M M^T onto the value half-space; rank(M)=V_K, so M is a partial isometry between the two halves, NOT an invertible V-by-V map. This is why the interface is a structural object of the codebook rather than a free parameter.",
+  "all_identity": true
+ },
+ "invariants": {
+  "layers_1": {
+   "toeplitz_dev_max": 0.0,
+   "fft_iir_err_max": 2.231273362388241e-15,
+   "future_perturbation_changed_bits": 0,
+   "state_bytes": [
+    1024,
+    1024,
+    1024,
+    1024
+   ],
+   "state_independent_of_L": true,
+   "static_kernel": true,
+   "has_NxN_score": false,
+   "has_kv_cache": false,
+   "interface_is_parameter": false,
+   "parameters_independent_of_depth": true,
+   "all_pass": true
+  },
+  "layers_2": {
+   "toeplitz_dev_max": 0.0,
+   "fft_iir_err_max": 2.231273362388241e-15,
+   "future_perturbation_changed_bits": 0,
+   "state_bytes": [
+    1536,
+    1536,
+    1536,
+    1536
+   ],
+   "state_independent_of_L": true,
+   "static_kernel": true,
+   "has_NxN_score": false,
+   "has_kv_cache": false,
+   "interface_is_parameter": false,
+   "parameters_independent_of_depth": true,
+   "all_pass": true
+  },
+  "layers_3": {
+   "toeplitz_dev_max": 0.0,
+   "fft_iir_err_max": 2.231273362388241e-15,
+   "future_perturbation_changed_bits": 0,
+   "state_bytes": [
+    2048,
+    2048,
+    2048,
+    2048
+   ],
+   "state_independent_of_L": true,
+   "static_kernel": true,
+   "has_NxN_score": false,
+   "has_kv_cache": false,
+   "interface_is_parameter": false,
+   "parameters_independent_of_depth": true,
+   "all_pass": true
+  },
+  "layers_4": {
+   "toeplitz_dev_max": 0.0,
+   "fft_iir_err_max": 2.231273362388241e-15,
+   "future_perturbation_changed_bits": 0,
+   "state_bytes": [
+    2560,
+    2560,
+    2560,
+    2560
+   ],
+   "state_independent_of_L": true,
+   "static_kernel": true,
+   "has_NxN_score": false,
+   "has_kv_cache": false,
+   "interface_is_parameter": false,
+   "parameters_independent_of_depth": true,
+   "all_pass": true
+  }
+ },
+ "gradchecks": {
+  "layers_1": {
+   "worst": {
+    "Wq": 2.9212281053327127e-10,
+    "Wout": 3.600384931596451e-11
+   },
+   "all_pass": true,
+   "n_params": 6144
+  },
+  "layers_2": {
+   "worst": {
+    "Wq": 1.4501331949481888e-10,
+    "Wout": 2.487478173744326e-10
+   },
+   "all_pass": true,
+   "n_params": 6144
+  },
+  "layers_3": {
+   "worst": {
+    "Wq": 4.9654772047574847e-11,
+    "Wout": 2.5287352395961075e-10
+   },
+   "all_pass": true,
+   "n_params": 6144
+  },
+  "layers_4": {
+   "worst": {
+    "Wq": 9.080819863421796e-11,
+    "Wout": 6.512318505638715e-11
+   },
+   "all_pass": true,
+   "n_params": 6144
+  }
+ },
+ "analytic_witnesses": [
+  {
+   "hops": 1,
+   "layers": 1,
+   "acc": 1.0,
+   "note": "Wq=I, Wout=CVAL^T, interface=fixed codebook swap"
+  },
+  {
+   "hops": 2,
+   "layers": 2,
+   "acc": 1.0,
+   "note": "Wq=I, Wout=CVAL^T, interface=fixed codebook swap"
+  },
+  {
+   "hops": 3,
+   "layers": 3,
+   "acc": 1.0,
+   "note": "Wq=I, Wout=CVAL^T, interface=fixed codebook swap"
+  },
+  {
+   "hops": 4,
+   "layers": 4,
+   "acc": 1.0,
+   "note": "Wq=I, Wout=CVAL^T, interface=fixed codebook swap"
+  }
+ ],
+ "checks": {
+  "interface_identities": true,
+  "all_invariants": true,
+  "all_gradchecks": true,
+  "params_independent_of_depth": true,
+  "analytic_witnesses": true,
+  "interface_not_in_params": true
+ },
+ "n_pass": 6,
+ "n_checks": 6,
+ "all_pass": true,
+ "summary": "Architectural change: the inter-layer interface is the codebook's own value->key swap M, shared and NOT a learnable parameter; inter-layer normalisation is fully differentiable. The static Toeplitz kernel, FFT/IIR duality, causality and O(1) state are unchanged. Only Wq/Wout are learned."
+}

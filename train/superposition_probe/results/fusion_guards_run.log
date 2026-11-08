@@ -1,0 +1,89 @@
+    [PASS] toeplitz
+    [PASS] fft_vs_toeplitz
+    [PASS] iir_vs_toeplitz
+    [PASS] strict_causality
+    [PASS] state_independent_of_L
+    [PASS] rho_theta_frozen
+    kernel_all_passed=True  e2e=single FFT  state_bytes=512  cond=2.965e+17
+  B0_base        kernel_all=True  e2e=single FFT
+    [PASS] toeplitz
+    [PASS] fft_vs_toeplitz
+    [PASS] iir_vs_toeplitz
+    [PASS] strict_causality
+    [PASS] state_independent_of_L
+    [PASS] rho_theta_frozen
+    kernel_all_passed=True  e2e=single FFT  state_bytes=512  cond=9.335e+16
+  F1_reso        kernel_all=True  e2e=single FFT
+    [PASS] toeplitz
+    [PASS] fft_vs_toeplitz
+    [PASS] iir_vs_toeplitz
+    [PASS] strict_causality
+    [PASS] state_independent_of_L
+    [PASS] rho_theta_frozen
+    kernel_all_passed=True  e2e=scan (O(L·M)，u_t 内生依赖 y_{t-1})  state_bytes=512  cond=9.335e+16
+  F2_full        kernel_all=True  e2e=scan (O(L·M)，u_t 内生依赖 y_{t-1})
+    [PASS] toeplitz
+    [PASS] fft_vs_toeplitz
+    [PASS] iir_vs_toeplitz
+    [PASS] strict_causality
+    [PASS] state_independent_of_L
+    [PASS] rho_theta_frozen
+    kernel_all_passed=True  e2e=single FFT  state_bytes=512  cond=9.335e+16
+  A1_noSFSC      kernel_all=True  e2e=single FFT
+    [PASS] toeplitz
+    [PASS] fft_vs_toeplitz
+    [PASS] iir_vs_toeplitz
+    [PASS] strict_causality
+    [PASS] state_independent_of_L
+    [PASS] rho_theta_frozen
+    kernel_all_passed=True  e2e=scan (O(L·M)，u_t 内生依赖 y_{t-1})  state_bytes=512  cond=9.335e+16
+  A2_noFDCAO     kernel_all=True  e2e=scan (O(L·M)，u_t 内生依赖 y_{t-1})
+    [PASS] toeplitz
+    [PASS] fft_vs_toeplitz
+    [PASS] iir_vs_toeplitz
+    [PASS] strict_causality
+    [PASS] state_independent_of_L
+    [PASS] rho_theta_frozen
+    kernel_all_passed=True  e2e=scan (O(L·M)，u_t 内生依赖 y_{t-1})  state_bytes=512  cond=9.335e+16
+  A3_noBind      kernel_all=True  e2e=scan (O(L·M)，u_t 内生依赖 y_{t-1})
+    [PASS] toeplitz
+    [PASS] fft_vs_toeplitz
+    [PASS] iir_vs_toeplitz
+    [PASS] strict_causality
+    [PASS] state_independent_of_L
+    [PASS] rho_theta_frozen
+    kernel_all_passed=True  e2e=scan (O(L·M)，u_t 内生依赖 y_{t-1})  state_bytes=1024  cond=9.335e+16
+  F3_full_C8     kernel_all=True  e2e=scan (O(L·M)，u_t 内生依赖 y_{t-1})
+  UP_softmax     kernel_all=None  e2e=N/A
+    [PASS] toeplitz
+    [PASS] fft_vs_toeplitz
+    [PASS] iir_vs_toeplitz
+    [PASS] strict_causality
+    [PASS] state_independent_of_L
+    [PASS] rho_theta_frozen
+    kernel_all_passed=True  e2e=single FFT  state_bytes=512  cond=2.965e+17
+  F4_cell00      kernel_all=True  e2e=single FFT
+    [PASS] toeplitz
+    [PASS] fft_vs_toeplitz
+    [PASS] iir_vs_toeplitz
+    [PASS] strict_causality
+    [PASS] state_independent_of_L
+    [PASS] rho_theta_frozen
+    kernel_all_passed=True  e2e=scan (O(L·M)，u_t 内生依赖 y_{t-1})  state_bytes=512  cond=2.965e+17
+  F5_cell10      kernel_all=True  e2e=scan (O(L·M)，u_t 内生依赖 y_{t-1})
+    [PASS] toeplitz
+    [PASS] fft_vs_toeplitz
+    [PASS] iir_vs_toeplitz
+    [PASS] strict_causality
+    [PASS] state_independent_of_L
+    [PASS] rho_theta_frozen
+    kernel_all_passed=True  e2e=single FFT  state_bytes=512  cond=2.965e+17
+  F6_cell01      kernel_all=True  e2e=single FFT
+    [PASS] toeplitz
+    [PASS] fft_vs_toeplitz
+    [PASS] iir_vs_toeplitz
+    [PASS] strict_causality
+    [PASS] state_independent_of_L
+    [PASS] rho_theta_frozen
+    kernel_all_passed=True  e2e=scan (O(L·M)，u_t 内生依赖 y_{t-1})  state_bytes=512  cond=2.965e+17
+  F7_cell11      kernel_all=True  e2e=scan (O(L·M)，u_t 内生依赖 y_{t-1})

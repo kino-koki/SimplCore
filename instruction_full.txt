@@ -1,0 +1,239 @@
+ICML 2027 投稿 · v7 详细改稿指令单
+适用稿件：Where the Bits Must Live: A Tight Input-Side Information Bound for Fixed-State Spectral Models（v7，10 页，2026-11-07）
+配套文件：ICML2027_SimplCore_投稿技能包.md、模块B_声明资产注册表.md、模块C_P0硬错扫描清单.md、模块F_模拟评审rubric.md
+本文档性质：逐处可执行的改稿指令单（不是论文正文，不随稿提交）。所有【改为】文案可直接粘贴进 LaTeX 源文件。
+核心约束：本轮只改字符串、编号、表格与三处措辞；不新增定理、不新增实验、不增加页数。
+0. 先回答「概率」：三个不能混为一谈的数
+0.1 真实录用率：不能给，也不能承诺
+ICML 主会整体录用率远低于 60%，且由审稿人抽样、AC 判断、当年投稿量与方向热度决定，不在稿件可控范围内。任何「改完就有 60% 录用概率」的说法都是编的。本指令单与上一轮技能包都不提供该保证。
+0.2 按约定的「内部质量门」：当前是 FAIL
+上一轮把「至少 60%」重新定义为可测的内部质量门：3 名独立模拟评审中 ≥2 人给 weak accept 及以上、五维自评无 <3 分项、P0 硬错清零、一票否决零命中。报告用语固定为「内部质量门 2/3 通过」，不换算成录用概率。
+表 0-1　当前门状态：FAIL。注意这不是「录用概率 0%」，是「尚未进入可讨论区间」。
+0.3 修完本指令单后：预期 2/3 通过（≥60% 的最小整数实现）
+N1–N7 全部不需要新结果、不需要新实验、不需要加页，纯字符串与表格级修复，工作量约 2 天。修完后 P0=0、一票否决=0、五维最低 ≥3，此时跑 3 人 20 分钟 blind read，预期 ≥2 人 weak accept 及以上，即「内部质量门 2/3 通过」。这是本指令单能给出的全部「60% 左右」。
+0.4 若 60% 指真实录用概率：只有两条路，都不是改稿
+表 0-2　「真实 60%」的三条路径。选 C 是浪费时间。
+结论一句话：按内部质量门口径，现在 0/3，改完预期 2/3；按真实录用率口径，改稿到不了 60%，能到的是「不再因硬错被早拒」。
+1. 三条硬约束（开工前贴在屏幕上）
+1. 编号统一优先于一切。N1 未完成前，禁止改其它任何段落。
+2. 本轮不新增内容。任何「顺便补一个表 / 加一句解释」都会重新引入不一致。
+3. 每次大改后整表重跑模块 C，不得只重跑改动条目；冻结后只允许改排版错误。
+2. N1（最高优先级，命中一票否决 V3）：P 编号两套撞名
+Theorem A 的前提叫 P1(task) / P2(visible input) / P3(class M) / P4(last-layer read-out) / P5(two accuracy notions)；§1.1 又说「All remaining statements are propositions P1-P8 or lemmas L1-L3」。于是 P1–P5 每个编号都有两个含义，全篇依赖图、Table 1、§4.7、§4.9、§7、Appendix A.5 全部无法判定指向哪一个。
+2.1 决议
+Theorem A 的五个前提整体改名为 A1–A5；Propositions 保持 P1–P8 不变。所有引用按「指前提 → A*」「指命题 → P*」逐处替换。
+2.2 全篇替换总表
+表 2-1　N1 全篇替换总表。按行逐条 search-and-replace，完成后全文搜索裸 P1–P5，确认每处都能判定指向。
+2.3 验收
+[ ] 全文无「Premises. P1」
+[ ] 全文无「P5(i)」「P5(ii)」（应为 A5(i)/A5(ii)）
+[ ] Table 1 第二行为 P6、第四行为 Proposition P4
+[ ] §2 的「positivity premise of P2」已改为非编号表述
+[ ] §3.5 依赖图中每个编号后能读出是前提还是命题
+[ ] 搜索 P1..P8，每条只对应 §3.3.3 的命题清单或 Appendix A.6
+3. N2：三载体 / format prior 在四处互斥
+§2 已正确定义：位置先验不是 per-token channel，它通过 A(v) 计，不计入 B；Appendix A.3 与 §3.1.2 也这么写。但摘要、§3.1(d)、Table 7 把它当成第三个「each supplying one bit」的 carrier，且 Table 7 的 caption 说它「absent from this table」而表里明明有这一行。另外「explicit tag / alphabet partition / symbol id carrying a role」三者在 Appendix A.3 自己承认是同一量的不同载体，属重复计数。
+3.1 统一口径（写进文档，全篇遵守）
+两个计入 B 的 bit carrier：显式 KEY/VALUE tag、字母表分区 V→2V（等价于 symbol id 承载 role）。一个 support restriction：绝对位置格式先验，缩减 |A(v)| 而非增加 B，不计入 B，任意 filler 间隔下失效。
+3.2 逐处替换
+表 3-1　N2 逐处替换。注意 §4.5 的「three carriers」措辞、§4.11「A(d)」相关句同步检索。
+3.3 验收
+[ ] 全文不再出现「three information-equivalent carriers」「three carriers ... each supplying one bit」
+[ ] Table 7 只有两行，caption 不再说「absent from this table」
+[ ] 摘要、§1.1、§3.1(d)、Appendix A.3 四处对 format prior 的描述一致：support restriction，缩减 |A(v)|，不计入 B
+4. N3（战略文案）：把 tight 的适用范围写进标题、摘要、结论
+§4.3 已诚实承认「The original content-chain task of Section 2 is NOT tight」，给出 flat alphabet 下 |A| mean 3.2508 / max 5 / log2|A| <= 2.3219 bits；§6.1 也承认未在标准 MQAR 协议上枚举 A(v)。但标题、摘要、§1、§8 仍笼统说「a tight bound」，读者会理解成「对本文主体实验所在任务紧」。R2 型审稿人一定拿这句打 significance。此改动不改变任何定理，只让标题与 §4.3 说同一句话。
+表 4-1　N3 三处以上措辞统一。中文说明：这不是弱化论文，是把「紧」从「对全部实验紧」收回到「对可构造族紧」。
+配套检查：摘要与 §8 中 log2 |A| 与 log2 |A(v)| 混用，统一为 log2 |A(v)|（定理口径），design rule 那一句可保留 log2 |A| 但需写成 log2 |A(v)| 或加括号说明。
+5. N4（命中一票否决 V5）：References [4] 张冠李戴
+现文：『[4] Gu, A. et al. On the Parameterization and Initialization of Diagonal State Space Models (S5). NeurIPS 2022. arXiv:2208.04933.』arXiv:2208.04933 是 Smith / Warrington / Linderman 的 S5《Simplified State Space Layers for Sequence Modeling》；「On the Parameterization and Initialization of Diagonal State Space Models」是 Gu 等人的 S4D，另一篇、另一个 arXiv 号。作者 + 标题 + 编号三者错配，且 Table 1 与 §6 都把它当 S5 引用。ICML 明确把 hallucinated references 列为 desk rejection grounds。
+5.1 改为
+[4] Smith, J. T. H., Warrington, A., and Linderman, S. W. Simplified State Space Layers for Sequence Modeling. arXiv:2208.04933, 2022.
+（若确需引用 S4D，另起一条并填其真实 arXiv 号；不要在 [4] 里合并两篇。）
+5.2 14 条逐条核验清单
+表 5-1　References 核验表。「核对」项须逐条查 arXiv 记录后勾选，不得凭记忆。
+验收：[ ] [4] 已改　[ ] 正文所有 \cite 键存在　[ ] 表中每条都被正文引用　[ ] 无「verified 2026-11-07」类自证句（v7 已删，勿加回）
+6. N5：T* 两个方向 + 转置上标乱码
+§2 一处写「the analytic optimum is T* = C_key^NT C_val」，另一处写「the unnormalised product (z_h C_val^T) C_key is the special case T_h = C_valNT C_key」。^NT / NT 是转置上标乱码，两个式子互为转置、方向相反；「unnormalised product ... with the same normalisation applied」自相矛盾。
+6.1 改为（整段替换 §2 的 H6 段落第二句起）
+For h < H_L the interface is q_(h+1) = T_h z_h / ||T_h z_h||_2 with a learnable T_h in R^(D x D). The analytic optimum is T* = C_key^T C_val, which maps a VALUE-half code to its KEY-half counterpart; the phrase 'maps the VALUE half to the KEY half' describes this action of T*, not a second interface. Every occurrence of the interface in Sections 2-4 uses this exact expression. The read-out is last-layer only (A4).
+6.2 删除
+删去「the unnormalised product (z_h C_val^T) C_key is the special case T_h = C_valNT C_key with the same normalisation applied」整句。全文只保留一个 T*，方向唯一：C_key^T C_val。
+验收：[ ] 全文无 ^NT / C_valNT　[ ] T* 只出现一次定义　[ ] §3.2.1、Appendix A.4 的 q_H 推导与 T* 方向一致
+7. N6：符号 d 三义复用（打破「No symbol is reused」）
+表 6-1　d 三义拆分。全篇替换后，把 §2 的「No symbol is reused」保留，它才成立。
+同步替换清单：R^(d x d) → R^(D x D)；2 M D + (K-1) D 保持；「when each hop offers d mutually orthogonal candidate successors」→「c mutually orthogonal candidate successors」；「d^(H+1)」→「c^(H+1)」；「o*d <= H*d」→「o*D <= H*D」；§4.6「width d=24」→「width D=24」；Table 6 / §3.3.2 中所有 d 按上表判定后替换。
+8. N7：小笔误与残留值（10 项，逐项勾）
+表 8-1　N7 逐项勾销表。每项改完在「#」列打勾。
+9. 数字冻结表（改稿期间不得改动任何值）
+以下值来自 v7 Table 2 / Table 3 / Table 5，是本轮唯一真值源。任何【改为】文案不得引入新数字；若必须引用，只能引用本表已有值。
+表 9-1　冻结值。0.2969 / 0.2711 / 0.9316 / 0.9414 / 0.9609 / 0.6016 / 2.43e-14 等旧值只在 Table 10 provenance audit 出现，不得作为结论引用。
+10. 48 小时排期
+表 10-1　排期。任何时段新增内容都视为违规，回到 Day 1 上午重跑。
+11. 挂起项与提交前冻结清单
+作者在 §4.10 与 Appendix C 已写明：2027 CFP 与投稿截止日未公布，页数、作者侧 LLM 使用披露、reciprocal reviewer 义务须按官方模板复核。这三项现在只能预排，不能算合规完成。
+表 11-1　提交前清单。「待 CFP」项不得在模板公布前勾为完成。
+12. 改后验收：60% 门判定表（留空，跑完模拟评审填）
+表 12-1　按模块 F 五维权重（Sound .30 / Orig .25 / Sig .20 / Clar .15 / Repro .10）填写，先写决定再打分。
+weak accept 及以上人数：___ / 3　　五维自评最低分：___（须 ≥3）　　P0：___（须 0）　　一票否决命中数：___（须 0）
+结论：PASS / FAIL　　报告用语：「内部质量门 ___/3 通过」或「内部质量门未通过，卡在 ___」
+禁止用语：「录用概率」「预计通过率」「accept 概率」。
+三条必杀质疑的正文预堵复查：
+Q1「这不就是 linear attention」→ §1 / Table 1 / §3.3.1 已承认 rho=1 同构并给 IFF 差异，检查 N1 替换后依赖图仍可读。
+Q2「任务被输入格式解决」→ 摘要 + §3.1 + §4.3 + §4.5 的 alphabet convention 句，检查 N2/N3 后无「no structural convention」类过度声称。
+Q3「纯合成 / 零训练」→ §4.4 / §4.6 / §5 / §6.1，检查未补不公平大规模基线。
+13. 若仍要真实 60%：significance 增量三档（本轮不做，仅供决策）
+表 13-1　本指令单不含 S1–S3；若选它们，须从模块 B Phase 1 重新全量登记声明资产，不能直接叠加到 v7。
+最后一句：v7 已经把「诚实」从卖点变成基线、把「一致性」从欠债变成资产。现在挡在前面的不是理论，是七处字符串与一张引用表。修完它们，按内部质量门口径就是 2/3；真实录用率仍不由这份指令单决定。
+
+[TABLE 0]
+门的四个合取条件 | v7 现状 | 判定
+≥2/3 模拟评审 weak accept 及以上 | 未跑；但 N1 命中 V3、N4 命中 V5，按协议一票否决即门失败 | FAIL
+五维自评每维 ≥3 | Clarity 因 P 编号撞名约 2–3；Soundness 4 / Originality 3 / Significance 3 / Reproducibility 5 | FAIL
+P0 硬错 = 0 | 剩余 6 条机械项 + 1 条战略文案（N1–N7） | FAIL
+一票否决 = 0 | V3（编号不一致）、V5（引用错配）命中 | FAIL
+
+[TABLE 1]
+路径 | 要补什么 | 工作量 / 风险
+A. 换 venue | 4 页理论短讯投 workshop，或 TMLR / 理论向期刊；自审材料作为公开技术报告 | 1 周；接受概率结构不同，但不再是 ICML 主会
+B. 补 significance 新结果 | 在标准 MQAR / associative-recall 协议上枚举或界定 A(v)，给出非平凡下界；或做跨架构验证，证明该输入侧 bit 预算对非量身任务同样给出设计规则 | 4–8 周；需新实验与新命题，可能推翻 §4.3 现有结论
+C. 继续打磨现有稿 | 无 | 边际收益已接近零；§4.3 已主动承认主任务不紧，significance 上限由结果本身决定，不由措辞决定
+
+[TABLE 2]
+原字符串 | 改为 | 出现位置（节 / 表）
+Premises. P1 (task) | Premises. A1 (task) | §3.1
+P2 (visible input) | A2 (visible input) | §3.1
+P3 (class M) | A3 (class M) | §3.1、§3.1(c)、§3.1.1
+P4: only the last layer is decoded | A4: only the last layer is decoded | §3.1
+P5: two accuracy notions, defined below | A5: two accuracy notions, defined below | §3.1
+Two accuracy notions (P5) | Two accuracy notions (A5) | §3.1
+P5(i) / P5(ii) | A5(i) / A5(ii) | §2.2、§3.1、§4、§4.5、§4.7、§4.9、§5、Table 2、Table 6 caption
+Parts (a) and (b) need NONE of P3 | Parts (a) and (b) need NONE of A3 | §3.1
+Within P3, increasing H_L | Within A3, increasing H_L | §3.1(c)
+Neither step uses P3 | Neither step uses A3 | §3.1.1、Appendix A.1
+by P1 that destroys the Toeplitz | by P6 that destroys the Toeplitz | §3.1(c)（现文误指 P1；Toeplitz IFF 是 P6）
+P6 gives h(s,s)=c_s | P6 gives h(s,s)=c_s | 保持不变（已是命题编号，正确）
+under P4 the decoded value | under A4 the decoded value | §3.1(f)、§3.1.2、Appendix A.3
+P5 gives a matching state-order bound | Proposition P5 gives a matching state-order bound | §3.1(e)
+P5's state-order bound is conditional | Proposition P5's state-order bound is conditional | §7
+P5 feeds A(e) | Proposition P5 feeds A(e) | §3.5 依赖图
+P2 and P6 feed Result 2(i); P1 and P6 feed A(c) | P2 and P6 feed Result 2(i); P1 and P6 feed Theorem A(c) | §3.5 依赖图
+A(c) states the consequence WITHIN class M | Theorem A(c) states the consequence WITHIN class M | Table 1 第三行
+P1 proves Toeplitz iff time-invariance | P6 proves Toeplitz iff time-invariance | Table 1 第二行（现文误标 P1）
+P4 records the rho=1 single-pole isomorphism | Proposition P4 records the rho=1 single-pole isomorphism | Table 1 第四行、§3.3、§5
+the positivity premise of P2 | the positivity premise of Result 2's matching argument | §2 Kernel families、§2.1 末（P2 是 linear-summary 不可能命题，无 positivity premise，属悬空引用）
+Under P2 with a linear historical summary | Under Proposition P2 with a linear historical summary | §3.2(i)、§3.2.1
+P2 (arbitrary read-out) | P2 (arbitrary read-out) | 保持不变（§3.3.3 命题清单，正确）
+P5 (when each hop offers d orthogonal successors) | Proposition P5 (when each hop offers d orthogonal successors) | §3.3.2
+P5: conditional state-order lower bound | Proposition P5: conditional state-order lower bound | Appendix A.5 标题
+A(b)'s pigeonhole argument | Theorem A(b)'s pigeonhole argument | §2.1 首句
+A(c) is falsified by a duality-preserving layer | Theorem A(c) is falsified by a duality-preserving layer | §4.11
+A(d), A(e), A(f) | A(d), A(e), A(f) | 保持不变（定理分部，正确）
+
+[TABLE 3]
+位置 | 现状原文（摘） | 改为（可直接粘贴，英文）
+摘要 第 10–12 句 | We therefore characterize where the bits may live: an explicit tag, an alphabet partition, and a symbol id carrying a role each supply one bit per ambiguous token. The alphabet partition folds the mandatory bit into the symbol id: it is not bit-free, it is annotation-free. | We therefore characterize where the bits may live: an explicit KEY/VALUE tag and an alphabet partition V -> 2V each supply one bit per ambiguous token, counted in B. A positional format prior is not a per-token channel; it restricts the support of the instance distribution and reduces |A(v)| instead. The alphabet partition folds the mandatory bit into the symbol id: it is not bit-free, it is annotation-free.
+§1.1 Result 1 | with per-fibre accuracy, a within-class-M location statement, three equivalent carriers, and the bit-depth frontier | with per-fibre accuracy, a within-class-M location statement, two bit carriers plus one support restriction, and the bit-depth frontier
+§3.1(d) 首句 | The bound is attained by three information-equivalent carriers, each supplying one bit per ambiguous token: an explicit KEY/VALUE tag; an alphabet partition V -> 2V, which is exactly log2(2V_K / V_K) = 1 bit folded into the id and is COUNTED in B by the definition in Section 2; and an absolute-position format prior, which encodes the same bit in a support assumption. | The bound is attained by two bit carriers, each supplying one bit per ambiguous token and each COUNTED in B by the definition in Section 2: an explicit KEY/VALUE tag, and an alphabet partition V -> 2V, which is exactly log2(2V_K / V_K) = 1 bit folded into the id. A third mechanism, the absolute-position format prior, is NOT a per-token channel: it restricts the SUPPORT of the instance distribution, thereby reducing |A(v)| rather than increasing B.
+§3.1(d) 末句 | Under arbitrary filler spacing the third carrier's assumption fails and its effective information falls to zero. | Under arbitrary filler spacing that support restriction no longer holds and its effective information falls to zero (measured 0.3438, five seeds).
+Table 7 表格 | 三行：explicit tag / codebook partition / position format prior，b_t 列均为 1 | 删去第三行，只留 explicit tag 与 codebook partition 两行；b_t 均为 1
+Table 7 caption | Three carriers of the same one bit per ambiguous token. ... The position prior is a support restriction, not a per-token channel; it is absent from this table and analysed through A(v) in Section 4.3. | Two carriers of the same one bit per ambiguous token; both are counted in B by Section 2. The alphabet partition folds the mandatory bit into the symbol id: it is not bit-free, it is annotation-free. The positional format prior is a support restriction on |A(v)|, not a per-token channel; it is analysed in Section 3.1(d) and measured in Section 4.9.
+§4.2 首句 / §4.3 索引 | （无，但 Table 7 caption 误指 §4.3） | 确认 §4.3 是 reachability enumeration，不承接 format prior；所有 format prior 分析指向 §3.1(d) 与 Appendix A.3
+
+[TABLE 4]
+位置 | 现状 | 改为（可直接粘贴，英文）
+标题 | Where the Bits Must Live: A Tight Input-Side Information Bound for Fixed-State Spectral Models | Where the Bits Must Live: An Input-Side Information Bound, Tight on a Constructible Family, for Fixed-State Spectral Models
+摘要 第 1 句后插入 | （无） | The bound is distribution-free and attained on an explicit binary-chain family with |A| = 2^m; on the content-chain task used in our experiments, reachability enumeration gives |A| <= 5 (log2|A| <= 2.3219), so the bound is loose there.
+摘要 第 12–13 句 | Strongest evidence: two further tight structural bounds ... are attained by one Toeplitz, O(1)-state construction | Strongest evidence: two tight structural bounds ... are attained by one Toeplitz, O(1)-state construction
+§1 第 2 段末句 | the contribution here is a tight, distribution-free quantification of the input-side deficit, and a construction showing that supplying exactly that deficit restores exact retrieval while preserving the static-kernel duality. | the contribution here is a distribution-free quantification of the input-side deficit, attained on an explicit constructible family, and a construction showing that supplying exactly that deficit restores exact retrieval while preserving the static-kernel duality.
+§1.1 Result 1 | A tight input-side information bound B >= log2 |A(v)| | An input-side information bound B >= log2 |A(v)|, tight on the binary-chain family
+§8 第 1–2 句 | We proved a tight lower bound on that information (B >= log2 |A|, Theorem A) | We proved a distribution-free lower bound on that information (B >= log2 |A(v)|, Theorem A), attained on an explicit binary-chain family
+§8 增补一句 | （无） | On the content-chain task studied in our experiments the bound is loose (Section 4.3); what transfers is the distribution-free inequality A(b), which applies to any flat projection, including standard associative-recall protocols.
+
+[TABLE 5]
+编号 | 核验项 | 状态
+[1] | Arora et al. Zoology, ICLR 2024, arXiv:2312.04927 | 已对齐，保留
+[2] | Jelassi et al. Repeat After Me, ICML 2024, arXiv:2402.01032 | 已对齐，保留
+[3] | Merrill et al. Illusion of State, ICML 2024, arXiv:2404.08819 | 已对齐，保留
+[4] | S5 作者 / 标题 / arXiv 号错配 | 必改，见 5.1
+[5] | Gu & Dao, Mamba, COLM 2024, arXiv:2312.00752 | 已对齐，保留
+[6] | Katharopoulos et al., ICML 2020, arXiv:2006.16236 | 已对齐，保留
+[7] | Yang et al. GLA, ICML 2024, arXiv:2312.06635 | 已对齐，保留
+[8] | Yang et al. Delta Rule, NeurIPS 2024, arXiv:2406.06484 | 核对 venue
+[9] | Dao & Gu, ICML 2024, arXiv:2405.21060 | 已对齐，保留
+[10] | Poli et al. Hyena, ICML 2023, arXiv:2302.10866 | 核对 venue
+[11] | Romero et al. CKConv, ICLR 2022, arXiv:2202.06037 | 核对 arXiv 号
+[12] | Tay et al. LRA, ICLR 2021, arXiv:2011.04006 | 已对齐，保留
+[13] | Vaswani et al., NeurIPS 2017, arXiv:1706.03762 | 已对齐，保留
+[14] | Olsson et al. Induction Heads, Transformer Circuits Thread 2022 | 非 arXiv 条目，确认可被引用
+
+[TABLE 6]
+现用 d 的含义 | 出现位置 | 改为
+delay d = L-1-t | §2 Symbol discipline、§2.1、§3.1.1、Appendix A.2 | ℓ（或用 lag 统一，但 lag 已另有含义，建议 ℓ）
+channel width d（d x d 矩阵、width d=24） | §2 H6、§3.4、§4.6、Appendix A.3/A.5 | D（§2.1 已有大写 D，统一为 D）
+branching factor d（d mutually orthogonal successors） | §3.1(e)、§3.3.2、§7、Appendix A.5 | c
+
+[TABLE 7]
+# | 位置 | 现状 | 改为 | 理由
+1 | §3.1 Proof route | F(v, s) takes at most 2AB values | F(v, s) takes at most 2^B values | Appendix A.1 已正确；正文排版丢失上标
+2 | Table 1 第三行 | A(c) states the consequence | Theorem A(c) states the consequence | 分部编号不能裸用
+3 | §4.4 末 | chance 0.0312 | chance 0.0313 | E1 残留；Table 2 / Table 10 均为 0.0313
+4 | §5 第 4 条 | a gapped layout gives 0.9609 | 改为 Table 2 中存在的值，或删去该数字只保留定性描述 | 0.9609 不在 Table 2，违反「Table 2 is the single source for every number quoted anywhere」
+5 | Table 12 | explicit / gapped 出现两行 1.0000 / 1.0000 | 其中一行改为 explicit / dense 或 explicit / padded（按原始结果文件） | 重复行，且 §4.9 自称覆盖五种配置
+6 | Broader Impact | 无生成式 AI 使用披露句 | 补回中性一句：Generative AI tools were used for implementation assistance and language editing; all research questions, proofs and conclusions were specified and verified by the human author. | v6 有、v7 删；但 §4.10 / Appendix C 又说该项须按官方模板复核，正文与自述冲突。2027 政策随 CFP 发布，须再核验
+7 | §4.10 | 7/7 gates pass | 删除该计数，保留「it is NOT a mathematical proof, and all proofs in this paper are analytic」 | check 计数不应作正文贡献
+8 | 摘要 / §8 / §1.1 | log2 |A| 与 log2 |A(v)| 混用 | 统一为 log2 |A(v)|；design rule 句可写 log2 |A(v)| | 定理口径一致
+9 | §2.1 首句 | A(b)'s pigeonhole argument | Theorem A(b)'s pigeonhole argument | 编号裸用
+10 | §4.2 / Table 4 caption | 「machine precision」与 2.27e-16 / 2.89e-16 并列 | 保持 Table 4 三个探针各自的值，摘要与 §4.2 只写「machine precision (worst error <= 3e-16 across probes)」 | Table 10 已记录漂移，勿在正文重引单值
+
+[TABLE 8]
+配置 ID | 值 | 统计量 | seed / 样本 | 来源
+C01 | 0.0313 | chance = 1/V_K（本任务 V_K=32） | 定义 | Table 2
+C02 | 0.1055 | marginal, trained, H=2, 1 layer | 5 / 512 | Table 3
+C03 | 0.9512 | marginal, trained, H=2, 2 layers | 5 / 512 | Table 3
+C04 | +0.8457 | paired difference | 5 | §4.6
+C05 | [+0.8281, +0.8598] | paired 95% CI, 10k resamples | 5 | §4.6
+C06 | 0.8621 | 0-bit, alternating, marginal, no training | 5 / 512 | Table 2
+C07 | 0.3438 | parity, gapped, marginal | 5 / 512 | Table 2
+C08 | 1.0000 | codebook, gapped, marginal | 1 / 512 | Table 2
+C09 | 0.9328 | duplicate keys, marginal, trained | 5 / 512 | §4.4
+C10 | 0.5652 / 0.0781 | rank-16 / rank-4 code, marginal, trained | 5 / 512 | §4.4
+C11 | 0.0625 | B=0, m=4, per-fibre uniform, exhaustive | exhaustive | §4.5 / Table 6
+C12 | <= 3e-16 | FFT/IIR rel. error, max over 3 probes | — | Table 4 / Table 10
+C13 | 0.0332-0.3125 | attention refs, range, 3 seeds | 3 / 512 | §4.6
+C14 | 3.2508 / 5 / 2.3219 | |A| mean / max / log2|A| upper bound, H=4, flat | 5 / 256 | §4.3
+C15 | 0.0586 / 0.0625 / 0.0801 / 0.0898 | Table 5 layers=5 row, off-diagonal, <= 0.10 | 512 held-out | Table 5
+
+[TABLE 9]
+时段 | 任务 | 交付 / 闸门
+Day 1 上午 | N1：A1–A5 全篇替换 + Table 1 的 P1→P6 / P4→Proposition P4 + §2 悬空引用修正（表 2-1 逐行） | 全文搜索裸 P1–P5 无歧义；出门前先做这一项
+Day 1 下午 | N2（表 3-1）、N5（§6.1）、N6（表 6-1） | 三载体两行；T* 唯一；d 三义拆开
+Day 2 上午 | N4（表 5-1 逐条核验）、N7（表 8-1 十项） | References 全绿；小笔误清零
+Day 2 下午 | N3（表 4-1 标题 / 摘要 / §1 / §1.1 / §8 五处 + 增补两句） | 标题与 §4.3 说同一句话
+冻结后 | 整表重跑模块 C；跑 3 人 20 分钟 blind read（模块 F） | P0=0、一票否决=0、五维最低 ≥3、≥2/3 weak accept → 内部质量门 2/3 通过
+CFP 公布后 | 解锁 Phase 7：页数、作者侧 LLM 披露、reciprocal reviewer 提名 | 当前为挂起项，见 §11
+
+[TABLE 10]
+检查项 | 状态
+正文页数 / PMLR 当年双栏模板 / 公式不溢出栏宽 | 待 CFP
+Broader Impact 位于 References 之前，含正面 / 负面 / 缓解 / 受影响方 | v7 已正确
+生成式 AI 使用披露句（N7 #6 补回）符合当年政策 | 待 CFP
+reciprocal reviewer 提名资格与 OpenReview 记录 | 待 CFP
+仅投一篇；无同主题并行投稿触发 concurrent submission 风险 | 待确认
+逐条引用核验（表 5-1） | 本轮完成
+匿名化：PDF 元数据、补充材料文件名、脚本注释、无内部路径 | v7 基本干净，终稿再扫
+摘要与全文逐句对齐；无占位内容；无 prompt injection | 本轮完成
+冻结：表 9-1 与 PDF 内所有数字一致；冻结后只改排版错误 | 本轮完成
+
+[TABLE 11]
+评审人 | 一句话决定（先写） | 决定档 | Sound | Orig | Sig | Clar | Repro | weighted | 一票否决
+R1 理论 / 信息论 |  |  |  |  |  |  |  |  | 
+R2 SSM / 线性注意力 |  |  |  |  |  |  |  |  | 
+R3 严苛 AC / 桌审 |  |  |  |  |  |  |  |  | 
+
+[TABLE 12]
+档 | 内容 | 预期改变 | 代价
+S1 最小 | 在标准 MQAR 协议上做一次 reachability enumeration，报告 A(v) 的分布与 log2|A(v)| 的实测下界，不声称紧 | 把 §4.3 的「not MQAR」升级为「bound transfers with measured magnitude」，堵 R2 的 significance 主问 | 1–2 周，合成实验，无需 GPU
+S2 中等 | 把 binary-chain witness 嵌入一个非相邻绑定 / 多查询的协议，证明下界在该协议上仍可达或给出非平凡 gap | tightness 不再只属于量身任务 | 3–5 周，需新命题，可能改定理陈述
+S3 大 | 跨架构验证：给 linear attention / GLA / Mamba-2 同条件输入侧 bit 预算，展示同一设计规则 | significance 可上 4 分 | 6–8 周，需公平基线，风险最高；不公平基线比没有基线更伤
+替代 | 改投理论短讯 workshop / TMLR / 理论向期刊 | venue 结构不同，不再讨论主会 60% | 1 周

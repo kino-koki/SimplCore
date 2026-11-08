@@ -1,0 +1,45 @@
+{
+ "total_params": 1057320252,
+ "total_B": 1.0573,
+ "language": {
+  "verbatim_qwen": 419881984,
+  "verbatim_detail": {
+   "embed_tokens": 155582464,
+   "28x_mlp_and_layernorms": 264298496,
+   "final_norm": 1024
+  },
+  "mixer_28_layers": 89171852,
+  "mixer_per_layer": 3184709,
+  "subtotal": 509053836,
+  "dropped_attention_params": 176160768,
+  "lm_head": "tied to embed_tokens (NOT double counted)"
+ },
+ "vision": {
+  "vision_tower": 522299312,
+  "merger_mlp": 25967104,
+  "subtotal": 548266416,
+  "source": "MiniCPM-V-4.7-1B model.vision_tower.* + model.merger.*"
+ },
+ "shards": {
+  "total": 111,
+  "index_tensors": 1017,
+  "max_shard_bytes": 25165104,
+  "note": "repacked to <=24MB for GitHub REST API upload"
+ },
+ "version": "2.0",
+ "total_params_trainable": 1057320252,
+ "dc_bias_buffer": {
+  "elements": 28672,
+  "dtype": "float32",
+  "shape": [
+   28,
+   1024
+  ],
+  "file": "dc_bias.safetensors",
+  "trainable": false,
+  "note": "static buffer added to residual stream before each FFN; NOT counted as trainable parameters"
+ },
+ "total_params_including_static_buffer": 1057348924,
+ "total_B_including_buffer": 1.05735,
+ "repair": "analytic DC-bias transfer, zero training; see SimplCore docs/TS2SC_coherence_audit.md"
+}

@@ -1,0 +1,44 @@
+{
+  "ts": {
+    "param_count": 524928,
+    "steps": 3000,
+    "val_ppl": 11.280539169326907,
+    "val_ce": 2.4230790436267853,
+    "kl_vs_teacher_T1": 5.024280511634061e-07,
+    "gen": " ime.prinm = new ffrence(float[]; input.length);\n \n ithis.didefaturests = new ATVaCULNOCUs",
+    "rep3": 0.05681818181818177
+  },
+  "sgc": {
+    "param_count": 436096,
+    "steps": 3000,
+    "val_ppl": 10.832292320071735,
+    "val_ce": 2.382531702518463,
+    "kl_vs_teacher_T1": 0.7399323061108589,
+    "gen": " / (input]:\n \"\"\"\n */\n public static class Pr=cls = (modeach(embeddingLoop trainEmocy(qingx",
+    "rep3": 0.022727272727272707,
+    "stream_check": {
+      "max_abs": 3.137041747570038,
+      "mean_abs": 0.4447024817052747,
+      "rel": 0.31959465298796325,
+      "state_bytes": 67072
+    }
+  },
+  "kd": {
+    "param_count": 436096,
+    "steps": 3000,
+    "val_ppl": 10.085265914606477,
+    "val_ce": 2.3110755383968353,
+    "kl_vs_teacher_T1": 0.4722725339233875,
+    "gen": " for e.re_modelineDataset + dict(output) {\n \n emoryType.FUFI]) -> None\n\n\ndef test_ = emax(",
+    "rep3": 0.011363636363636354
+  },
+  "verdict": {
+    "result": "SUPPORTED",
+    "ratio_kd_vs_ts": 0.8940411236751417,
+    "ratio_sgc_scratch_vs_ts": 0.9602637034873291,
+    "kd_gain_over_sgc_scratch": 0.06896291047104153,
+    "token_budget_per_arm": 3072000,
+    "chinchilla_20x_tokens": 10498560,
+    "note": "预算为前哨级（约 2.05M token/臂，Chinchilla 20× 约 9.2M）；结论按此预算给出，不外推到规模化训练。"
+  }
+}

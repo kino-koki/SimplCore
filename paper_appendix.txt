@@ -1,0 +1,745 @@
+Supplementary Material
+
+Where the Bits Must Live: A Tight Input-Side Information Bound
+for Fixed-State Spectral Models
+
+
+
+Anonymous submission. This document contains the appendices to the
+main paper. It is self-contained: each proof restates the final
+premises and the identifier of the claim it establishes, and proofs
+cross-reference those identifiers rather than referring to 'the
+proof above'. Numerical witnesses certify non-vacuity and
+agreement; they are never used as premises.
+
+
+
+Contents
+
+Appendix A Complete analytic proofs (A.1-A.11)
+Appendix B Withdrawn statements
+Appendix C Reproducibility
+Appendix D All raw fusion measurements
+Appendix E Premise, boundary and non-vacuity ledger
+Appendix F All 1500-step convergence curves
+Appendix G All fusion evolution curves
+Appendix H Exhaustive information-bound enumeration
+Appendix I Complete numeric provenance and witness detail
+Appendix J Per-seed raw curves at key steps
+
+
+
+
+The main paper states four core results. SE1-SE5 in Appendix A.7-A.11
+are supporting statements about an exactly-defined finite
+consolidation process; P1-P8 and L1-L3 are propositions and lemmas.
+No theorem is introduced in the supplementary material.
+Appendix A Complete Analytic Proofs                                                    premise. QED.
+All proofs are analytic. Numerical witnesses certify non-vacuity and                   A(e). B < log2|A| makes exactness impossible for EVERY deterministic
+agreement with the statements; they are not used as premises.                          model by A(b), hence for every H_L; for B >= log2|A| Result 2(ii) gives
+                                                                                       minimum depth exactly H. The frontier is a right angle. A(f): under A4 the
+A.1 Theorem A(a) and A(b)                                                              decoded value at depth H_L is k_(H_L); for H_L > H and distinct keys this
+Fix a fibre v. The decoder observes (v, s) with s in (0,1)^B, so F(v, .) has at        differs from k_H. Retaining and selecting the H-th intermediate output
+most 2^B distinct values. Let A(v) be the set of distinct answers over                 gives the correct answer for any H_L >= H; the lower bound H_L >= H is
+instances compatible with v and in the support. If |A(v)| > 2^B, two                   unchanged. QED.
+instances G, G' in the fibre share (v, s) but have k_H(G) != k_H(G'). F
+cannot equal both. Under the uniform measure on the fibre, at most 2^B of
+                                                                                       A.4 Result 2: induction and tightness
+the |A(v)| answer classes can be correct, hence acc(F | v) <= 2^B / |A(v)|;            (i) P2 rules out an order-1 vector state with a linear summary; Construction
+this proves (a). Exactness on every instance requires |A(v)| <= 2^B for all            C gives an order-2 tensor state with a contraction read-out, so the minimum
+v, i.e. B >= log2 |A(v)|; this proves (b). Neither step uses A3. The marginal          is exactly 2. (ii) Induction on H. Base H=1: one contraction resolves one
+accuracy E_v[acc(F|v)] is NOT bounded by 1/|A| when fibres with |A(v)|=1               content match and yields the value; a zero-th layer cannot. Step: suppose
+carry most of the mass, which is why Section 4 labels every statistic. QED.            H-1 layers resolve H-1 hops and produce q_H = C[k_H] by the unique H6
+                                                                                       interface. Layer H performs one further match with q_H and returns k_H's
+Binary-chain witness for |A| = 2^m. Fix m <= n and H = m. At hop h the                 successor. Fewer than H layers leave at least one hop unresolved: the last
+visible flat sequence contains one key k_h and TWO candidate successor                 read-out sees a mixture of at least two successors and cannot be exact on all
+symbols; a bit d_h not recorded in v selects which one is bound, and the               fibres. The analytic construction attains 1.0000 on the diagonal of the 5 x 5
+selected symbol is the key of hop h+1. Both candidates are present as                  grid and <= 0.10 off it, so the bound is tight and non-vacuous. Overshoot
+tokens, so every d in (0,1)^m yields the SAME v and the same q = k_1.                  H_L > H is A(f), not a failure of the lower bound. QED.
+Map d to the endpoint id sum_h d_h 2^(h-1); with V_K >= 2^m these are
+2^m distinct endpoints. The witness enumerates all 2^m assignments with                A.5 Proposition P5: conditional state-order lower bound
+bit-identical visible inputs (max deviation 0.0e+00). If the pairing is also           Premise. The interface is H6 with rank at most D; the codebook rows are
+absent from v, all n! matchings belong to the fibre, giving B >= log2(n!).             mutually orthogonal; at each of H hops there are c mutually orthogonal
+QED.                                                                                   candidate successors; answers are determined by the joint choice of the
+                                                                                       start key and the H successors, so the candidate set has size c^(H+1).
+A.2 Theorem A(c) and the Toeplitz equivalence (P6)                                     Claim. An order-o tensor state whose per-layer linear summary has image
+In class M, layer h computes z_h = sum_t K_h(L-1-t) m_h[t] e(x_t) with                 dimension at most o*d cannot be exact unless o >= H+1. Proof. The H+1
+m_h[t] = <q_h, e(x_(t-1))>, and q_(h+1) = T_h z_h / ||T_h z_h||. K_h                   independent matching directions must be simultaneously recoverable from
+depends only on the lag and on fixed parameters, T_h is fixed, and e is                the summary for every one of the c^(H+1) joint choices. If o <= H, the
+fixed. The composition is therefore a function of the multiset of (flat                summary is a linear map from a space of dimension (H+1)d into one of
+symbol id, position) pairs plus q, i.e. of v with the refinement s removed.            dimension o*D <= H*D; its kernel has dimension at least d > 0. By the P2
+Under arbitrary filler spacing the positions of the pair tokens are                    construction (with the blocks taken to be the coefficient matrices of the
+determined by filler counts independent of the role assignment, so F is                H+1 directions) there exist two distinct joint choices producing the same
+constant on the fibre: no choice of H_L, state order or (rho, theta, w)                summary and the same q, hence the same read-out, yet requiring different
+changes this, and A(a) applies. To encode roles in the kernel one makes the            answers. Exactness is impossible; therefore o >= H+1. This is a
+recurrence coefficients functions of x_t, hence time-varying. For y_t = a_t            CONDITIONAL bound: when each hop offers only 2 candidates the same
+y_(t-1) + b_t y_(t-2) + c_t u_t with c_t != 0, P6 gives h(s,s)=c_s,                    counting gives 2^(H+1) classes and the necessary order is weaker,
+h(s+1,s)=a_(s+1) c_s, h(s+2,s)=(a_(s+2)a_(s+1)+b_(s+2)) c_s. Toeplitz                  degenerating to a log2(H+1) bit requirement. We state that degeneration
+forces c_s, a_s and b_s constant by induction on the lag, so (rho_t, theta_t)          explicitly rather than presenting c^(H+1) as unconditional. QED.
+are constant. Non-Toeplitz h(t,s) has no single H(z) and the single-FFT
+path fails. This negates THAT path within M, not every conceivable O(L                 A.6 P1, P3, P4, P7, P8 and non-vacuity
+log L) algorithm. A(c) is therefore a conditional statement: IF duality is             P1. H(z) = sin(theta) / (1 - 2 rho cos(theta) z^(-1) + rho^2 z^(-2)) gives y_t
+preserved, the bits must enter on the input side. QED.                                 = 2 rho cos(theta) y_(t-1) - rho^2 y_(t-2) + sin(theta) u_t, a real-field
+                                                                                       equivalence; different rounding orders in the FFT and IIR paths make fp32
+A.3 Theorem A(d), A(e), A(f) and P2                                                    bitwise identity false (W1). P3. For a finite output set F with |F| <= |S|, the
+A(d). By the Section 2 definition B = sum_t log2 |pi^(-1)(v_t)|, so an                 state can encode f(x) directly, so the literal claim 'O(1) states must lose' is
+alphabet partition with |pi^(-1)| = 2 contributes exactly one bit per                  false; the correct statement is that a SPECTRAL compression state loses
+non-empty token and is COUNTED in B. An explicit tag and a symbol id                   content addressing. P4. At rho=1 and a single pole the Construction C state
+carrying a role are the same quantity in a different carrier. Tagging only the         reduces to sum_tau k_tau v_tau^T, the linear-attention state; rho<1 retains
+KEY token of each of n pairs gives B = n, which attains B >= n from A(b).              a decay spectrum. P7. With impulse response bounded by rho^lag /
+A positional prior is a support restriction: it reduces |A(v)| rather than             |sin(theta)| and per-step injection bounded by delta_max, the output error is
+increasing B, and under random filler spacing the restriction no longer                at most delta_max / ((1-rho)|sin(theta)|), under a uniform floating-point
+holds, so the effective information falls to zero (measured 0.3438, 5 seeds).          perturbation model. P8. As theta_m -> 0 the dictionary columns approach
+QED.                                                                                   theta_m rho^lag (lag+1) and become collinear, so the grid is asymptotically
+P2 (explicit construction). Fix keys and q; A = sum_p L_p v_p + c with d x             rank deficient. Non-vacuity: n=4, m=2, V_K=32, H=2, flat alphabet,
+d blocks L_p, read-out f(A,q) arbitrary, target j = j(q). Case 1: L_j singular.        arbitrary filler spacing give |A|=4 at B=0 with acc <= 1/4, and exactness at
+Pick nonzero delta in ker L_j and change only v_j; delta-A = 0, answer                 B=2.
+changes. Case 2: L_j invertible and some L_p != 0 for p != j. Pick delta_p
+and set delta_j = -L_j^(-1) L_p delta_p; then delta-A = L_p delta_p + L_j              A.7 SE1: orthogonal-registration zero-crosstalk identity
+delta_j = 0, and delta_j is nonzero, so the target value changes. Case 3: L_j          PREMISE. C in R^(V x V) satisfies C C^T = I; S = sum_(a=1)^m w_a
+invertible and all other L_p = 0. Then A depends only on v_j; fix all values           C[k_a]^T C[v_a] with distinct k_a; the query is q = C[k]. CLAIM. C[k] S =
+and redirect q to a different pair p != j, which changes the required answer           w_j C[V_K + v_j] when k = k_j, and 0 when k is not among the k_a.
+while A is unchanged. In every case two legal assignments give the same                PROOF. C[k] C[k_a]^T = delta_(k,k_a) by row orthogonality, so C[k] S =
+(A,q) and different answers, so f cannot be exact. No step infers a                    sum_a w_a delta_(k,k_a) C[V_K+v_a]. Distinctness leaves at most one
+target-coordinate perturbation from dim ker L > 0 alone. Scope: single                 nonzero term. CONSEQUENCE. The read-out logits = (C[k] S)
+mixer with a fixed linear historical summary; deep stacks with per-position            C[V_K:,:]^T are a one-hot vector scaled by w_j for a registered key, so
+nonlinear FFNs, input-dependent gates and outer-product states leave the               accuracy is IDENTICALLY the fraction of correctly registered bindings.
+
+
+                                                                                  10
+There is no cross-talk term to bound or estimate. NON-VACUITY. V = 64,              Greedy removal of the smallest weight is optimal; (ii) the number of slots
+V_K = 32, C the normalized Sylvester matrix, m >= 2: 200 randomized                 whose weight stays above epsilon is K* = floor(log epsilon / log rho).
+instances give a maximum on-target error of 4.4e-16 and maximum                     PROOF. (i) Utility U = sum_a w_a u_a with u_a >= 0 and mutually
+off-target error of 8.5e-17. BOUNDARY. Repeated keys, a rank-deficient              independent; retaining the C_max largest weights maximizes U, and
+codebook, or a non-codebook registration vector break the identity; this is         dropping the smallest is its online realization. (ii) rho^a > epsilon iff a < log
+why the break-alignment arm collapses to chance.                                    epsilon / log rho. NON-VACUITY. At rho = 0.999 and epsilon = 1e-3, K*
+                                                                                    = 6904; at rho = 0.90, K* = 65. The fast-decay arm loses accuracy to
+A.8 SE2: monotone improvement and cover time                                        0.1313 while the standard arm stays at 1.0000 over 320 rounds, matching
+PREMISE. n bindings arrive by i.i.d. sampling with replacement (coupon              the predicted capacity collapse. BOUNDARY. rho = 1 is critically stable,
+collector); the gate has false-accept at most alpha and miss at most beta;          non-BIBO and has amplitude growing with L; the architecture excludes it
+accepted experiences are correct; rho < 1 with a precision floor epsilon            and no run instantiates it. A near-critical value such as 0.99999 barely
+such that SE5's capacity K* >= n. CLAIM. (i) the number m_t of correct              decays within the run and therefore has no discriminating power; 0.90 was
+registrations is monotone non-decreasing; (ii) E[m_T] >= (1-beta) T until           chosen so SE5 is observable.
+saturation; (iii) E[T_cover] = n H_n / (1-beta) with H_n = sum_(i=1)^n 1/i;
+(iv) Pr(T_cover > (1+eps) E T) <= exp(-eps^2 (1-beta) n H_n / 3); (v) the           Appendix B Withdrawn Statements
+probability of any false commit in T rounds is at most min(1, T alpha).             ID      Withdrawn statement and reason
+PROOF. (i) SE1 makes each correct registration a disjoint orthogonal term;          W1      Unconditional fp32 bitwise FFT/IIR duality: different rounding
+register() replaces only the term of the same key and never removes                         orders; real-field equivalence only.
+another key's correct term, and K* >= n prevents decay below epsilon. (ii)          W8      Content addressing requires input-dependent kernel coefficients:
+The gate accepts a true binding with probability at least 1-beta. (iii) The                 refuted by Construction C with strictly static kernels.
+classical coupon-collector expectation n H_n divided by the effective               W9      Absolute-position parity is a general role basis: a hidden format
+arrival probability 1-beta. (iv) Chernoff on a sum of n geometric variables,                prior; collapses under arbitrary spacing.
+equivalently the union bound Pr(some type missing) <= n(1-1/n)^T. (v)               W10/W11 'Exactly one bit per token is necessary and sufficient': the necessary
+Boole's inequality over T rounds. NON-VACUITY AND CHECK. For n =                            quantity is total B >= log2|A|; one bit per token is a sufficient carrier.
+32, alpha = 0.05, beta approximately 0, the prediction is 129.87 rounds; the        W12     Single-hop attention parity (Fisher p=0.4998): the stored baseline did
+measured five-seed mean first full-cover round is 130.00 (relative gap 0.10                 not reproduce in the same-run audit (Section 4.6). No equivalence or
+percent), with per-seed values 170, 100, 90, 120, 170. The arrival model                    superiority claim is made.
+                                                                                    W13     Trained corroboration of the layer bound under the earlier protocol:
+was set to i.i.d. BEFORE measuring. BOUNDARY. A deterministic
+                                                                                            withdrawn after the fairness audit removed two input asymmetries.
+round-robin schedule gives T_cover = n and SE2 does not apply; large beta
+                                                                                            Re-established on the corrected architecture in Section 4.12; the
+stretches the cover time by 1/(1-beta); if K* < n then SE5 takes over and                   earlier number is not reused.
+full cover is impossible.                                                           W14     Straight-through inter-layer normalisation (norm taken outside the
+                                                                                            graph): finite-difference gradient deviation 2.5e-03. Replaced by a
+A.9 SE3: the statistical gate is necessary                                                  differentiable square root built from log and exp, deviation 2.9e-10;
+PREMISE. Each accepted experience is corrupted independently with                           all conservation checks are rerun on final weights.
+probability p; a corrupted value is uniform on [0, V_K); there is no gate;          W15     SE3 as an almost-sure upper bound tested pointwise against a sample
+the final value of a key is its last write. CLAIM. E[acc] = (1-p) + p/V_K =                 mean: a finite sample mean legitimately exceeds an expectation.
+1 - p(1 - 1/V_K) exactly, and E[acc] <= that value in general because some                  Replaced by the exact expectation 1-p(1-1/V_K) with a Hoeffding
+keys may never arrive. PROOF. The last write is correct either when it is                   concentration interval (Appendix A.9).
+not corrupted (probability 1-p) or when corruption happens to draw the true
+value (probability p/V_K). SE1 makes the keys independent, so accuracy is           Appendix C Reproducibility
+the mean of n such Bernoulli variables. CONCENTRATION. Over N                       The submission is accompanied by an anonymised artifact containing the
+independent key-level trials, Hoeffding gives Pr(|a_bar - mu| >= t) <= 2            reference implementation of the layer, the seven same-run mechanism
+exp(-2 N t^2). With N = 640000 the 4-sigma interval is [0.7071, 0.7116]             references used only for the Section 4.6 audit, the reachability enumeration
+and the enumeration mean is 0.7091, inside it. WHY NECESSARY.                       of Section 4.3, and all raw result files. Every number in Tables 2-4 is
+Orthogonality prevents cross-talk but cannot prevent a wrong value from             injected from those files at build time; no value is transcribed by hand. All
+occupying an orthogonal slot; hence without a gate SE2's full cover is              probes are CPU-only NumPy and complete in minutes. The Section 4.12
+unattainable under corruption. SCOPE. With p = 0, mu = 1 and the gate is            run uses 1500 Adam steps, lr 0.02, batch 64, five seeds, and 512 training
+irrelevant: the ungated clean arm ties the fused arm exactly. The gate is           plus 512 held-out instances per seed; the architecture module and every
+necessary ONLY when experiences can be wrong. W15. An earlier draft                 convergence curve are in the artifact. The fusion run of Section 4.13 and
+called mu an almost-sure upper bound and tested it pointwise against a              Appendices D-E uses 320 i.i.d. arrival rounds, 32 bindings, five seeds, rho
+sample mean; a sample mean legitimately exceeds an expectation. The                 = 0.999 and epsilon = 1e-3; all seven arms, sixteen ablation cells and every
+claim is now an exact expectation with a concentration interval.                    individual seed are printed in Appendix D. Seeds are listed per table. The
+                                                                                    environment, dependency versions and a one-command reproduction script
+A.10 SE4: compatibility with the CT7 rate bound                                     are in the artifact. The 2027 call for papers and submission deadline were
+CT7(b) bounds the information that T consolidation rounds can write into            not published at the time of writing; page count, the author-side LLM-use
+the state by T w b bits, independent of context length L and of bank                disclosure and reciprocal-reviewer obligations must be rechecked against
+capacity C. SE2 permits about (1-beta) T registrations and a corresponding          the official template when it appears.
+accuracy gain. CLAIM. Both hold together. PROOF. Registration is
+                                                                                    No count of statements is presented as a contribution. The
+injective (SE1's partial isometry), so one binding corresponds to one
+                                                                                    withdrawn-statement register in Appendix B is a soundness practice, not an
+key-value association of exactly log2(V_K) bits. With T = 100 and w = 1,
+                                                                                    originality claim.
+SE2 registers 100 bindings using 500 bits, while CT7 allows 500 bits:
+equality, not violation. MEANING. Self-evolution is real but bounded.
+Long context buys inference-time retrieval, not a faster learning rate.             Appendix D All Raw Fusion Measurements
+CT7(c)'s earlier statement that improvement was not proved is resolved for          Every row below is a single seed of a single arm. Nothing is averaged away
+this finite process; CT7(b)'s upper bound is untouched.                             and no value is transcribed by hand: the generator reads the raw result files
+                                                                                    at build time. Protocol: 32 bindings, 320 rounds of i.i.d. arrival, rho = 0.999
+A.11 SE5: optimal decay eviction and closed-form capacity                           unless stated, precision floor epsilon = 1e-3, capacity 64, one-sided
+PREMISE. Slot weights w_a = rho^age(a) with rho < 1; utility is additive            paired-CI gate with alpha = 0.05, tau = 0, 8 probes and noise sigma = 0.10.
+and orthogonal (SE1); precision floor epsilon; capacity C_max. CLAIM. (i)           Chance is 1/32 = 0.0313. The core state is 32768 bytes in every row.
+
+
+
+                                                                               11
+arm                            seed       final acc        commits       first full cover        SE2 prediction matches measurement                                                 yes
+fused gated                    0          1.0000           49            170                     SE3 concentration holds                                                            yes
+fused gated                    1          1.0000           55            100                     SE3 enumeration within 4sigma                                                      yes
+fused gated                    2          1.0000           47            90                      no gradient through retrieval                                                      yes
+fused gated                    3          1.0000           53            120                     no NxN score                                                                       yes
+fused gated                    4          1.0000           54            170                     no kv cache                                                                        yes
+no consolidation               0          0.0000           0             none                    v64 stack invariants                                                               yes
+no consolidation               1          0.0000           0             none                    v64 interface identities                                                           yes
+no consolidation               2          0.0000           0             none
+no consolidation               3          0.0000           0             none
+                                                                                                 Table 20. All 27 consistency checks on the FINAL post-evolution state.
+no consolidation               4          0.0000           0             none                    They cover the five analytic results, the paired statistics, monotonicity,
+ungated clean                  0          1.0000           320           170                     core-state constancy, capacity bounds, the SE2 prediction-measurement
+ungated clean                  1          1.0000           320           100                     agreement, SE3's concentration interval, the v6.4 stack invariants and the
+ungated clean                  2          1.0000           320           90
+                                                                                                 interface identities. A false here would be a finding, not a crashed run.
+ungated clean                  3          1.0000           320           120
+ungated clean                  4          1.0000           320           170
+ungated corrupt                0          0.6250           320           none                    Appendix E Premise, Boundary and Non-Vacuity Ledger
+ungated corrupt                1          0.7500           320           none
+ungated corrupt                2          0.5625           320           none                    A theorem whose premises admit no instance is empty. The table below
+ungated corrupt                3          0.5625           320           none                    gives one concrete satisfying instance, the exact boundary at which the
+ungated corrupt                4          0.7188           320           none                    statement stops, and what would falsify it, for every new supporting result.
+random write                   0          0.6250           154           none
+                                                                                                 These are not additional contributions; they are the audit trail that keeps the
+random write                   1          0.6875           153           none
+random write                   2          0.5938           154           none                    premises honest.
+random write                   3          0.7500           155           none                    result       satisfying instance                     boundary / falsifier
+random write                   4          0.7812           155           none                    SE1          V=64, V_K=32, Sylvester C, m>=2         repeated keys or rank-deficient code;
+break alignment                0          0.0000           49            none                                 distinct keys                           any nonzero off-target read
+break alignment                1          0.0000           55            none                    SE2          n=32 i.i.d. arrivals, beta~0, K*=6904   round-robin arrival; beta>0; K*<n; a
+break alignment                2          0.0938           47            none                                 >= n                                    non-monotone fused curve
+break alignment                3          0.0000           53            none                    SE3          p=0.30, uniform corrupted value, no     p=0 makes the gate irrelevant; a gated
+break alignment                4          0.0312           54            none                                 gate                                    arm below the exact expectation
+rho fast                       0          0.1562           49            none                    SE4          T=100, w=1, b=log2(32)=5, 500 bits      any run writing more than T w
+rho fast                       1          0.1562           55            none                                 used = 500 allowed                      log2(V_K) bits into the state
+rho fast                       2          0.0938           47            none                    SE5          rho=0.999, eps=1e-3, K*=6904;           rho=1 is non-BIBO and excluded; a
+rho fast                       3          0.1250           53            none                                 rho=0.90, K*=65                         better-than-greedy eviction
+rho fast                       4          0.1250           54            none                    CT7          answer() is no-grad; selection          a differentiable exact-retrieval channel
+Table 18. All 35 arm-seed runs. The first-full-cover column reports the                                       Jacobian vanishes a.e.                  through the online path
+first sampled round at which accuracy reaches 1.0 (sampling every 10                             Table 21. Each row names a measurement that would have to come out
+rounds); '-' means no such round occurred. The five fused values are the                         differently. The five supporting results SE1-SE5 do not change the four
+ones averaged in Section 4.13.                                                                   core results of Section 1.1; they make the empirical claim in Result 4
+corruption            config                          mean           sd             n            auditable at the level of individual runs. The withdrawn-statement register
+0.00                  gate off                        1.0000         0.0000         5            (Appendix B) records W13, W14 and W15, all of which are premise
+0.00                  alpha 0.10                      1.0000         0.0000         5            corrections rather than numerical adjustments.
+0.00                  alpha 0.05                      1.0000         0.0000         5
+0.00                  alpha 0.01                      1.0000         0.0000         5
+0.00                  tau positive                    1.0000         0.0000         5            Appendix F All 1500-Step Convergence Curves
+0.00                  sigma 0.30                      1.0000         0.0000         5
+0.00                  rho 0.90                        0.1313         0.0234         5
+                                                                                                 Section 4.12 reports only the diagonal and the first-crossing step. Here
+0.00                  rho 0.999                       1.0000         0.0000         5            every sampled point of every arm is printed for all five seeds, followed by
+0.30                  gate off                        0.6438         0.0781         5            every individual cell of the layer-by-hop matrix. Protocol: 1500 Adam
+0.30                  alpha 0.10                      1.0000         0.0000         5            steps, lr 0.02, batch 64, 512 training and 512 held-out instances per seed,
+0.30                  alpha 0.05                      1.0000         0.0000         5
+                                                                                                 width d = 64, fixed Hadamard embedding, evaluation every 150 steps. The
+0.30                  alpha 0.01                      1.0000         0.0000         5
+0.30                  tau positive                    1.0000         0.0000         5            architecture module's inter-layer map is the fixed codebook value-to-key
+0.30                  sigma 0.30                      1.0000         0.0000         5            swap; only the query projection and read-out are learned, from random
+0.30                  rho 0.90                        0.1000         0.0364         5            initialisation.
+0.30                  rho 0.999                       1.0000         0.0000         5
+                                                                                                 arm                                    step          mean acc      sd            n seeds
+Table 19. All 16 corruption x configuration cells, each over five seeds.                         arch codebook M                        0             0.0266        0.0064        5
+Under zero corruption the six gate configurations saturate and only the                          arch codebook M                        150           1.0000        0.0000        5
+fast-decay configuration degrades; under 30 percent corruption the gate-off                      arch codebook M                        300           1.0000        0.0000        5
+                                                                                                 arch codebook M                        450           1.0000        0.0000        5
+row degrades while every gated row saturates. This is the measured form of                       arch codebook M                        600           1.0000        0.0000        5
+SE3's scope.                                                                                     arch codebook M                        750           1.0000        0.0000        5
+check                                                                             pass           arch codebook M                        900           1.0000        0.0000        5
+theory 7of7                                                                       yes            arch codebook M                        1050          1.0000        0.0000        5
+theory SE1                                                                        yes            arch codebook M                        1200          1.0000        0.0000        5
+theory SE2                                                                        yes            arch codebook M                        1350          1.0000        0.0000        5
+theory SE3                                                                        yes            arch codebook M                        1500          1.0000        0.0000        5
+                                                                                                 arch analytic witness                  0             1.0000        0.0000        5
+theory SE4                                                                        yes
+                                                                                                 legacy learnable interface random      0             0.0301        0.0052        5
+theory SE5                                                                        yes
+                                                                                                 legacy learnable interface random      150           0.2812        0.0368        5
+theory nonvacuous SE2                                                             yes
+                                                                                                 legacy learnable interface random      300           0.2633        0.0381        5
+theory SE3 concentration                                                          yes
+                                                                                                 legacy learnable interface random      450           0.2492        0.0319        5
+theory SE3 exact expectation                                                      yes
+                                                                                                 legacy learnable interface random      600           0.2398        0.0278        5
+evolution all invariants                                                          yes
+                                                                                                 legacy learnable interface random      750           0.2383        0.0388        5
+evolution monotone                                                                yes
+                                                                                                 legacy learnable interface random      900           0.2422        0.0276        5
+fused above 0.90                                                                  yes
+                                                                                                 legacy learnable interface random      1050          0.2445        0.0321        5
+all key paired positive                                                           yes
+                                                                                                 legacy learnable interface random      1200          0.2520        0.0329        5
+core state bytes constant across rounds                                           yes
+                                                                                                 legacy learnable interface random      1350          0.2535        0.0311        5
+slot count bounded by capacity                                                    yes
+                                                                                                 legacy learnable interface random      1500          0.2492        0.0325        5
+SE5 capacity predicts rho fast loss                                               yes            legacy learnable interface fixedM      0             0.0387        0.0119        5
+ablation clean gate configs saturate                                              yes            legacy learnable interface fixedM      150           1.0000        0.0000        5
+ablation noisy gate necessary                                                     yes            legacy learnable interface fixedM      300           1.0000        0.0000        5
+ablation rho decay matches SE5                                                    yes            legacy learnable interface fixedM      450           1.0000        0.0000        5
+
+
+
+
+                                                                                            12
+legacy learnable interface fixedM   600       1.0000        0.0000     5          4            1          1         0.1875          6144          1500
+legacy learnable interface fixedM   750       1.0000        0.0000     5          4            1          2         0.1719          6144          1500
+legacy learnable interface fixedM   900       1.0000        0.0000     5          4            1          3         0.1504          6144          1500
+legacy learnable interface fixedM   1050      1.0000        0.0000     5          4            1          4         0.1309          6144          1500
+legacy learnable interface fixedM   1200      1.0000        0.0000     5          4            2          0         0.2402          6144          1500
+legacy learnable interface fixedM   1350      1.0000        0.0000     5          4            2          1         0.2051          6144          1500
+legacy learnable interface fixedM   1500      1.0000        0.0000     5          4            2          2         0.2637          6144          1500
+legacy trainable near-swap          0         0.0238        0.0106     5          4            2          3         0.2773          6144          1500
+legacy trainable near-swap          150       1.0000        0.0000     5          4            2          4         0.2207          6144          1500
+legacy trainable near-swap          300       1.0000        0.0000     5          4            3          0         0.3555          6144          1500
+legacy trainable near-swap          450       1.0000        0.0000     5          4            3          1         0.3516          6144          1500
+legacy trainable near-swap          600       1.0000        0.0000     5          4            3          2         0.3496          6144          1500
+legacy trainable near-swap          750       1.0000        0.0000     5          4            3          3         0.3633          6144          1500
+legacy trainable near-swap          900       1.0000        0.0000     5          4            3          4         0.3535          6144          1500
+legacy trainable near-swap          1050      1.0000        0.0000     5          4            4          0         1.0000          6144          1500
+legacy trainable near-swap          1200      1.0000        0.0000     5          4            4          1         1.0000          6144          1500
+legacy trainable near-swap          1350      1.0000        0.0000     5          4            4          2         1.0000          6144          1500
+legacy trainable near-swap          1500      1.0000        0.0000     5          4            4          3         1.0000          6144          1500
+                                                                                  4            4          4         1.0000          6144          1500
+Table 22. All 45 arm-step cells. The random learnable interface stays in
+0.21-0.29 for the entire budget (this task's chance is 1/32 = 0.0313; 0.25        Table 23. All 80 layer-by-hop runs. Parameter count is 6144 in every row
+belongs to a DIFFERENT historical task); the codebook-fixed interface and         because the inter-layer map is shared and is not a parameter; depth adds
+the near-swap basin cross 0.99 by step 150 on every seed. The analytic            computation, not weights. The diagonal is the only set of cells above 0.99.
+witness is exact at step 0 by construction.
+hops         layers          seed    acc               params        steps        Appendix G All Fusion Evolution Curves
+1            1               0       1.0000            6144          1500         Section 4.13 reports final accuracies. Here the full trajectory of each arm is
+1            1               1       1.0000            6144          1500
+1            1               2       1.0000            6144          1500         printed: accuracy is sampled every 10 rounds and averaged over the five
+1            1               3       1.0000            6144          1500         seeds at each sampled round. Protocol: 32 bindings, 320 i.i.d. arrival
+1            1               4       1.0000            6144          1500         rounds, rho = 0.999 except the fast-decay arm, epsilon = 1e-3, capacity 64,
+1            2               0       0.0215            6144          1500         one-sided paired-CI gate. The core state is 32768 bytes at every sampled
+1            2               1       0.0430            6144          1500
+1            2               2       0.0332            6144          1500         point of every run.
+1            2               3       0.0312            6144          1500         arm                           round        mean acc   sd        mean slots
+1            2               4       0.0273            6144          1500         fused gated                   1            0.0312     0.0000    1.0
+1            3               0       0.0352            6144          1500         fused gated                   10           0.2687     0.0250    8.6
+1            3               1       0.0410            6144          1500         fused gated                   20           0.4688     0.0198    15.0
+1            3               2       0.0312            6144          1500         fused gated                   30           0.6562     0.0685    21.0
+1            3               3       0.0312            6144          1500         fused gated                   40           0.7438     0.0459    23.8
+1            3               4       0.0566            6144          1500         fused gated                   50           0.7812     0.0442    25.0
+1            4               0       0.0469            6144          1500         fused gated                   60           0.8562     0.0153    27.4
+1            4               1       0.0410            6144          1500         fused gated                   70           0.9000     0.0415    28.8
+1            4               2       0.0352            6144          1500         fused gated                   80           0.9125     0.0415    29.2
+1            4               3       0.0312            6144          1500         fused gated                   90           0.9500     0.0375    30.4
+1            4               4       0.0273            6144          1500         fused gated                   100          0.9625     0.0364    30.8
+2            1               0       0.1582            6144          1500         fused gated                   110          0.9750     0.0234    31.2
+2            1               1       0.1543            6144          1500         fused gated                   120          0.9812     0.0250    31.4
+2            1               2       0.2129            6144          1500         fused gated                   130          0.9812     0.0250    31.4
+2            1               3       0.1875            6144          1500         fused gated                   140          0.9875     0.0153    31.6
+2            1               4       0.1914            6144          1500         fused gated                   150          0.9875     0.0153    31.6
+2            2               0       1.0000            6144          1500         fused gated                   160          0.9875     0.0153    31.6
+2            2               1       1.0000            6144          1500         fused gated                   170          1.0000     0.0000    32.0
+2            2               2       1.0000            6144          1500         fused gated                   180          1.0000     0.0000    32.0
+2            2               3       1.0000            6144          1500         fused gated                   190          1.0000     0.0000    32.0
+2            2               4       1.0000            6144          1500         fused gated                   200          1.0000     0.0000    32.0
+2            3               0       0.0352            6144          1500         fused gated                   210          1.0000     0.0000    32.0
+2            3               1       0.0254            6144          1500         fused gated                   220          1.0000     0.0000    32.0
+2            3               2       0.0273            6144          1500         fused gated                   230          1.0000     0.0000    32.0
+2            3               3       0.0312            6144          1500         fused gated                   240          1.0000     0.0000    32.0
+2            3               4       0.0312            6144          1500         fused gated                   250          1.0000     0.0000    32.0
+2            4               0       0.0352            6144          1500         fused gated                   260          1.0000     0.0000    32.0
+2            4               1       0.0410            6144          1500         fused gated                   270          1.0000     0.0000    32.0
+2            4               2       0.0371            6144          1500         fused gated                   280          1.0000     0.0000    32.0
+2            4               3       0.0273            6144          1500         fused gated                   290          1.0000     0.0000    32.0
+2            4               4       0.0332            6144          1500         fused gated                   300          1.0000     0.0000    32.0
+3            1               0       0.1562            6144          1500         fused gated                   310          1.0000     0.0000    32.0
+3            1               1       0.1660            6144          1500         fused gated                   320          1.0000     0.0000    32.0
+3            1               2       0.2051            6144          1500         no consolidation              1            0.0000     0.0000    0.0
+3            1               3       0.1230            6144          1500         no consolidation              10           0.0000     0.0000    0.0
+3            1               4       0.1348            6144          1500         no consolidation              20           0.0000     0.0000    0.0
+3            2               0       0.2363            6144          1500         no consolidation              30           0.0000     0.0000    0.0
+3            2               1       0.2480            6144          1500         no consolidation              40           0.0000     0.0000    0.0
+3            2               2       0.2500            6144          1500         no consolidation              50           0.0000     0.0000    0.0
+3            2               3       0.2773            6144          1500         no consolidation              60           0.0000     0.0000    0.0
+3            2               4       0.2246            6144          1500         no consolidation              70           0.0000     0.0000    0.0
+3            3               0       1.0000            6144          1500         no consolidation              80           0.0000     0.0000    0.0
+3            3               1       1.0000            6144          1500         no consolidation              90           0.0000     0.0000    0.0
+3            3               2       1.0000            6144          1500         no consolidation              100          0.0000     0.0000    0.0
+3            3               3       1.0000            6144          1500         no consolidation              110          0.0000     0.0000    0.0
+3            3               4       1.0000            6144          1500         no consolidation              120          0.0000     0.0000    0.0
+3            4               0       0.0352            6144          1500         no consolidation              130          0.0000     0.0000    0.0
+3            4               1       0.0449            6144          1500         no consolidation              140          0.0000     0.0000    0.0
+3            4               2       0.0332            6144          1500         no consolidation              150          0.0000     0.0000    0.0
+3            4               3       0.0352            6144          1500         no consolidation              160          0.0000     0.0000    0.0
+3            4               4       0.0332            6144          1500         no consolidation              170          0.0000     0.0000    0.0
+4            1               0       0.1348            6144          1500         no consolidation              180          0.0000     0.0000    0.0
+
+
+
+
+                                                                             13
+no consolidation   190   0.0000   0.0000   0.0         random write      70    0.4562   0.0805   20.6
+no consolidation   200   0.0000   0.0000   0.0         random write      80    0.5062   0.0538   22.2
+no consolidation   210   0.0000   0.0000   0.0         random write      90    0.5188   0.0468   22.6
+no consolidation   220   0.0000   0.0000   0.0         random write      100   0.5250   0.0667   24.2
+no consolidation   230   0.0000   0.0000   0.0         random write      110   0.5437   0.0545   25.0
+no consolidation   240   0.0000   0.0000   0.0         random write      120   0.5750   0.0319   25.4
+no consolidation   250   0.0000   0.0000   0.0         random write      130   0.5625   0.0625   26.0
+no consolidation   260   0.0000   0.0000   0.0         random write      140   0.5750   0.0643   26.8
+no consolidation   270   0.0000   0.0000   0.0         random write      150   0.6000   0.0637   27.0
+no consolidation   280   0.0000   0.0000   0.0         random write      160   0.6375   0.1038   28.0
+no consolidation   290   0.0000   0.0000   0.0         random write      170   0.6625   0.0871   28.8
+no consolidation   300   0.0000   0.0000   0.0         random write      180   0.6750   0.0755   29.2
+no consolidation   310   0.0000   0.0000   0.0         random write      190   0.7125   0.0935   29.4
+no consolidation   320   0.0000   0.0000   0.0         random write      200   0.7000   0.1179   29.8
+ungated clean      1     0.0312   0.0000   1.0         random write      210   0.7375   0.1000   30.0
+ungated clean      10    0.2687   0.0250   8.6         random write      220   0.7250   0.0956   30.4
+ungated clean      20    0.4688   0.0198   15.0        random write      230   0.7375   0.0897   30.8
+ungated clean      30    0.6562   0.0685   21.0        random write      240   0.7500   0.0765   31.0
+ungated clean      40    0.7438   0.0459   23.8        random write      250   0.6875   0.1046   31.2
+ungated clean      50    0.7812   0.0442   25.0        random write      260   0.6875   0.1064   31.2
+ungated clean      60    0.8562   0.0153   27.4        random write      270   0.7188   0.0948   31.4
+ungated clean      70    0.9000   0.0415   28.8        random write      280   0.7063   0.0919   31.4
+ungated clean      80    0.9125   0.0415   29.2        random write      290   0.7000   0.0805   31.4
+ungated clean      90    0.9500   0.0375   30.4        random write      300   0.6813   0.0696   31.4
+ungated clean      100   0.9625   0.0364   30.8        random write      310   0.6687   0.0508   31.4
+ungated clean      110   0.9750   0.0234   31.2        random write      320   0.6875   0.0713   31.4
+ungated clean      120   0.9812   0.0250   31.4        break alignment   1     0.0437   0.0250   1.0
+ungated clean      130   0.9812   0.0250   31.4        break alignment   10    0.0312   0.0342   8.6
+ungated clean      140   0.9875   0.0153   31.6        break alignment   20    0.0250   0.0125   15.0
+ungated clean      150   0.9875   0.0153   31.6        break alignment   30    0.0312   0.0342   21.0
+ungated clean      160   0.9875   0.0153   31.6        break alignment   40    0.0187   0.0250   23.8
+ungated clean      170   1.0000   0.0000   32.0        break alignment   50    0.0187   0.0250   25.0
+ungated clean      180   1.0000   0.0000   32.0        break alignment   60    0.0312   0.0198   27.4
+ungated clean      190   1.0000   0.0000   32.0        break alignment   70    0.0312   0.0342   28.8
+ungated clean      200   1.0000   0.0000   32.0        break alignment   80    0.0312   0.0342   29.2
+ungated clean      210   1.0000   0.0000   32.0        break alignment   90    0.0312   0.0342   30.4
+ungated clean      220   1.0000   0.0000   32.0        break alignment   100   0.0312   0.0395   30.8
+ungated clean      230   1.0000   0.0000   32.0        break alignment   110   0.0125   0.0250   31.2
+ungated clean      240   1.0000   0.0000   32.0        break alignment   120   0.0125   0.0250   31.4
+ungated clean      250   1.0000   0.0000   32.0        break alignment   130   0.0063   0.0125   31.4
+ungated clean      260   1.0000   0.0000   32.0        break alignment   140   0.0187   0.0153   31.6
+ungated clean      270   1.0000   0.0000   32.0        break alignment   150   0.0125   0.0153   31.6
+ungated clean      280   1.0000   0.0000   32.0        break alignment   160   0.0125   0.0153   31.6
+ungated clean      290   1.0000   0.0000   32.0        break alignment   170   0.0250   0.0234   32.0
+ungated clean      300   1.0000   0.0000   32.0        break alignment   180   0.0250   0.0234   32.0
+ungated clean      310   1.0000   0.0000   32.0        break alignment   190   0.0187   0.0153   32.0
+ungated clean      320   1.0000   0.0000   32.0        break alignment   200   0.0125   0.0153   32.0
+ungated corrupt    1     0.0125   0.0153   1.0         break alignment   210   0.0125   0.0153   32.0
+ungated corrupt    10    0.1750   0.0153   8.6         break alignment   220   0.0187   0.0250   32.0
+ungated corrupt    20    0.3125   0.0713   15.2        break alignment   230   0.0312   0.0280   32.0
+ungated corrupt    30    0.4250   0.0580   20.4        break alignment   240   0.0312   0.0280   32.0
+ungated corrupt    40    0.4875   0.0424   23.4        break alignment   250   0.0250   0.0234   32.0
+ungated corrupt    50    0.5813   0.0580   25.6        break alignment   260   0.0187   0.0250   32.0
+ungated corrupt    60    0.6188   0.0893   26.8        break alignment   270   0.0187   0.0153   32.0
+ungated corrupt    70    0.6188   0.0459   28.4        break alignment   280   0.0187   0.0153   32.0
+ungated corrupt    80    0.6375   0.0424   29.8        break alignment   290   0.0125   0.0153   32.0
+ungated corrupt    90    0.6750   0.0319   30.2        break alignment   300   0.0250   0.0364   32.0
+ungated corrupt    100   0.6813   0.0306   31.0        break alignment   310   0.0250   0.0364   32.0
+ungated corrupt    110   0.6750   0.0424   31.2        break alignment   320   0.0250   0.0364   32.0
+ungated corrupt    120   0.6937   0.0234   31.4        rho fast          1     0.0312   0.0000   1.0
+ungated corrupt    130   0.6750   0.0468   31.4        rho fast          10    0.2687   0.0250   8.6
+ungated corrupt    140   0.6937   0.0606   31.6        rho fast          20    0.4688   0.0198   15.0
+ungated corrupt    150   0.7125   0.0500   32.0        rho fast          30    0.6562   0.0685   21.0
+ungated corrupt    160   0.7500   0.0559   32.0        rho fast          40    0.7438   0.0459   23.8
+ungated corrupt    170   0.7125   0.0800   32.0        rho fast          50    0.7812   0.0442   25.0
+ungated corrupt    180   0.7125   0.0824   32.0        rho fast          60    0.8562   0.0153   27.4
+ungated corrupt    190   0.7188   0.1296   32.0        rho fast          70    0.7625   0.0755   28.8
+ungated corrupt    200   0.7188   0.1479   32.0        rho fast          80    0.5813   0.0580   29.2
+ungated corrupt    210   0.7562   0.1389   32.0        rho fast          90    0.4188   0.0897   30.4
+ungated corrupt    220   0.7438   0.0956   32.0        rho fast          100   0.3250   0.1000   30.8
+ungated corrupt    230   0.7312   0.1019   32.0        rho fast          110   0.3063   0.0893   31.2
+ungated corrupt    240   0.7500   0.0625   32.0        rho fast          120   0.2750   0.0824   31.4
+ungated corrupt    250   0.6687   0.0673   32.0        rho fast          130   0.2375   0.0755   31.4
+ungated corrupt    260   0.6687   0.0755   32.0        rho fast          140   0.2313   0.0643   31.6
+ungated corrupt    270   0.6937   0.0415   32.0        rho fast          150   0.2000   0.0755   31.6
+ungated corrupt    280   0.7188   0.0713   32.0        rho fast          160   0.1750   0.0545   31.6
+ungated corrupt    290   0.7063   0.0153   32.0        rho fast          170   0.1562   0.0656   32.0
+ungated corrupt    300   0.6562   0.0198   32.0        rho fast          180   0.1562   0.0442   32.0
+ungated corrupt    310   0.6312   0.0234   32.0        rho fast          190   0.1875   0.0523   32.0
+ungated corrupt    320   0.6438   0.0781   32.0        rho fast          200   0.1500   0.0750   32.0
+random write       1     0.0000   0.0000   0.2         rho fast          210   0.1500   0.0871   32.0
+random write       10    0.1000   0.0125   4.8         rho fast          220   0.1500   0.0696   32.0
+random write       20    0.1250   0.0198   6.0         rho fast          230   0.1250   0.0656   32.0
+random write       30    0.1625   0.0459   7.8         rho fast          240   0.1375   0.0643   32.0
+random write       40    0.2500   0.0198   11.2        rho fast          250   0.1187   0.0306   32.0
+random write       50    0.3375   0.0125   15.0        rho fast          260   0.1125   0.0250   32.0
+random write       60    0.4062   0.0685   17.4        rho fast          270   0.1375   0.0153   32.0
+
+
+
+
+                                                  14
+rho fast                            280            0.1250        0.0280        32.0              3         0          7            8            0.1250              0.0e+00
+rho fast                            290            0.1313        0.0364        32.0              3         0          8            8            0.1250              0.0e+00
+rho fast                            300            0.1437        0.0250        32.0              3         1          1            8            0.2500              0.0e+00
+rho fast                            310            0.1250        0.0342        32.0              3         1          2            8            0.2500              0.0e+00
+rho fast                            320            0.1313        0.0234        32.0              3         1          3            8            0.2500              0.0e+00
+                                                                                                 3         1          4            8            0.2500              0.0e+00
+Table 24. All 231 arm-round cells. The fused arm is monotone on all five                         3         1          5            8            0.2500              0.0e+00
+seeds; the ungated corrupted arm rises then fluctuates as later writes                           3         1          6            8            0.2500              0.0e+00
+overwrite earlier correct registrations; the fast-decay arm loses slots as                       3         1          7            8            0.2500              0.0e+00
+SE5's finite-precision capacity is exhausted.                                                    3         1          8            8            0.2500              0.0e+00
+                                                                                                 3         3          1            8            1.0000              0.0e+00
+comparison                     paired diff         CI95 low      CI95 high        all pos        3         3          2            8            1.0000              0.0e+00
+no consolidation               +1.0000             +1.0000       +1.0000          yes            3         3          3            8            1.0000              0.0e+00
+ungated clean                  +0.0000             +0.0000       +0.0000          no             3         3          4            8            1.0000              0.0e+00
+ungated corrupt                +0.3563             +0.2875       +0.4250          yes            3         3          5            8            1.0000              0.0e+00
+random write                   +0.3125             +0.2500       +0.3750          yes            3         3          6            8            1.0000              0.0e+00
+break alignment                +0.9750             +0.9375       +1.0000          yes            3         3          7            8            1.0000              0.0e+00
+rho fast                       +0.8688             +0.8500       +0.8875          yes            3         3          8            8            1.0000              0.0e+00
+Table 25. All 6 paired bootstrap comparisons, 10000 resamples, five seeds.                       4         0          1            16           0.0625              0.0e+00
+                                                                                                 4         0          2            16           0.0625              0.0e+00
+The ungated clean arm ties exactly: with no corruption the gate is                               4         0          3            16           0.0625              0.0e+00
+irrelevant, which is the measured form of SE3's scope, not a failure of the                      4         0          4            16           0.0625              0.0e+00
+comparison.                                                                                      4         0          5            16           0.0625              0.0e+00
+                                                                                                 4         0          6            16           0.0625              0.0e+00
+                                                                                                 4         0          7            16           0.0625              0.0e+00
+Appendix H Exhaustive Information-Bound Enumeration                                              4         0          8            16           0.0625              0.0e+00
+Theorem A is checked against the complete enumeration of the                                     4         1          1            16           0.1250              0.0e+00
+                                                                                                 4         1          2            16           0.1250              0.0e+00
+binary-chain fibre space, not against a sample. Every (m, B) pair below is                       4         1          3            16           0.1250              0.0e+00
+enumerated over all 2^m role assignments with bit-identical visible inputs.                      4         1          4            16           0.1250              0.0e+00
+The depth scan then verifies that stacking 1-8 static-LTI layers produces                        4         1          5            16           0.1250              0.0e+00
+bit-identical outputs across compatible role assignments. These are finite                       4         1          6            16           0.1250              0.0e+00
+                                                                                                 4         1          7            16           0.1250              0.0e+00
+exhaustive objects; they certify non-vacuity, they are not the proof.                            4         1          8            16           0.1250              0.0e+00
+m          B       answer classes         fibres        acc                 predicted            4         4          1            16           1.0000              0.0e+00
+1          0       2                      1             0.5000              0.5000               4         4          2            16           1.0000              0.0e+00
+1          1       2                      2             1.0000              1.0000               4         4          3            16           1.0000              0.0e+00
+1          2       2                      2             1.0000              1.0000               4         4          4            16           1.0000              0.0e+00
+2          0       4                      1             0.2500              0.2500               4         4          5            16           1.0000              0.0e+00
+2          1       4                      2             0.5000              0.5000               4         4          6            16           1.0000              0.0e+00
+2          2       4                      4             1.0000              1.0000               4         4          7            16           1.0000              0.0e+00
+2          3       4                      4             1.0000              1.0000               4         4          8            16           1.0000              0.0e+00
+3          0       8                      1             0.1250              0.1250               1         1          1            2            1.0000              0.0e+00
+3          1       8                      2             0.2500              0.2500               1         1          2            2            0.0000              0.0e+00
+3          2       8                      4             0.5000              0.5000               1         1          3            2            0.0000              0.0e+00
+3          3       8                      8             1.0000              1.0000               1         1          4            2            0.0000              0.0e+00
+3          4       8                      8             1.0000              1.0000               1         1          5            2            0.0586              0.0e+00
+4          0       16                     1             0.0625              0.0625               2         2          1            4            0.0000              0.0e+00
+4          1       16                     2             0.1250              0.1250               2         2          2            4            1.0000              0.0e+00
+4          2       16                     4             0.2500              0.2500               2         2          3            4            0.0000              0.0e+00
+4          3       16                     8             0.5000              0.5000               2         2          4            4            0.0000              0.0e+00
+4          4       16                     16            1.0000              1.0000               2         2          5            4            0.0625              0.0e+00
+4          5       16                     16            1.0000              1.0000               3         3          1            8            0.0000              0.0e+00
+                                                                                                 3         3          2            8            0.0000              0.0e+00
+Table 26. All 18 (m, B) enumeration cells. Accuracy equals the predicted                         3         3          3            8            1.0000              0.0e+00
+upper bound 2^B / |A| in every row and reaches 1 exactly at B = m.                               3         3          4            8            0.0000              0.0e+00
+m          B        layers          |A|             acc                   output dev             3         3          5            8            0.0801              0.0e+00
+2          0        1               4               0.2500                0.0e+00                4         4          1            16           0.0000              0.0e+00
+2          0        2               4               0.2500                0.0e+00                4         4          2            16           0.0000              0.0e+00
+2          0        3               4               0.2500                0.0e+00                4         4          3            16           0.0000              0.0e+00
+2          0        4               4               0.2500                0.0e+00                4         4          4            16           1.0000              0.0e+00
+2          0        5               4               0.2500                0.0e+00                4         4          5            16           0.0898              0.0e+00
+2          0        6               4               0.2500                0.0e+00                2         2          3            4            1.0000              0.0e+00
+2          0        7               4               0.2500                0.0e+00                2         2          4            4            1.0000              0.0e+00
+2          0        8               4               0.2500                0.0e+00                3         3          4            8            1.0000              0.0e+00
+2          1        1               4               0.5000                0.0e+00                3         3          5            8            1.0000              0.0e+00
+2          1        2               4               0.5000                0.0e+00                4         4          5            16           1.0000              0.0e+00
+2          1        3               4               0.5000                0.0e+00                4         4          6            16           1.0000              0.0e+00
+2          1        4               4               0.5000                0.0e+00                Table 27. All 98 depth-scan cells. Accuracy and output deviation are
+2          1        5               4               0.5000                0.0e+00
+2          1        6               4               0.5000                0.0e+00
+                                                                                                 invariant to layer count, which is the empirical form of Theorem A(e):
+2          1        7               4               0.5000                0.0e+00                depth cannot manufacture the missing bits.
+2          1        8               4               0.5000                0.0e+00                carrier                           bits / token acc            Toeplitz   run-time tag
+2          2        1               4               1.0000                0.0e+00                explicit tag                      1            1.0000         yes        yes
+2          2        2               4               1.0000                0.0e+00                codebook partition                1            1.0000         yes        no
+2          2        3               4               1.0000                0.0e+00
+2          2        4               4               1.0000                0.0e+00                Table 28. All 3 bit carriers. The position-format-prior accuracy 0.2969 is a
+2          2        5               4               1.0000                0.0e+00                SINGLE-SEED measurement on the alternating layout under that carrier's
+2          2        6               4               1.0000                0.0e+00                support assumption; it is a DIFFERENT configuration from the frozen
+2          2        7               4               1.0000                0.0e+00
+2          2        8               4               1.0000                0.0e+00
+                                                                                                 five-seed parity-gapped value in Table 10 and is never quoted as a
+3          0        1               8               0.1250                0.0e+00                conclusion elsewhere. The position format prior is a support restriction, not
+3          0        2               8               0.1250                0.0e+00                a per-token channel, and is analysed through A(v) rather than through B; its
+3          0        3               8               0.1250                0.0e+00                effective bit count under arbitrary filler is zero.
+3          0        4               8               0.1250                0.0e+00
+3          0        5               8               0.1250                0.0e+00                hops       layers        acc           per-layer accuracies
+3          0        6               8               0.1250                0.0e+00                1          1             1.0000        1.00
+
+
+
+
+                                                                                            15
+1           2              0.0000          1.00 0.00                                                    slot count bounded by capacity         pass               consistency on final weights
+1           3              0.0000          1.00 0.00 0.00                                               SE5 capacity predicts rho fast loss    pass               consistency on final weights
+1           4              0.0000          1.00 0.00 0.00 0.00                                          ablation clean gate configs saturate   pass               consistency on final weights
+1           5              0.0645          1.00 0.00 0.00 0.00 0.06                                     ablation noisy gate necessary          pass               consistency on final weights
+2           1              0.0000          0.00                                                         ablation rho decay matches SE5         pass               consistency on final weights
+2           2              1.0000          0.00 1.00                                                    SE2 prediction matches                 pass               consistency on final weights
+2           3              0.0000          0.00 1.00 0.00                                               measurement
+2           4              0.0000          0.00 1.00 0.00 0.00                                          SE3 concentration holds                pass               consistency on final weights
+2           5              0.0684          0.00 1.00 0.00 0.00 0.07                                     SE3 enumeration within 4sigma          pass               consistency on final weights
+3           1              0.0000          0.00                                                         no gradient through retrieval          pass               consistency on final weights
+3           2              0.0000          0.00 0.00                                                    no NxN score                           pass               consistency on final weights
+3           3              1.0000          0.00 0.00 1.00                                               no kv cache                            pass               consistency on final weights
+3           4              0.0000          0.00 0.00 1.00 0.00                                          SE2 prediction gap                     0.0987%            coupon-collector bound is
+3           5              0.0879          0.00 0.00 1.00 0.00 0.09                                                                                               non-vacuous
+4           1              0.0000          0.00                                                         SE3 concentration                      inside 4-sigma     exact expectation, not an upper
+4           2              0.0000          0.00 0.00                                                                                                              bound
+4           3              0.0000          0.00 0.00 0.00                                               SE4 equality                           500 = 500 bits     no contradiction with CT7
+4           4              1.0000          0.00 0.00 0.00 1.00                                          SE5 capacity                           6904 vs 65         decay predicts the loss
+4           5              0.0918          0.00 0.00 0.00 1.00 0.09
+                                                                                                        Table 31. Witness detail for the non-analytic checks. A false here would be
+Table 29. All 20 zero-training layer-by-hop cells with the full per-layer                               a finding to fix, not a crashed run.
+accuracy vector. The last-layer read-out is why H_L > H overshoots fail:                                hops       encoding          n                mean |A|      max log2|A|        frac |A|>1
+the correct intermediate value is computed at layer H but is not the layer                              1          flat              1280             1.00          0.00               0.00
+that is read out.                                                                                       1          codebook          1280             1.00          0.00               0.00
+                                                                                                        2          flat              1280             1.52          1.00               0.52
+                                                                                                        2          codebook          1280             1.00          0.00               0.00
+Appendix I Complete Numeric Provenance and Witness Detail                                               3          flat              1280             2.36          2.00               0.75
+                                                                                                        3          codebook          1280             1.00          0.00               0.00
+Every numeric value quoted anywhere in the paper is listed below with its
+                                                                                                        4          flat              1280             3.25          2.32               0.97
+statistic, seed count, sample count and the object it was measured on. This                             4          codebook          1280             1.00          0.00               0.00
+table exists so that no number has to be taken on trust and no earlier drifted                          Table 32. Compatible-answer-set enumeration for the original
+value can re-enter unnoticed. All entries are finite-sample quantities unless                           content-chain task. The bound B >= log2 |A(v)| is sufficient but not tight on
+the statistic column says otherwise; none is a theorem.                                                 this task; tightness belongs to the binary-chain witness of Appendix H. This
+quantity                   value          statistic             seeds / n   object                      distinction is stated in Section 4.3 and is not hidden here.
+chance (this task)         0.0312         definition            -           1/V_K
+H=2, 2 layers, 1500        1.0000         mean / sd 0.0000      5 / 512     architecture stack
+steps                                                                                                   Appendix J Per-Seed Raw Curves at Key Steps
+H=2, 1 layer, 1500 steps   0.1809         mean / sd 0.0219      5 / 512     architecture stack
+H=2 paired difference      +0.8191        paired bootstrap      5           two-layer minus             Appendix F averages over seeds at each step; this appendix prints the
+                                                                            one-layer                   individual trajectories so that no seed-level failure can be hidden by a
+paired 95%% CI             [+0.8008,      10000 resamples       5           same pair                   mean. Each row is one seed of one arm at one evaluation step. The five
+                           +0.8375]
+first step >= 0.99         150            max over seeds        5           codebook-fixed
+                                                                                                        evaluation steps are 0, 150, 400, 800 and 1500, taken from the same
+                                                                            interface                   1500-step runs used in Section 4.12. Loss is the held-out cross-entropy on a
+legacy random interface, 0.2492           mean                  5           learnable                   fixed 64-instance probe batch; accuracy is on the full 512-instance held-out
+1500                                                                        inter-layer matrix          set.
+SE2 predicted            129.87           analytic n H_n /      -           n=32, beta~0
+E[T_cover]                                (1-beta)                                                      arm                                     seed       step        acc             loss
+SE2 measured mean        130.00           mean over seeds       5           fused gated arm             arch codebook M                         0          0           0.0273          3.4683
+cover                                                                                                   arch codebook M                         0          150         1.0000          0.0655
+SE2 relative gap         0.0987%          derived               -           prediction vs               arch codebook M                         0          1500        1.0000          0.0017
+                                                                            measurement                 arch codebook M                         1          0           0.0273          3.4534
+SE3 exact E[acc]           0.709375       analytic         -                p=0.30, V_K=32              arch codebook M                         1          150         1.0000          0.0608
+SE3 enumeration mean       0.709102       mean over 640000 20000            exhaustive per-key          arch codebook M                         1          1500        1.0000          0.0015
+                                          key trials       runs                                         arch codebook M                         2          0           0.0234          3.4731
+SE3 Hoeffding 4-sigma      [0.7071,       concentration    -                same                        arch codebook M                         2          150         1.0000          0.0597
+                           0.7116]                                                                      arch codebook M                         2          1500        1.0000          0.0014
+SE4 bits consumed          500            analytic              -           T=100, w=1, b=5             arch codebook M                         3          0           0.0371          3.4595
+SE4 CT7 bound              500            analytic upper        -           same                        arch codebook M                         3          150         1.0000          0.0751
+                                          bound                                                         arch codebook M                         3          1500        1.0000          0.0024
+SE5 K* at rho=0.999        6904           floor(log eps / log   -           eps=1e-3                    arch codebook M                         4          0           0.0176          3.4635
+                                          rho)                                                          arch codebook M                         4          150         1.0000          0.0756
+core state bytes           32768          exact                 -           d x d fp64, all runs        arch codebook M                         4          1500        1.0000          0.0021
+fused final accuracy       1.0000         mean / sd 0.0000      5 / 512     320 rounds                  arch analytic witness                   0          0           1.0000          0.0000
+ungated corrupted          0.6438         mean / sd 0.0781      5 / 512     p=0.30, no gate             arch analytic witness                   1          0           1.0000          0.0000
+break alignment            0.0250         mean / sd 0.0364      5 / 512     non-codebook                arch analytic witness                   2          0           1.0000          0.0000
+                                                                            registration                arch analytic witness                   3          0           1.0000          0.0000
+fast decay              0.1313            mean / sd 0.0234      5 / 512     rho=0.90                    arch analytic witness                   4          0           1.0000          0.0000
+SE1 max on-target error 4.4e-16           max over 200          200         orthogonality               legacy learnable interface rando        0          0           0.0332          3.4666
+                                          instances                         identity                    legacy learnable interface rando        0          150         0.2852          3.8409
+SE1 max off-target error 8.5e-17          max over 200          200         same                        legacy learnable interface rando        0          1500        0.2617          4.9533
+                                          instances                                                     legacy learnable interface rando        1          0           0.0293          3.4664
+FFT/IIR duality (final     2.89e-16       max over probes       -           real-field                  legacy learnable interface rando        1          150         0.2637          4.0069
+state)                                                                      equivalence                 legacy learnable interface rando        1          1500        0.2129          5.6684
+Toeplitz deviation (final) 0              exact                 -           static recurrence           legacy learnable interface rando        2          0           0.0371          3.4607
+                                                                                                        legacy learnable interface rando        2          150         0.2207          3.6956
+Table 30. All 25 provenance rows. Values from different probes are never                                legacy learnable interface rando        2          1500        0.2090          4.7915
+averaged together; the FFT/IIR row is a maximum over separately listed                                  legacy learnable interface rando        3          0           0.0215          3.4631
+probes, not a mixture.                                                                                  legacy learnable interface rando        3          150         0.3223          3.6256
+                                                                                                        legacy learnable interface rando        3          1500        0.2734          6.1103
+witness                                measured value    what it certifies                              legacy learnable interface rando        4          0           0.0293          3.4697
+evolution all invariants               pass              consistency on final weights                   legacy learnable interface rando        4          150         0.3145          3.8663
+evolution monotone                     pass              consistency on final weights                   legacy learnable interface rando        4          1500        0.2891          4.8512
+fused above 0.90                       pass              consistency on final weights                   legacy learnable interface fixed        0          0           0.0391          3.4783
+all key paired positive                pass              consistency on final weights                   legacy learnable interface fixed        0          150         1.0000          0.1207
+core state bytes constant across       pass              consistency on final weights                   legacy learnable interface fixed        0          1500        1.0000          0.0019
+rounds
+
+
+
+                                                                                                   16
+legacy learnable interface fixed     1        0              0.0215      3.4747
+legacy learnable interface fixed     1        150            1.0000      0.0738
+legacy learnable interface fixed     1        1500           1.0000      0.0017
+legacy learnable interface fixed     2        0              0.0312      3.4700
+legacy learnable interface fixed     2        150            1.0000      0.0581
+legacy learnable interface fixed     2        1500           1.0000      0.0015
+legacy learnable interface fixed     3        0              0.0449      3.4793
+legacy learnable interface fixed     3        150            1.0000      0.1008
+legacy learnable interface fixed     3        1500           1.0000      0.0027
+legacy learnable interface fixed     4        0              0.0566      3.4705
+legacy learnable interface fixed     4        150            1.0000      0.0731
+legacy learnable interface fixed     4        1500           1.0000      0.0021
+legacy trainable near-swap           0        0              0.0234      3.4641
+legacy trainable near-swap           0        150            1.0000      0.0569
+legacy trainable near-swap           0        1500           1.0000      0.0016
+legacy trainable near-swap           1        0              0.0410      3.4781
+legacy trainable near-swap           1        150            1.0000      0.0623
+legacy trainable near-swap           1        1500           1.0000      0.0016
+legacy trainable near-swap           2        0              0.0254      3.4697
+legacy trainable near-swap           2        150            1.0000      0.0496
+legacy trainable near-swap           2        1500           1.0000      0.0013
+legacy trainable near-swap           3        0              0.0215      3.4606
+legacy trainable near-swap           3        150            1.0000      0.1082
+legacy trainable near-swap           3        1500           1.0000      0.0025
+legacy trainable near-swap           4        0              0.0078      3.4713
+legacy trainable near-swap           4        150            1.0000      0.0681
+legacy trainable near-swap           4        1500           1.0000      0.0022
+Table 33. All 65 per-seed curve values. The legacy random-interface rows
+stay between 0.21 and 0.29 at every step on every seed, far from this task's
+1/32 chance and never above 0.30; the codebook-fixed rows reach 1.0 by
+step 150 on every seed and never regress. The analytic witness is exact at
+step 0. No seed was excluded and no value was rounded from a different
+run.
+arm                                seed   first full cover   committed   core bytes
+fused gated                        0      170                49          32768
+fused gated                        1      100                55          32768
+fused gated                        2      90                 47          32768
+fused gated                        3      120                53          32768
+fused gated                        4      170                54          32768
+no consolidation                   0      none               0           32768
+no consolidation                   1      none               0           32768
+no consolidation                   2      none               0           32768
+no consolidation                   3      none               0           32768
+no consolidation                   4      none               0           32768
+ungated clean                      0      170                320         32768
+ungated clean                      1      100                320         32768
+ungated clean                      2      90                 320         32768
+ungated clean                      3      120                320         32768
+ungated clean                      4      170                320         32768
+ungated corrupt                    0      none               320         32768
+ungated corrupt                    1      none               320         32768
+ungated corrupt                    2      none               320         32768
+ungated corrupt                    3      none               320         32768
+ungated corrupt                    4      none               320         32768
+random write                       0      none               154         32768
+random write                       1      none               153         32768
+random write                       2      none               154         32768
+random write                       3      none               155         32768
+random write                       4      none               155         32768
+break alignment                    0      none               49          32768
+break alignment                    1      none               55          32768
+break alignment                    2      none               47          32768
+break alignment                    3      none               53          32768
+break alignment                    4      none               54          32768
+rho fast                           0      none               49          32768
+rho fast                           1      none               55          32768
+rho fast                           2      none               47          32768
+rho fast                           3      none               53          32768
+rho fast                           4      none               54          32768
+Table 34. All 35 fusion runs with their first full-cover round, number of
+committed experiences and core state size. The core state is constant across
+every arm, every seed and every round; only the bounded slot metadata
+changes. These are the individual values behind Table 16 and Table 18.
+End of artifact. No further numeric claims appear anywhere in the
+submission.
+
+
+
+
+                                                                                      17
+

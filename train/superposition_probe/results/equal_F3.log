@@ -1,0 +1,2 @@
+选中臂: ['F9_D8_N81_P16', 'F10_D4_N108_P8', 'R0_g2_repro', 'A0_init_legacy', 'A1_init_spread']
+  [F9_D8_N81_P16    s2] acc=0.3867 shuffle=0.3750 params=10232 guards=True 44.0s

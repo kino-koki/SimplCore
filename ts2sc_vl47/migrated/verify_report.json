@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "n_shards": 111,
+  "n_tensors": 1017,
+  "total_bytes": 2293098232,
+  "dtype_count": {
+    "BF16": 625,
+    "F32": 392
+  },
+  "params_from_index": 1057320252,
+  "params_accounting": 1057320252,
+  "tie_delta": 0,
+  "nan_inf_tensors": [],
+  "residual_self_attn_tensors": [],
+  "n_mixer_tensors": 392,
+  "n_vision_tensors": 468,
+  "merger_out_dim": 1024,
+  "text_hidden_size": 1024,
+  "errors": []
+}

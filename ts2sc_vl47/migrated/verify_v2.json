@@ -1,0 +1,40 @@
+{
+ "version": "2.0",
+ "status": "PASS",
+ "checks": {
+  "v1_shards_untouched": {
+   "count": 111,
+   "bytes": 2293098232,
+   "pass": true
+  },
+  "index_tensors": {
+   "count": 1017,
+   "pass": true
+  },
+  "dc_bias_shape": [
+   28,
+   1024
+  ],
+  "dc_bias_finite": true,
+  "dc_bias_bitwise_matches_diag": true,
+  "dc_bias_norm_per_layer": [
+   0.6234,
+   2.0196,
+   3.3016,
+   21.2419,
+   33.5931
+  ],
+  "param_ledger": {
+   "trainable": 1057320252,
+   "static_buffer": 28672,
+   "total": 1057348924,
+   "pass": true
+  },
+  "config_v2": "2.0",
+  "no_attention_components_added": true,
+  "o1_state_unchanged": true
+ },
+ "sha256": {
+  "dc_bias.safetensors": "937de03892443cc24f2124b0a4f1811e5f8c85ebe99723df48fdf2eac8649597"
+ }
+}

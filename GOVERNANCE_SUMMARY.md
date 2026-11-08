@@ -25,10 +25,10 @@
 | 3 | **错引命题**：§3.1(c)「by P1 that destroys the Toeplitz structure」和 Table 1「P1 proves Toeplitz iff time-invariance」实际应为 **P6** | 不是改名，是论证用错了命题 |
 | 4 | **完整证明正文/附录各一份**：§3.1.1 / §3.1.2 / §3.2.1 / §3.4 显式构造在正文写了完整证明，Appendix A.1–A.4 又写一份，且 §3.1.1 的「Neither step uses P3」正好撞上命名空间冲突 | 技能包 §4.4 说的「证明越完整，复制进正文的不一致前提越多」 |
 
-修法：Theorem A 前提整体改名 **TAP1–TAP5**（并在 §3.1 写明 namespace 规则）；`Theorem B` 全文归零；两处错引改 P6；四段重复证明移出正文，只留 proof intuition，附录保留唯一完整版。
+修法：Theorem A 前提整体改名 **A1–A5**（并在 §3.1 写明 namespace 规则）；`Theorem B` 全文归零；两处错引改 P6；四段重复证明移出正文，只留 proof intuition，附录保留唯一完整版。
 机器复核：`TAP` 18 次、`Theorem B` 0、残留歧义短语 0、`namespace_unique: true`。
 
-另外修了检查器自身的两处脆弱性（双栏断行导致正则漏判、`TAP5:` 被当成裸 `P5:`），**语义条件一条未放宽**。
+另外修了检查器自身的两处脆弱性（双栏断行导致正则漏判、`A5:` 被当成裸 `P5:`），**语义条件一条未放宽**。
 
 ---
 
@@ -94,3 +94,7 @@ python3 build_simplcore_pdf_v7.py      # 16 页合并版
 python3 split_submission.py            # 两个提交 PDF
 python3 tools/eval_baselines/desk_check_v7.py   # 45/45
 ```
+
+## v7.2 续：按用户顺序完成三步
+
+① `tighten_experiments.py` 把全部实验重算到最紧口径（18 行穷举全 hold、FFT/IIR 9.05e−16、配对 CI、21 条冻结、14/14）；② `ts2sc_numpy_migrate.py` 纯 NumPy 在真实 2MB teacher 字节上跑通 COPY/DERIVE/SGC，`MiniCPM-V-4.7-1B` 仅 Stage-0 规划（私有仓库无权重字节）；③ 按指令单 N1–N7 改稿，含 [4] S5 与 [11] CKConv 两处引用修正。详见 `V72_REPORT.md`。desk-check 46/46、治理 12/12、拆分 11/11、收紧 14/14。门仍 `NOT EVALUABLE`；推送未执行（GH_TOKEN 空），`push_v72.py` 已备。

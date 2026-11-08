@@ -247,36 +247,35 @@ def namespace_check_after(path):
     import fitz
     d = fitz.open(path)
     t = "\n".join(p.get_text() for p in d)
-    tap = len(re.findall(r"\bTAP[1-5]\b", t))
+    # The revision order fixes the namespace as A1-A5 (Theorem A premises)
+    # and P1-P8 (supporting propositions). TAP* was an earlier naming.
+    a_premises = len(re.findall(r"\bA[1-5]\b", t))
+    tap_leftover = len(re.findall(r"\bTAP[1-5]\b", t))
     tb = len(re.findall(r"\bTheorem B\b", t))
     p = len(re.findall(r"\bP[1-8]\b", t))
-    # A real conflict now would be a bare P-number used for a Theorem A
-    # premise. We check the exact phrases that used to be ambiguous.
-    # A bare P-number used as a Theorem A premise is the defect. Use a
-    # negative lookbehind so "TAP5: two accuracy notions" is NOT counted
-    # as a residual "P5: two accuracy notions".
     flat = " ".join(t.split())
     bad = [s for s in ("Two accuracy notions (P5)",
                        "Parts (a) and (b) need NONE of P3",
                        "Within P3, increasing", "Failure at H_L > H follows from P4",
-                       "by P1 that destroys", "Neither step uses P3")
+                       "by P1 that destroys", "Neither step uses P3",
+                       "positivity premise of P2", "P5(i)", "P5(ii)")
            if s in flat]
-    # "Supporting proposition P5 gives ..." is legitimate: the P5 is
-    # explicitly qualified. Only an UNQUALIFIED sentence-start P5 is bad.
     if re.search(r"(?<!proposition )\bP5 gives a matching state-order bound", flat):
         bad.append("unqualified P5 state-order sentence")
-    # A bare "P5: two accuracy notions" is bad; "TAP5: ..." is not. The
-    # negative lookbehind on a LETTER excludes the TAP prefix.
     if re.search(r"(?<![A-Za-z])P5:\s*two accuracy notions", flat):
         bad.append("bare P5: two accuracy notions")
-    out = dict(tap_mentions=tap, theorem_b_mentions=tb,
+    out = dict(a_premise_mentions=a_premises,
+               tap_leftover_mentions=tap_leftover,
+               theorem_b_mentions=tb,
                supporting_p_mentions=p,
                residual_ambiguous_phrases=bad,
-               namespace_unique=bool(tap >= 5 and tb == 0 and not bad))
+               namespace_unique=bool(a_premises >= 5 and tap_leftover == 0
+                                     and tb == 0 and not bad))
     json.dump(out, open(OUT + "/governance_namespace_after.json", "w"),
               indent=1)
     print("== claim namespace (AFTER) ==")
-    print("   TAP:", tap, "| Theorem B:", tb, "| residual ambiguous:", bad)
+    print("   A1-A5:", a_premises, "| TAP leftover:", tap_leftover,
+          "| Theorem B:", tb, "| residual ambiguous:", bad)
     print("   unique:", out["namespace_unique"])
     return out
 

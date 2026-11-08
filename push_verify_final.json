@@ -1,0 +1,49 @@
+{
+  "repo": "kino-koki/SimplCore",
+  "head_short": "e4cf6d0381e5",
+  "commit_1": "7aada0d32124",
+  "commit_2": "e4cf6d0381e5",
+  "commit_1_files": 22,
+  "commit_1_bytes": 1468351,
+  "push_script_remote_tree_verify": {
+    "n": 22,
+    "n_pass": 22,
+    "all_pass": true
+  },
+  "independent_readback_before_rate_limit": {
+    "key_files_checked": 11,
+    "key_files_matched": 11,
+    "note": "11 key files matched remote blob sha1; the 12th (push_report_v81.json) was re-read after its local payload had been edited post-push, so it was excluded from the match set rather than counted as a mismatch."
+  },
+  "local_report_restored_to_commit2_payload": true,
+  "local_key_file_sha256": {
+    "simplcore.pdf": "f26386eb68f66cfa",
+    "paper_main.pdf": "c687fb18f04c975b",
+    "paper_appendix.pdf": "9ffac6fe42d3bb56",
+    "build_simplcore_pdf_v8.py": "971cef7e077c5847",
+    "patch_v8_five_fixes.py": "6607cd8d0ac73e07",
+    "appendix_D_fusion_long.csv": "cf9f1c795e1ed98f",
+    "appendix_D_fusion_wide.csv": "dd3774e9c9bfad3a",
+    "MIGRATION_TIMING_ACCEPTANCE.md": "2fc2d2e377c61f44",
+    "ts2sc_680m.ps1": "ce0e67f404f06568",
+    "TS2SC_VL47_PREFLIGHT.md": "794eeec714f49461",
+    "TS2SC_VL47_CONTINUE.md": "8085173b3f5b804e",
+    "PAPER_TS2SC_ADDENDUM.md": "cd57872b7a581f5f",
+    "REVISION_LOG.md": "ed36518133b00914",
+    "CHANGELOG.md": "731418f641346489",
+    "ts2sc_vl47/se2_ci.json": "b4dfdaf52403bc87",
+    "ts2sc_vl47/five_fix_pdf_check.json": "83b44153db9a33b2",
+    "ts2sc_vl47/migration_timing_evidence.json": "48431cb11e617e5e",
+    "ts2sc_vl47/rollback_check.json": "c19d1217f80b9397",
+    "tools/eval_baselines/results/desk_check_v7.json": "0cc259725437a0b5",
+    "tools/eval_baselines/results/split_check.json": "3261c00dc55914d9",
+    "push_v81.py": "65e0c25ba9f4102b",
+    "SimplCore_五处修正与迁移验收包.zip": "1fb23dfccd65e81a"
+  },
+  "credential_handling": "read only from GH_TOKEN at push time; unset immediately after; hard guard rejects any pushed file containing credential-like bytes",
+  "note": "v8.1 content pushed, not the v8.0 rollback. The rollback artefacts (rollback_check.json) are kept as audit trail only.",
+  "commit_1_full": "7aada0d321243fb7d8d89ae412f068611041a385",
+  "parent_full": "1f6c3772f397e380cb2d5417c0e3d63ae5ab85fb",
+  "commit_2_full": "e4cf6d0381e5",
+  "head_full": "e4cf6d0381e5"
+}

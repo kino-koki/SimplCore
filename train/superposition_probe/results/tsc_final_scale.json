@@ -1,0 +1,32 @@
+[
+ {
+  "V": 64,
+  "rank": 8,
+  "learned_T_params": 1024,
+  "dense_T_params": 4096,
+  "explicit_codebook_bytes": 32768,
+  "fwht_seconds": 5e-05,
+  "fwht_involution_rel_error": 1.504403371525002e-16,
+  "note": "FULL length-V FWHT, measured (no proxy)"
+ },
+ {
+  "V": 1024,
+  "rank": 8,
+  "learned_T_params": 16384,
+  "dense_T_params": 1048576,
+  "explicit_codebook_bytes": 8388608,
+  "fwht_seconds": 5.7e-05,
+  "fwht_involution_rel_error": 3.160032600646443e-16,
+  "note": "FULL length-V FWHT, measured (no proxy)"
+ },
+ {
+  "V": 262144,
+  "rank": 8,
+  "learned_T_params": 4194304,
+  "dense_T_params": 68719476736,
+  "explicit_codebook_bytes": 549755813888,
+  "fwht_seconds": 0.011872,
+  "fwht_involution_rel_error": 3.163041676774713e-16,
+  "note": "FULL length-V FWHT, measured (no proxy)"
+ }
+]

@@ -1,0 +1,164 @@
+{
+  "ckpt_step": 181,
+  "results": {
+    "华为是什么公司": {
+      "before": {
+        "text": "，所以。  Param化处理参数，可以学习，可以学习，但不的",
+        "rep3": 0.125,
+        "cjk": 0.6,
+        "fact_good": null,
+        "fact_bad": null,
+        "n": 18
+      },
+      "trained": {
+        "text": "，喝，吃好，吃好，吃好，吃好，但，但",
+        "rep3": 0.5,
+        "cjk": 0.6111,
+        "fact_good": null,
+        "fact_bad": null,
+        "n": 18
+      },
+      "teacher": {
+        "text": "？华为的业务范围是什么？华为的业务有哪些？华为的业务有哪些",
+        "rep3": 0.3571,
+        "cjk": 0.8966
+      }
+    },
+    "今天天气很好，": {
+      "before": {
+        "text": "晴，心情的植物园圃，绿圃，绿园，绿叶的气候",
+        "rep3": 0.0625,
+        "cjk": 0.8095,
+        "fact_good": null,
+        "fact_bad": null,
+        "n": 18
+      },
+      "trained": {
+        "text": "晴，心情的植物园径，绿圃，绿园，绿圃，公园",
+        "rep3": 0.125,
+        "cjk": 0.7619,
+        "fact_good": null,
+        "fact_bad": null,
+        "n": 18
+      },
+      "teacher": {
+        "text": "我需要写一篇关于天气的作文，题目是《天气的变化》。",
+        "rep3": 0.0,
+        "cjk": 0.84
+      }
+    },
+    "中国的首都是": {
+      "before": {
+        "text": "的，是直辖市，人口，是新兴。深圳是新兴。深圳是新兴，",
+        "rep3": 0.25,
+        "cjk": 0.7692,
+        "fact_good": false,
+        "fact_bad": true,
+        "n": 18
+      },
+      "trained": {
+        "text": "的，是直辖市，人口，是新兴。深圳是新兴。深圳是新兴，",
+        "rep3": 0.25,
+        "cjk": 0.7692,
+        "fact_good": false,
+        "fact_bad": true,
+        "n": 18
+      },
+      "teacher": {
+        "text": "______，是世界上最早的城市，也是世界上最大的城市。______，",
+        "rep3": 0.0714,
+        "cjk": 0.5429
+      }
+    },
+    "水的化学式是": {
+      "before": {
+        "text": "世界，但，所以。  Param化和化学化学化学化学化学化学化学化学",
+        "rep3": 0.3125,
+        "cjk": 0.697,
+        "fact_good": null,
+        "fact_bad": null,
+        "n": 18
+      },
+      "trained": {
+        "text": "世界，但，所以。在空中，但，所以，所以，是最大的城市",
+        "rep3": 0.1875,
+        "cjk": 0.7308,
+        "fact_good": null,
+        "fact_bad": null,
+        "n": 18
+      }
+    },
+    "问：中国的首都是哪里？答：": {
+      "before": {
+        "text": "但座，还有，还有丰富的城市，北京，位于北京，位于中国的气候",
+        "rep3": 0.0625,
+        "cjk": 0.8276,
+        "fact_good": true,
+        "fact_bad": false,
+        "n": 18
+      },
+      "trained": {
+        "text": "但座，还有许多，所以，北京，北京，人口，人口，是新兴",
+        "rep3": 0.125,
+        "cjk": 0.7308,
+        "fact_good": true,
+        "fact_bad": false,
+        "n": 18
+      }
+    },
+    "问：华为是什么公司？答：": {
+      "before": {
+        "text": "但，所以，所以，所以，所以，北京的饮食，是最大的城市，",
+        "rep3": 0.3125,
+        "cjk": 0.7407,
+        "fact_good": false,
+        "fact_bad": true,
+        "n": 18
+      },
+      "trained": {
+        "text": "但，所以，所以，所以，所以，北京的气候，是直辖市，北京",
+        "rep3": 0.3125,
+        "cjk": 0.7407,
+        "fact_good": false,
+        "fact_bad": false,
+        "n": 18
+      }
+    },
+    "问：水的化学式是什么？答：": {
+      "before": {
+        "text": "但，但有，但的，但是最大的城市，是直辖市，是直辖市",
+        "rep3": 0.0625,
+        "cjk": 0.8,
+        "fact_good": false,
+        "fact_bad": true,
+        "n": 18
+      },
+      "trained": {
+        "text": "但，但用到，但有，但用到，是最大的城市，拥有",
+        "rep3": 0.1875,
+        "cjk": 0.7727,
+        "fact_good": false,
+        "fact_bad": true,
+        "n": 18
+      }
+    },
+    "华为是一家": {
+      "before": {
+        "text": "门计算机的，是新兴。这些，但，所以，所以，所以，北京",
+        "rep3": 0.1875,
+        "cjk": 0.7308,
+        "fact_good": false,
+        "fact_bad": false,
+        "n": 18
+      },
+      "trained": {
+        "text": "门计算机的，是新兴。这些，但，所以，所以，所以，北京",
+        "rep3": 0.1875,
+        "cjk": 0.7308,
+        "fact_good": false,
+        "fact_bad": false,
+        "n": 18
+      }
+    }
+  }
+}

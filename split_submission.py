@@ -37,7 +37,7 @@ print("split point: appendix begins on merged page", cut + 1)
 # ---------------------------------------------------------------- main paper
 main = fitz.open()
 main.insert_pdf(src, from_page=0, to_page=cut - 1)
-main.set_metadata({"title": "Where the Bits Must Live",
+main.set_metadata({"title": "Exact Content Addressing Needs an Order-2 State",
                    "author": "Anonymous submission",
                    "subject": "ICML submission - main paper",
                    "keywords": "", "creator": "", "producer": ""})

@@ -1,0 +1,35 @@
+=== CONTINUE ROUND ===
+Q0 freeze: 122 files
+Q1 W14 withdrawn; fixes present: True
+Q2 speak verdict: NO
+Q3 real bytes: 99614720 SGC all_pass: True
+WROTE /data/workspace/ts2sc_vl47/continue_results.json
+{
+  "Q2": {
+    "verdict": "NO",
+    "lang_attn": 0,
+    "mixer_per_layer": 14.0
+  },
+  "Q3": {
+    "weight_bytes": 99614720,
+    "header_tensors": 310,
+    "sgc_all_pass": true,
+    "fft_iir": 7.032268775742137e-16,
+    "qwen17_params": 1720574976,
+    "tokenizer_blocked": true
+  },
+  "combos": [
+    [
+      "historical package (Qwen3-0.6B lan",
+      1.0573
+    ],
+    [
+      "same language side + learned T_h p",
+      1.0867
+    ],
+    [
+      "full Qwen3-1.7B-Instruct language ",
+      2.2688
+    ]
+  ]
+}

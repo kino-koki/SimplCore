@@ -1,0 +1,44 @@
+{
+  "ts": {
+    "param_count": 524928,
+    "steps": 3000,
+    "val_ppl": 11.280539169326907,
+    "val_ce": 2.4230790436267853,
+    "kl_vs_teacher_T1": 5.024280511634061e-07,
+    "gen": " ime.prinm = new ffrence(float[]; input.length);\n \n ithis.didefaturests = new ATVaCULNOCUs",
+    "rep3": 0.05681818181818177
+  },
+  "sgc": {
+    "param_count": 436096,
+    "steps": 3000,
+    "val_ppl": 10.817423416294725,
+    "val_ce": 2.3811581134796143,
+    "kl_vs_teacher_T1": 0.7394896075129509,
+    "gen": " * memoryHas()):\n gate_seed to the step = did):\n return L * GRUMER\")\n embeddingMit\\tests_r",
+    "rep3": 0.03409090909090906,
+    "stream_check": {
+      "max_abs": 9.566545486450195e-06,
+      "mean_abs": 1.0550641695861174e-06,
+      "rel": 1.0364204205792775e-06,
+      "state_bytes": 68608
+    }
+  },
+  "kd": {
+    "param_count": 436096,
+    "steps": 3000,
+    "val_ppl": 10.216617463848213,
+    "val_ce": 2.3240155577659607,
+    "kl_vs_teacher_T1": 0.47390041872859,
+    "gen": " for keyss\\cposl |\"public void testTimeMillibuditer.configreval = 1.01f);\n \n prefloat:\n in",
+    "rep3": 0.0
+  },
+  "verdict": {
+    "result": "SUPPORTED",
+    "ratio_kd_vs_ts": 0.9056852079932827,
+    "ratio_sgc_scratch_vs_ts": 0.9589456012624425,
+    "kd_gain_over_sgc_scratch": 0.05554057831752187,
+    "token_budget_per_arm": 3072000,
+    "chinchilla_20x_tokens": 10498560,
+    "note": "预算为前哨级（3.07M token/臂 = 3000 步 × 16 × 64；Chinchilla 20× 按 TS 臂 524,928 参数计为 10.50M）；结论按此预算给出，不外推到规模化训练。"
+  }
+}

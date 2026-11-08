@@ -1,0 +1,18 @@
+{
+ "n_layers": 3,
+ "learned_T_used": true,
+ "toeplitz_pass": true,
+ "fft_iir_rel_error": 2.892054960323659e-16,
+ "duality_pass": true,
+ "last_time_dev": 1.4460274801618295e-16,
+ "last_time_pass": true,
+ "strict_causality": true,
+ "state_bytes_per_layer": 512,
+ "state_independent_of_L": true,
+ "no_nxn_score": true,
+ "no_kv_cache": true,
+ "no_input_dependent_kernel": true,
+ "no_external_role_tag": true,
+ "no_position_gate": true,
+ "all_passed": true
+}

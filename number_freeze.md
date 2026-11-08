@@ -57,3 +57,9 @@ Appendix I 的 Table 30 是逐值溯源表，Table 31 是 witness 明细。
 | 旧值不作为结论陈述 | ✅ Table 10 列 superseded，Table 28 标不同配置 |
 
 **Phase 4 判定：放行。**
+
+## v7.2 收紧后的单一真值源
+
+`tighten_experiments.py` 从原始 JSON **重算**全部冻结值，产出 `tools/eval_baselines/results/tight_freeze.json`（21 条 C01–C21，每条带 statistic / seeds / source）与 `tight_audit.json`（**14/14 PASS**）。本轮改稿未引入任何新数字；N3 摘要与 §8 引用的 `|A| <= 5` / `log2|A(v)| <= 2.3219` 均来自既有 `fibre.json`（C18），不是新测量。
+
+**0.0312 处置**：PDF 中 23 处 `0.0312` 绝大多数是 16/512 的**真实实测 acc**（5×5 网格非对角、融合曲线第 1 轮等）。本轮只把 `(chance 0.0312)` 这一处标注改为 `0.0313`，其余实测值一字未动。把它们一律替换成 0.0313 会是数据篡改。

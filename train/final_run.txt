@@ -1,0 +1,16 @@
+== ts == ppl=11.281 kl_T1=0.0000 rep3=0.057
+   gen: ' ime.prinm = new ffrence(float[]; input.length);\n \n ithis.didefaturests = new ATVaCULNOCUs'
+== sgc == ppl=10.817 kl_T1=0.7395 rep3=0.034
+   gen: ' * memoryHas()):\n gate_seed to the step = did):\n return L * GRUMER")\n embeddingMit\\tests_r'
+== kd == ppl=10.217 kl_T1=0.4739 rep3=0.000
+   gen: ' for keyss\\cposl |"public void testTimeMillibuditer.configreval = 1.01f);\n \n prefloat:\n in'
+
+VERDICT: {
+ "result": "SUPPORTED",
+ "ratio_kd_vs_ts": 0.9056852079932827,
+ "ratio_sgc_scratch_vs_ts": 0.9589456012624425,
+ "kd_gain_over_sgc_scratch": 0.05554057831752187,
+ "token_budget_per_arm": 3072000,
+ "chinchilla_20x_tokens": 10498560,
+ "note": "预算为前哨级（3.07M token/臂 = 3000 步 × 16 × 64；Chinchilla 20× 按 TS 臂 524,928 参数计为 10.50M）；结论按此预算给出，不外推到规模化训练。"
+}

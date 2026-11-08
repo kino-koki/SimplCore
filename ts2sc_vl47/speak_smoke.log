@@ -1,0 +1,35 @@
+=== REAL BASE-MODEL SPEAK PROBE (numpy only, no torch) ===
+config: 24 layers, h=1536, 16 heads/2 kv, V=130560
+tokenizer roundtrip: [True, True, True]
+  中国的首都是         ->  4 tokens | roundtrip='中国的首都是'
+  今天天气很好，        ->  5 tokens | roundtrip='今天天气很好，'
+  水的化学式是         ->  5 tokens | roundtrip='水的化学式是'
+weight parts: 22, total 2.161 GB
+virtual file: header tensors=219, data=2.161 GB, hlen=25248
+has q/k norm: False
+lm_head: BF16 [130560, 1536] [0, 401080320]
+   layer  0/24  18.4s
+forward done in 155.0s | bytes fetched 1.364 GB in 14 API calls
+
+  PROMPT '中国的首都是'
+       +12.342  id=8573    ';++'
+       +11.528  id=90774   'VILLE'
+       +11.147  id=61552   ' geared'
+       +10.736  id=77770   ' nong'
+       +10.399  id=7888    '基础'
+
+  PROMPT '今天天气很好，'
+       +11.431  id=104     's'
+       +10.163  id=116529  '自然不会'
+       +10.125  id=71582   'formerly'
+        +9.681  id=119239  ' nullptr'
+        +9.434  id=106266  'feldt'
+
+  PROMPT '水的化学式是'
+       +12.054  id=50040   '窍'
+       +11.186  id=43640   'ACY'
+       +11.123  id=8573    ';++'
+       +10.776  id=111007  '/MA'
+       +10.722  id=56327   '++;'
+
+WROTE ts2sc_vl47/speak_results.json

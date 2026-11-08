@@ -1,0 +1,136 @@
+{
+ "checks": {
+  "architecture_module_6of6": true,
+  "gradcheck_layers_1": true,
+  "gradcheck_layers_2": true,
+  "gradcheck_layers_3": true,
+  "gradcheck_layers_4": true,
+  "W14_graph_normalisation_exact": true,
+  "W14_legacy_deviation_recorded": true,
+  "arch_converges_all_5_seeds": true,
+  "matrix_diagonal_exact_at_1500": true,
+  "matrix_offdiagonal_below_diagonal": true
+ },
+ "detail": {
+  "architecture_module": {
+   "interface_identities": true,
+   "all_invariants": true,
+   "all_gradchecks": true,
+   "params_independent_of_depth": true,
+   "analytic_witnesses": true,
+   "interface_not_in_params": true
+  },
+  "gradchecks_final_weights": {
+   "layers_1": {
+    "worst": {
+     "Wq": 2.9212281053327127e-10,
+     "Wout": 3.600384931596451e-11
+    },
+    "all_pass": true,
+    "n_params": 6144
+   },
+   "layers_2": {
+    "worst": {
+     "Wq": 1.4501331949481888e-10,
+     "Wout": 2.487478173744326e-10
+    },
+    "all_pass": true,
+    "n_params": 6144
+   },
+   "layers_3": {
+    "worst": {
+     "Wq": 4.9654772047574847e-11,
+     "Wout": 2.5287352395961075e-10
+    },
+    "all_pass": true,
+    "n_params": 6144
+   },
+   "layers_4": {
+    "worst": {
+     "Wq": 9.080819863421796e-11,
+     "Wout": 6.512318505638715e-11
+    },
+    "all_pass": true,
+    "n_params": 6144
+   }
+  },
+  "W14": {
+   "gradcheck_rand_stop": {
+    "worst": 0.00024272156343147996,
+    "within_5e4": true
+   },
+   "gradcheck_T1_stop": {
+    "worst": 0.0025403106553338033,
+    "within_5e4": false
+   }
+  },
+  "convergence": {
+   "arch_1500": {
+    "arm": "arch_codebook_M",
+    "mean": 1.0,
+    "sd": 0.0,
+    "n": 5,
+    "converged_seeds": 5,
+    "first_step_mean": 150.0,
+    "first_step_max": 150
+   },
+   "diagonal_at_1500": [
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "legacy_1500": {
+    "arm": "legacy_learnable_T1_random",
+    "mean": 0.24921875,
+    "sd": 0.03246185411611989,
+    "n": 5,
+    "converged_seeds": 0,
+    "first_step_mean": null,
+    "first_step_max": null
+   },
+   "paired": {
+    "arch_codebook_M minus legacy_random": {
+     "mean": 0.75078125,
+     "ci95": [
+      0.72265625,
+      0.77890625
+     ],
+     "n": 5,
+     "all_positive": true
+    },
+    "arch_analytic_witness minus legacy_random": {
+     "mean": 0.75078125,
+     "ci95": [
+      0.72265625,
+      0.77890625
+     ],
+     "n": 5,
+     "all_positive": true
+    },
+    "legacy_learnable_T1_fixedM minus legacy_random": {
+     "mean": 0.75078125,
+     "ci95": [
+      0.72265625,
+      0.77890625
+     ],
+     "n": 5,
+     "all_positive": true
+    },
+    "legacy_trainable_near_M minus legacy_random": {
+     "mean": 0.75078125,
+     "ci95": [
+      0.72265625,
+      0.77890625
+     ],
+     "n": 5,
+     "all_positive": true
+    }
+   }
+  }
+ },
+ "n_pass": 10,
+ "n_checks": 10,
+ "all_pass": true,
+ "note": "All conservation / gradient checks use the FINAL 1500-step trained configuration. The static Toeplitz kernel, FFT/IIR duality, strict causality and O(1) state are unchanged by the new inter-layer wiring: M and the unit normalisation live OUTSIDE the recurrence."
+}

@@ -1,0 +1,20 @@
+{
+ "fibre_all_hold": true,
+ "fibre_n_rows": 18,
+ "sgc_fft_iir_machine_precision": true,
+ "sgc_toeplitz": true,
+ "sgc_causal_bitwise": true,
+ "sgc_state_independent_of_L": true,
+ "paired_all_positive": true,
+ "paired_ci_excludes_zero": true,
+ "carriers_exactly_two_counted_in_B": true,
+ "position_prior_not_counted_in_B": true,
+ "chance_single_definition": true,
+ "all_conclusion_values_have_seeds_ge_5": true,
+ "no_superseded_values_in_freeze": true,
+ "one_value_per_config": true,
+ "chance_not_duplicated": true,
+ "n_pass": 14,
+ "n_checks": 14,
+ "all_pass": true
+}

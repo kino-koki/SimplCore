@@ -1,0 +1,55 @@
+[
+ {
+  "encoding": "flat",
+  "perm": [
+   1,
+   0,
+   2
+  ],
+  "predicted_id": 4,
+  "answer_id": 3,
+  "distractor_id": 4,
+  "alpha_answer": 0.8260529979995868,
+  "beta_distractor": 0.9494999999989502,
+  "beta_gt_alpha": true,
+  "acc": 0.0,
+  "m2_nonzero_positions": [
+   1,
+   4
+  ],
+  "m2_magnitudes": [
+   0.0,
+   1.0,
+   0.0,
+   0.0,
+   1.0,
+   0.0
+  ]
+ },
+ {
+  "encoding": "codebook",
+  "perm": [
+   1,
+   0,
+   2
+  ],
+  "predicted_id": 3,
+  "answer_id": 3,
+  "distractor_id": 4,
+  "alpha_answer": 0.8260529979995866,
+  "beta_distractor": 0.0,
+  "beta_gt_alpha": false,
+  "acc": 1.0,
+  "m2_nonzero_positions": [
+   1
+  ],
+  "m2_magnitudes": [
+   0.0,
+   1.0,
+   0.0,
+   0.0,
+   -0.0,
+   0.0
+  ]
+ }
+]

@@ -10,7 +10,7 @@
 | # | P0 定义 | 修复前（v6.5 合并稿） | 修复后 | 证据 |
 |---|---|---|---|---|
 | 1 | 同一量两个互斥定义 / 下界与紧性见证不同量 | v6 基线硬错；v7 已改 B 定义但**未做机器验证** | ✅ 清零 | `governance_s4.json`: S4 PASS，v6 反事实矛盾 4 条已消除 |
-| 2 | 定理结论被本文表格数字反证且未限定口径 | v6 Theorem A(a) 写 unconditional ≤1/2，与 §4.9 的 0.8023/1.0000 冲突 | ✅ 清零 | v7 已改 per-fibre `acc(F\|v) ≤ 2^B/\|A(v)\|`；本轮复核 P5(i)/(ii) 全部标 TAP5 |
+| 2 | 定理结论被本文表格数字反证且未限定口径 | v6 Theorem A(a) 写 unconditional ≤1/2，与 §4.9 的 0.8023/1.0000 冲突 | ✅ 清零 | v7 已改 per-fibre `acc(F\|v) ≤ 2^B/\|A(v)\|`；本轮复核 P5(i)/(ii) 全部标 A5 |
 | 3 | 核心结果数 / 定理名 / 编号在同一 PDF 内不一致 | **存在**：Theorem B 双义、FOUR 与 SIX 并存的残留、P 命名空间双占 | ✅ 清零 | `governance_namespace_after.json`: TAP 18 / Theorem B 0 / 残留歧义 0 |
 | 4 | 前提里的层接口、码归一化、核家族与构造处不一致 | v6 四套层接口写法；本轮前仍有 §3.1(c)「by P1」错引 | ✅ 清零 | H6 唯一 `q_(h+1)=T_h z_h/‖·‖₂`；`CCᵀ=I` 单一；振荡核与严格正实极族显式分离；错引已改 P6 |
 | 5 | 同一配置两个不同数值且都作为结论 | `0.2969 / 0.2711`、`0.9316/0.9414/0.9328`、FFT 误差多值 | ✅ 清零 | Table 10 溯源表把旧值列为 superseded；Table 28 caption 补「单 seed / 不同配置」；冻结值唯一（16 条） |
@@ -36,8 +36,8 @@
 
 **修复后**：
 ```
-§3.1  Premises (TAP1-TAP5). TAP1 (task) ... TAP5: two accuracy notions.
-      Namespace. TAP1-TAP5 name only the premises of Theorem A;
+§3.1  Premises (A1-A5). A1 (task) ... A5: two accuracy notions.
+      Namespace. A1-A5 name only the premises of Theorem A;
       P1-P8 name supporting propositions (Section 3.4).
       The two namespaces are disjoint by construction.
 §3.1(e) ... Supporting proposition P5 gives a matching state-order bound ...
@@ -75,7 +75,7 @@
 ### P0-F 检查器自身的两处误报（不是放宽标准）
 
 - 双栏 PDF 把 `IF one chooses to preserve` 断行，原 `has()` 正则漏判 ⇒ 改为「原始文本匹配 + 空白归一化副本匹配」，`absent()` 同步变严。
-- `TAP5: two accuracy notions` 被旧判定当成裸 `P5:` ⇒ 改用负向断言 `(?<![A-Za-z])P5:`；`Supporting proposition P5 gives ...` 用 `(?<!proposition )` 排除。
+- `A5: two accuracy notions` 被旧判定当成裸 `P5:` ⇒ 改用负向断言 `(?<![A-Za-z])P5:`；`Supporting proposition P5 gives ...` 用 `(?<!proposition )` 排除。
 
 这两处修的是**检查器对排版/子串的脆弱性**，语义条件一条未放宽。修后 `desk_check` **45/45**。
 
@@ -99,3 +99,19 @@
 ## Phase 3 判定
 
 稿件内部 **P0 = 0**，放行 Phase 4–6；**Phase 7 因 2027 CFP 未发布 + References 待核验而挂起**。
+
+## v7.2 追加验收（指令单 N1–N7）
+
+| 项 | 结果 |
+|---|---|
+| N1 `TAP` 残留 / `Theorem B` / 裸 `P5(i)(ii)` / 歧义短语 | **0 / 0 / 0 / 0**，`A1-A5` 23 处 |
+| N2 `three ... carriers` / `absent from this table` | **0 / 0** |
+| N3 新标题 / 摘要 loose 句 / §8 loose 句 / `a tight lower bound` | 1 / 1 / 1 / **0** |
+| N4 真 S5 作者 / S4D 标题残留 / CKConv 2102.02611 | 1 / **0** / 1 |
+| N5 `unnormalised product` / `^NT` | **0 / 0** |
+| N6 `width d=` / `d mutually orthogonal` / `R^(d x d)` | **0 / 0 / 0** |
+| N7 chance 0.0312 标注 / 0.9609 / gates 计数 / AI 披露 / 裸 log2\|A\| / Table12 去重 | **0 / 0 / 0** / 1 / **0** / 1 |
+
+**References 逐条核验（联网）**：[4] S5 ✓（arXiv:2208.04933）、S4D 真编号 2206.11893 ✓、[8] DeltaNet NeurIPS 2024 ✓、[7] GLA ICML 2024 ✓、[9] Mamba-2 ICML 2024 ✓、[11] CKConv arXiv:**2102.02611** ICLR 2022 ✓。**[10] Hyena venue 本轮未取得独立权威页面，保留原值并列截稿前复核，不声称已核验**。无「verified 2026-11-07」类自证句。
+
+desk-check **46/46**（新增 `[4] 必须是真 S5` 反幻觉断言）；治理 12/12；拆分 11/11；收紧审计 14/14。内部 P0 = 0，一票否决 = 0。

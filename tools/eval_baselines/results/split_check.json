@@ -1,7 +1,7 @@
 {
  "split_point_merged_page": 10,
  "paper_main_pages": 9,
- "paper_appendix_pages": 9,
+ "paper_appendix_pages": 10,
  "banned_fragments_found": [],
  "checks": {
   "two_pdfs_exist": true,

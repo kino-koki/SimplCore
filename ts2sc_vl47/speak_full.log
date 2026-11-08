@@ -1,0 +1,12 @@
+=== REAL BASE-MODEL SPEAK PROBE (numpy only, no torch) ===
+config: 24 layers, h=1536, 16 heads/2 kv, V=130560
+tokenizer roundtrip: [True, True, True]
+  中国的首都是         ->  4 tokens | roundtrip='中国的首都是'
+  今天天气很好，        ->  5 tokens | roundtrip='今天天气很好，'
+  水的化学式是         ->  5 tokens | roundtrip='水的化学式是'
+weight parts: 22, total 2.161 GB
+virtual file: header tensors=219, data=2.161 GB, hlen=25248
+has q/k norm: False
+lm_head: BF16 [130560, 1536] [0, 401080320]
+lm_head cached in RAM: 401 MB (uint16 BF16 bits)
+   layer  0/24  58.2s

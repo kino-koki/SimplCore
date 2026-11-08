@@ -1,0 +1,6 @@
+  [S2_bind         ] 0.5586±0.0184
+  [S8_softgate     ] 0.2448±0.0423
+  [S9_writegate    ] 0.5560±0.0166
+  [S10_both        ] 0.2695±0.0169
+
+写入 results/long_results.json

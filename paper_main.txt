@@ -1,0 +1,659 @@
+                               Where the Bits Must Live: An Input-Side
+                          Information Bound, Tight on a Constructible Family,
+                                    for Fixed-State Spectral Models
+                                                                  Anonymous submission
+
+
+Abstract
+We prove that exact H-hop content retrieval by any deterministic fixed-state decoder requires B >= log2 |A(v)| bits of input-side information beyond a flat
+symbol alphabet, where A(v) is the set of answers compatible with the flat projection v (Theorem A). The bound is attained on an explicit binary-chain
+family with |A| = 2^m; on the content-chain task used in our experiments, reachability enumeration gives |A| <= 5 (log2|A(v)| <= 2.3219), so the bound is
+loose there. The difficulty is that the bound is distribution-free and depth-free: extra layers, higher state order, and kernel retuning cannot manufacture the
+missing bits within the duality-preserving LTI class, because the whole computation there is a function of the flat projection. We therefore characterize
+where the bits may live: an explicit KEY/VALUE tag and an alphabet partition V -> 2V each supply one bit per ambiguous token, counted in B. A positional
+format prior is not a per-token channel; it restricts the support of the instance distribution and reduces |A(v)| instead. The alphabet partition folds the
+mandatory bit into the symbol id: it is not bit-free, it is annotation-free. Strongest evidence: two tight structural bounds (an order-2 state for one hop; exactly
+H static-LTI layers for H hops under last-layer read-out) are attained by one Toeplitz, O(1)-state construction. In the architecture module the H6 interface is
+the codebook's fixed value-to-key swap rather than a learned matrix; from random initialisation of the remaining weights, H=2 with two layers reaches
+1.0000 +/- 0.0000 by step 150 on five of five seeds, while one layer stays at 0.1809 +/- 0.0219 (paired difference +0.8191, 95% CI [+0.8008, +0.8375] at
+1500 steps). The design rule is to budget log2 |A(v)| bits at the input or relax exactness. We make no language-modeling, perplexity, throughput, equivalence
+or superiority claim. Separately, on an exactly-defined finite consolidation process we prove that zero-order codebook registration improves retrieval
+monotonically, with a predicted cover time of 129.87 rounds against a measured 130.00 over five seeds; an earlier attention-parity statement is withdrawn
+because it did not reproduce (W12).
+                                                                                    Zoology, Repeat After Me, Illusion    Theorem A quantifies the exact input-side deficit B
+1 Introduction                                                                      of State: fixed-state models are      >= log2|A| for ANY deterministic decoder
+                                                                                    weak at associative recall
+Fixed-state attention-free sequence models compress a prefix into                   S5: LTI requires time-invariant       P6 proves Toeplitz iff time-invariance for the full
+a constant-size summary. The question addressed here is not how                     coefficients                          second-order family with c_t != 0
+much such a model can compress, but which information is                            Mamba: selectivity breaks the         Theorem Theorem A(c) states the consequence
+                                                                                    convolution view                      WITHIN class M: duality-preserving layers cannot
+simply absent from a flat symbol sequence and therefore cannot                                                            manufacture the bits
+be recovered by any deterministic decoder, regardless of depth or                   Linear attention: state is a sum of   Proposition P4 records the rho=1 single-pole
+                                                                                    key-value outer products              isomorphism; Result 2 keeps rho<1 decay and proves
+kernel design.                                                                                                            the joint bound
+Multi-hop content retrieval exposes the issue sharply. When key
+and value symbols share one alphabet, the same visible sequence                     2 Preliminaries and One Layer Interface
+can be compatible with several binding graphs that demand                           Alphabet and the budget B. Fix a flat reference alphabet Sigma_0 of size
+different answers. A decoder that sees only the flat projection                     V_K and a projection pi : Sigma -> Sigma_0 that erases all role
+                                                                                    information. For an input x_(1:L) in Sigma^L write v = pi(x_(1:L)) for its
+must guess. Prior work established the empirical weakness; the                      flat projection. Define the input-side information budget B = sum_t b_t,
+contribution here is a distribution-free quantification of the                      b_t = log2 |pi^(-1)(v_t)| , the total number of bits by which the ACTUAL
+input-side deficit, attained on an explicit constructible family, and               symbol alphabet exceeds the flat reference at each position. An explicit tag,
+a construction showing that supplying exactly that deficit restores                 an alphabet partition V -> 2V, and a symbol id that encodes a role are all
+exact retrieval while preserving the static-kernel duality.                         instances of b_t = 1 and are therefore counted in B; a wholly flat alphabet
+                                                                                    has B = 0. A positional format prior is not a per-token channel: it is a
+1.1 Four core results                                                               restriction on the SUPPORT of the instance distribution and is accounted
+   · Result 1 (Theorem A). An input-side information bound B >= log2                for through A(v), not through B. Given v, a decoder can observe at most
+   |A(v)|, tight on the binary-chain family, with per-fibre accuracy, a             2^B distinguishable refinements of v.
+   within-class-M location statement, two bit carriers plus one support             One layer interface (H6, unique). Each static-LTI layer computes m_h[t]
+   restriction, and the bit-depth frontier. The serial-depth and state-order        = <q_h, e(x_(t-1))> and z_h = sum_t K_h(L-1-t) m_h[t] e(x_t). For h <
+   statements of earlier drafts are folded into part (e) of the same theorem.       H_L the interface is q_(h+1) = T_h z_h / ||T_h z_h||_2 with a learnable
+   · Result 2. Two structural bounds proved jointly and attained by one             T_h in R^(D x D); the analytic optimum is T* = C_key^T C_val. Every
+   construction: the minimum tensor state order for one hop is exactly 2,           occurrence of the interface in Sections 2-4 uses this exact expression. The
+   and exact H-hop retrieval under last-layer read-out requires exactly H           phrase 'maps the VALUE half to the KEY half' describes the action of T* =
+   static-LTI layers.                                                               C_key^T C_val, not a second interface. The read-out is last-layer only
+   · Result 3 (Construction C). A static-LTI, order-2, contraction read-out         (A4). The read-out is last-layer only (P4).
+   layer that performs content addressing. It is a constructive                     Kernel families, kept separate. P1 (Z-transform duality) holds for every
+   counterexample to the earlier claim that content addressing and FFT/IIR          stable second-order LTI recurrence, including the oscillatory family K(lag)
+   duality are mutually exclusive.                                                  = rho^lag sin((lag+1)theta). The retrieval construction and Result 2 use the
+   · Result 4 (Empirical E). Five-seed verification at a 1500-step budget           strictly-positive real-pole family K(lag) = sum_j r_1^(lag-j) r_2^j > 0,
+   that the layer bound survives end-to-end training from random                    which is required by the positivity premise of Result 2's matching
+   initialisation (Section 4.12), degradation curves, and a same-run                argument. The two statements concern different subfamilies of the same
+   reproduction audit with one withdrawn claim.                                     LTI class and do not conflict. State size is 2 M D + (K-1) D scalars,
+All remaining statements are propositions P1-P8 or lemmas L1-L3; none is            independent of L; strict causality follows by induction on the two-tap
+promoted to a theorem. Table 1 records the exact increment over prior               recurrence.
+results.                                                                            Symbol discipline. t is absolute time, d = L-1-t is a delay, lag is a kernel
+Known result                   Precise increment here                               lag, H is hops, H_L is layers, n is binding pairs, V_K = V/2 is the
+                                                                                    key-vocabulary size, r is interface rank, rho < 1 is a pole modulus, B is the
+
+
+                                                                                1
+input-side bit budget of the previous paragraph, and A(v) is the                       |A(v)|. If B < log2 |A(v)| then acc(F | v) <= 1/2. This is a conditional bound
+compatible-answer set. No symbol is reused.                                            on a single fibre, not a marginal claim.
+                                                                                       (b) Bit lower bound. Exact retrieval on every compatible instance requires
+2.1 State accounting, derived                                                          B >= log2 |A(v)|. An explicit binary-chain family gives |A| = 2^m for every
+The layer's entire streaming state is the pair (y_(t-1), y_(t-2)) of the two-tap       m <= n, hence B >= m; taking m = n gives B >= n. If the pairing itself is
+recurrence together with the (K-1) delayed inputs of the FFT overlap-add               absent from v, |A| >= n! and B >= log2(n!). The bound is a property of the
+path: 2 M D + (K-1) D scalar values, or 4(2 M D + (K-1) D) bytes in fp32,              task and does not depend on H_L, state order, or kernel parameters.
+with M the number of poles, D the channel width and K the fixed kernel
+                                                                                       (c) A within-class-M location statement. Within A3, increasing H_L, the
+length. None of these quantities depends on L. Induction on t gives strict
+                                                                                       state order, or retuning (rho, theta, w) cannot lower the bound: the
+causality: y_t reads only y_(t-1), y_(t-2) and u_t, so a perturbation at any
+                                                                                       composition is a function of v with s removed. To place role information in
+future position leaves all past outputs bit-identical. A per-channel
+                                                                                       the KERNEL one must make its coefficients input-dependent and hence
+coefficient tensor of shape (M, D) is permitted by the architecture:
+                                                                                       time-varying; by P6 (Toeplitz iff time-invariance) that destroys the Toeplitz
+replacing the fixed (rho, theta) grid by learnable, time-INVARIANT (r_1,
+                                                                                       structure and the single-FFT/IIR path. Consequently, IF one chooses to
+r_2) poles keeps the operator LTI, hence keeps Toeplitz and the
+                                                                                       preserve duality, the missing bits must be supplied on the input side. This is
+single-FFT/IIR duality. Learnability of a parameter is not time-variance;
+                                                                                       a consequence of a design choice within M, not a physical force acting on
+the latter is what P6 forbids.
+                                                                                       all architectures; it does not exclude other algorithm families or other O(L
+Two consequences are used repeatedly. First, the O(1) state is a structural            log L) paths.
+property (a fixed number of scalar registers), not a measurement; it is why
+                                                                                       (d) Tightness and carriers. The bound is attained by two bit carriers, each
+Theorem A(b)'s pigeonhole argument applies at all. Second, the
+                                                                                       supplying one bit per ambiguous token and each COUNTED in B by the
+strictly-positive real-pole kernel K(lag) = sum_j r_1^(lag-j) r_2^j satisfies
+                                                                                       definition in Section 2: an explicit KEY/VALUE tag, and an alphabet
+the log-convex Turan identity h(lag)^2 - h(lag-1)h(lag+1) = (r_1 r_2)^lag >
+                                                                                       partition V -> 2V, which is exactly log2(2V_K / V_K) = 1 bit folded into
+0, whereas a conjugate-pole oscillatory kernel necessarily takes
+                                                                                       the id. A third mechanism, the absolute-position format prior, is NOT a
+non-positive values. Positivity is required by the matching argument of P2;
+                                                                                       per-token channel: it restricts the SUPPORT of the instance distribution,
+it is a property of this subfamily, not of the general LTI duality in P1. The
+                                                                                       thereby reducing |A(v)| rather than increasing B. Under arbitrary filler
+two facts are listed side by side so that no reader has to infer which kernel
+                                                                                       spacing that support restriction no longer holds and its effective
+family a statement refers to.
+                                                                                       information falls to zero (measured 0.3438, five seeds). Tagging only the
+2.2 Task distribution and the fibre A(v), formally                                     KEY token of each pair gives B = n, which is tight for the binary-chain
+                                                                                       family. The alphabet partition folds the mandatory bit into the symbol id: it
+An instance G is a directed binding graph on n pairs. A role assignment rho
+                                                                                       is not bit-free, it is annotation-free.
+in (0,1)^(2n) decides, for each pair, which token is the KEY and which the
+VALUE; pair order is arbitrary and an arbitrary number of zero FILLER                  (e) Bit-depth frontier and state order. For every B >= log2 |A(v)| the
+tokens may appear between pairs. The answer is k_H(G), the endpoint of                 minimum depth is still exactly H (Result 2); for every B < log2 |A(v)| no
+the H-hop chain starting at the externally supplied query q = k_0. The                 depth suffices. The frontier in (B, minimum H_L) is a right angle, not a
+instance distribution is uniform over role assignments, pair permutations,             trade-off curve. Supporting proposition P5 gives a matching state-order
+filler counts and distinct key choices from [V_K], conditioned on distinct             bound: when each hop offers c mutually orthogonal candidate successors,
+keys unless a duplicate-key condition is stated. For a fixed flat projection v         exact H-hop retrieval requires an order-o tensor state with o >= H+1
+we define the FIBRE R(v) = ( G : pi(x(G)) = v ) and the compatible-answer              (proved in Appendix A.5). Earlier drafts headline result; the state-order
+set A(v) = ( k_H(G) : G in R(v) ). The per-fibre statistic A5(i) is the                statement is folded into (e) here.
+uniform measure on R(v); the marginal statistic A5(ii) is the push-forward             (f) Overshoot is a read-out convention. Failure at H_L > H follows from
+of the instance distribution under pi. These two measures are different                A4. Retaining intermediate outputs and selecting the H-th makes H_L >= H
+objects, and Theorem A(a) constrains only the first. Section 4.3 computes              sufficient; the lower bound is unchanged. 'Exactly H' is not an architectural
+|A(v)| for the concrete task by reachability enumeration rather than                   law.
+assuming a value.                                                                      Proof route (a),(b). F(v, s) takes at most 2^B values on a fibre. If |A(v)| >
+                                                                                       2^B, two compatible instances with distinct answers share the same (v, s),
+3 Four Core Results                                                                    so F cannot be correct on both; the uniform measure on the fibre gives
+                                                                                       acc(F | v) <= 2^B/|A(v)|. Full proofs, the binary-chain witness, and the
+3.1 Result 1 - Theorem A (input-side information bound)
+                                                                                       supporting P5 state-order argument are in Appendix A.1-A.5.
+Premises (A1-A5). A1 (task): an instance has n binding pairs, a role
+assignment deciding which token of each pair is the KEY, arbitrary pair                Proof intuition. A deterministic decoder sees at most 2^B distinct
+order, arbitrary zero fillers, and answer k_H(G), the endpoint of the H-hop            refinements of a flat projection v, so a fibre with |A(v)| > 2^B answers
+chain from an external query q = k_0. A2 (visible input): the model sees (v,           forces two distinct answers onto one output (pigeonhole). No property of
+s) with v the flat projection and s in (0,1)^B the refinement counted above.           the kernel, depth or state order enters this step, which is why (a) and (b) are
+A3 (class M): H_L static-LTI layers with time-invariant,                               distribution-free and depth-free. For (c), a static-LTI stack with fixed
+content-independent coefficients, fixed-dimensional state, fixed linear                interfaces is a function of v alone once the refinement is removed, so the
+interfaces, deterministic last-layer read-out. A4: only the last layer is              missing bits cannot be manufactured inside the recurrence; P6 says making
+decoded. A5: two accuracy notions, defined below. Parts (a) and (b) need               the coefficients input-dependent destroys Toeplitz. For (d), the same budget
+NONE of A3. Namespace. A1-A5 name only the premises of Theorem A;                      B = sum_t log2|pi^(-1)(v_t)| is charged by an explicit tag, by the alphabet
+P1-P8 name supporting propositions (Section 3.4). The two namespaces are               partition, and by the KEY-only tag, so the lower bound and its tightness
+disjoint by construction.                                                              witness use ONE quantity (Appendix H records the executable
+                                                                                       bit-accounting check). A position prior is instead a restriction on |A(v)|, not
+Two accuracy notions (A5). (i) Per-fibre conditional accuracy acc(F | v)
+                                                                                       a contribution to B. Complete proofs are in Appendix A.1-A.3; the
+is the fraction correct on a FIXED fibre v under the uniform measure over
+                                                                                       exhaustive binary-chain witness and the per-fibre statistic are in Tables 6
+all instances compatible with v and in the distribution's support; A(v) is the
+                                                                                       and 26.
+set of distinct answers on that fibre. (ii) Marginal accuracy is E_v[acc(F |
+v)] over the data distribution. Theorem A bounds (i). When most fibres                 3.2 Result 2 (two tight structural bounds)
+have |A(v)| = 1, (ii) can exceed 1/2 while (i) stays bounded. These are not            (i) Minimum state order. Under Proposition P2 with a linear historical
+two accuracies of one configuration; Table 2 labels every number with its              summary and n >= 2 binding pairs, no order-1 (vector) state supports exact
+statistic.                                                                             one-hop content addressing (P2 below). An order-2 tensor state with a
+(a) Per-fibre impossibility. For any deterministic decoder F (no LTI,                  contraction read-out does, and is therefore minimal. (ii) Exactly H layers.
+depth, state or read-out assumption) and any fibre v, acc(F | v) <= 2^B /              Under H6, A4 and distinct keys, one static-LTI layer resolves at most one
+
+
+                                                                                   2
+content match; H hops require H_L >= H, and H_L = H suffices. Both                    placed without destroying duality, which is A(c). This also answers the
+bounds are attained by the SAME Toeplitz, O(1)-state construction C.                  question of whether the tensor state is 'linear attention with extra steps': the
+Induction and the complete zero-training 5 x 5 layer x hop grid are in                read-out contraction is bilinear, but the recurrence coefficients are static,
+Appendix A.4 and Section 4.                                                           the state is decaying, and the layer count is exactly H by Result 2(ii).
+Proof intuition. One static-LTI layer resolves at most one content match,
+so H hops need at least H layers; the H-th intermediate output through the
+                                                                                      3.3.2 The bit / depth / order frontier (design rule)
+unique H6 interface supplies the next query, giving the matching upper                The three quantities form a step function rather than a smooth trade-off.
+bound by induction. An order-1 vector state is ruled out by P2, while                 Table 6 gives the measured frontier. For B < log2|A| the problem is
+Construction C attains order 2, so the minimum is exactly 2. The full                 infeasible at EVERY depth and EVERY state order (A(b)). At B >=
+induction is in Appendix A.4 and the attaining 5 x 5 grid is Table 5.                 log2|A| the minimum depth is exactly H (Result 2(ii)) and the conditional
+Overshoot H_L > H is A(f), a read-out convention, not a failure of the                minimum state order is H+1 (P5, when each hop offers d orthogonal
+lower bound.                                                                          successors). Pairwise scoring is never required inside the recurrence: the
+                                                                                      q.k match occurs in the contraction read-out outside the static kernel.
+3.3 Result 3 - Construction C and Result 4 - Empirical E                              Increasing B beyond log2|A| buys no further reduction in depth, and
+Construction C. With u_t[r,n] = a_t[r] b_t[n] an outer-product signal, s_t =          increasing depth beyond H does not buy fewer bits. The design rule is
+rho s_(t-1) + u_t with rho independent of t, and read-out z_n = sum_r q_r             therefore to budget log2|A| bits at the input, then choose H layers and an
+s_(p,r,n), the recurrence is still a static LTI system: Toeplitz,                     order-(H+1) state; any other allocation is either infeasible or wasteful. This
+single-FFT/IIR dual, strictly causal, O(1) state, no N x N score, no KV               is the transferable statement of the paper: it says what is necessary under an
+cache. The q.k matching happens OUTSIDE the recurrence, in the                        information budget, rather than reporting one point on a benchmark.
+contraction. This refutes the earlier claim that content addressing and               B bits       |A|           predicted upper       observed           holds
+duality are mutually exclusive. P4 records the rho=1 single-pole                      0            2             0.5000                0.5000             yes
+                                                                                      1            2             1.0000                1.0000             yes
+isomorphism with a linear-attention state; we do not claim to leave that              2            2             1.0000                1.0000             yes
+family.                                                                               0            4             0.2500                0.2500             yes
+  hops H | diagonal = exact (Result 2)                                                1            4             0.5000                0.5000             yes
+                                                                                      2            4             1.0000                1.0000             yes
+                                                                                      3            4             1.0000                1.0000             yes
+                                                                                      0            8             0.1250                0.1250             yes
+                                                                                      1            8             0.2500                0.2500             yes
+                                                                                      2            8             0.5000                0.5000             yes
+                                                                                      Table 6. Per-fibre uniform statistic on the binary-chain witness (exhaustive
+                                                                                      enumeration). Accuracy is 2^(B-m) for B < m and exactly 1 at B = m.
+                                                                                      Adding depth leaves these values unchanged (Table 7). These are NOT
+                                                                                      marginal accuracies.
+
+                                                                                      3.3.3 The eight propositions, stated in full
+  layers H_L ->                                                                       P1 (duality). For K(lag) = rho^lag sin((lag+1)theta) with 0 < rho < 1, H(z)
+Figure 1. Reachable exact retrieval as a function of layer count and hop              = sin(theta)/(1 - 2 rho cos(theta) z^(-1) + rho^2 z^(-2)), so the convolution
+count. The diagonal is the exactly-H-layer bound (Result 2); grey dots                equals y_t = 2 rho cos(theta) y_(t-1) - rho^2 y_(t-2) + sin(theta) u_t. This is
+below it are measured chance-level single-layer failures. The vertical                a real-field equivalence; fp32 bitwise identity is false because the two
+boundary at order 2 is Result 2's minimum state order. This is a boundary             execution orders round differently (W1). P2 (arbitrary read-out). Under a
+diagram, not an architecture schematic.                                               fixed linear historical summary A = sum_p L_p v_p + c and an arbitrary
+Empirical E. Table 2 collects every number used in this paper together                f(A,q), exact content addressing is impossible for n >= 2 (proof in Section
+with its statistic, seed count, sample count and source. The layer bound              3.4). Its premise excludes deep per-position FFNs, input-dependent gates
+survives 5-seed training: H=2 gives 0.1055 +/- 0.0180 with one layer and              and outer-product states. P3 (correct information form). For a finite
+0.9512 +/- 0.0094 with two (paired +0.8457, CI [+0.8281, +0.8598]).                   output set F with |F| <= |S| the state can encode f(x), so the literal claim
+Degradation is monotone in role-bit noise, and the failure mode is rank loss          'O(1) states must lose' is false; what fails is spectral compression under
+rather than loss of orthogonality. Section 4.6 reports a same-run                     content addressing.
+reproduction audit and the W12 withdrawal.                                            P4 (linear-attention relation). At rho=1 with a single pole the
+                                                                                      Construction C state is sum_tau k_tau v_tau^T. P5 (state order).
+3.3.1 Relation to linear attention, stated precisely                                  Conditional on c mutually orthogonal candidate successors per hop, exact
+Setting rho = 1 and retaining a single pole reduces the Construction C state          H-hop retrieval requires o >= H+1; with branching factor 2 the same
+to S = sum_tau k_tau v_tau^T, which is the linear-attention state; P4                 counting degenerates to a log2(H+1) bit requirement (Appendix A.5). P6
+records this isomorphism. For rho < 1 and several poles the state is S =              (Toeplitz iff time-invariance). For the second-order recurrence with c_t !=
+sum_tau K(lag) k_tau v_tau^T with a fixed, input-independent decay                    0, the impulse response is Toeplitz iff (a_t, b_t, c_t) are constant; proved by
+K(lag). Gated linear attention uses S = sum_tau (prod_j g_j) k_tau v_tau^T            induction on the lag in Appendix A.2. P7 (error bound). With a uniform
+with input-dependent gates g_j. The two are NOT equal as operators on a               per-step        perturbation       bound         delta_max,         |e|     <=
+general input: by P6, input-dependent coefficients make the impulse                   delta_max/((1-rho)|sin(theta)|). P8 (grid degeneracy). As theta_m -> 0 the
+response non-Toeplitz, whereas the fixed decay keeps it Toeplitz and                  dictionary columns approach theta_m rho^lag (lag+1) and become
+preserves the single-FFT/IIR duality. What CAN be said is a conditional               collinear, so condition number diverges. P1-P8 are standard or conditional
+containment: on inputs for which the gate products happen to equal a fixed            facts recorded for completeness; none is an independent headline result.
+geometric sequence, the two states coincide up to that sequence. We
+therefore do NOT claim that the rho<1 multi-pole family lies outside the              3.3.4 Non-vacuity witnesses, itemised
+linear-attention family, nor that it is a new paradigm; the contribution is the       A theorem whose premises admit no instance is empty. Five independent
+tight JOINT characterization under a strictly static kernel, where the decay          witnesses are supplied. (W1) n=4, m=2, V_K=32, H=2, flat alphabet,
+is part of the kernel rather than a learned input-dependent gate. This is the         arbitrary filler spacing: B=0 gives |A|=4 and acc(F|v) <= 1/4, while B=2
+precise scope of the claimed difference, and it is weaker than 'a new                 gives exactness. (W2) The exhaustive binary-chain enumeration gives
+architecture'.                                                                        2^(B-m) for B < m and 1 at B=m for m=1..4, with bit-identical visible
+A direct consequence is that the information bound A(b) applies to both               inputs across all 2^m role assignments. (W3) Depth invariance: a static-LTI
+families: no amount of gating, depth or state order recovers bits absent              stack of depth 1..8 produces bit-identical outputs across compatible role
+from the flat projection. The difference lies in WHERE the bits may be                assignments (maximum deviation 0.0e+00), confirming that depth cannot
+
+
+                                                                                  3
+manufacture the bits. (W4) Two bit carriers each supply one bit per                 NOT claim that every possible repair must converge to a pairwise
+ambiguous token (Table 7); the positional format prior is a support                 key/value score. That reading is an explanatory framework, not a theorem:
+restriction, not a carrier. (W5) The 5 x 5 layer x hop grid (Table 5) attains       the proof of A(b) excludes only decoders with fewer than log2|A|
+the exactly-H-layer bound. Each witness is a finite, reproducible object;           distinguishable refinements, and says nothing about the internal form of
+none is used as a premise of a proof.                                               those that attain it. Stating this boundary explicitly prevents the
+m        B        layers        |A|        acc             dev                      impossibility result from being over-read.
+2        0        1             4          0.2500          0.0e+00
+2        0        2             4          0.2500          0.0e+00                  3.7 Premise, claim, boundary and non-vacuity, per statement
+2        0        3             4          0.2500          0.0e+00                  Every statement in this paper is listed below with its exact premise, its
+2        0        4             4          0.2500          0.0e+00
+2        0        5             4          0.2500          0.0e+00
+                                                                                    conclusion, the boundary outside which it is NOT claimed, and one
+2        0        6             4          0.2500          0.0e+00                  concrete instance satisfying the premise. A statement without such an
+2        0        7             4          0.2500          0.0e+00                  instance would be vacuous; a statement quoted without its boundary would
+2        0        8             4          0.2500          0.0e+00                  be over-read.
+Table 11. Depth-invariance witness. Accuracy is the per-fibre uniform               stmt      premise                  conclusion         boundary               non-vacuity
+statistic and does not change with layer count; the output deviation across         A(a)      deterministic F, fibre   acc(F|v) <=        conditional, not       n=4, m=2, B=0,
+                                                                                              v                        2^B/|A(v)|         marginal               |A|=4
+compatible role assignments is zero. This is the empirical form of A(e), not        A(b)      determinism only         B >= log2|A|       exactness on all       binary chain,
+its proof.                                                                                                                                instances              |A|=2^m
+                                                                                    A(c)      class M, P6            bits cannot be       IF duality kept        static 2-layer
+3.4 Supporting statements (not theorems)                                                                             made inside                                 stack
+P1 (Z-transform duality, real-field equivalence; fp32 bitwise identity              A(d)      B = sum log2|pi^-1| 3 carriers, 1           position prior is      V -> 2V
+                                                                                                                     bit/token            support                partition
+withdrawn as W1). P2 (arbitrary read-out impossibility; complete                    A(e)      A(b) + Result 2(ii)    right-angle frontier no stop/select         Table 6, m=1..4
+construction in Appendix A.3). P3 (the literal claim 'O(1) states must lose'        A(f)      P4 last-layer read-out H_L>H overshoots retained                   H=2, H_L=3
+is false for finite output sets). P4 (rho=1 single-pole linear-attention                                                                  intermediates suffice
+                                                                                    B(i)      P2 linear summary, min state order = 2 single mixer               Construction C
+isomorphism). P5 (state-order bound o >= H+1, conditional). P6 (Toeplitz
+                                                                                              n>=2
+iff time-invariant coefficients). P7 (error bound under uniformly bounded           B(ii)     H6, P4, distinct keys min layers = H        overshoot is read-out Table 5 diagonal
+perturbations). P8 (frequency-grid asymptotic rank deficiency). Lemmas              P5        d orthogonal           o >= H+1             branching 2           H=2, d=64
+L1-L3 record the role-bit, codebook and rank facts. Full statements and                       successors/hop                              degenerates
+proofs are in Appendix A.                                                           Table 13. Statement audit. A(b), A(e) and the Result 2 lower bound are the
+P2 proof intuition. With a fixed linear historical summary A = sum_p L_p            only unconditional-within-their-premises statements; A(c) and P5 are
+v_p + c, one can always change a value assignment while keeping (A, q)              explicitly conditional. No statement is promoted by a numerical check.
+fixed, either through a singular block L_j, through a compensating pair of
+blocks, or by redirecting the query when A depends on a single value. The           4 Experiments: One Table, One Numeric Convention
+complete three-case construction is in Appendix A.3. It never infers a              All experiments are synthetic content chains with V=64, V_K=32,
+target-coordinate perturbation from dim ker L > 0 alone; this is the only           n_pairs=4, distinct keys unless stated, and last-layer read-out. The 32-way
+form of the argument used anywhere in the paper.                                    answer chance is 1/32 = 0.0313 . An older parity task used four pairs with a
+                                                                                    1/4 chance; that is a DIFFERENT task and its 0.25 is never placed beside
+3.5 Dependency map and falsification                                                0.0313. Table 2 is the single source for the pre-v6.4 numbers; Section 4.12
+Proposition P2 and P6 feed Result 2(i); Proposition P1 and P6 feed                  injects its own values from its convergence curves.
+Theorem A(c); Proposition P5 feeds A(e); Theorem A(b) plus Result 2(ii)             quantity                value               statistic           seeds / n       source
+give A(e)'s right angle; Construction C supplies the attaining witness for          chance (this task)      0.0313              1/V_K               -               definition
+both A(d) and Result 2; Empirical E tests Result 2(ii) under training. Each         H=2, 1 layer            0.1055              marginal, trained   5 / 512         Table 3
+theorem states all premises on the same page as its statement. The bound is         H=2, 2 layers           0.9512              marginal, trained   5 / 512         Table 3
+                                                                                    paired diff             +0.8457             paired bootstrap    5               Sec 4.6
+non-vacuous: n=4, m=2, V_K=32, H=2, flat alphabet and arbitrary filler              paired 95% CI           [+0.8281,           10k resamples       5               Sec 4.6
+spacing give |A|=4 at B=0 and exactness at B=2. Any exact H-hop                                             +0.8598]
+construction with B < log2 |A(v)|, or with H_L < H static-LTI layers,               0-bit, alternating      0.8621              marginal, no        5 / 512         Table 2
+falsifies the corresponding part at an identifiable place. Numerical                                                            training
+witnesses are not the proofs.                                                       parity, gapped          0.3438              marginal, no        5 / 512         Table 2
+                                                                                                                                training
+                                                                                    codebook, gapped        1.0000              marginal, no        1 / 512         Table 2
+3.6 Why the three escapes do not beat the bound                                                                                 training
+P2's conclusion depends on its premise: a single mixer whose history enters         duplicate keys          0.9328              marginal, trained   5 / 512         Sec 4.4
+the final computation only through a fixed linear summary A. Three                  rank-16 code            0.5652              marginal, trained   5 / 512         Sec 4.4
+modifications leave that premise, and each is worth stating precisely rather        rank-4 code             0.0781              marginal, trained   5 / 512         Sec 4.4
+than listing as a vague caveat. (i) Deep stacks with per-position nonlinear         B=0, m=4                0.0625              per-fibre uniform   exhaustive      Sec 4.5
+                                                                                    FFT/IIR error           <= 3e-16            max over probes     -               Table 4
+FFNs. A and q then pass through the SAME nonlinear map, producing                   attention refs          0.0332-0.3125       range, 3 seeds      3 / 512         Sec 4.6
+cross-terms that are not captured by A = sum_p L_p v_p + c; the
+                                                                                    Table 2. One row per configuration. The per-fibre uniform statistic (B=0,
+zero-space construction of Section 3.4 no longer applies. (ii)
+                                                                                    m=4 -> 0.0625) and the marginal statistic (0-bit alternating 0.8621) are
+Input-dependent gates. The recurrence coefficients become functions of
+                                                                                    DIFFERENT quantities under P5, not two values of one measurement.
+x_t, so the coefficients are no longer time-invariant; by P6 the impulse
+                                                                                    Values appearing in earlier drafts for the same configuration (0.2969
+response is non-Toeplitz and the single-FFT path fails. This is a real
+                                                                                    single-seed, 0.2711 from a different probe, 0.9316 / 0.9414 single-seed
+architectural difference, not a defect. (iii) Outer-product states. Keeping S
+                                                                                    duplicate-key runs) are superseded here by the 5-seed entries and are not
+= sum_p k_p v_p^T retains the binding explicitly instead of compressing it
+                                                                                    quoted elsewhere.
+into one vector, so dim ker L >= nd - d no longer bounds what the state can
+distinguish. Construction C is an instance of (iii).                                H_L \ H          1                 2              3             4              5
+                                                                                    1                1.0000            0.0000         0.0000        0.0000         -
+None of the three escapes changes Theorem A(b). That bound uses only                2                0.0000            1.0000         0.0000        0.0000         -
+determinism and the pigeonhole principle: F(v, s) takes at most 2^B values,         3                0.0000            0.0000         1.0000        0.0000         -
+so |A(v)| > 2^B forces two distinct answers onto one output. It makes NO            4                0.0000            0.0000         0.0000        1.0000         -
+assumption about P3. Consequently an architecture can escape P2 while               5                0.0586            0.0625         0.0801        0.0898         -
+still obeying A(b); escaping P2 is a statement about where the computation          Table 5. Zero-training layer x hop accuracy grid, codebook partition,
+happens, not about how many input-side bits the task requires. We also do           gapped layout, 512 held-out samples. The diagonal is exact; off-diagonal
+
+
+
+                                                                                4
+entries are at or below 0.10. One row per (H_L, H); no value is reused                claims only; the state byte count is the proved structural quantity. At V =
+across configurations.                                                                2^18 a dense codebook would need 549.8 GB while the fast
+                                                                                      Walsh-Hadamard transform applies it in O(V log V) with involution error
+4.1 The zero-training layer x hop grid                                                1.05e-15, so the construction does not require an explicit V x V matrix.
+The analytic construction attains 1.0000 exactly on the diagonal H_L = H              Finite precision, in scope. On the analytic construction
+for H = 1..5 and stays at or below 0.10 off the diagonal. Removing the role           fp64/fp32/fp16/bf16/int8 all give 1.0000 up to L=128 (Table 2 rows for the
+bit is the only manipulation that breaks the diagonal; non-orthogonal                 1-bit regime). This is a rank-1 sparse output, so quantisation cannot change
+full-rank codes, V up to 512, and L up to 129 all retain exactness. Figure 1          argmax; it does NOT extend the earlier long-decay frontier, where
+locates the off-diagonal failures below the boundary.                                 bf16/int8 degrade near L=2049 and fp32 holds to L=16385 at rho=0.999.
+4.2 Conservation on the final learned interface                                       The two regimes are different measurements and are never merged.
+Checks are run on the FINAL parameters, not on initial grids. Toeplitz                4.5 Per-fibre exhaustive enumeration
+deviation is 0, the FFT and IIR paths agree to machine precision (worst
+                                                                                      Exhaustive enumeration of the binary-chain witness gives accuracy
+error across all probes 2.89e-16), a perturbation of a future position
+                                                                                      2^(B-m) for B < m and exactly 1 at B = m, for m = 1..4; a static-LTI stack
+changes no past output, and state bytes are constant in L. These are
+                                                                                      of depth 1..8 produces bit-identical outputs across all compatible role
+real-field equivalences; the earlier fp32 bitwise claim is withdrawn (W1).
+                                                                                      assignments (maximum deviation 0.0e+00). These numbers use the
+Table 4 lists each probe separately so that the displayed bound is a
+                                                                                      PER-FIBRE UNIFORM statistic of A5(i). They are not comparable to the
+maximum, not a mixture.
+                                                                                      marginal accuracies in Table 2 without the statistic label.
+probe                    FFT/IIR rel. error        Toeplitz   state const. in L
+analytic stack           2.27e-16                  yes        yes                     4.6 Same-run training audit and W12
+codebook stack           2.89e-16                  yes        yes                     hops       arm                         params        acc (5 seeds)
+learned interface        2.89e-16                  yes        yes                     1          tsc_h1                      2304          0.9996 +/- 0.0008
+Table 4. Conservation probes. The abstract quotes only 'machine                       1          tsc_h2                      2880          0.3805 +/- 0.0360
+precision', not one probe's value.                                                    2          tsc_h1                      2304          0.1055 +/- 0.0180
+                                                                                      2          tsc_h2                      2880          0.9512 +/- 0.0094
+carrier                   b_t        Toeplitz      dual err      runtime tag
+                                                                                      2          linear_attn                 4032          0.2625 +/- 0.0289
+explicit tag              1          yes           0.0e+00       yes
+                                                                                      2          attn2l                      5184          0.2223 +/- 0.0223
+codebook partition        1          yes           2.9e-16       no
+Table 7. Two carriers of the same one bit per ambiguous token; both are               Table 3. Seven mechanisms under one self-contained autodiff, Adam, 400
+counted in B by Section 2. The alphabet partition folds the mandatory bit             steps, batch 64, lr 0.02, width D=24, 5 seeds, identical visible ids and
+into the symbol id: it is not bit-free, it is annotation-free. The positional         external query. Parameter counts are recorded, not forced equal. The
+format prior is a support restriction on |A(v)|, not a per-token channel; it is       baseline implementations are minimal mechanism references in a separate
+analysed in Section 3.1(d) and measured in Section 4.9.                               evaluation directory; they are NOT part of the architecture under study and
+                                                                                      are NOT reproductions of published systems.
+4.3 Bridging the tight witness to the original task                                   W12 (formal withdrawal). An earlier draft reported Fisher p = 0.4998 for
+Theorem A is tight on the binary-chain witness, where |A| = 2^m and B =               1.0000 versus 0.9987 on a single-hop task, with the attention number taken
+m. The original content-chain task of Section 2 is NOT tight, and we state            from a stored record. In this same-run audit the attention references did not
+the gap. A reachability enumeration over the layer's matching rule (5 seeds,          converge: across 400 / 1200 / 3000 steps and lr 0.02 / 0.10 they stay in
+256 samples each, gapped layout) gives, on the flat alphabet, a                       [0.0332, 0.3125], with no arm exceeding 0.3125. The stored number did
+compatible-answer set of mean size 3.2508 and maximum 5 at H=4, i.e.                  not reproduce. We withdraw the parity statement entirely and make NO
+log2 |A(v)| <= 2.3219 bits; under the codebook partition |A| = 1 for every H          claim of equivalence, superiority or inferiority with respect to attention.
+tested. The partition supplies 2 n_pairs = 8 bits, one per non-empty token,           These toy references are unoptimised; their low values are a limitation of
+while an explicit tag on each KEY token supplies 4 bits. Both are                     this audit, not evidence about published models. All rows are released so
+SUFFICIENT but NOT TIGHT on this task: the necessary quantity is at                   the audit can be falsified.
+most log2(H+1), and the observed H=4 maximum is 2.3219 bits. We do not
+claim the original task attains the bound; tightness is a property of the             4.7 Complete ablation ledger
+binary-chain construction, and the two are connected by the same injection            Every ablation below is a zero-training analytic measurement on the same
+argument, not by identical |A|.                                                       512 held-out samples unless stated otherwise; the ACCURACY column
+                                                                                      always uses the marginal statistic of A5(ii). The only manipulation that
+4.4 Trained degradation curves                                                        breaks the diagonal of Table 5 is removal of the role bit; code choice, gate
+From random initialisation with the analytic-gradient trainer (600 steps,             choice, vocabulary size, length and precision do not.
+rank 32, 5 seeds): role-bit noise p = 0 / .05 / .10 / .20 / .40 gives 1.0000 /        ablation                 setting                    acc         statistic / n
+0.8777 / 0.7797 / 0.6305 / 0.3625, monotone non-increasing. Duplicate                 code=hadamard            code=hadamard role=True    1.0000      marginal / 512
+keys give 0.9328; duplicate keys plus 10% noise give 0.7301.                                                   norm=True
+                                                                                      code=random              code=random role=True      1.0000      marginal / 512
+Non-orthogonal codes with Gram off-diagonal up to 0.476 still give
+                                                                                                               norm=True
+1.0000, whereas rank collapse to 16 gives 0.5652 and to 4 gives 0.0781                code=identity            code=identity role=True    1.0000      marginal / 512
+(chance 0.0313). The failure mode is rank loss, not loss of orthogonality.                                     norm=True
+This is an observation with a measured Gram diagnostic, not a theorem. A              code=gaussian            code=gaussian role=True    1.0000      marginal / 512
+learnable codebook was not implemented and is listed as an open item.                                          norm=True
+                                                                                      rho_fast                 code=hadamard role=True    1.0000      marginal / 512
+H_L         L             us/token              state B       state const.                                     norm=True
+1           9             7.4                   1024          yes                     rho_slow                 code=hadamard role=True    1.0000      marginal / 512
+1           1025          5.7                   1024          yes                                              norm=True
+1           4097          5.6                   1024          yes                     w_skew                   code=hadamard role=True    1.0000      marginal / 512
+2           9             8.1                   2048          yes                                              norm=True
+2           1025          5.3                   2048          yes                     no_norm                  code=hadamard role=True    1.0000      marginal / 512
+2           4097          5.9                   2048          yes                                              norm=False
+3           9             9.5                   3072          yes                     no_role_mask             code=hadamard role=False   0.6016      marginal / 512
+3           1025          5.1                   3072          yes                                              norm=True
+3           4097          5.2                   3072          yes
+4           9             10.8                  4096          yes                     Table 9 (part 1). Analytic ablations. The role-bit removal row is the single
+4           1025          5.1                   4096          yes                     breaking case. A second group varies layout, encoding, gate and duplicate
+Table 8. Reference throughput and state accounting. Absolute rates come               keys. Values for parity/gapped and duplicate keys are the five-seed entries
+from an unoptimised CPU NumPy implementation and support SCALING                      of Table 2 (0.3438 and 0.9328); single-seed values from earlier probes are
+
+
+                                                                                  5
+recorded only in the provenance audit (Table 10) and are not quoted as                                Each result has a stated failure mode that can be checked without
+results. A learned low-rank INTERFACE of rank r >= 5 attains 0.9694 at                                re-running any training. A(b) is falsified by any exact H-hop construction
+r=4 and 1.0000 at r=16 over 3 seeds; this is a different experiment from the                          with B < log2|A| on a fibre where |A| > 2^B; the identifiable place is the
+CODEBOOK Gram-rank collapse of Section 4.4, and the two are not                                       injection step in Appendix A.1. A(c) is falsified by a duality-preserving
+compared. Finally, the adversary permutation that makes the flat distractor                           layer whose coefficients depend on x_t yet whose impulse response is
+peak dominate gives measured accuracy 0.0000 with beta > alpha (0.94950                               Toeplitz, contradicting P6's induction on the lag. Result 2(i) is falsified by
+> 0.82605), while the codebook partition gives 1.0000; this is the concrete                           an order-1 state achieving exact one-hop retrieval under P2; Result 2(ii) by
+witness behind Lemma L1.                                                                              a single static-LTI layer exact on H >= 2 hops, or by a two-layer stack
+                                                                                                      exact on H=1 under P4. P5 is falsified by an exact H-hop construction with
+4.8 Numeric-provenance audit                                                                          o <= H under its d-orthogonal-successor premise. Construction C is
+Earlier drafts quoted several values for the same configuration. Table 10                             falsified by a non-Toeplitz impulse response or an L-dependent state, both
+records each drift, the single value used in this submission, its statistic, and                      checked in Table 4. The W12 audit is falsified by reproducing the stored
+its source. No number in this paper appears without one of these rows.                                0.9987 attention baseline under the Section 4.6 protocol. Each condition
+quantity                 earlier values              value here        statistic / source             names the exact measurement that would have to come out differently. The
+parity, gapped           0.2969 (1 seed); 0.2711     0.3438            5-seed mean / Table 2          Section 4.12 convergence claim is falsified by any of the five seeds missing
+                         (other probe)
+duplicate keys           0.9316; 0.9414; 0.9328      0.9328            5-seed trained / Table 2
+                                                                                                      0.99 at step 1500 on a diagonal cell, or by any off-diagonal cell reaching it.
+FFT/IIR error            2.27e-16; 2.89e-16;         <= 3e-16          max over 3 probes /
+                         2.43e-14                                      Table 4                        4.12 Convergence of the codebook-wired stack
+chance                   0.0313 and 0.25 used        0.0313            1/V_K, this task only          Architectural change, not a training trick. The H6 interface of Section 2
+                         together                                                                     admits the special case T_h = C_val^T C_key, the codebook's own
+attention refs           labelled                    0.0332-0.3125     range, no chance claim
+                                                                                                      value-to-key swap. We make this the wiring of the architecture module: it
+                         chance-equivalent                             / Sec 4.6
+                         (withdrawn)                                                                  is fixed, shared by all layers and NOT a learnable parameter, so the
+fp32 bitwise             claimed then denied         withdrawn W1      real-field only /              parameter count is independent of depth. Only the external-query
+                                                                       Appendix B                     projection and the read-out are learned, both from random initialisation.
+Table 10. Provenance audit. The value 0.3125 in the attention range is                                The inter-layer unit normalisation is built from log and exp inside the
+10/32 and is NOT 1/32; the historical four-pair task has chance 0.25 and is                           graph, removing the straight-through gradient (W14). The recurrence
+a different task, so 0.25 is never placed beside 0.0313. This is the single                           kernel is untouched: static, Toeplitz, causal, O(1) state, no score matrix and
+numeric convention of the paper.                                                                      no cache.
+                                                                                                      wiring, H=2 and two layers        acc (5 seeds)       conv. seeds   first step >= 0.99
+4.9 Full five-seed paired statistics                                                                  codebook-fixed interface          1.0000 +/- 0.0000   5/5           150
+Table 12 reports every five-seed configuration used in the adversarial and                            analytic witness, zero training   1.0000 +/- 0.0000   5/5           0
+codebook experiments, with its mean, standard deviation and                                           learned interface, random init    0.2492 +/- 0.0325   0/5           none
+                                                                                                      learned interface, fixed swap     1.0000 +/- 0.0000   5/5           150
+10,000-resample paired CI. Entries are marginal accuracies under A5(ii).                              learned interface, near-swap      1.0000 +/- 0.0000   5/5           150
+The paired difference between an explicit role bit and the parity format                              init
+prior on the gapped layout is +0.6562 with CI [+0.6332, +0.6824] over five                            Table 14. 1500 Adam steps, lr 0.02, batch 64, five seeds, 512 training and
+seeds, all positive.                                                                                  512 held-out instances per seed. All arms see the same data, embedding
+mask / layout                     mean             std            CI95                                and optimiser. The learned random interface does not converge at this
+explicit / alternating            1.0000           0.0000         [1.0000, 1.0000]
+                                                                                                      budget; the codebook-fixed interface and the near-swap basin do. The swap
+explicit / gapped                 1.0000           0.0000         [1.0000, 1.0000]
+explicit / dense                  1.0000           0.0000         [1.0000, 1.0000]                    is an algebraic object of the Hadamard dictionary and contains no training
+parity / gapped                   0.3438           0.0314         [0.3176, 0.3668]                    data, labels or run-time annotation.
+none / alternating                0.8621           0.0104         [0.8527, 0.8676]                    hops / layers         1                2              3               4
+Table 12. Five-seed statistics (duplicate identical rows in the source JSON                           1                     1.0000           0.0312         0.0391          0.0363
+are shown once). The per-fibre uniform value 0.0625 of Table 6 and the                                2                     0.1809           1.0000         0.0301          0.0348
+                                                                                                      3                     0.1570           0.2473         1.0000          0.0363
+marginal value 0.8621 of this table are different statistics under A5; neither                        4                     0.1551           0.2414         0.3547          1.0000
+is a correction of the other.
+                                                                                                      Table 15. Trained layer-by-hop grid at 1500 steps, five seeds per cell. The
+4.10 Reproduction protocol                                                                            diagonal is 1.0000 everywhere; the largest off-diagonal mean is 0.3547.
+The anonymised artifact contains one reference implementation of the                                  The H=2 paired difference is +0.8191 with 95% CI [+0.8008, +0.8375], all
+layer, seven minimal mechanism references used ONLY for the Section 4.6                               five paired differences positive. Conservation, gradient and
+audit, the reachability enumeration of Section 4.3, and all raw result files.                         interface-identity checks pass on the final weights: Toeplitz deviation 0,
+All probes are CPU-only NumPy with no external model weights and                                      FFT/IIR agreement to machine precision, future perturbations change no
+complete in minutes on a single core. Seeds are listed per table: 1000+s for                          past output, state bytes independent of L, and finite-difference gradients
+training, 7000+s for held-out evaluation, s in (0,..,4) for the five-seed rows;                       within 5e-4 at every depth. These are experiments, not theorems; W13 is
+analytic witnesses use fixed seeds recorded with each table. Every number                             re-established here on the corrected architecture and the earlier number is
+in Tables 2-12 is injected from the raw files at build time by string                                 not reused. The earlier same-run training figures in Tables 2-3 are kept as
+formatting, so a changed source file changes the PDF and a stale                                      the W13 audit trail only; Tables 14-15 supersede them as the training
+transcription is impossible. A single command regenerates the paper and a                             evidence for Result 4. No language-modeling or attention-comparison
+second command re-runs all synthetic probes. The verifier checks                                      claim is made.
+statement formation, witness agreement and protocol consistency. It is
+                                                                                                      4.13 Deep SGC-SMM fusion and provable self-evolution
+NOT a mathematical proof, and all proofs in this paper are analytic.
+                                                                                                      The sidecar is removed. Earlier versions kept an episodic bank outside the
+Compute statement: total CPU time for every reported synthetic probe is                               model and injected a retrieved vector into the SGC stream. Here an
+under one hour; no GPU, no pretrained model, no private weight and no                                 experience is registered INTO the same Sylvester-Hadamard codebook
+external dataset is used. Token counts, perplexity and generation quality                             used by the tensor state: S_t = rho S_(t-1) + sum_e C[k_e]^T C[v_e], with
+are NOT measured. The 2027 call for papers and submission deadline had                                read-out o = q S_t. Registration is a partial isometry between two
+not been published when this version was prepared; page count, the                                    orthogonal half-spaces, not a learned update, so it is zero-order by
+author-side LLM-use disclosure and reciprocal-reviewer obligations must                               construction. Because Hadamard rows are exactly orthogonal, C[k] S = w_j
+be rechecked against the official template when it appears.                                           C[V_K+v_j] when k = k_j and 0 otherwise (SE1): retrieval accuracy is
+                                                                                                      IDENTICALLY the fraction of bindings correctly registered, not a
+4.11 Explicit falsification conditions
+
+
+                                                                                                  6
+finite-sample estimate. This identity is what makes improvement provable.                > H failure to last-layer read-out, not to the static kernel family.
+arm                        final acc (5 seeds)              paired diff vs fused         · Self-evolution is bounded. Section 4.13 proves real, monotone
+fused_gated                1.0000 +/- 0.0000                -                            improvement for a finite consolidation process, but SE4 caps the
+no_consolidation           0.0000 +/- 0.0000                +1.0000
+                                                                                         information entering the state at T w log2(V_K) bits, independent of
+ungated_clean              1.0000 +/- 0.0000                +0.0000
+ungated_corrupt            0.6438 +/- 0.0781                +0.3563                      context length and bank capacity. Long context buys inference-time
+random_write               0.6875 +/- 0.0713                +0.3125                      retrieval, not a faster learning rate. No language-model, perplexity or
+break_alignment            0.0250 +/- 0.0364                +0.9750                      general-capability improvement is claimed.
+rho_fast                   0.1313 +/- 0.0234                +0.8688
+Table 16. Seven arms, 320 rounds of i.i.d. binding arrivals, 32 bindings,              6 Related Work, Placed Precisely
+five seeds, a one-sided paired-CI gate (alpha = 0.05), rho = 0.999. The                Table 1 gives the exact increment per known result; we do not repeat it
+fused arm reaches 1.0000 on all five seeds and its curve is monotone on all            here. Zoology [1], Repeat After Me [2] and Illusion of State [3] established
+five. Removing consolidation gives 0; removing the gate under clean                    that fixed-state models struggle with associative recall. S5 [4] gave the LTI
+experiences gives 1.0000 too (the gate is irrelevant when p = 0, which is              duality and the requirement of time-invariant coefficients; Mamba [5]
+precisely SE3's scope); removing it under 30 percent corruption gives                  observed that selectivity breaks the convolution view; linear attention [6]
+0.6438; breaking the codebook alignment gives 0.0250; fast decay gives                 and its gated and delta-rule variants [7,8] use outer-product states. We do
+0.1313. Paired bootstrap differences for the four discriminating arms are              not claim to be the first to observe that static convolutions struggle with
+positive on all five seeds.                                                            recall, nor that LTI systems require time-invariance. The increment is the
+Theory meets measurement. SE2's coupon-collector bound predicts                        exact algebraic bound B >= log2 |A(v)|, its per-fibre accuracy statement,
+E[T_cover] = n H_n / (1-beta) = 129.87 rounds for n = 32 and beta                      the tight binary-chain witness, and the joint layer/state characterization
+approximately 0 (a true delta of 1 against noise sigma = 0.10 with 8 probes            under a strictly static kernel.
+gives an LCB near 0.94). The measured mean first full-cover round over
+five seeds is 130.00, a relative gap of 0.10 percent; the five values are 170,         6.1 Relation to MQAR and associative-recall protocols
+100, 90, 120, 170. The premise was changed to i.i.d. arrival BEFORE the                Zoology, MQAR and induction-head tasks measure recall under a large
+measurement, not fitted after it. SE3 gives the exact expectation E[acc] = 1           vocabulary, multiple queries and non-adjacent bindings, with performance
+- p(1-1/V_K) = 0.7094 for ungated corrupted writes, verified by                        summarised over a distribution of sequences. The task studied here is
+enumeration at 0.7091 inside Hoeffding's 4-sigma interval [0.7071,                     deliberately narrower: n_pairs = 4, V_K = 32, one external query, adjacent
+0.7116].                                                                               binding emission and a single last-layer read-out. It was chosen because it
+corruption          gate                         acc (5 seeds)
+                                                                                       admits an EXACT per-fibre answer set A(v) that can be enumerated, which
+0.00                gate_off                     1.0000 +/- 0.0000                     is what makes the bound tight and falsifiable. It is not an MQAR result and
+0.00                alpha_0.05                   1.0000 +/- 0.0000                     is not reported as one. In particular, the 0.9512 five-seed trained accuracy
+0.00                rho_0.90                     0.1313 +/- 0.0234                     on H=2 (Table 3) is not comparable to an MQAR score: the vocabularies,
+0.30                gate_off                     0.6438 +/- 0.0781                     query counts, sequence lengths and answer distributions differ. What
+0.30                alpha_0.05                   1.0000 +/- 0.0000
+0.30                rho_0.90                     0.1000 +/- 0.0364
+                                                                                       transfers is the information bound A(b), which is distribution-free and
+                                                                                       therefore applies to MQAR as well: any flat projection that leaves |A(v)|
+Table 17. Gate x corruption ablation. With clean experiences all six gate
+                                                                                       compatible answers requires at least log2|A(v)| input-side bits, regardless of
+configurations saturate, so a clean-only ablation would be vacuous; the gate
+                                                                                       vocabulary size. Establishing the same tightness on a standard MQAR
+becomes necessary exactly when experiences can be wrong. SE5 gives the
+                                                                                       protocol would require enumerating A(v) there, which we did not do and
+finite-precision capacity K* = floor(log eps / log rho): 6904 at rho = 0.999
+                                                                                       do not claim.
+and 65 at rho = 0.90, which predicts the fast-decay loss. SE4 shows these
+gains consume exactly T w log2(V_K) bits, so CT7's rate bound is                       7 Limitations and a Falsifiable Prediction
+unchanged. All conservation checks pass on the FINAL post-evolution
+                                                                                       Theorem A assumes distinct keys, adjacent binding emission, an external
+state (Toeplitz deviation 0, FFT/IIR agreement to machine precision,
+                                                                                       query, last-layer read-out and a deterministic decoder; multi-query chains
+causality, a 32768-byte core state independent of L and of the number of
+                                                                                       and stop/select mechanisms are outside Result 2. Proposition P5's
+bindings). These are theorems and measurements about an exactly-defined
+                                                                                       state-order bound is conditional on c mutually orthogonal candidate
+finite synthetic process, NOT a claim about language modelling, general
+                                                                                       successors per hop; when the branching factor is 2 it degenerates to
+self-improvement or SOTA.
+                                                                                       2^(H+1), which we state rather than hide. Finite-precision results cover L
+                                                                                       <= 128 for the analytic construction; the long-decay frontier at L=2049 is a
+5 What This Does NOT Establish
+                                                                                       separate measurement. Theorem A(b) is distribution-free and depth-free: no
+   · No parity claim. W12 withdraws it; the same-run audit did not
+                                                                                       deterministic decoder supplied with B < log2 |A(v)| input-side bits can be
+   reproduce the stored baseline. No equivalence, superiority or inferiority
+                                                                                       exact on all compatible instances. Any construction attaining exact H-hop
+   is claimed.
+                                                                                       retrieval with fewer bits falsifies the bound at a precisely identifiable place.
+   · No architecture comparison. Section 4.6 supplies same-condition toy               We did not run a >=10M-token equal-compute language-model
+   mechanism references for a reproduction audit, not full reproductions of            experiment, and we do not present this as an architecture paper. A learnable
+   GLA, DeltaNet, Mamba-2 or Transformer, and not a performance                        codebook, a converged strong baseline and a fair throughput comparison
+   ranking. Earlier O1-O4 lacked 5-seed paired CIs; the Section 4.6 results            remain open.
+   have them.
+   · No language modeling. There is no >=10M-token equal-compute run,                  8 Conclusion
+   no val perplexity, no generation readability and no measured throughput             Exact retrieval needs information that a flat symbol sequence does not
+   comparison.                                                                         contain. We proved a distribution-free lower bound on that information (B
+   · Not a new paradigm. P4 states the rho=1 single-pole isomorphism                   >= log2 |A(v)|, Theorem A), attained on an explicit binary-chain family,
+   with linear attention. The contribution is a tight JOINT characterization           stated precisely where the bits may live within the duality-preserving LTI
+   under static kernels.                                                               class, and showed that the bit-depth frontier is a right angle: extra layers
+   · Role necessity is conditional. With no role bit the tight alternating             cannot substitute for missing bits. On the content-chain task studied in our
+   layout gives 0.8621 while a gapped layout is higher because zero fillers            experiments the bound is loose (Section 4.3); what transfers is the
+   suppress the spurious peak (L1). Under the codebook partition neither a             distribution-free inequality A(b), which applies to any flat projection,
+   tag nor a position rule is needed; the alphabet convention remains an               including standard associative-recall protocols. Two tight structural bounds
+   encoding-level inductive bias. Exactly one bit per token is a sufficient            (order-2 state for one hop; exactly H static-LTI layers for H hops under
+   carrier, not an information-theoretically minimal one.                              last-layer read-out) are attained by one Toeplitz, O(1)-state construction,
+   · Overshoot is not an architectural law. Theorem A(f) attributes H_L                and the layer bound survives 1500-step end-to-end training from random
+
+
+                                                                                   7
+initialisation (Section 4.12) with the inter-layer map fixed to the codebook's
+own value-to-key swap. The practical rule is to budget the bits at the input
+or relax exactness. The earlier attention-parity claim is withdrawn because
+it did not reproduce (W12). Deep fusion of the codebook state with
+zero-order consolidation (Section 4.13, Appendix A.7-A.11) further shows
+that this class of models can improve itself on an exactly-defined finite
+process, with a predicted and measured cover time in agreement, while
+remaining within the same information bound. This is an
+information-bound paper with a constructive counterexample, not a claim
+of language-model parity, equivalence, superiority or a new SOTA
+sequence model.
+
+
+
+
+                                                                                 8
+Broader Impact
+Generative AI tools were used for implementation assistance and language
+editing; all research questions, proofs and conclusions were specified and
+verified by the human author. This disclosure is subject to the ICML 2027
+author instructions, which are not yet published.
+This is a theoretical and synthetic-experimental study of information limits
+in fixed-state sequence models. It contains no language-model training, no
+human-subject data, no deployed system and no generative capability. The
+immediate practical consequence is a design rule: an input-side information
+budget must be accounted for before attributing a retrieval failure to model
+capacity. A possible misuse is to quote the synthetic exactness figures as
+evidence of general language-model parity, or to treat the withdrawn parity
+claim as a performance result; both readings are excluded explicitly in
+Sections 5 and 8. The work does not introduce a new mechanism for
+surveillance, data collection or large-scale deployment. Its environmental
+footprint is limited to CPU-only synthetic probes.
+
+References
+[1] Arora, S. et al. Zoology: Measuring and Improving Recall in Efficient
+Language Models. ICLR 2024. arXiv:2312.04927.
+[2] Jelassi, S. et al. Repeat After Me: Transformers are Better than State
+Space Models at Copying. ICML 2024. arXiv:2402.01032.
+[3] Merrill, W. et al. The Illusion of State in State-Space Models. ICML
+2024. arXiv:2404.08819.
+[4] Smith, J. T. H., Warrington, A., and Linderman, S. W. Simplified State
+Space Layers for Sequence Modeling. arXiv:2208.04933, 2022.
+[5] Gu, A. and Dao, T. Mamba: Linear-Time Sequence Modeling with
+Selective State Spaces. COLM 2024. arXiv:2312.00752.
+[6] Katharopoulos, A. et al. Transformers are RNNs: Fast Autoregressive
+Transformers with Linear Attention. ICML 2020. arXiv:2006.16236.
+[7] Yang, S. et al. Gated Linear Attention Transformers with
+Hardware-Efficient Training. ICML 2024. arXiv:2312.06635.
+[8] Yang, S. et al. Parallelizing Linear Transformers with the Delta Rule
+over Sequence Length. NeurIPS 2024. arXiv:2406.06484.
+[9] Dao, T. and Gu, A. Transformers are SSMs: Generalized Models and
+Efficient Algorithms Through Structured State Space Duality. ICML 2024.
+arXiv:2405.21060.
+[10] Poli, M. et al. Hyena Hierarchy: Towards Larger Convolutional
+Language Models. ICML 2023. arXiv:2302.10866.
+[11] Romero, D. W. et al. CKConv: Continuous Kernel Convolution For
+Sequential Data. ICLR 2022. arXiv:2102.02611.
+[12] Tay, Y. et al. Long Range Arena: A Benchmark for Efficient
+Transformers. ICLR 2021. arXiv:2011.04006.
+[13] Vaswani, A. et al. Attention Is All You Need. NeurIPS 2017.
+arXiv:1706.03762.
+[14] Olsson, C. et al. In-context Learning and Induction Heads.
+Transformer Circuits Thread, 2022.
+
+
+
+
+                                                                               9
+

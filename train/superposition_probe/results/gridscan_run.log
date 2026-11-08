@@ -1,0 +1,12 @@
+  [t0   ] theta_max=1.41372 acc=0.5501±0.0176 shuffle=0.5358 guards=True
+  [t001 ] theta_max=0.01000 acc=0.5176±0.0181 shuffle=0.5221 guards=True
+  [t005 ] theta_max=0.05000 acc=0.5547±0.0089 shuffle=0.5475 guards=True
+  [t01  ] theta_max=0.10000 acc=0.5547±0.0100 shuffle=0.5352 guards=True
+  [t03  ] theta_max=0.30000 acc=0.5671±0.0118 shuffle=0.5690 guards=True
+  [t06  ] theta_max=0.60000 acc=0.5443±0.0224 shuffle=0.5417 guards=True
+  [t10  ] theta_max=1.00000 acc=0.5319±0.0284 shuffle=0.5312 guards=True
+  [t20  ] theta_max=2.00000 acc=0.5658±0.0152 shuffle=0.5430 guards=True
+  [t29  ] theta_max=2.90000 acc=0.5540±0.0467 shuffle=0.5501 guards=True
+  [hybrid] acc=0.3770
+
+写入 results/gridscan.json

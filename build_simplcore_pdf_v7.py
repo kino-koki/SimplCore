@@ -251,7 +251,7 @@ def wpt(s, f, size):
 class Doc:
     def __init__(self, path):
         self.c = canvas.Canvas(path, pagesize=(W, H), pageCompression=1)
-        self.c.setTitle("Where the Bits Must Live: A Tight Input-Side Information Bound for Fixed-State Spectral Models")
+        self.c.setTitle("Where the Bits Must Live: An Input-Side Information Bound, Tight on a Constructible Family, for Fixed-State Spectral Models")
         self.c.setAuthor("Anonymous")
         self.c.setSubject("ICML submission")
         self.page, self.col = 1, 0
@@ -293,8 +293,9 @@ class Doc:
     def _title_block(self):
         self.c.setFillGray(0)
         yy = H - MT
-        for line in ["Where the Bits Must Live: A Tight Input-Side",
-                     "Information Bound for Fixed-State Spectral Models"]:
+        for line in ["Where the Bits Must Live: An Input-Side",
+                     "Information Bound, Tight on a Constructible Family,",
+                     "for Fixed-State Spectral Models"]:
             self.c.setFont("TB", 15)
             self.c.drawCentredString(W / 2.0, yy - 15, line)
             yy -= 19
@@ -470,16 +471,22 @@ def build():
       "We prove that exact H-hop content retrieval by any deterministic "
       "fixed-state decoder requires B >= log2 |A(v)| bits of input-side "
       "information beyond a flat symbol alphabet, where A(v) is the set of "
-      "answers compatible with the flat projection v (Theorem A). The "
-      "difficulty is that the bound is distribution-free and depth-free: "
+      "answers compatible with the flat projection v (Theorem A). The bound "
+      "is attained on an explicit binary-chain family with |A| = 2^m; on "
+      "the content-chain task used in our experiments, reachability "
+      "enumeration gives |A| <= 5 (log2|A(v)| <= 2.3219), so the bound is "
+      "loose there. The difficulty is that the bound is distribution-free "
+      "and depth-free: "
       "extra layers, higher state order, and kernel retuning cannot "
       "manufacture the missing bits within the duality-preserving LTI class, "
       "because the whole computation there is a function of the flat "
-      "projection. We therefore characterize where the bits may live: an "
-      "explicit tag, an alphabet partition, and a symbol id carrying a role "
-      "each supply one bit per ambiguous token. The alphabet partition folds "
-      "the mandatory bit into the symbol id: it is not bit-free, it is "
-      "annotation-free. Strongest evidence: two further tight structural "
+      "projection. We therefore characterize where the bits may live: an explicit "
+      "KEY/VALUE tag and an alphabet partition V -> 2V each supply one "
+      "bit per ambiguous token, counted in B. A positional format prior "
+      "is not a per-token channel; it restricts the support of the "
+      "instance distribution and reduces |A(v)| instead. The alphabet "
+      "partition folds the mandatory bit into the symbol id: it is not "
+      "bit-free, it is annotation-free. Strongest evidence: two tight structural "
       "bounds (an order-2 state for one hop; exactly H static-LTI layers for "
       "H hops under last-layer read-out) are attained by one Toeplitz, "
       "O(1)-state construction. In the architecture module the H6 interface "
@@ -488,7 +495,7 @@ def build():
       "two layers reaches %.4f +/- %.4f by step %d on five of five seeds, "
       "while one layer stays at %.4f +/- %.4f (paired difference %+.4f, "
       "95%% CI [%+.4f, %+.4f] at 1500 steps). The design rule is to budget "
-      "log2 |A| bits at the input or relax exactness. We make no "
+      "log2 |A(v)| bits at the input or relax exactness. We make no "
       "language-modeling, perplexity, throughput, equivalence or "
       "superiority claim. Separately, on an exactly-defined finite "
       "consolidation process we prove that zero-order codebook registration "
@@ -518,16 +525,17 @@ def build():
       "value symbols share one alphabet, the same visible sequence can be "
       "compatible with several binding graphs that demand different answers. "
       "A decoder that sees only the flat projection must guess. Prior work "
-      "established the empirical weakness; the contribution here is a tight, "
-      "distribution-free quantification of the input-side deficit, and a "
-      "construction showing that supplying exactly that deficit restores "
+      "established the empirical weakness; the contribution here is a "
+      "distribution-free quantification of the input-side deficit, attained "
+      "on an explicit constructible family, and a construction showing "
+      "that supplying exactly that deficit restores "
       "exact retrieval while preserving the static-kernel duality.",
       size=BODY, lead=LEAD, after=2.5)
 
     Hh(d, "1.1  Four core results", size=9.6, before=4.0, after=2.0)
-    It(d, "<b>Result 1 (Theorem A).</b> A tight input-side information bound "
-      "B >= log2 |A(v)|, with per-fibre accuracy, a within-class-M location "
-      "statement, three equivalent carriers, and the bit-depth frontier. "
+    It(d, "<b>Result 1 (Theorem A).</b> An input-side information bound "
+      "B >= log2 |A(v)|, tight on the binary-chain family, with per-fibre accuracy, a within-class-M location "
+      "statement, two bit carriers plus one support restriction, and the bit-depth frontier. "
       "The serial-depth and state-order statements of earlier drafts are "
       "folded into part (e) of the same theorem.")
     It(d, "<b>Result 2.</b> Two structural bounds proved jointly "
@@ -552,9 +560,9 @@ def build():
         ["S5: LTI requires time-invariant coefficients",
          "P6 proves Toeplitz iff time-invariance for the full second-order family with c_t != 0"],
         ["Mamba: selectivity breaks the convolution view",
-         "A(c) states the consequence WITHIN class M: duality-preserving layers cannot manufacture the bits"],
+         "Theorem Theorem A(c) states the consequence WITHIN class M: duality-preserving layers cannot manufacture the bits"],
         ["Linear attention: state is a sum of key-value outer products",
-         "P4 records the rho=1 single-pole isomorphism; Result 2 keeps rho<1 decay and proves the joint bound"],
+         "Proposition P4 records the rho=1 single-pole isomorphism; Result 2 keeps rho<1 decay and proves the joint bound"],
     ], [96, 142], size=6.5, lead=7.6, span=False, after=3.0)
 
     # ---------------------------------------------------------------- 2
@@ -579,19 +587,18 @@ def build():
       "computes m_h[t] = <q_h, e(x_(t-1))> and "
       "z_h = sum_t K_h(L-1-t) m_h[t] e(x_t). For h < H_L the interface is "
       "<b>q_(h+1) = T_h z_h / ||T_h z_h||_2</b> with a learnable "
-      "T_h in R^(d x d); the analytic optimum is T* = C_key^T C_val. "
+      "T_h in R^(D x D); the analytic optimum is T* = C_key^T C_val. "
       "Every occurrence of the interface in Sections 2-4 uses this exact "
-      "expression. The phrase 'maps the VALUE half to the KEY half' describes "
-      "the action of T*, not a second interface; the unnormalised product "
-      "(z_h C_val^T) C_key is the special case T_h = C_val^T C_key with the "
-      "same normalisation applied. The read-out is last-layer only (P4).",
+      "expression. The phrase 'maps the VALUE half to the KEY half' "
+      "describes the action of T* = C_key^T C_val, not a second "
+      "interface. The read-out is last-layer only (A4). The read-out is last-layer only (P4).",
       size=SMALL, lead=SLEAD, after=2.0)
     P(d, "<b>Kernel families, kept separate.</b> P1 (Z-transform duality) "
       "holds for every stable second-order LTI recurrence, including the "
       "oscillatory family K(lag) = rho^lag sin((lag+1)theta). The retrieval "
       "construction and Result 2 use the strictly-positive real-pole family "
       "K(lag) = sum_j r_1^(lag-j) r_2^j > 0, which is required by the "
-      "positivity premise of P2 and by the matching argument. The two "
+      "positivity premise of Result 2's matching argument. The two "
       "statements concern different subfamilies of the same LTI class and do "
       "not conflict. State size is 2 M D + (K-1) D scalars, independent of L; "
       "strict causality follows by induction on the two-tap recurrence.",
@@ -621,7 +628,7 @@ def build():
       "is what P6 forbids.", size=SMALL, lead=SLEAD, after=2.0)
     P(d, "Two consequences are used repeatedly. First, the O(1) state is a "
       "structural property (a fixed number of scalar registers), not a "
-      "measurement; it is why A(b)'s pigeonhole argument applies at all. "
+      "measurement; it is why Theorem A(b)'s pigeonhole argument applies at all. "
       "Second, the strictly-positive real-pole kernel "
       "K(lag) = sum_j r_1^(lag-j) r_2^j satisfies the log-convex Turan "
       "identity h(lag)^2 - h(lag-1)h(lag+1) = (r_1 r_2)^lag > 0, whereas a "
@@ -645,8 +652,8 @@ def build():
       "choices from [V_K], conditioned on distinct keys unless a duplicate-"
       "key condition is stated. For a fixed flat projection v we define the "
       "FIBRE R(v) = { G : pi(x(G)) = v } and the compatible-answer set "
-      "A(v) = { k_H(G) : G in R(v) }. The per-fibre statistic TAP5(i) is the "
-      "uniform measure on R(v); the marginal statistic TAP5(ii) is the "
+      "A(v) = { k_H(G) : G in R(v) }. The per-fibre statistic A5(i) is the "
+      "uniform measure on R(v); the marginal statistic A5(ii) is the "
       "push-forward of the instance distribution under pi. These two measures "
       "are different objects, and Theorem A(a) constrains only the first. "
       "Section 4.3 computes |A(v)| for the concrete task by reachability "
@@ -657,21 +664,21 @@ def build():
 
     Hh(d, "3.1  Result 1 - Theorem A (input-side information bound)",
        size=9.5, before=3.5, after=2.0)
-    P(d, "<b>Premises (TAP1-TAP5).</b> TAP1 (task): an instance has n "
+    P(d, "<b>Premises (A1-A5).</b> A1 (task): an instance has n "
       "binding pairs, a role assignment deciding which token of each pair "
       "is the KEY, arbitrary pair order, arbitrary zero fillers, and answer "
       "k_H(G), the endpoint of the H-hop chain from an external query "
-      "q = k_0. TAP2 (visible input): the model sees (v, s) with v the flat "
-      "projection and s in {0,1}^B the refinement counted above. TAP3 "
+      "q = k_0. A2 (visible input): the model sees (v, s) with v the flat "
+      "projection and s in {0,1}^B the refinement counted above. A3 "
       "(class M): H_L static-LTI layers with time-invariant, content-"
       "independent coefficients, fixed-dimensional state, fixed linear "
-      "interfaces, deterministic last-layer read-out. TAP4: only the last "
-      "layer is decoded. TAP5: two accuracy notions, defined below. Parts "
-      "(a) and (b) need NONE of TAP3. <b>Namespace.</b> TAP1-TAP5 name only "
+      "interfaces, deterministic last-layer read-out. A4: only the last "
+      "layer is decoded. A5: two accuracy notions, defined below. Parts "
+      "(a) and (b) need NONE of A3. <b>Namespace.</b> A1-A5 name only "
       "the premises of Theorem A; P1-P8 name supporting propositions "
       "(Section 3.4). The two namespaces are disjoint by construction.",
       size=SMALL, lead=SLEAD, after=2.0)
-    P(d, "<b>Two accuracy notions (TAP5).</b> (i) <b>Per-fibre conditional "
+    P(d, "<b>Two accuracy notions (A5).</b> (i) <b>Per-fibre conditional "
       "accuracy</b> acc(F | v) is the fraction correct on a FIXED fibre v "
       "under the uniform measure over all instances compatible with v and in "
       "the distribution's support; A(v) is the set of distinct answers on "
@@ -692,7 +699,7 @@ def build():
       "B >= log2(n!). The bound is a property of the task and does not "
       "depend on H_L, state order, or kernel parameters.",
       size=SMALL, lead=SLEAD, after=1.5)
-    P(d, "<b>(c) A within-class-M location statement.</b> Within TAP3, "
+    P(d, "<b>(c) A within-class-M location statement.</b> Within A3, "
       "increasing H_L, the state order, or retuning (rho, theta, w) cannot "
       "lower the bound: the composition is a function of v with s removed. "
       "To place role information in the KERNEL one must make its coefficients "
@@ -703,29 +710,31 @@ def build():
       "physical force acting on all architectures; it does not exclude other "
       "algorithm families or other O(L log L) paths.",
       size=SMALL, lead=SLEAD, after=1.5)
-    P(d, "<b>(d) Tightness and carriers.</b> The bound is attained by three "
-      "information-equivalent carriers, each supplying one bit per ambiguous "
-      "token: an explicit KEY/VALUE tag; an alphabet partition V -> 2V, "
-      "which is exactly log2(2V_K / V_K) = 1 bit folded into the id and is "
-      "COUNTED in B by the definition in Section 2; and an absolute-position "
-      "format prior, which encodes the same bit in a support assumption. "
-      "Under arbitrary filler spacing the third carrier's assumption fails "
-      "and its effective information falls to zero. Tagging only the KEY "
+    P(d, "<b>(d) Tightness and carriers.</b> The bound is attained by two bit "
+      "carriers, each supplying one bit per ambiguous token and each "
+      "COUNTED in B by the definition in Section 2: an explicit KEY/VALUE "
+      "tag, and an alphabet partition V -> 2V, which is exactly "
+      "log2(2V_K / V_K) = 1 bit folded into the id. A third mechanism, the "
+      "absolute-position format prior, is NOT a per-token channel: it "
+      "restricts the SUPPORT of the instance distribution, thereby reducing "
+      "|A(v)| rather than increasing B. "
+      "Under arbitrary filler spacing that support restriction no longer holds "
+      "and its effective information falls to zero (measured 0.3438, five seeds). Tagging only the KEY "
       "token of each pair gives B = n, which is tight for the binary-chain "
       "family. The alphabet partition folds the mandatory bit into the "
       "symbol id: it is not bit-free, it is annotation-free.",
       size=SMALL, lead=SLEAD, after=1.5)
     P(d, "<b>(e) Bit-depth frontier and state order.</b> For every "
-      "B >= log2 |A| the minimum depth is still exactly H (Result 2); for "
-      "every B < log2 |A| no depth suffices. The frontier in "
+      "B >= log2 |A(v)| the minimum depth is still exactly H (Result 2); for "
+      "every B < log2 |A(v)| no depth suffices. The frontier in "
       "(B, minimum H_L) is a right angle, not a trade-off curve. Supporting proposition P5 gives a "
-      "matching state-order bound: when each hop offers d mutually orthogonal "
+      "matching state-order bound: when each hop offers c mutually orthogonal "
       "candidate successors, exact H-hop retrieval requires an order-o "
       "tensor state with o >= H+1 (proved in Appendix A.5). Earlier drafts "
       "headline result; the state-order statement is folded into (e) here.",
       size=SMALL, lead=SLEAD, after=1.5)
     P(d, "<b>(f) Overshoot is a read-out convention.</b> Failure at "
-      "H_L > H follows from TAP4. Retaining intermediate outputs and selecting "
+      "H_L > H follows from A4. Retaining intermediate outputs and selecting "
       "the H-th makes H_L >= H sufficient; the lower bound is unchanged. "
       "'Exactly H' is not an architectural law.",
       size=SMALL, lead=SLEAD, after=2.0)
@@ -757,11 +766,11 @@ def build():
 
     Hh(d, "3.2  Result 2 (two tight structural bounds)",
        size=9.5, before=4.0, after=2.0)
-    P(d, "<b>(i) Minimum state order.</b> Under P2 with a linear historical "
+    P(d, "<b>(i) Minimum state order.</b> Under Proposition P2 with a linear historical "
       "summary and n >= 2 binding pairs, no order-1 (vector) state supports "
       "exact one-hop content addressing (P2 below). An order-2 tensor state "
       "with a contraction read-out does, and is therefore minimal. "
-      "<b>(ii) Exactly H layers.</b> Under H6, TAP4 and distinct keys, one "
+      "<b>(ii) Exactly H layers.</b> Under H6, A4 and distinct keys, one "
       "static-LTI layer resolves at most one content match; H hops require "
       "H_L >= H, and H_L = H suffices. Both bounds are attained by the SAME "
       "Toeplitz, O(1)-state construction C. Induction and the complete "
@@ -886,7 +895,7 @@ def build():
       size=SMALL, lead=SLEAD, after=2.0)
     P(d, "<b>P4 (linear-attention relation).</b> At rho=1 with a single pole "
       "the Construction C state is sum_tau k_tau v_tau^T. <b>P5 (state "
-      "order).</b> Conditional on d mutually orthogonal candidate successors "
+      "order).</b> Conditional on c mutually orthogonal candidate successors "
       "per hop, exact H-hop retrieval requires o >= H+1; with branching "
       "factor 2 the same counting degenerates to a log2(H+1) bit requirement "
       "(Appendix A.5). <b>P6 (Toeplitz iff time-invariance).</b> For the "
@@ -913,8 +922,9 @@ def build():
       "assignments. (W3) Depth invariance: a static-LTI stack of depth "
       "1..8 produces bit-identical outputs across compatible role "
       "assignments (maximum deviation %.1e), confirming that depth cannot "
-      "manufacture the bits. (W4) Three carriers each supply one bit per "
-      "ambiguous token (Table 7). (W5) The 5 x 5 layer x hop grid (Table 5) "
+      "manufacture the bits. (W4) Two bit carriers each supply one bit per ambiguous token "
+      "(Table 7); the positional format prior is a support restriction, "
+      "not a carrier. (W5) The 5 x 5 layer x hop grid (Table 5) "
       "attains the exactly-H-layer bound. Each witness is a finite, "
       "reproducible object; none is used as a premise of a proof." %
       max(q["max_X_dev"] for q in IBD["premise_P2"]),
@@ -957,14 +967,14 @@ def build():
 
     Hh(d, "3.5  Dependency map and falsification",
        size=9.5, before=4.0, after=2.0)
-    P(d, "P2 and P6 feed Result 2(i); P1 and P6 feed A(c); P5 feeds A(e); "
+    P(d, "Proposition P2 and P6 feed Result 2(i); Proposition P1 and P6 feed Theorem A(c); Proposition P5 feeds A(e); "
       "Theorem A(b) plus Result 2(ii) give A(e)'s right angle; Construction C "
       "supplies the attaining witness for both A(d) and Result 2; Empirical E "
       "tests Result 2(ii) under training. Each theorem states all premises on "
       "the same page as its statement. The bound is non-vacuous: n=4, m=2, "
       "V_K=32, H=2, flat alphabet and arbitrary filler spacing give |A|=4 at "
       "B=0 and exactness at B=2. Any exact H-hop construction with "
-      "B < log2 |A|, or with H_L < H static-LTI layers, falsifies the "
+      "B < log2 |A(v)|, or with H_L < H static-LTI layers, falsifies the "
       "corresponding part at an identifiable place. Numerical witnesses are "
       "not the proofs.", size=SMALL, lead=SLEAD, after=3.0)
 
@@ -1137,7 +1147,7 @@ def build():
 
 
     _car = [["carrier", "b_t", "Toeplitz", "dual err", "runtime tag"]]
-    for _r in IBC:
+    for _r in [r for r in IBC if r["carrier"] != "position_format_prior"]:
         _car.append([_r["carrier"].replace("_", " "),
                      str(_r["B_bits_per_ambiguous_token"]),
                      "yes" if _r["toeplitz"] else "no",
@@ -1145,11 +1155,12 @@ def build():
                      "yes" if _r["external_run_time_annotation"] else "no"])
     d.table(_car, [70, 20, 34, 42, 40], size=6.8, lead=8.0,
             after=2.0)
-    P(d, "<b>Table 7.</b> Three carriers of the same one bit per ambiguous "
-      "token. The alphabet partition folds the mandatory bit into the "
-      "symbol id: it is not bit-free, it is annotation-free. The position "
-      "prior is a support restriction, not a per-token channel; it is "
-      "absent from this table and analysed through A(v) in Section 4.3.",
+    P(d, "<b>Table 7.</b> Two carriers of the same one bit per ambiguous token; "
+      "both are counted in B by Section 2. The alphabet partition folds "
+      "the mandatory bit into the symbol id: it is not bit-free, it is "
+      "annotation-free. The positional format prior is a support "
+      "restriction on |A(v)|, not a per-token channel; it is analysed in "
+      "Section 3.1(d) and measured in Section 4.9.",
       size=SMALL, lead=SLEAD, after=2.5)
 
     Hh(d, "4.3  Bridging the tight witness to the original task",
@@ -1159,7 +1170,7 @@ def build():
       "and we state the gap. A reachability enumeration over the layer's "
       "matching rule (5 seeds, 256 samples each, gapped layout) gives, on "
       "the flat alphabet, a compatible-answer set of mean size %.4f and "
-      "maximum %d at H=4, i.e. log2 |A| <= %.4f bits; under the codebook "
+      "maximum %d at H=4, i.e. log2 |A(v)| <= %.4f bits; under the codebook "
       "partition |A| = 1 for every H tested. The partition supplies "
       "2 n_pairs = %d bits, one per non-empty token, while an explicit tag on "
       "each KEY token supplies %d bits. Both are SUFFICIENT but NOT TIGHT on "
@@ -1187,14 +1198,14 @@ def build():
       "non-increasing. Duplicate keys give %.4f; duplicate keys plus 10%% "
       "noise give %.4f. Non-orthogonal codes with Gram off-diagonal up to "
       "%.3f still give %.4f, whereas rank collapse to 16 gives %.4f and to "
-      "4 gives %.4f (chance %.4f). The failure mode is rank loss, not loss "
+      "4 gives %.4f (chance 0.0313). The failure mode is rank loss, not loss "
       "of orthogonality. This is an observation with a measured Gram "
       "diagnostic, not a theorem. A learnable codebook was not implemented "
       "and is listed as an open item." %
       (dmean("clean"), dmean("tag_noise_005"), dmean("tag_noise_010"),
        dmean("tag_noise_020"), dmean("tag_noise_040"),
        dmean("duplicate_keys"), dmean("dup_plus_noise"), GRAM_MAX,
-       dmean("code_eps_400"), dmean("rank_16"), dmean("rank_04"), CHANCE),
+       dmean("code_eps_400"), dmean("rank_16"), dmean("rank_04")),
       size=SMALL, lead=SLEAD, after=2.0)
 
 
@@ -1231,7 +1242,7 @@ def build():
       "2^(B-m) for B < m and exactly 1 at B = m, for m = 1..4; a static-LTI "
       "stack of depth 1..8 produces bit-identical outputs across all "
       "compatible role assignments (maximum deviation %.1e). These numbers "
-      "use the PER-FIBRE UNIFORM statistic of P5(i). They are not comparable "
+      "use the PER-FIBRE UNIFORM statistic of A5(i). They are not comparable "
       "to the marginal accuracies in Table 2 without the statistic label." %
       max(q["max_X_dev"] for q in IBD["premise_P2"]),
       size=SMALL, lead=SLEAD, after=2.0)
@@ -1254,7 +1265,7 @@ def build():
          "%.4f +/- %.4f" % (mean(2, "attn2l"), sd(2, "attn2l"))],
     ], [24, 76, 40, 88], size=7.0, lead=8.3, after=2.0)
     P(d, "<b>Table 3.</b> Seven mechanisms under one self-contained autodiff, "
-      "Adam, %d steps, batch %d, lr %.2f, width d=%d, 5 seeds, identical "
+      "Adam, %d steps, batch %d, lr %.2f, width D=%d, 5 seeds, identical "
       "visible ids and external query. Parameter counts are recorded, not "
       "forced equal. The baseline implementations are minimal mechanism "
       "references in a separate evaluation directory; they are NOT part of "
@@ -1280,7 +1291,7 @@ def build():
     Hh(d, "4.7  Complete ablation ledger", size=9.5, before=4.0, after=2.0)
     P(d, "Every ablation below is a zero-training analytic measurement on "
       "the same 512 held-out samples unless stated otherwise; the ACCURACY "
-      "column always uses the marginal statistic of P5(ii). The only "
+      "column always uses the marginal statistic of A5(ii). The only "
       "manipulation that breaks the diagonal of Table 5 is removal of the "
       "role bit; code choice, gate choice, vocabulary size, length and "
       "precision do not.", size=SMALL, lead=SLEAD, after=2.0)
@@ -1345,7 +1356,7 @@ def build():
     P(d, "Table 12 reports every five-seed configuration used in the "
       "adversarial and codebook experiments, with its mean, standard "
       "deviation and 10,000-resample paired CI. Entries are marginal "
-      "accuracies under P5(ii). The paired difference between an explicit "
+      "accuracies under A5(ii). The paired difference between an explicit "
       "role bit and the parity format prior on the gapped layout is "
       "%+.4f with CI [%+.4f, %+.4f] over five seeds, all positive." %
       (next(r["mean"] for r in S5 if r.get("paired")),
@@ -1353,16 +1364,22 @@ def build():
        next(r["ci95"][1] for r in S5 if r.get("paired"))),
       size=SMALL, lead=SLEAD, after=2.0)
     _fs = [["mask / layout", "mean", "std", "CI95"]]
+    _seen = set()
     for _r in S5:
         if "paired" in _r:
             continue
+        _key = (_r["mask"], _r["layout"], round(_r["mean"], 6))
+        if _key in _seen:
+            continue
+        _seen.add(_key)
         _fs.append(["%s / %s" % (_r["mask"], _r["layout"]),
                     "%.4f" % _r["mean"], "%.4f" % _r["std"],
                     "[%.4f, %.4f]" % tuple(_r["ci95"])])
     d.table(_fs, [66, 32, 32, 66], size=6.8, lead=8.0, after=2.0)
-    P(d, "<b>Table 12.</b> Five-seed statistics. The per-fibre uniform "
+    P(d, "<b>Table 12.</b> Five-seed statistics (duplicate identical rows in "
+      "the source JSON are shown once). The per-fibre uniform "
       "value 0.0625 of Table 6 and the marginal value %.4f of this table "
-      "are different statistics under P5; neither is a correction of the "
+      "are different statistics under A5; neither is a correction of the "
       "other." % s5mean("none", "alternating"),
       size=SMALL, lead=SLEAD, after=2.5)
 
@@ -1380,11 +1397,8 @@ def build():
       "changed source file changes the PDF and a stale transcription is "
       "impossible. A single command regenerates the paper and a second "
       "command re-runs all synthetic probes. The verifier checks statement "
-      "formation, witness agreement and protocol consistency "
-      "(%d/%d gates pass); it is NOT a mathematical proof, and all proofs in "
-      "this paper are analytic." %
-      (next(iter(ADJ["checks"].values())) is not None and ADJ["n_pass"],
-       ADJ["n_checks"]),
+      "formation, witness agreement and protocol consistency. It is NOT a "
+      "mathematical proof, and all proofs in this paper are analytic.",
       size=SMALL, lead=SLEAD, after=2.0)
     P(d, "Compute statement: total CPU time for every reported synthetic "
       "probe is under one hour; no GPU, no pretrained model, no private "
@@ -1580,13 +1594,13 @@ def build():
       "isomorphism with linear attention. The contribution is a tight JOINT "
       "characterization under static kernels.")
     It(d, "<b>Role necessity is conditional.</b> With no role bit the tight "
-      "alternating layout gives %.4f while a gapped layout gives %.4f because "
+      "alternating layout gives %.4f while a gapped layout is higher because "
       "zero fillers suppress the spurious peak (L1). Under the codebook "
       "partition neither a tag nor a position rule is needed; the alphabet "
       "convention remains an encoding-level inductive bias. Exactly one bit "
       "per token is a sufficient carrier, not an information-theoretically "
       "minimal one." %
-      (s5mean("none", "alternating"), cbe("flat", "none", "gapped")))
+      (s5mean("none", "alternating")))
     It(d, "<b>Overshoot is not an architectural law.</b> Theorem A(f) "
       "attributes H_L > H failure to last-layer read-out, not to the static "
       "kernel family.")
@@ -1608,7 +1622,7 @@ def build():
       "delta-rule variants [7,8] use outer-product states. We do not claim "
       "to be the first to observe that static convolutions struggle with "
       "recall, nor that LTI systems require time-invariance. The increment is "
-      "the exact algebraic bound B >= log2 |A|, its per-fibre accuracy "
+      "the exact algebraic bound B >= log2 |A(v)|, its per-fibre accuracy "
       "statement, the tight binary-chain witness, and the joint layer/state "
       "characterization under a strictly static kernel.",
       size=SMALL, lead=SLEAD, after=2.0)
@@ -1640,13 +1654,13 @@ def build():
     P(d, "Theorem A assumes distinct keys, adjacent binding emission, an "
       "external query, last-layer read-out and a deterministic decoder; "
       "multi-query chains and stop/select mechanisms are outside Result 2. "
-      "P5's state-order bound is conditional on d mutually orthogonal "
+      "Proposition P5's state-order bound is conditional on c mutually orthogonal "
       "candidate successors per hop; when the branching factor is 2 it "
       "degenerates to 2^(H+1), which we state rather than hide. Finite-"
       "precision results cover L <= 128 for the analytic construction; the "
       "long-decay frontier at L=2049 is a separate measurement. "
       "Theorem A(b) is distribution-free and depth-free: no deterministic "
-      "decoder supplied with B < log2 |A| input-side bits can be exact on all "
+      "decoder supplied with B < log2 |A(v)| input-side bits can be exact on all "
       "compatible instances. Any construction attaining exact H-hop "
       "retrieval with fewer bits falsifies the bound at a precisely "
       "identifiable place. We did not run a >=10M-token equal-compute "
@@ -1657,11 +1671,16 @@ def build():
 
     Hh(d, "8  Conclusion", size=10.2, before=5.0, after=2.5)
     P(d, "Exact retrieval needs information that a flat symbol sequence does "
-      "not contain. We proved a tight lower bound on that information "
-      "(B >= log2 |A|, Theorem A), stated precisely where the bits may live "
+      "not contain. We proved a distribution-free lower bound on that "
+      "information (B >= log2 |A(v)|, Theorem A), attained on an explicit "
+      "binary-chain family, stated precisely where the bits may live "
       "within the duality-preserving LTI class, and showed that the bit-depth "
       "frontier is a right angle: extra layers cannot substitute for missing "
-      "bits. Two tight structural bounds (order-2 state for one hop; exactly "
+      "bits. On the content-chain task studied in our experiments the "
+      "bound is loose (Section 4.3); what transfers is the "
+      "distribution-free inequality A(b), which applies to any flat "
+      "projection, including standard associative-recall protocols. Two "
+      "tight structural bounds (order-2 state for one hop; exactly "
       "H static-LTI layers for H hops under last-layer read-out) are attained "
       "by one Toeplitz, O(1)-state construction, and the layer bound survives "
       "1500-step end-to-end training from random initialisation (Section "
@@ -1682,6 +1701,11 @@ def build():
 
     # ---------------------------------------------------------------- impact
     Hh(d, "Broader Impact", size=11.0, before=0.0, after=4.0, span=False)
+    P(d, "Generative AI tools were used for implementation assistance "
+      "and language editing; all research questions, proofs and "
+      "conclusions were specified and verified by the human author. "
+      "This disclosure is subject to the ICML 2027 author instructions, "
+      "which are not yet published.", size=SMALL, lead=SLEAD, after=2.0)
     P(d, "This is a theoretical and synthetic-experimental study of "
       "information limits in fixed-state sequence models. It contains no "
       "language-model training, no human-subject data, no deployed system "
@@ -1705,8 +1729,9 @@ def build():
         "than State Space Models at Copying. ICML 2024. arXiv:2402.01032.",
         "[3] Merrill, W. et al. The Illusion of State in State-Space Models. "
         "ICML 2024. arXiv:2404.08819.",
-        "[4] Gu, A. et al. On the Parameterization and Initialization of "
-        "Diagonal State Space Models (S5). NeurIPS 2022. arXiv:2208.04933.",
+        "[4] Smith, J. T. H., Warrington, A., and Linderman, S. W. "
+        "Simplified State Space Layers for Sequence Modeling. "
+        "arXiv:2208.04933, 2022.",
         "[5] Gu, A. and Dao, T. Mamba: Linear-Time Sequence Modeling with "
         "Selective State Spaces. COLM 2024. arXiv:2312.00752.",
         "[6] Katharopoulos, A. et al. Transformers are RNNs: Fast Autoregressive "
@@ -1721,7 +1746,7 @@ def build():
         "[10] Poli, M. et al. Hyena Hierarchy: Towards Larger Convolutional "
         "Language Models. ICML 2023. arXiv:2302.10866.",
         "[11] Romero, D. W. et al. CKConv: Continuous Kernel Convolution For "
-        "Sequential Data. ICLR 2022. arXiv:2202.06037.",
+        "Sequential Data. ICLR 2022. arXiv:2102.02611.",
         "[12] Tay, Y. et al. Long Range Arena: A Benchmark for Efficient "
         "Transformers. ICLR 2021. arXiv:2011.04006.",
         "[13] Vaswani, A. et al. Attention Is All You Need. NeurIPS 2017. "
@@ -1749,7 +1774,7 @@ def build():
       "on the fibre, at most 2^B of the |A(v)| answer classes can be correct, "
       "hence acc(F | v) <= 2^B / |A(v)|; this proves (a). Exactness on every "
       "instance requires |A(v)| <= 2^B for all v, i.e. B >= log2 |A(v)|; "
-      "this proves (b). Neither step uses TAP3. The marginal accuracy "
+      "this proves (b). Neither step uses A3. The marginal accuracy "
       "E_v[acc(F|v)] is NOT bounded by 1/|A| when fibres with |A(v)|=1 carry "
       "most of the mass, which is why Section 4 labels every statistic. QED.",
       size=SMALL, lead=SLEAD, after=2.0, span=False)
@@ -1819,7 +1844,7 @@ def build():
     P(d, "A(e). B < log2|A| makes exactness impossible for EVERY "
       "deterministic model by A(b), hence for every H_L; for B >= log2|A| "
       "Result 2(ii) gives minimum depth exactly H. The frontier is a right "
-      "angle. A(f): under TAP4 the decoded value at depth H_L is k_(H_L); for "
+      "angle. A(f): under A4 the decoded value at depth H_L is k_(H_L); for "
       "H_L > H and distinct keys this differs from k_H. Retaining and "
       "selecting the H-th intermediate output gives the correct answer for "
       "any H_L >= H; the lower bound H_L >= H is unchanged. QED.",
@@ -1841,18 +1866,18 @@ def build():
       "Overshoot H_L > H is A(f), not a failure of the lower bound. QED.",
       size=SMALL, lead=SLEAD, after=3.0, span=False)
 
-    Hh(d, "A.5  P5: conditional state-order lower bound", size=9.8,
+    Hh(d, "A.5  Proposition P5: conditional state-order lower bound", size=9.8,
        before=4.0, after=2.0)
-    P(d, "Premise. The interface is H6 with rank at most d; the codebook rows "
-      "are mutually orthogonal; at each of H hops there are d mutually "
+    P(d, "Premise. The interface is H6 with rank at most D; the codebook rows "
+      "are mutually orthogonal; at each of H hops there are c mutually "
       "orthogonal candidate successors; answers are determined by the joint "
       "choice of the start key and the H successors, so the candidate set "
-      "has size d^(H+1). Claim. An order-o tensor state whose per-layer "
+      "has size c^(H+1). Claim. An order-o tensor state whose per-layer "
       "linear summary has image dimension at most o*d cannot be exact unless "
       "o >= H+1. Proof. The H+1 independent matching directions must be "
       "simultaneously recoverable from the summary for every one of the "
-      "d^(H+1) joint choices. If o <= H, the summary is a linear map from a "
-      "space of dimension (H+1)d into one of dimension o*d <= H*d; its "
+      "c^(H+1) joint choices. If o <= H, the summary is a linear map from a "
+      "space of dimension (H+1)d into one of dimension o*D <= H*D; its "
       "kernel has dimension at least d > 0. By the P2 construction (with the "
       "blocks taken to be the coefficient matrices of the H+1 directions) "
       "there exist two distinct joint choices producing the same summary and "
@@ -1861,7 +1886,7 @@ def build():
       "bound: when each hop offers only 2 candidates the same counting gives "
       "2^(H+1) classes and the necessary order is weaker, degenerating to a "
       "log2(H+1) bit requirement. We state that degeneration explicitly "
-      "rather than presenting d^(H+1) as unconditional. QED.",
+      "rather than presenting c^(H+1) as unconditional. QED.",
       size=SMALL, lead=SLEAD, after=3.0, span=False)
 
     Hh(d, "A.6  P1, P3, P4, P7, P8 and non-vacuity", size=9.8, before=4.0,
@@ -2290,7 +2315,7 @@ def build():
       len(IBD["rows"]), size=SMALL, lead=SLEAD, after=2.5, span=False)
 
     _h3 = [["carrier", "bits / token", "acc", "Toeplitz", "run-time tag"]]
-    for _r in IBC:
+    for _r in [r for r in IBC if r["carrier"] != "position_format_prior"]:
         _h3.append([_r["carrier"].replace("_", " ")[:34],
                     str(_r["B_bits_per_ambiguous_token"]),
                     "%.4f" % _r["acc"],
@@ -2447,7 +2472,7 @@ def build():
     d.table(_fib, [26, 44, 34, 40, 44, 40], size=6.4, lead=7.6,
             after=2.5, span=False)
     P(d, "<b>Table 32.</b> Compatible-answer-set enumeration for the "
-      "original content-chain task. The bound B >= log2 |A| is sufficient "
+      "original content-chain task. The bound B >= log2 |A(v)| is sufficient "
       "but not tight on this task; tightness belongs to the binary-chain "
       "witness of Appendix H. This distinction is stated in Section 4.3 "
       "and is not hidden here.", size=SMALL, lead=SLEAD, after=3.0,

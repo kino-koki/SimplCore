@@ -1,0 +1,27 @@
+{
+  "ckpt_step": 181,
+  "aggregate": {
+    "before": {
+      "n": 8,
+      "rep3": 0.1719,
+      "cjk": 0.7469,
+      "fact_good": 1,
+      "fact_bad": 3
+    },
+    "trained": {
+      "n": 8,
+      "rep3": 0.2344,
+      "cjk": 0.731,
+      "fact_good": 1,
+      "fact_bad": 2
+    },
+    "teacher": {
+      "n": 3,
+      "rep3": 0.1428,
+      "cjk": 0.7598,
+      "fact_good": 0,
+      "fact_bad": 0
+    }
+  },
+  "note": "teacher cjk recomputed from raw text; teacher n=3 (historical baseline)"
+}

@@ -1,0 +1,129 @@
+{
+ "claim": "DC-bias is the only zero-training repair with measured gain",
+ "generation_before_after": {
+  "华为是什么公司": {
+   "old": {
+    "text": "。\n在花儿也吃，但不，也，也，也是",
+    "rep3": 0.1429
+   },
+   "bias": {
+    "text": "，所以。  Param化处理参数，可以学习，可以学习，但",
+    "rep3": 0.1429
+   },
+   "teacher": {
+    "text": "？华为的业务范围是什么？华为的业务有哪些？华为的业务有哪些",
+    "rep3": 0.3571
+   }
+  },
+  "今天天气很好，": {
+   "old": {
+    "text": "适合户外，微动，天气晴，绿，花儿在树子",
+    "rep3": 0.0
+   },
+   "bias": {
+    "text": "晴，心情的植物园圃，绿圃，绿园，公园里",
+    "rep3": 0.0714
+   },
+   "teacher": {
+    "text": "我需要写一篇关于天气的作文，题目是《天气的变化》。",
+    "rep3": 0.0
+   }
+  },
+  "中国的首都是": {
+   "old": {
+    "text": "城市，有，北京，北京，北京，北京，北京，北京，",
+    "rep3": 0.6429
+   },
+   "bias": {
+    "text": "的，是直辖市，人口，是新兴。深圳是新兴。深圳是",
+    "rep3": 0.2143
+   },
+   "teacher": {
+    "text": "______，是世界上最早的城市，也是世界上最大的城市。______，",
+    "rep3": 0.0714
+   }
+  }
+ },
+ "rejected_paths": {
+  "readout_alignment_W": {
+   "holdout_cos_gain": 0.0826,
+   "generation": "β=0,A=1 → '这这这这这…' rep3 0.8125",
+   "verdict": "rejected: overfit (N=24 << D=1024), repetition loop"
+  },
+  "norm_direct_copy": {
+   "mean_cos": "0.4985 → 0.4200",
+   "source": "NORM_FIX/norm_fix_experiment.json"
+  },
+  "dpt_projection_copy": {
+   "mean_cos": "0.4985 → 0.2114 (gate on) / 0.3587 (gate off)",
+   "source": "NORM_FIX/dpt_experiment.json"
+  },
+  "static_attention_profile_ceiling": {
+   "mean_cos": 0.3695,
+   "per_layer": [
+    {
+     "layer": 0,
+     "cos": 0.8846,
+     "ratio": 0.7776
+    },
+    {
+     "layer": 1,
+     "cos": 0.5734,
+     "ratio": 0.7873
+    },
+    {
+     "layer": 2,
+     "cos": 0.536,
+     "ratio": 0.7167
+    },
+    {
+     "layer": 14,
+     "cos": 0.2571,
+     "ratio": 1.9925
+    },
+    {
+     "layer": 15,
+     "cos": 0.5163,
+     "ratio": 2.7432
+    }
+   ],
+   "source": "TS2SC_V3/profile_ceiling.json"
+  },
+  "analytic_v3_transfer": {
+   "mean_injection_cos": 0.5032,
+   "generation": "otionalotionalotional… rep3 0.9286",
+   "verdict": "rejected: static p(0) self-feedback loop"
+  },
+  "lambda_calibration": {
+   "generation": "会上，所以地中，所以的一时间的用途…",
+   "verdict": "rejected"
+  }
+ },
+ "optimization_grid": {
+  "0.0,0": {
+   "rep3": 0.1667,
+   "junk": 0.0931,
+   "cjk": 0.6653,
+   "teacher_bigram": 0.0544,
+   "coherence": 0.6381
+  },
+  "1.0,1": {
+   "rep3": 0.5,
+   "junk": 0.0,
+   "cjk": 1.0,
+   "teacher_bigram": 0.0,
+   "coherence": 0.65
+  },
+  "0.0,1": {
+   "rep3": 0.8125,
+   "junk": 0.0,
+   "cjk": 1.0,
+   "teacher_bigram": 0.0,
+   "coherence": 0.5562
+  }
+ },
+ "selected": {
+  "beta": 1.0,
+  "readout_align": 0
+ }
+}

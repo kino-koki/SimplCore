@@ -163,10 +163,15 @@ add("P", "no_old_appendix_ledger",
 _rs = full[full.find("References"):]
 _rs = _rs[:_rs.find("Appendix A")]
 _refs = re.findall(r"\[\d+\][\s\S]*?(?=\[\d+\]|Appendix|$)", _rs)
-add("P", "references_have_venues",
+add("P", "references_have_verifiable_identifier",
     len(_refs) >= 14 and
-    all(re.search(r"(ICLR|ICML|NeurIPS|COLM|Transformer Circuits)", r)
+    all(re.search(r"(arXiv:\d{4}\.\d{4,5}|Transformer Circuits)", r)
         for r in _refs[:14]))
+# N4: reference [4] must be the real S5 paper, not Gu et al.'s S4D.
+add("P", "reference_4_is_S5_not_S4D",
+    has(r"Smith, J\. T\. H\., Warrington, A\., and Linderman, S\. W\.") and
+    has(r"Simplified State Space Layers for Sequence Modeling") and
+    absent(r"On the Parameterization and Initialization of Diagonal"))
 add("P", "zoology_is_ICLR_2024",
     has(r"Zoology[\s\S]{0,120}ICLR 2024") and
     not re.search(r"Zoology[^\n]{0,120}ICLR 2023", full))
@@ -183,7 +188,8 @@ add("P", "main_paper_within_8_pages",
 add("P1", "fibre_bridge_present",
     has(r"Bridging the tight witness") and has(r"NOT tight"))
 add("P1", "original_task_A_quantified",
-    has(r"compatible-answer set of mean size") and has(r"log2 \|A\| <= "))
+    has(r"compatible-answer set of mean size") and
+    has(r"log2 \|A(\(v\))?\| <= "))
 add("P1", "P5_state_order_proof",
     has(r"P5: conditional state-order lower bound") and
     has(r"CONDITIONAL") and has(r"degenerat"))

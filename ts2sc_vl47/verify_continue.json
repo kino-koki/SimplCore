@@ -1,0 +1,238 @@
+{
+  "status": "PASS",
+  "n_checks": 46,
+  "n_pass": 46,
+  "checks": [
+    {
+      "name": "result_json_exists",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "freeze_files_122",
+      "pass": true,
+      "detail": "n=122"
+    },
+    {
+      "name": "freeze_sha256_nonempty",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "fibre_bound_holds",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "toeplitz_frozen",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "fft_iir_machine_precision_frozen",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "five_seed_paired_frozen",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "W14_withdrawn",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "W14_all_five_fixes_present",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "W14_no_capability_claim",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q2_verdict_NO",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q2_28_layers",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q2_layer_ids_contiguous",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q2_zero_language_self_attn",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q2_static_mixers_only",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q2_vision_attention_preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q2_dc_bias_reduces_repetition",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q2_sft_worsens_repetition",
+      "pass": true,
+      "detail": "delta=+0.0625"
+    },
+    {
+      "name": "q2_ceiling_below_one",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_real_shard_99614720",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_header_310_tensors",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_sha256_first_MB_64hex",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_embed_shape_151936x2048",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_embed_offset_zero",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_qwen3_has_qk_norm",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_tied_embeddings_no_lm_head",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_params_1720574976",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_copy_bitwise",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_copy_256_rows_1MiB",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_copy_all_finite",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_derive_bitwise",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_sgc_all_pass",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_sgc_fft_iir_1e-12",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_sgc_fft_dual_1e-9",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_sgc_toeplitz_zero",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_sgc_causality_bitwise",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_sgc_O1_state",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_sgc_static_no_attention",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_combo_historical_1.0573B",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_combo_tsc_1.0867B",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_combo_tsc_delta_exact",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_combo_qwen17_2.2688B",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_tsc_per_layer_D2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_tokenizer_is_lfs_pointer",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_no_speaking_test_claimed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "q3_no_training_or_generation",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "source": "ts2sc_vl47/continue_results.json"
+}

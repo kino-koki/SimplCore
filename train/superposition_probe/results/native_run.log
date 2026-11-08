@@ -1,0 +1,26 @@
+  [N0_fixed         s0] acc=0.5430 shuffle=0.5430 params=12288 guards=True Δρ=0.000 5.4s
+  [N0_fixed         s1] acc=0.5098 shuffle=0.4961 params=12288 guards=True Δρ=0.000 4.8s
+  [N0_fixed         s2] acc=0.5293 shuffle=0.5020 params=12288 guards=True Δρ=0.000 5.0s
+  [N1_shared        s0] acc=0.6094 shuffle=0.5996 params=12320 guards=True Δρ=0.277 5.2s
+  [N1_shared        s1] acc=0.5645 shuffle=0.5527 params=12320 guards=True Δρ=0.278 5.2s
+  [N1_shared        s2] acc=0.5801 shuffle=0.5547 params=12320 guards=True Δρ=0.270 5.2s
+  [N2_perch         s0] acc=0.6074 shuffle=0.5898 params=12416 guards=True Δρ=0.302 5.1s
+  [N2_perch         s1] acc=0.5879 shuffle=0.5273 params=12416 guards=True Δρ=0.315 5.1s
+  [N2_perch         s2] acc=0.5840 shuffle=0.5625 params=12416 guards=True Δρ=0.321 5.3s
+  [N3_perch_C8      s0] acc=0.6621 shuffle=0.6406 params=22784 guards=True Δρ=0.431 8.2s
+  [N3_perch_C8      s1] acc=0.6426 shuffle=0.6543 params=22784 guards=True Δρ=0.390 8.5s
+  [N3_perch_C8      s2] acc=0.6875 shuffle=0.7051 params=22784 guards=True Δρ=0.376 8.7s
+  [N4_perch_M32     s0] acc=0.6582 shuffle=0.6777 params=22784 guards=True Δρ=0.318 8.1s
+  [N4_perch_M32     s1] acc=0.6582 shuffle=0.6504 params=22784 guards=True Δρ=0.372 8.2s
+  [N4_perch_M32     s2] acc=0.6934 shuffle=0.6953 params=22784 guards=True Δρ=0.337 8.9s
+  [N5_scaninit      s0] acc=0.6074 shuffle=0.5898 params=12416 guards=True Δρ=0.302 5.2s
+  [N5_scaninit      s1] acc=0.5879 shuffle=0.5273 params=12416 guards=True Δρ=0.315 4.9s
+  [N5_scaninit      s2] acc=0.5840 shuffle=0.5625 params=12416 guards=True Δρ=0.321 5.2s
+  [N6_noBind        s0] acc=0.1934 shuffle=0.2070 params=10368 guards=True Δρ=0.437 4.5s
+  [N6_noBind        s1] acc=0.2285 shuffle=0.2227 params=10368 guards=True Δρ=0.270 4.5s
+  [N6_noBind        s2] acc=0.2324 shuffle=0.2070 params=10368 guards=True Δρ=0.418 4.7s
+  [N7_perch_C16     s0] acc=0.7676 shuffle=0.7617 params=43520 guards=True Δρ=0.323 15.2s
+  [N7_perch_C16     s1] acc=0.7246 shuffle=0.7168 params=43520 guards=True Δρ=0.309 15.1s
+  [N7_perch_C16     s2] acc=0.7656 shuffle=0.7695 params=43520 guards=True Δρ=0.397 15.2s
+
+写入 results/native_results.json

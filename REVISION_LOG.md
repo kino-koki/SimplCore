@@ -448,3 +448,13 @@ BF16 权重逐位复制、在真实 embedding 上的 SGC 对偶/因果/O(1) 验�
 校验：生成器 py_compile PASS；PDF **17 页 / 主文 8 页**；五项修正文本核验 **16/16**；desk-check **46/46**；拆分 **11/11**。
 未新增定理、命题、实验数字；未跑训练；未推仓。
 
+
+
+## 2026-11-08 — PDF 重排版（只改版式，不动结论）
+
+用户反馈 `simplcore.pdf` 排版异常。逐页渲染定位后重写渲染层：修标题与匿名行重叠、Table 1 挤爆、表格跨栏撕裂与长词溢出、长章节标题越界、Figure 2 框内文字重叠、§2 公式字距拉伸与重复句、第 9 页单栏空白与 References 拥挤；统一 PDF 元数据标题。
+
+校验：py_compile PASS；**18 页 / 主文 8 页**；18 页逐 span 几何核验 0 越界 / 0 小于 6 pt / 0 同行重叠；标题–匿名间距 12.13 pt；desk-check **46/46**；拆分 **11/11**。附录因排版舒展自然多 1 页，未删内容未注水。
+
+未改任何定理、命题、数字；未跑训练、未推仓。补丁 `relayout_v8.py` / `relayout_v8_fix2.py`，备份 `build_simplcore_pdf_v8_prerelayout.py` 可一键回退。详见 `PDF_RELAYOUT_REPORT.md`。
+

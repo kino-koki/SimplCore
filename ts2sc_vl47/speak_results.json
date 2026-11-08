@@ -1,0 +1,222 @@
+{
+  "status": "REAL_FULL_DEPTH_FORWARD",
+  "claim": "complete 24-layer forward on real BF16 weights; next-token distribution only",
+  "not": [
+    "autoregressive generation",
+    "downstream evaluation",
+    "LM parity",
+    "throughput benchmark",
+    "multimodal inference"
+  ],
+  "model": {
+    "repo": "MiniCPM5-1B",
+    "architecture": [
+      "LlamaForCausalLM"
+    ],
+    "layers": 24,
+    "hidden": 1536,
+    "vocab": 130560,
+    "dtype": "BF16->fp32"
+  },
+  "device": {
+    "torch": false,
+    "transformers": false,
+    "gpu": false,
+    "numpy": "2.2.6",
+    "cpu_count": 2
+  },
+  "weights": {
+    "parts": 22,
+    "virtual_data_bytes": 2161265664,
+    "disk_model_materialised": false,
+    "stage4_bytes_fetched": 498073600,
+    "stage4_api_calls": 5
+  },
+  "prompts": [
+    {
+      "prompt": "中国的首都是",
+      "n_tokens": 4,
+      "ids": [
+        0,
+        28898,
+        5217,
+        4759
+      ],
+      "roundtrip": "中国的首都是",
+      "top": [
+        {
+          "id": 26323,
+          "logit": 19.13936996459961,
+          "text": "哪些",
+          "raw": "åĵªäºĽ"
+        },
+        {
+          "id": 14697,
+          "logit": 18.807762145996094,
+          "text": "哪里",
+          "raw": "åĵªéĩĮ"
+        },
+        {
+          "id": 34453,
+          "logit": 18.130157470703125,
+          "text": "哪个",
+          "raw": "åĵªä¸ª"
+        },
+        {
+          "id": 11360,
+          "logit": 16.895198822021484,
+          "text": "北京",
+          "raw": "åĮĹäº¬"
+        },
+        {
+          "id": 2122,
+          "logit": 16.485183715820312,
+          "text": "什么",
+          "raw": "ä»Ģä¹Ī"
+        },
+        {
+          "id": 5590,
+          "logit": 16.313892364501953,
+          "text": "哪",
+          "raw": "åĵª"
+        },
+        {
+          "id": 49055,
+          "logit": 16.295913696289062,
+          "text": "北京市",
+          "raw": "åĮĹäº¬å¸Ĥ"
+        },
+        {
+          "id": 2523,
+          "logit": 15.779399871826172,
+          "text": "直",
+          "raw": "çĽ´"
+        }
+      ]
+    },
+    {
+      "prompt": "今天天气很好，",
+      "n_tokens": 5,
+      "ids": [
+        0,
+        9051,
+        38478,
+        21541,
+        337
+      ],
+      "roundtrip": "今天天气很好，",
+      "top": [
+        {
+          "id": 28798,
+          "logit": 18.211965560913086,
+          "text": "阳光",
+          "raw": "éĺ³åħī"
+        },
+        {
+          "id": 21909,
+          "logit": 16.786746978759766,
+          "text": "晴",
+          "raw": "æĻ´"
+        },
+        {
+          "id": 17065,
+          "logit": 16.072444915771484,
+          "text": "温度",
+          "raw": "æ¸©åº¦"
+        },
+        {
+          "id": 83575,
+          "logit": 15.068004608154297,
+          "text": "春风",
+          "raw": "æĺ¥é£İ"
+        },
+        {
+          "id": 32895,
+          "logit": 14.868851661682129,
+          "text": "温暖",
+          "raw": "æ¸©æļĸ"
+        },
+        {
+          "id": 55694,
+          "logit": 14.654794692993164,
+          "text": "适宜",
+          "raw": "éĢĤå®ľ"
+        },
+        {
+          "id": 79619,
+          "logit": 14.494428634643555,
+          "text": "户外",
+          "raw": "æĪ·å¤ĸ"
+        },
+        {
+          "id": 129513,
+          "logit": 14.308575630187988,
+          "text": "温暖的",
+          "raw": "æ¸©æļĸçļĦ"
+        }
+      ]
+    },
+    {
+      "prompt": "水的化学式是",
+      "n_tokens": 5,
+      "ids": [
+        0,
+        33271,
+        19256,
+        2600,
+        519
+      ],
+      "roundtrip": "水的化学式是",
+      "top": [
+        {
+          "id": 19256,
+          "logit": 19.882240295410156,
+          "text": "化学",
+          "raw": "åĮĸåŃ¦"
+        },
+        {
+          "id": 2068,
+          "logit": 17.7684326171875,
+          "text": "水",
+          "raw": "æ°´"
+        },
+        {
+          "id": 38530,
+          "logit": 17.755104064941406,
+          "text": "高中",
+          "raw": "é«ĺä¸Ń"
+        },
+        {
+          "id": 11127,
+          "logit": 17.405765533447266,
+          "text": "理解",
+          "raw": "çĲĨè§£"
+        },
+        {
+          "id": 52219,
+          "logit": 16.28891372680664,
+          "text": "初中",
+          "raw": "åĪĿä¸Ń"
+        },
+        {
+          "id": 118720,
+          "logit": 15.911724090576172,
+          "text": "化学反应",
+          "raw": "åĮĸåŃ¦åıįåºĶ"
+        },
+        {
+          "id": 61,
+          "logit": 15.439908981323242,
+          "text": "H",
+          "raw": "H"
+        },
+        {
+          "id": 82907,
+          "logit": 15.256815910339355,
+          "text": "理解和",
+          "raw": "çĲĨè§£åĴĮ"
+        }
+      ]
+    }
+  ]
+}

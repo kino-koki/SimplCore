@@ -1,0 +1,40 @@
+  [B0_base        s0] skip
+  [B0_base        s1] skip
+  [B0_base        s2] skip
+  [F1_reso        s0] skip
+  [F1_reso        s1] skip
+  [F1_reso        s2] skip
+  [F2_full        s0] skip
+  [F2_full        s1] skip
+  [F2_full        s2] skip
+  [A1_noSFSC      s0] skip
+  [A1_noSFSC      s1] skip
+  [A1_noSFSC      s2] skip
+  [A2_noFDCAO     s0] skip
+  [A2_noFDCAO     s1] skip
+  [A2_noFDCAO     s2] skip
+  [A3_noBind      s0] skip
+  [A3_noBind      s1] skip
+  [A3_noBind      s2] skip
+  [F3_full_C8     s0] skip
+  [F3_full_C8     s1] skip
+  [F3_full_C8     s2] acc=0.3555 shuffle=0.3984 params=43520  26.7s
+  [UP_softmax     s0] acc=1.0000 shuffle=1.0000 params=10240  2.1s
+  [UP_softmax     s1] acc=1.0000 shuffle=1.0000 params=10240  2.1s
+  [UP_softmax     s2] acc=0.9961 shuffle=1.0000 params=10240  2.1s
+
+写入 results/fusion_results.json
+le=0.3438 params=18432  10.9s
+  [A2_noFDCAO     s1] acc=0.3945 shuffle=0.4004 params=18432  10.1s
+  [A2_noFDCAO     s2] acc=0.3223 shuffle=0.3027 params=18432  9.7s
+  [A3_noBind      s0] acc=0.1816 shuffle=0.1738 params=16896  9.5s
+  [A3_noBind      s1] acc=0.1309 shuffle=0.1562 params=16896  9.6s
+  [A3_noBind      s2] acc=0.1953 shuffle=0.1680 params=16896  9.9s
+  [F3_full_C8     s0] acc=0.4004 shuffle=0.4121 params=43520  14.0s
+  [F3_full_C8     s1] acc=0.4238 shuffle=0.4492 params=43520  14.9s
+  [F3_full_C8     s2] acc=0.3555 shuffle=0.3984 params=43520  18.3s
+  [UP_softmax     s0] acc=1.0000 shuffle=1.0000 params=10240  4.5s
+  [UP_softmax     s1] acc=1.0000 shuffle=1.0000 params=10240  4.2s
+  [UP_softmax     s2] acc=0.9961 shuffle=1.0000 params=10240  4.3s
+
+写入 results/fusion_results.json

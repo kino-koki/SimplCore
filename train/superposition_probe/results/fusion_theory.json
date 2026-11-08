@@ -1,0 +1,67 @@
+{
+ "SE1": {
+  "worst_on_error": 4.440892098500626e-16,
+  "worst_off_error": 8.528420021082405e-17,
+  "trials": 200,
+  "holds": true,
+  "statement": "q_k S = w_j C[VK+v_j] if k=k_j, else 0. Retrieval accuracy EQUALS the fraction of bindings correctly registered; no cross-talk term exists."
+ },
+ "SE2": {
+  "n": 32,
+  "alpha": 0.05,
+  "beta": 0.1,
+  "p_accept": 0.9,
+  "H_n": 4.05849519543652,
+  "E_T_cover": 144.30205139329848,
+  "chernoff_tail_at_2ET": 1.200085380534363e-17,
+  "union_false_commit_bound": 1.0,
+  "monotone_improvement": true,
+  "statement": "E[m_T] >= (1-beta) T until saturation, and E[T_cover] = n H_n / (1-beta). Accuracy is monotone non-decreasing because SE1 makes each accepted registration add a disjoint orthogonal term and never remove a correct one.",
+  "note": "This is the POSITIVE counterpart of CT7(c), which said 'improvement is NOT proved'. It is proved here for the exactly-defined finite consolidation process."
+ },
+ "SE3": {
+  "p_noise": 0.3,
+  "exact_expectation": 0.7093750000000001,
+  "observed_mean": 0.7091015625,
+  "observed_max": 0.96875,
+  "hoeffding_4sigma_interval": [
+   0.7071047461079486,
+   0.7116452538920516
+  ],
+  "hoeffding_tail_bound": 0.024455063980252906,
+  "n_key_trials": 640000,
+  "holds": true,
+  "statement": "A statistical gate is NECESSARY for SE2: with corruption rate p, E[accuracy] = 1 - p(1-1/V_K) exactly, and a finite sample mean lies within Hoeffding's interval. Orthogonality prevents cross-talk but NOT the occupation of a slot by a wrong value.",
+  "note": "This replaces an earlier draft that called mu an almost-sure upper bound; a sample mean legitimately exceeds an expectation. Registered as W15."
+ },
+ "SE4": {
+  "CT7_info_bound_bits": 500.0,
+  "SE2_bindings": 100,
+  "bits_per_binding": 5.0,
+  "bits_consumed": 500.0,
+  "consistent": true,
+  "statement": "Self-evolution is REAL but BOUNDED: it converts at most T*w*log2(V_K) bits of experience into weight state, independent of L and of bank capacity C. SE2's improvement and CT7's rate bound hold simultaneously.",
+  "note": "This is why the paper does not claim that long context buys a faster learning rate: it buys inference-time retrieval, not unbounded self-improvement."
+ },
+ "SE5": {
+  "rho": 0.999,
+  "eps": 0.001,
+  "K_star": 6904,
+  "capacity_respected": true,
+  "statement": "With additive orthogonal utility, evicting the smallest rho^age weight is greedy-optimal; K* = floor(log eps / log rho) is the number of slots whose weight stays above eps."
+ },
+ "checks": {
+  "SE1": true,
+  "SE2": true,
+  "SE3": true,
+  "SE4": true,
+  "SE5": true,
+  "nonvacuous_SE2": true,
+  "SE3_concentration": true,
+  "SE3_exact_expectation": true
+ },
+ "n_pass": 8,
+ "n_checks": 8,
+ "all_pass": true,
+ "scope": "Theorems about an exactly-defined finite consolidation process on a synthetic codebook. NOT a claim about language modelling, general self-improvement or SOTA."
+}

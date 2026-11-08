@@ -1,0 +1,23 @@
+  [PASS] toeplitz: max_dev=0.0
+  [PASS] fft_vs_toeplitz: rel_err=3.570736694436011e-16
+  [PASS] iir_vs_toeplitz: rel_err=1.3390262604135042e-15
+  [PASS] strict_causality: max_past_abs_diff=0.0
+  [PASS] state_independent_of_L: bytes_by_L={9: 512, 17: 512, 25: 512, 65: 512}
+  [PASS] rho_theta_frozen: fingerprint=17.69217406252558
+  ==> all_passed=True
+  [PASS] toeplitz: max_dev=0.0
+  [PASS] fft_vs_toeplitz: rel_err=2.114632197527115e-16
+  [PASS] iir_vs_toeplitz: rel_err=9.86828358845987e-16
+  [PASS] strict_causality: max_past_abs_diff=0.0
+  [PASS] state_independent_of_L: bytes_by_L={9: 512, 17: 512, 25: 512, 65: 512}
+  [PASS] rho_theta_frozen: fingerprint=37.53950108575128
+  ==> all_passed=True
+  [PASS] toeplitz: max_dev=0.0
+  [PASS] fft_vs_toeplitz: rel_err=2.1114109649827197e-16
+  [PASS] iir_vs_toeplitz: rel_err=7.917791118685199e-16
+  [PASS] strict_causality: max_past_abs_diff=0.0
+  [PASS] state_independent_of_L: bytes_by_L={9: 512, 17: 512, 25: 512, 65: 512}
+  [PASS] rho_theta_frozen: fingerprint=39.2
+  ==> all_passed=True
+
+写入 results/guards.json

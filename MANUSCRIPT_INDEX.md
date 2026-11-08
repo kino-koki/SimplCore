@@ -103,3 +103,11 @@ Construction C / Empirical E），其余一律 P1–P8 或 L1–L3。
 `verify_governance.py`（一键） · `theory_work/governance.py`（B 可计算化 / 命名空间 / 数字冻结） · `split_submission.py`（双轨拆分） · `build_simplcore_pdf_v7.py`（唯一当前生成器；`_pregov.py` / `_pre65.py` 为历史归档）
 
 **状态**：Phase 0–5 PASS；Phase 6 门 `NOT EVALUABLE`；Phase 7 挂起。2027 CFP 未发布，不构成合规承诺。
+
+## v7.2 索引增补（2026-11-07）
+
+**本轮新增**：`V72_REPORT.md`（总报告）· `tighten_experiments.py` · `ts2sc_numpy_migrate.py` · `patch_v72.py` / `patch_v72b.py` · `build_simplcore_pdf_v7_pre72.py`（改稿前归档）· `push_v72.py` · `tools/eval_baselines/results/tight_freeze.json` / `tight_audit.json` · `ts2sc_results/ts2sc_migration.json` · `SimplCore_v7.2_交付包.zip`。
+
+**提交包仍只两项**：`paper_main.pdf`（9 页）、`paper_appendix.pdf`（9 页）。`simplcore.pdf` 17 页为本地合并副本。
+
+**状态**：Phase 0–5 PASS（治理总检 12/12、desk-check 46/46、收紧审计 14/14）；Phase 6 门 `NOT EVALUABLE`；Phase 7 挂起。推送未执行（GH_TOKEN 空）。

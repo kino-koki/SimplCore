@@ -1,0 +1,562 @@
+[
+ {
+  "seed": 0,
+  "encoding": "codebook",
+  "layout": "alternating",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0007816771862565939,
+  "temperature": 12.711807561037118,
+  "rank": 32,
+  "T_alignment": 0.9963085933746064
+ },
+ {
+  "seed": 0,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0012397959147310569,
+  "temperature": 16.003251592187393,
+  "rank": 32,
+  "T_alignment": 0.9966402142534091
+ },
+ {
+  "seed": 0,
+  "encoding": "codebook",
+  "layout": "dense",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0012155934737851034,
+  "temperature": 15.67816478535932,
+  "rank": 32,
+  "T_alignment": 0.9966042779328557
+ },
+ {
+  "seed": 0,
+  "encoding": "codebook",
+  "layout": "padded",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0017957503090065136,
+  "temperature": 17.969887005569756,
+  "rank": 32,
+  "T_alignment": 0.9968678374187471
+ },
+ {
+  "seed": 0,
+  "encoding": "flat",
+  "layout": "alternating",
+  "arm": "learned_T",
+  "acc": 0.78125,
+  "final_loss": 0.04876437140424121,
+  "temperature": 16.931607850326643,
+  "rank": 32,
+  "T_alignment": 0.02907138433238706
+ },
+ {
+  "seed": 0,
+  "encoding": "flat",
+  "layout": "gapped",
+  "arm": "learned_T",
+  "acc": 0.970703125,
+  "final_loss": 0.004084269448377284,
+  "temperature": 18.799770173998976,
+  "rank": 32,
+  "T_alignment": 0.04798374835739243
+ },
+ {
+  "seed": 0,
+  "encoding": "flat",
+  "layout": "dense",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0012072747597407826,
+  "temperature": 15.689243884227588,
+  "rank": 32,
+  "T_alignment": 0.07985824410275906
+ },
+ {
+  "seed": 0,
+  "encoding": "flat",
+  "layout": "padded",
+  "arm": "learned_T",
+  "acc": 0.994140625,
+  "final_loss": 0.002954530504328159,
+  "temperature": 18.85955105665098,
+  "rank": 32,
+  "T_alignment": 0.05672324507873463
+ },
+ {
+  "seed": 0,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "fixed_Tstar",
+  "acc": 1.0,
+  "T_alignment": 1.0
+ },
+ {
+  "seed": 0,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "frozen_random_T",
+  "acc": 0.283203125,
+  "T_alignment": 0.500375724783621
+ },
+ {
+  "seed": 0,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "two_bits_plus_gate",
+  "acc": 0.30078125,
+  "T_alignment": 1.0
+ },
+ {
+  "seed": 1,
+  "encoding": "codebook",
+  "layout": "alternating",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0008685320747454871,
+  "temperature": 12.480692673848502,
+  "rank": 32,
+  "T_alignment": 0.9961235920408219
+ },
+ {
+  "seed": 1,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.001430280020875585,
+  "temperature": 15.862900570294483,
+  "rank": 32,
+  "T_alignment": 0.9962418166280045
+ },
+ {
+  "seed": 1,
+  "encoding": "codebook",
+  "layout": "dense",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0013738007394229505,
+  "temperature": 15.537149635075009,
+  "rank": 32,
+  "T_alignment": 0.9962270349299824
+ },
+ {
+  "seed": 1,
+  "encoding": "codebook",
+  "layout": "padded",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0017757531989684556,
+  "temperature": 17.450406598348454,
+  "rank": 32,
+  "T_alignment": 0.9963764453368692
+ },
+ {
+  "seed": 1,
+  "encoding": "flat",
+  "layout": "alternating",
+  "arm": "learned_T",
+  "acc": 0.7890625,
+  "final_loss": 0.03001763421125707,
+  "temperature": 17.117382407270085,
+  "rank": 32,
+  "T_alignment": 0.031061118774331452
+ },
+ {
+  "seed": 1,
+  "encoding": "flat",
+  "layout": "gapped",
+  "arm": "learned_T",
+  "acc": 0.96484375,
+  "final_loss": 0.002881238142390889,
+  "temperature": 18.248948213850273,
+  "rank": 32,
+  "T_alignment": 0.05460545115518588
+ },
+ {
+  "seed": 1,
+  "encoding": "flat",
+  "layout": "dense",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.001300542324411943,
+  "temperature": 15.626605183158397,
+  "rank": 32,
+  "T_alignment": 0.0848856461621122
+ },
+ {
+  "seed": 1,
+  "encoding": "flat",
+  "layout": "padded",
+  "arm": "learned_T",
+  "acc": 0.99609375,
+  "final_loss": 0.002796512955936714,
+  "temperature": 18.21770778150418,
+  "rank": 32,
+  "T_alignment": 0.0648510386678725
+ },
+ {
+  "seed": 1,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "fixed_Tstar",
+  "acc": 1.0,
+  "T_alignment": 1.0
+ },
+ {
+  "seed": 1,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "frozen_random_T",
+  "acc": 0.138671875,
+  "T_alignment": 0.4966973189652502
+ },
+ {
+  "seed": 1,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "two_bits_plus_gate",
+  "acc": 0.279296875,
+  "T_alignment": 1.0
+ },
+ {
+  "seed": 2,
+  "encoding": "codebook",
+  "layout": "alternating",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0009956956666193845,
+  "temperature": 12.56639834387255,
+  "rank": 32,
+  "T_alignment": 0.9959364407919644
+ },
+ {
+  "seed": 2,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0013815432469620023,
+  "temperature": 15.650243645078126,
+  "rank": 32,
+  "T_alignment": 0.9959742973766382
+ },
+ {
+  "seed": 2,
+  "encoding": "codebook",
+  "layout": "dense",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0014494112423854106,
+  "temperature": 15.618400022163952,
+  "rank": 32,
+  "T_alignment": 0.995941825950093
+ },
+ {
+  "seed": 2,
+  "encoding": "codebook",
+  "layout": "padded",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.001750492624571841,
+  "temperature": 17.92028723906507,
+  "rank": 32,
+  "T_alignment": 0.9961343393460809
+ },
+ {
+  "seed": 2,
+  "encoding": "flat",
+  "layout": "alternating",
+  "arm": "learned_T",
+  "acc": 0.80859375,
+  "final_loss": 0.07795905793838945,
+  "temperature": 17.35613719797007,
+  "rank": 32,
+  "T_alignment": 0.031549427621549726
+ },
+ {
+  "seed": 2,
+  "encoding": "flat",
+  "layout": "gapped",
+  "arm": "learned_T",
+  "acc": 0.953125,
+  "final_loss": 0.003857379280221974,
+  "temperature": 17.968265738936974,
+  "rank": 32,
+  "T_alignment": 0.04822261100720288
+ },
+ {
+  "seed": 2,
+  "encoding": "flat",
+  "layout": "dense",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0015436193797249223,
+  "temperature": 15.515211934992042,
+  "rank": 32,
+  "T_alignment": 0.07882598909454637
+ },
+ {
+  "seed": 2,
+  "encoding": "flat",
+  "layout": "padded",
+  "arm": "learned_T",
+  "acc": 0.99609375,
+  "final_loss": 0.002437320983081808,
+  "temperature": 18.545138423928368,
+  "rank": 32,
+  "T_alignment": 0.05470830135791124
+ },
+ {
+  "seed": 2,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "fixed_Tstar",
+  "acc": 1.0,
+  "T_alignment": 1.0
+ },
+ {
+  "seed": 2,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "frozen_random_T",
+  "acc": 0.236328125,
+  "T_alignment": 0.500159758534337
+ },
+ {
+  "seed": 2,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "two_bits_plus_gate",
+  "acc": 0.279296875,
+  "T_alignment": 1.0
+ },
+ {
+  "seed": 3,
+  "encoding": "codebook",
+  "layout": "alternating",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.000867172894697135,
+  "temperature": 12.620250417381827,
+  "rank": 32,
+  "T_alignment": 0.9960197703472616
+ },
+ {
+  "seed": 3,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0014303728110434532,
+  "temperature": 15.631949075410649,
+  "rank": 32,
+  "T_alignment": 0.9961052364333823
+ },
+ {
+  "seed": 3,
+  "encoding": "codebook",
+  "layout": "dense",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0014583931490121738,
+  "temperature": 15.61972833915574,
+  "rank": 32,
+  "T_alignment": 0.9961299562117678
+ },
+ {
+  "seed": 3,
+  "encoding": "codebook",
+  "layout": "padded",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0015414660016385036,
+  "temperature": 17.567404658673354,
+  "rank": 32,
+  "T_alignment": 0.9963692120580854
+ },
+ {
+  "seed": 3,
+  "encoding": "flat",
+  "layout": "alternating",
+  "arm": "learned_T",
+  "acc": 0.806640625,
+  "final_loss": 0.16620160378894822,
+  "temperature": 16.537654410889516,
+  "rank": 32,
+  "T_alignment": 0.03180420586844093
+ },
+ {
+  "seed": 3,
+  "encoding": "flat",
+  "layout": "gapped",
+  "arm": "learned_T",
+  "acc": 0.96875,
+  "final_loss": 0.006868388294220788,
+  "temperature": 17.36391543841439,
+  "rank": 32,
+  "T_alignment": 0.04245299140761749
+ },
+ {
+  "seed": 3,
+  "encoding": "flat",
+  "layout": "dense",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0015531346467853593,
+  "temperature": 15.517432870247196,
+  "rank": 32,
+  "T_alignment": 0.08003386167228153
+ },
+ {
+  "seed": 3,
+  "encoding": "flat",
+  "layout": "padded",
+  "arm": "learned_T",
+  "acc": 0.99609375,
+  "final_loss": 0.0021665369581342904,
+  "temperature": 18.11410623659414,
+  "rank": 32,
+  "T_alignment": 0.056582759778822586
+ },
+ {
+  "seed": 3,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "fixed_Tstar",
+  "acc": 1.0,
+  "T_alignment": 1.0
+ },
+ {
+  "seed": 3,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "frozen_random_T",
+  "acc": 0.140625,
+  "T_alignment": 0.5017892124511324
+ },
+ {
+  "seed": 3,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "two_bits_plus_gate",
+  "acc": 0.25390625,
+  "T_alignment": 1.0
+ },
+ {
+  "seed": 4,
+  "encoding": "codebook",
+  "layout": "alternating",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.000881185807347978,
+  "temperature": 12.523778281209639,
+  "rank": 32,
+  "T_alignment": 0.9963649495133033
+ },
+ {
+  "seed": 4,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0012123358836725754,
+  "temperature": 15.709976191868895,
+  "rank": 32,
+  "T_alignment": 0.9964042425226065
+ },
+ {
+  "seed": 4,
+  "encoding": "codebook",
+  "layout": "dense",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.001229473097972252,
+  "temperature": 15.388523576305944,
+  "rank": 32,
+  "T_alignment": 0.9964530674790043
+ },
+ {
+  "seed": 4,
+  "encoding": "codebook",
+  "layout": "padded",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0016631917310672936,
+  "temperature": 17.407846623823836,
+  "rank": 32,
+  "T_alignment": 0.9967736366295991
+ },
+ {
+  "seed": 4,
+  "encoding": "flat",
+  "layout": "alternating",
+  "arm": "learned_T",
+  "acc": 0.826171875,
+  "final_loss": 0.11301926608217754,
+  "temperature": 17.150692978373318,
+  "rank": 32,
+  "T_alignment": 0.03261894461050844
+ },
+ {
+  "seed": 4,
+  "encoding": "flat",
+  "layout": "gapped",
+  "arm": "learned_T",
+  "acc": 0.98046875,
+  "final_loss": 0.024868785224480116,
+  "temperature": 18.44705145528646,
+  "rank": 32,
+  "T_alignment": 0.05266907620389314
+ },
+ {
+  "seed": 4,
+  "encoding": "flat",
+  "layout": "dense",
+  "arm": "learned_T",
+  "acc": 1.0,
+  "final_loss": 0.0011713351992436703,
+  "temperature": 15.466294198517772,
+  "rank": 32,
+  "T_alignment": 0.08617566655968129
+ },
+ {
+  "seed": 4,
+  "encoding": "flat",
+  "layout": "padded",
+  "arm": "learned_T",
+  "acc": 0.9921875,
+  "final_loss": 0.0017764595024881685,
+  "temperature": 18.01020391277366,
+  "rank": 32,
+  "T_alignment": 0.06802071743141452
+ },
+ {
+  "seed": 4,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "fixed_Tstar",
+  "acc": 1.0,
+  "T_alignment": 1.0
+ },
+ {
+  "seed": 4,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "frozen_random_T",
+  "acc": 0.33203125,
+  "T_alignment": 0.4979327203938261
+ },
+ {
+  "seed": 4,
+  "encoding": "codebook",
+  "layout": "gapped",
+  "arm": "two_bits_plus_gate",
+  "acc": 0.2421875,
+  "T_alignment": 1.0
+ }
+]

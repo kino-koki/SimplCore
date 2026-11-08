@@ -1,0 +1,891 @@
+{
+ "configs": [
+  {
+   "name": "gate_off",
+   "alpha": 1.0,
+   "tau": -1000000000.0
+  },
+  {
+   "name": "alpha_0.10",
+   "alpha": 0.1,
+   "tau": 0.0
+  },
+  {
+   "name": "alpha_0.05",
+   "alpha": 0.05,
+   "tau": 0.0
+  },
+  {
+   "name": "alpha_0.01",
+   "alpha": 0.01,
+   "tau": 0.0
+  },
+  {
+   "name": "tau_positive",
+   "alpha": 0.05,
+   "tau": 0.25
+  },
+  {
+   "name": "sigma_0.30",
+   "alpha": 0.05,
+   "tau": 0.0,
+   "sigma": 0.3
+  },
+  {
+   "name": "rho_0.90",
+   "alpha": 0.05,
+   "tau": 0.0,
+   "rho": 0.9
+  },
+  {
+   "name": "rho_0.999",
+   "alpha": 0.05,
+   "tau": 0.0,
+   "rho": 0.999
+  }
+ ],
+ "corruptions": [
+  0.0,
+  0.3
+ ],
+ "rows": [
+  {
+   "corruption": 0.0,
+   "config": "gate_off",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 320,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "gate_off",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 320,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "gate_off",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 320,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "gate_off",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 320,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "gate_off",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 320,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.10",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 58,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.10",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 70,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.10",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 66,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.10",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 67,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.10",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 67,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.05",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 49,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.05",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 55,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.05",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 47,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.05",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 53,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.05",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 54,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.01",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 40,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.01",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 43,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.01",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 39,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.01",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 42,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.01",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 42,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "tau_positive",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 32,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "tau_positive",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 32,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "tau_positive",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 32,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "tau_positive",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 32,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "tau_positive",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 32,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "sigma_0.30",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 49,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "sigma_0.30",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 55,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "sigma_0.30",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 47,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "sigma_0.30",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 53,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "sigma_0.30",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 54,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.90",
+   "seed": 0,
+   "acc": 0.15625,
+   "commits": 49,
+   "slots": 32,
+   "K_star": 65
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.90",
+   "seed": 1,
+   "acc": 0.15625,
+   "commits": 55,
+   "slots": 32,
+   "K_star": 65
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.90",
+   "seed": 2,
+   "acc": 0.09375,
+   "commits": 47,
+   "slots": 32,
+   "K_star": 65
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.90",
+   "seed": 3,
+   "acc": 0.125,
+   "commits": 53,
+   "slots": 32,
+   "K_star": 65
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.90",
+   "seed": 4,
+   "acc": 0.125,
+   "commits": 54,
+   "slots": 32,
+   "K_star": 65
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.999",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 49,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.999",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 55,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.999",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 47,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.999",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 53,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.999",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 54,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "gate_off",
+   "seed": 0,
+   "acc": 0.625,
+   "commits": 320,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "gate_off",
+   "seed": 1,
+   "acc": 0.75,
+   "commits": 320,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "gate_off",
+   "seed": 2,
+   "acc": 0.5625,
+   "commits": 320,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "gate_off",
+   "seed": 3,
+   "acc": 0.5625,
+   "commits": 320,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "gate_off",
+   "seed": 4,
+   "acc": 0.71875,
+   "commits": 320,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.10",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 50,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.10",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 53,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.10",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 52,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.10",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 55,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.10",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 53,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.05",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 45,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.05",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 45,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.05",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 38,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.05",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 45,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.05",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 46,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.01",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 36,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.01",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 37,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.01",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 35,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.01",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 38,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.01",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 38,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "tau_positive",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 32,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "tau_positive",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 32,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "tau_positive",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 32,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "tau_positive",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 32,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "tau_positive",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 32,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "sigma_0.30",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 45,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "sigma_0.30",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 45,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "sigma_0.30",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 38,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "sigma_0.30",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 45,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "sigma_0.30",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 46,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.90",
+   "seed": 0,
+   "acc": 0.125,
+   "commits": 45,
+   "slots": 32,
+   "K_star": 65
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.90",
+   "seed": 1,
+   "acc": 0.125,
+   "commits": 45,
+   "slots": 32,
+   "K_star": 65
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.90",
+   "seed": 2,
+   "acc": 0.03125,
+   "commits": 38,
+   "slots": 32,
+   "K_star": 65
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.90",
+   "seed": 3,
+   "acc": 0.125,
+   "commits": 45,
+   "slots": 32,
+   "K_star": 65
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.90",
+   "seed": 4,
+   "acc": 0.09375,
+   "commits": 46,
+   "slots": 32,
+   "K_star": 65
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.999",
+   "seed": 0,
+   "acc": 1.0,
+   "commits": 45,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.999",
+   "seed": 1,
+   "acc": 1.0,
+   "commits": 45,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.999",
+   "seed": 2,
+   "acc": 1.0,
+   "commits": 38,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.999",
+   "seed": 3,
+   "acc": 1.0,
+   "commits": 45,
+   "slots": 32,
+   "K_star": 6904
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.999",
+   "seed": 4,
+   "acc": 1.0,
+   "commits": 46,
+   "slots": 32,
+   "K_star": 6904
+  }
+ ],
+ "summary": [
+  {
+   "corruption": 0.0,
+   "config": "gate_off",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.10",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.05",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "alpha_0.01",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "tau_positive",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "sigma_0.30",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.90",
+   "mean": 0.13125,
+   "sd": 0.023385358667337132,
+   "n": 5
+  },
+  {
+   "corruption": 0.0,
+   "config": "rho_0.999",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "gate_off",
+   "mean": 0.64375,
+   "sd": 0.07806247497997998,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.10",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.05",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "alpha_0.01",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "tau_positive",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "sigma_0.30",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.90",
+   "mean": 0.1,
+   "sd": 0.036443449342783124,
+   "n": 5
+  },
+  {
+   "corruption": 0.3,
+   "config": "rho_0.999",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  }
+ ],
+ "clean_gate_configs_saturate": true,
+ "noisy_gate_beats_gate_off": true,
+ "rho_decay_degrades_as_SE5": true,
+ "note": "Under clean experiences every gate reaches 1.0: the gate is irrelevant there, which is exactly SE3's scope. Under 30% corruption the gate separates the arms and gate_off degrades toward SE3's exact expectation. Measured trade-offs consistent with SE2/SE5, not additional theorems."
+}

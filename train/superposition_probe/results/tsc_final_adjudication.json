@@ -1,0 +1,130 @@
+{
+ "checks": {
+  "zero_bits_fails_on_tight_layout": true,
+  "zero_bits_adversary_proved": true,
+  "one_bit_all_layouts": true,
+  "one_bit_adversary_survives": true,
+  "two_bits_strictly_worse": true,
+  "learned_reaches_analytic": true,
+  "frozen_random_far_below_one": true,
+  "learned_T_aligns_with_Tstar": true,
+  "conservation_all_pass": true,
+  "gradcheck_pass": true,
+  "scale_finite": true,
+  "learned_interface_also_fails_on_adversary": true,
+  "effective_rank_bound_verified": true
+ },
+ "all_pass": true,
+ "witnesses": {
+  "zero_bits_mean": 0.9412109375,
+  "one_bit_mean": 1.0,
+  "two_bits_mean": 0.27109375,
+  "fixed_Tstar_mean": 1.0,
+  "frozen_random_mean": 0.226171875,
+  "learned_alignment": 0.9962998393287542,
+  "adversary_flat": {
+   "encoding": "flat",
+   "perm": [
+    1,
+    0,
+    2
+   ],
+   "predicted_id": 4,
+   "answer_id": 3,
+   "distractor_id": 4,
+   "alpha_answer": 0.8260529979995868,
+   "beta_distractor": 0.9494999999989502,
+   "beta_gt_alpha": true,
+   "acc": 0.0,
+   "m2_nonzero_positions": [
+    1,
+    4
+   ],
+   "m2_magnitudes": [
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0
+   ]
+  },
+  "adversary_codebook": {
+   "encoding": "codebook",
+   "perm": [
+    1,
+    0,
+    2
+   ],
+   "predicted_id": 3,
+   "answer_id": 3,
+   "distractor_id": 4,
+   "alpha_answer": 0.8260529979995866,
+   "beta_distractor": 0.0,
+   "beta_gt_alpha": false,
+   "acc": 1.0,
+   "m2_nonzero_positions": [
+    1
+   ],
+   "m2_magnitudes": [
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    -0.0,
+    0.0
+   ]
+  },
+  "learned_adversary": {
+   "learned_T_used": true,
+   "predicted_id": 4,
+   "answer_id": 3,
+   "distractor_id": 4,
+   "matched_positions": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "key_positions": [
+    1,
+    4
+   ],
+   "A_equal_at_the_two_key_positions": true,
+   "b_differs_at_the_two_key_positions": true,
+   "fails": true
+  },
+  "rank_ablation": [
+   {
+    "rank": 4,
+    "acc": 0.9694010416666666
+   },
+   {
+    "rank": 8,
+    "acc": 0.9954427083333334
+   },
+   {
+    "rank": 16,
+    "acc": 1.0
+   },
+   {
+    "rank": 24,
+    "acc": 1.0
+   },
+   {
+    "rank": 32,
+    "acc": 1.0
+   },
+   {
+    "rank": 48,
+    "acc": 1.0
+   },
+   {
+    "rank": 64,
+    "acc": 1.0
+   }
+  ]
+ },
+ "claim": "EXACTLY ONE BIT. With 0 bits (flat alphabet) H>=2 retrieval fails, and Lemma R3 gives an explicit adversary permutation proving it for the NT31/R2 readout class. With 1 bit (the model's own orthogonal codebook split) it is exactly 1.0000 on all four layouts, with a LEARNED layer interface (no hand-designed T*). With 2 bits (an extra role gate) it is strictly worse. The single bit is endogenous: no run-time tag, no absolute-position rule, no format prior."
+}

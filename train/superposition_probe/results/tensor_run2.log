@@ -1,0 +1,2 @@
+选中臂: ['T2_P2', 'T3_P4']
+  [T2_P2            s0] acc=0.9668 perm=0.9629 params=10268 guards=True 19.5s

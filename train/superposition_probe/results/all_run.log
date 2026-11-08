@@ -1,0 +1,33 @@
+  [S0_static        s0] acc=0.2207  shuffle=0.26171875 params=8192  6.3s
+  [S0_static        s1] acc=0.2031  shuffle=0.212890625 params=8192  6.1s
+  [S0_static        s2] acc=0.2266  shuffle=0.232421875 params=8192  6.2s
+  [S1_demod         s0] acc=0.2012  shuffle=0.220703125 params=10240  6.8s
+  [S1_demod         s1] acc=0.1875  shuffle=0.19140625 params=10240  6.4s
+  [S1_demod         s2] acc=0.1973  shuffle=0.21484375 params=10240  6.5s
+  [S2_bind          s0] acc=0.5293  shuffle=0.505859375 params=12288  8.4s
+  [S2_bind          s1] acc=0.5723  shuffle=0.541015625 params=12288  7.8s
+  [S2_bind          s2] acc=0.5488  shuffle=0.560546875 params=12288  7.2s
+  [S3_bind_orth     s0] acc=0.0762  shuffle=0.08984375 params=12288  7.0s
+  [S3_bind_orth     s1] acc=0.1016  shuffle=0.095703125 params=12288  7.1s
+  [S3_bind_orth     s2] acc=0.0977  shuffle=0.08203125 params=12288  6.9s
+  [S4_phase_orth    s0] acc=0.0781  shuffle=0.08203125 params=12288  8.3s
+  [S4_phase_orth    s1] acc=0.0781  shuffle=0.087890625 params=12288  8.2s
+  [S4_phase_orth    s2] acc=0.0918  shuffle=0.09765625 params=12288  8.2s
+  [S5_bind_flat     s0] acc=0.1016  shuffle=0.1015625 params=12288  7.2s
+  [S5_bind_flat     s1] acc=0.0996  shuffle=0.1015625 params=12288  7.3s
+  [S5_bind_flat     s2] acc=0.1074  shuffle=0.09765625 params=12288  7.1s
+  [S6_bind_M32      s0] acc=0.0898  shuffle=0.091796875 params=22528  11.6s
+  [S6_bind_M32      s1] acc=0.1152  shuffle=0.09765625 params=22528  11.6s
+  [S6_bind_M32      s2] acc=0.0996  shuffle=0.099609375 params=22528  11.6s
+Traceback (most recent call last):
+  File "/data/workspace/train/superposition_probe/super_probe.py", line 418, in <module>
+    main()
+  File "/data/workspace/train/superposition_probe/super_probe.py", line 405, in main
+    r = run_train(arm, sd, steps=a.steps, verbose=False)
+  File "/data/workspace/train/superposition_probe/super_probe.py", line 289, in run_train
+    acc, _ = evaluate(arm, P, rho, theta, Xte, Xpte, Yte)
+  File "/data/workspace/train/superposition_probe/super_probe.py", line 250, in evaluate
+    K = S.kernel(rho, theta, L)
+  File "/data/workspace/train/superposition_probe/sgc_fixed.py", line 35, in kernel
+    return (rho[:, None] ** tau[None, :]) * np.sin((tau[None, :] + 1.0) * theta[:, None])
+TypeError: 'NoneType' object is not subscriptable

@@ -1,0 +1,212 @@
+{
+  "status": "CONTINUE_ROUND_COMPLETE",
+  "q0_experiment_freeze": {
+    "n_result_files": 122,
+    "n_result_bytes": 2597944,
+    "tree_sha256": "90610c223fe89b0e1108e5038982822bfc0d007f799fa2170adb2cb8042d0736",
+    "checks": {
+      "fibre_bound_all_hold": true,
+      "toeplitz": true,
+      "fft_iir_machine_precision": true,
+      "five_seed_paired_positive": true
+    },
+    "note": "Freeze is a byte-level audit of EXISTING files; no experiment was re-run, no number was recomputed by training."
+  },
+  "q1_withdrawal_W14": {
+    "withdrawal": "W14",
+    "claim_withdrawn": "speak_smoke_results.json top-k shows the base model cannot produce Chinese",
+    "why": "Those logits came from a PRE-FIX forward: RoPE used absolute positions under left padding, the additive mask had the wrong broadcast shape, and embedding rows were read from virtual offset 0 instead of the tensor's own data offset. All four are implementation defects, not properties of the weights.",
+    "observed_top1": [
+      ";++",
+      "s",
+      "窍"
+    ],
+    "fixed_in_current_source": {
+      "per_sample_rope_positions": true,
+      "mask_shape_BTT": true,
+      "embedding_base_offset": true,
+      "lm_head_base_offset": true,
+      "bounded_prefetch": true
+    },
+    "all_fixes_present": true,
+    "status": "WITHDRAWN; the smoke file is retained as evidence of the bug, NOT as a model-capability result",
+    "further": "The corrected 24-layer run was attempted but the sandbox killed the long command (HTTP 502) at layer 0/18/21 across staged attempts; no complete corrected logits exist. Therefore NO claim is made in either direction."
+  },
+  "q2_qwen06_speak_verdict": {
+    "identity": {
+      "user_label": "Qwen3-0.6B 那个仓里的小模型",
+      "actual_repo": "TS2SC-VL-1B",
+      "language_side_source": "Qwen/Qwen3-0.6B FFN/emb/norm verbatim",
+      "language_params": 509053836,
+      "vision_params": 548266416,
+      "total_params": 1057320252
+    },
+    "structural_recheck": {
+      "n_index_tensors": 1017,
+      "n_language_layers": 28,
+      "layer_ids_contiguous": true,
+      "mixer_tensors": 392,
+      "mixer_tensors_per_layer": 14.0,
+      "language_side_self_attn_tensors": 0,
+      "vision_side_self_attn_tensors": 224,
+      "mixer_tensor_kinds": [
+        "coef",
+        "evidence_bias",
+        "evidence_gain",
+        "evidence_pos_gain",
+        "feed",
+        "gate_proj.weight",
+        "in_proj.weight",
+        "local_conv.weight",
+        "norm.weight",
+        "out_proj.weight",
+        "out_scale",
+        "raw_rho_log",
+        "raw_theta",
+        "uncertainty_logit"
+      ]
+    },
+    "generation_evidence_from_the_package_itself": {
+      "prompt": "中国的首都是",
+      "student_continuation": "城市，有，北京，北京，北京，北京，北京，",
+      "rep3_static": 0.6429,
+      "rep3_after_dc_bias": 0.2143,
+      "static_kernel_ceiling_cos": 0.3695,
+      "sft_rep3_before": 0.1719,
+      "sft_rep3_after_181_steps": 0.2344,
+      "sft_rep3_delta": 0.0625
+    },
+    "verdict": "NO",
+    "verdict_basis": [
+      "The package's own evidence records repetition loops and semantic breakdown on three Chinese prompts.",
+      "All 28 language-side layers are static input-independent mixers: 0 language-side self_attn tensors, 0 N×N score, 0 KV cache. The measured static-kernel ceiling is cos 0.3695.",
+      "DC-bias reduces repetition 0.6429 -> 0.2143 but does not restore factual QA behaviour.",
+      "181 steps of next-token finetuning made repetition WORSE (+0.0625) despite a lower holdout CE."
+    ],
+    "not_claimed": [
+      "No autoregressive generation was re-run in this round (no torch, 2 CPUs, 370 MiB free disk).",
+      "This is a verdict on the EXISTING migrated package, not on the original Qwen3-0.6B checkpoint."
+    ]
+  },
+  "q3_qwen17_fallback": {
+    "real_weight_bytes": {
+      "shard": "qa_00",
+      "bytes": 99614720,
+      "header_bytes": 35648,
+      "data_start": 35656,
+      "tensors_in_header": 310,
+      "sha256_first_1MB": "4be8458089365443599fd4a060e445b467cadee05ee2e58088ca0acb0fcc178c"
+    },
+    "config": {
+      "hidden_size": 2048,
+      "num_hidden_layers": 28,
+      "num_attention_heads": 16,
+      "num_key_value_heads": 8,
+      "head_dim": 128,
+      "vocab_size": 151936,
+      "intermediate_size": 6144,
+      "tie_word_embeddings": true
+    },
+    "header_ledger": {
+      "total_params_from_real_shapes": 1720574976,
+      "embed_shape": [
+        151936,
+        2048
+      ],
+      "embed_data_offsets": [
+        0,
+        622329856
+      ],
+      "dtype_counts": {
+        "BF16": 310
+      },
+      "has_q_norm": true,
+      "has_k_norm": true,
+      "has_lm_head_tensor": false
+    },
+    "stageA_COPY": {
+      "rows_read": 256,
+      "bytes_read": 1048576,
+      "bitwise_equal": true,
+      "independent_reread_bitwise_equal": true,
+      "mean": -1.6791620850664657e-05,
+      "std": 0.03274041294406164,
+      "min": -0.2080078125,
+      "max": 0.205078125,
+      "all_finite": true
+    },
+    "stageB_DERIVE": {
+      "primitive": "fixed column permutation (seed 20261107) + 64-col slice",
+      "bitwise_equal": true,
+      "deterministic": true,
+      "not": "a learned projection; not a full q/k_proj migration"
+    },
+    "stageC_SGC": {
+      "input": "REAL MiniCPM/Qwen3 teacher embed rows (BF16 -> fp64)",
+      "L": 24,
+      "C": 8,
+      "rho": 0.9,
+      "theta": 0.7,
+      "fft_iir_rel_error": 7.032268775742137e-16,
+      "fft_dual_rel_error": 3.214751440339263e-16,
+      "toeplitz_deviation": 0.0,
+      "causal_past_deviation_bits": 0,
+      "state_bytes": 64,
+      "state_independent_of_L": true,
+      "static_kernel": true,
+      "no_NxN_score": true,
+      "no_KV_cache": true,
+      "all_pass": true
+    },
+    "parameter_budget": {
+      "vision_side_params": 548266416,
+      "historical_language_side_params": 509053836,
+      "tsc_T_per_layer": 1048576,
+      "tsc_T_total_28_layers": 29360128,
+      "qwen17_total_from_real_header": 1720574976,
+      "combinations": [
+        {
+          "name": "historical package (Qwen3-0.6B language + MiniCPM-V4.7 vision)",
+          "language": 509053836,
+          "vision": 548266416,
+          "total": 1057320252,
+          "near_1B": true
+        },
+        {
+          "name": "same language side + learned T_h per layer (TSC interface)",
+          "language": 538413964,
+          "vision": 548266416,
+          "total": 1086680380,
+          "near_1B": true
+        },
+        {
+          "name": "full Qwen3-1.7B-Instruct language + same vision (verbatim)",
+          "language": 1720574976,
+          "vision": 548266416,
+          "total": 2268841392,
+          "near_1B": false
+        }
+      ]
+    },
+    "generation_test_blocker": {
+      "tokenizer_json_in_repo": true,
+      "tokenizer_json_size_bytes": 133,
+      "downloaded_object_is_lfs_pointer": true,
+      "lfs_pointer": "version https://git-lfs.github.com/spec/v1\noid sha256:aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4\ns",
+      "consequence": "No BPE merge table for Qwen3 is reachable in this sandbox (media.githubusercontent.com 403, huggingface.co 403, PyPI 403, no torch). Chinese prompts cannot be encoded with the correct ids, so a next-token or autoregressive speaking test on Qwen3-1.7B-Instruct is NOT performed and NOT simulated.",
+      "what_would_unblock": [
+        "a real tokenizer.json as an ordinary (non-LFS) repo blob",
+        "or a torch/transformers runtime plus a GPU/CPU budget for a 4.06 GB model"
+      ]
+    }
+  },
+  "not_claimed": [
+    "no autoregressive generation",
+    "no downstream evaluation",
+    "no LM parity / ppl / logit-KL",
+    "no throughput benchmark",
+    "no multimodal inference",
+    "no training",
+    "no claim that the TSC interface is implemented in the weights"
+  ]
+}

@@ -1,0 +1,7 @@
+选中臂: ['T0_vector', 'T1_P1', 'T2_P2', 'T3_P4', 'T10_long']
+  [T0_vector        s0] acc=0.5918 perm=0.6406 params=10248 guards=True 5.7s
+  [T0_vector        s1] acc=0.6309 perm=0.6426 params=10248 guards=True 5.6s
+  [T0_vector        s2] acc=0.6250 perm=0.6504 params=10248 guards=True 5.6s
+  [T1_P1            s0] acc=0.8789 perm=0.8711 params=10218 guards=True 16.0s
+  [T1_P1            s1] acc=0.8848 perm=0.8945 params=10218 guards=True 15.5s
+  [T1_P1            s2] acc=0.9277 perm=0.8965 params=10218 guards=True 15.1s

@@ -1,0 +1,74 @@
+{
+ "language": {
+  "model.embed_tokens.weight": {
+   "orig_shape": [
+    151936,
+    1024
+   ],
+   "axis": 0,
+   "n": 16,
+   "parts": [
+    "model.embed_tokens.weight__part0of4__c0",
+    "model.embed_tokens.weight__part0of4__c1",
+    "model.embed_tokens.weight__part0of4__c2",
+    "model.embed_tokens.weight__part0of4__c3",
+    "model.embed_tokens.weight__part1of4__c0",
+    "model.embed_tokens.weight__part1of4__c1",
+    "model.embed_tokens.weight__part1of4__c2",
+    "model.embed_tokens.weight__part1of4__c3",
+    "model.embed_tokens.weight__part2of4__c0",
+    "model.embed_tokens.weight__part2of4__c1",
+    "model.embed_tokens.weight__part2of4__c2",
+    "model.embed_tokens.weight__part2of4__c3",
+    "model.embed_tokens.weight__part3of4__c0",
+    "model.embed_tokens.weight__part3of4__c1",
+    "model.embed_tokens.weight__part3of4__c2",
+    "model.embed_tokens.weight__part3of4__c3"
+   ]
+  }
+ },
+ "vision": {
+  "merger.mlp.0.linear_1.weight": {
+   "orig_shape": [
+    4608,
+    4608
+   ],
+   "axis": 0,
+   "n": 2,
+   "parts": [
+    "merger.mlp.0.linear_1.weight__c0",
+    "merger.mlp.0.linear_1.weight__c1"
+   ]
+  },
+  "vision_tower.vit_merger.linear_1.weight": {
+   "orig_shape": [
+    17216,
+    4608
+   ],
+   "axis": 0,
+   "n": 8,
+   "parts": [
+    "vision_tower.vit_merger.linear_1.weight__part0of2__c0",
+    "vision_tower.vit_merger.linear_1.weight__part0of2__c1",
+    "vision_tower.vit_merger.linear_1.weight__part0of2__c2",
+    "vision_tower.vit_merger.linear_1.weight__part0of2__c3",
+    "vision_tower.vit_merger.linear_1.weight__part1of2__c0",
+    "vision_tower.vit_merger.linear_1.weight__part1of2__c1",
+    "vision_tower.vit_merger.linear_1.weight__part1of2__c2",
+    "vision_tower.vit_merger.linear_1.weight__part1of2__c3"
+   ]
+  },
+  "vision_tower.vit_merger.linear_2.weight": {
+   "orig_shape": [
+    1152,
+    17216
+   ],
+   "axis": 0,
+   "n": 2,
+   "parts": [
+    "vision_tower.vit_merger.linear_2.weight__c0",
+    "vision_tower.vit_merger.linear_2.weight__c1"
+   ]
+  }
+ }
+}

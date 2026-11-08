@@ -1,0 +1,64 @@
+{
+ "mode": "NumPy-only TS2SC migration primitive chain (NO torch, NO GPU)",
+ "real_weight_bytes": {
+  "file": "qa00_prefix.bin",
+  "total_bytes": 2000000,
+  "header_bytes": 35648,
+  "data_start": 35656,
+  "tensors_in_header": 310,
+  "teacher_tensor": "model.embed_tokens.weight",
+  "dtype": "BF16",
+  "shape": [
+   151936,
+   2048
+  ],
+  "rows_read": 256,
+  "bytes_read": 1048576,
+  "note": "REAL teacher bytes, first 256 rows only; not the full shard"
+ },
+ "stageA_COPY": {
+  "bitwise_equal": true,
+  "fp32_view_equal": true,
+  "statistics": {
+   "mean": -1.679161323409062e-05,
+   "std": 0.032740410417318344,
+   "min": -0.2080078125,
+   "max": 0.205078125,
+   "all_finite": true
+  }
+ },
+ "stageB_DERIVE": {
+  "primitive": "fixed column permutation + slice (D=64)",
+  "bitwise_equal": true,
+  "deterministic": true,
+  "note": "reproduces the TS2SC DERIVE primitive; NOT a learned projection and NOT a full k_proj migration"
+ },
+ "stageC_SGC": {
+  "columns": 8,
+  "max_fft_iir_rel_error": 1.1436834270840258e-15,
+  "input_dtype": "float64 (promoted from BF16->float32 view)",
+  "causal_past_deviation": 0.0,
+  "state_registers_per_column": 2,
+  "state_bytes_per_column_fp32": 8,
+  "state_independent_of_L": true,
+  "toeplitz": true,
+  "no_NxN_score": true,
+  "no_KV_cache": true,
+  "static_kernel": true
+ },
+ "stageD_minicpm_v47_plan": {
+  "repository": "MiniCPM-V-4.7-1B / TS2SC-VL-1B",
+  "kind": "vision-language, linear-attention model, NOT a Qwen3 checkpoint",
+  "vocab_size": 248094,
+  "shards_recorded": 111,
+  "evidence_file": "evidence/source_safetensors_header.json",
+  "weight_bytes_in_sandbox": 0,
+  "Stage0_status": "PLAN ONLY - provenance classification requires the real index/header; no COPY/DERIVE was executed",
+  "required_for_end_to_end": [
+   "authenticated access to the private repository (GH_TOKEN with Contents: read), or the weight files placed at a sandbox path",
+   "full safetensors header/index for 111 shards",
+   "teacher forward for logit-KL distillation (our NumPy engine deliberately does NOT implement a Transformer forward)"
+  ]
+ },
+ "honest_boundary": "The NumPy engine above runs the complete COPY / DERIVE / SGC primitive chain on REAL teacher bytes without torch. It is NOT an end-to-end migration of MiniCPM-V-4.7-1B: that repository is private, no weight byte for it is reachable here, and no teacher forward / logit-KL / perplexity / generation was run. No LM claim is made."
+}

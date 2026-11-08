@@ -1,0 +1,12 @@
+选中臂: ['R0_g2_repro', 'A0_init_legacy', 'A1_init_spread']
+  [R0_g2_repro      s0] acc=0.2441 shuffle=0.2871 params=12544 guards=True 13.8s
+  [R0_g2_repro      s1] acc=0.2285 shuffle=0.2676 params=12544 guards=True 13.4s
+  [R0_g2_repro      s2] acc=0.2695 shuffle=0.2695 params=12544 guards=True 13.6s
+  [A0_init_legacy   s0] acc=0.7344 shuffle=0.6621 params=10248 guards=True 12.8s
+  [A0_init_legacy   s1] acc=0.6758 shuffle=0.6406 params=10248 guards=True 12.5s
+  [A0_init_legacy   s2] acc=0.5957 shuffle=0.6094 params=10248 guards=True 12.3s
+  [A1_init_spread   s0] acc=0.7012 shuffle=0.6230 params=10248 guards=True 12.3s
+  [A1_init_spread   s1] acc=0.6660 shuffle=0.6445 params=10248 guards=True 13.0s
+  [A1_init_spread   s2] acc=0.5918 shuffle=0.5879 params=10248 guards=True 10.3s
+
+写入 results/equal_results.json
