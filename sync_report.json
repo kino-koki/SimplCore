@@ -1,0 +1,11 @@
+{
+  "new_head": "50e91265b85d629b89b8036bb0a7351aafa9ebec",
+  "parent": "e4cf6d0381e581e98f20cab0b24f6a9a605a1cef",
+  "n_pushed": 426,
+  "n_remote_blobs": 1392,
+  "n_mismatch": 0,
+  "verification": "PASS",
+  "excluded": "upstream snapshots, >50 MiB bundles, __pycache__, credential-bearing",
+  "commit_url": "https://github.com/kino-koki/SimplCore/commit/50e91265b85d629b89b8036bb0a7351aafa9ebec",
+  "note": "Every local SimplCore file absent from the remote tree was pushed. Content-level dedup (git blob sha1) skipped upstream snapshot copies. No credential literal is present in any pushed artifact."
+}
