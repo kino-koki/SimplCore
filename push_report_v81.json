@@ -1,0 +1,282 @@
+{
+  "repo": "kino-koki/SimplCore",
+  "commit_1": "7aada0d321243fb7d8d89ae412f068611041a385",
+  "parent": "1f6c3772f397e380cb2d5417c0e3d63ae5ab85fb",
+  "commit_1_message": "v8.1: five reviewer fixes + migration acceptance",
+  "n_files": 22,
+  "total_bytes": 1468351,
+  "remote_tree_verify": {
+    "n": 22,
+    "n_pass": 22,
+    "all_pass": true
+  },
+  "manifest": [
+    {
+      "path": "simplcore.pdf",
+      "bytes": 261032,
+      "blob_sha1": "3d28aa8b7f136ace25d0268cd0030023f1a1e1ea",
+      "sha256": "f26386eb68f66cfa4f120764c547b9e379276c0b2d054058d2494401c7fabdb5"
+    },
+    {
+      "path": "paper_main.pdf",
+      "bytes": 173409,
+      "blob_sha1": "a6a8dd1f5034d25a73ccb4cb4972e44ab92c1222",
+      "sha256": "c687fb18f04c975b81f23b1184c6b56fa32d98fdfcce4b04749756d1cd1062c9"
+    },
+    {
+      "path": "paper_appendix.pdf",
+      "bytes": 134869,
+      "blob_sha1": "961f501e65d2504f07ba841a0d8a738fdd16bdb7",
+      "sha256": "9ffac6fe42d3bb5621ef6647bae4523dfee8fe3f68cdc41c156f56d247c9065e"
+    },
+    {
+      "path": "build_simplcore_pdf_v8.py",
+      "bytes": 153323,
+      "blob_sha1": "1bb6cff75f8714eed363bf38f3e3cbbe1b5e4612",
+      "sha256": "971cef7e077c58478ab94bccb06c632877b696abe74dfc3dd781dda7f09ddfab"
+    },
+    {
+      "path": "patch_v8_five_fixes.py",
+      "bytes": 14828,
+      "blob_sha1": "034c2b5b3d108943bfd0ea82e421083c82e1fffb",
+      "sha256": "6607cd8d0ac73e07c22b081d03a52f4672a7622cb252881c9b593770d2bc7dfa"
+    },
+    {
+      "path": "appendix_D_fusion_long.csv",
+      "bytes": 6568,
+      "blob_sha1": "e8267a62896cd6d6c76122e3adfdcff8b2595810",
+      "sha256": "cf9f1c795e1ed98f219b0be84a7a3bfb14da02b73488ddb660dcaf52510e52d1"
+    },
+    {
+      "path": "appendix_D_fusion_wide.csv",
+      "bytes": 1230,
+      "blob_sha1": "ea074291eec12061cfa432a0a0386eb14fc976bf",
+      "sha256": "dd3774e9c9bfad3a59819984ce3f9880c91bf1f86a141a13042f7c690b111922"
+    },
+    {
+      "path": "MIGRATION_TIMING_ACCEPTANCE.md",
+      "bytes": 8952,
+      "blob_sha1": "d9762a1f2c3af0217336746c31221f361804bcb9",
+      "sha256": "2fc2d2e377c61f44035e8ce11015cbb2323ccaeab9f542e435a693e71ce83f45"
+    },
+    {
+      "path": "ts2sc_680m.ps1",
+      "bytes": 23749,
+      "blob_sha1": "fe9e74d59aa4d4303b5656ceb3bcbf4e1816aada",
+      "sha256": "ce0e67f404f0656887dae5d2aa6430bddcc59376d84517fe019ef27949832dc4"
+    },
+    {
+      "path": "TS2SC_VL47_PREFLIGHT.md",
+      "bytes": 6743,
+      "blob_sha1": "17a059866d983fe6990aa148ebf88a1f540112f4",
+      "sha256": "794eeec714f4946175efa069e24159ddb3cc3da3c90c371b40ea8e506a9138d5"
+    },
+    {
+      "path": "TS2SC_VL47_CONTINUE.md",
+      "bytes": 7425,
+      "blob_sha1": "8f581339a72d5d56588d4654a7dd42c7b27422af",
+      "sha256": "8085173b3f5b804e514f866372793a9a39728ef2138e9f04f24928ab4bc57b35"
+    },
+    {
+      "path": "PAPER_TS2SC_ADDENDUM.md",
+      "bytes": 2543,
+      "blob_sha1": "a41f95b07d1e7d7133b4da18ff3c590b277ede50",
+      "sha256": "cd57872b7a581f5fbbc38bf4e5efc2d81ea75e89b7d8f505485bf5e8b34a418e"
+    },
+    {
+      "path": "REVISION_LOG.md",
+      "bytes": 29163,
+      "blob_sha1": "d78de5743647a13ae065d568df5bc88354a835b0",
+      "sha256": "ed36518133b0091411ec441cf3469ee8a7a2b92369b7350137574465f1c2bcbe"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 43012,
+      "blob_sha1": "5457c9592acc2a9c61321e13e8707b9c1a8a3f41",
+      "sha256": "731418f64134648929e326112c4447c8aa5f6b7de980677fa081a98c49c6e99a"
+    },
+    {
+      "path": "ts2sc_vl47/se2_ci.json",
+      "bytes": 596,
+      "blob_sha1": "913275d28c4569788389f72fb1e26b4bf5c7a0ea",
+      "sha256": "b4dfdaf52403bc87babf8986220d3aa1d3800ce73467674fceea3fae2e8e07a9"
+    },
+    {
+      "path": "ts2sc_vl47/five_fix_pdf_check.json",
+      "bytes": 632,
+      "blob_sha1": "3d38e4bf8ea7c7d086c090f6a791eadefc4a92ee",
+      "sha256": "83b44153db9a33b2a3793e9ad56a59890aea2ee274c1693920eb6c83e975336f"
+    },
+    {
+      "path": "ts2sc_vl47/migration_timing_evidence.json",
+      "bytes": 388,
+      "blob_sha1": "7d88a574a7c3134ca930b0fa0cd4872e6cdb0fc9",
+      "sha256": "48431cb11e617e5e43ac336159927a211921bd57b505252adbd234e19d2e743d"
+    },
+    {
+      "path": "ts2sc_vl47/rollback_check.json",
+      "bytes": 507,
+      "blob_sha1": "3e4873ba04ae75935f9a03c94a4611674704d8f5",
+      "sha256": "c19d1217f80b93979fa63706a33aa2d2ccd959dd8dcbaa733124d34e0eda3a91"
+    },
+    {
+      "path": "tools/eval_baselines/results/desk_check_v7.json",
+      "bytes": 5821,
+      "blob_sha1": "dde09b001369a00419b9e72cb25cccab1c9be39f",
+      "sha256": "0cc259725437a0b5306fda709d2654a5303ce375e1b60a5d130f098bb30f307c"
+    },
+    {
+      "path": "tools/eval_baselines/results/split_check.json",
+      "bytes": 844,
+      "blob_sha1": "19f633d8a8b8e218c9ec97841d18f47df9259e0b",
+      "sha256": "3261c00dc55914d94f9e8e35077053076b2352c4b1d7dc0a27d5b0f7cc6f143c"
+    },
+    {
+      "path": "push_v81.py",
+      "bytes": 7812,
+      "blob_sha1": "0cb06e78c462f9e62c595f38a8191647bf061a69",
+      "sha256": "65e0c25ba9f4102bab30067e7b677a6834fd0e1b9eec24daa0b4b81efa532cbe"
+    },
+    {
+      "path": "SimplCore_五处修正与迁移验收包.zip",
+      "bytes": 584905,
+      "blob_sha1": "475bf6b70a15208d873793d55a4695de8da84a34",
+      "sha256": "1fb23dfccd65e81a6f69c763e8111cf2d3bd0f84292b703ab5ac8f044d81d97a"
+    }
+  ],
+  "verification": [
+    {
+      "path": "simplcore.pdf",
+      "local_blob": "3d28aa8b7f136ace25d0268cd0030023f1a1e1ea",
+      "remote_blob": "3d28aa8b7f136ace25d0268cd0030023f1a1e1ea",
+      "match": true
+    },
+    {
+      "path": "paper_main.pdf",
+      "local_blob": "a6a8dd1f5034d25a73ccb4cb4972e44ab92c1222",
+      "remote_blob": "a6a8dd1f5034d25a73ccb4cb4972e44ab92c1222",
+      "match": true
+    },
+    {
+      "path": "paper_appendix.pdf",
+      "local_blob": "961f501e65d2504f07ba841a0d8a738fdd16bdb7",
+      "remote_blob": "961f501e65d2504f07ba841a0d8a738fdd16bdb7",
+      "match": true
+    },
+    {
+      "path": "build_simplcore_pdf_v8.py",
+      "local_blob": "1bb6cff75f8714eed363bf38f3e3cbbe1b5e4612",
+      "remote_blob": "1bb6cff75f8714eed363bf38f3e3cbbe1b5e4612",
+      "match": true
+    },
+    {
+      "path": "patch_v8_five_fixes.py",
+      "local_blob": "034c2b5b3d108943bfd0ea82e421083c82e1fffb",
+      "remote_blob": "034c2b5b3d108943bfd0ea82e421083c82e1fffb",
+      "match": true
+    },
+    {
+      "path": "appendix_D_fusion_long.csv",
+      "local_blob": "e8267a62896cd6d6c76122e3adfdcff8b2595810",
+      "remote_blob": "e8267a62896cd6d6c76122e3adfdcff8b2595810",
+      "match": true
+    },
+    {
+      "path": "appendix_D_fusion_wide.csv",
+      "local_blob": "ea074291eec12061cfa432a0a0386eb14fc976bf",
+      "remote_blob": "ea074291eec12061cfa432a0a0386eb14fc976bf",
+      "match": true
+    },
+    {
+      "path": "MIGRATION_TIMING_ACCEPTANCE.md",
+      "local_blob": "d9762a1f2c3af0217336746c31221f361804bcb9",
+      "remote_blob": "d9762a1f2c3af0217336746c31221f361804bcb9",
+      "match": true
+    },
+    {
+      "path": "ts2sc_680m.ps1",
+      "local_blob": "fe9e74d59aa4d4303b5656ceb3bcbf4e1816aada",
+      "remote_blob": "fe9e74d59aa4d4303b5656ceb3bcbf4e1816aada",
+      "match": true
+    },
+    {
+      "path": "TS2SC_VL47_PREFLIGHT.md",
+      "local_blob": "17a059866d983fe6990aa148ebf88a1f540112f4",
+      "remote_blob": "17a059866d983fe6990aa148ebf88a1f540112f4",
+      "match": true
+    },
+    {
+      "path": "TS2SC_VL47_CONTINUE.md",
+      "local_blob": "8f581339a72d5d56588d4654a7dd42c7b27422af",
+      "remote_blob": "8f581339a72d5d56588d4654a7dd42c7b27422af",
+      "match": true
+    },
+    {
+      "path": "PAPER_TS2SC_ADDENDUM.md",
+      "local_blob": "a41f95b07d1e7d7133b4da18ff3c590b277ede50",
+      "remote_blob": "a41f95b07d1e7d7133b4da18ff3c590b277ede50",
+      "match": true
+    },
+    {
+      "path": "REVISION_LOG.md",
+      "local_blob": "d78de5743647a13ae065d568df5bc88354a835b0",
+      "remote_blob": "d78de5743647a13ae065d568df5bc88354a835b0",
+      "match": true
+    },
+    {
+      "path": "CHANGELOG.md",
+      "local_blob": "5457c9592acc2a9c61321e13e8707b9c1a8a3f41",
+      "remote_blob": "5457c9592acc2a9c61321e13e8707b9c1a8a3f41",
+      "match": true
+    },
+    {
+      "path": "ts2sc_vl47/se2_ci.json",
+      "local_blob": "913275d28c4569788389f72fb1e26b4bf5c7a0ea",
+      "remote_blob": "913275d28c4569788389f72fb1e26b4bf5c7a0ea",
+      "match": true
+    },
+    {
+      "path": "ts2sc_vl47/five_fix_pdf_check.json",
+      "local_blob": "3d38e4bf8ea7c7d086c090f6a791eadefc4a92ee",
+      "remote_blob": "3d38e4bf8ea7c7d086c090f6a791eadefc4a92ee",
+      "match": true
+    },
+    {
+      "path": "ts2sc_vl47/migration_timing_evidence.json",
+      "local_blob": "7d88a574a7c3134ca930b0fa0cd4872e6cdb0fc9",
+      "remote_blob": "7d88a574a7c3134ca930b0fa0cd4872e6cdb0fc9",
+      "match": true
+    },
+    {
+      "path": "ts2sc_vl47/rollback_check.json",
+      "local_blob": "3e4873ba04ae75935f9a03c94a4611674704d8f5",
+      "remote_blob": "3e4873ba04ae75935f9a03c94a4611674704d8f5",
+      "match": true
+    },
+    {
+      "path": "tools/eval_baselines/results/desk_check_v7.json",
+      "local_blob": "dde09b001369a00419b9e72cb25cccab1c9be39f",
+      "remote_blob": "dde09b001369a00419b9e72cb25cccab1c9be39f",
+      "match": true
+    },
+    {
+      "path": "tools/eval_baselines/results/split_check.json",
+      "local_blob": "19f633d8a8b8e218c9ec97841d18f47df9259e0b",
+      "remote_blob": "19f633d8a8b8e218c9ec97841d18f47df9259e0b",
+      "match": true
+    },
+    {
+      "path": "push_v81.py",
+      "local_blob": "0cb06e78c462f9e62c595f38a8191647bf061a69",
+      "remote_blob": "0cb06e78c462f9e62c595f38a8191647bf061a69",
+      "match": true
+    },
+    {
+      "path": "SimplCore_五处修正与迁移验收包.zip",
+      "local_blob": "475bf6b70a15208d873793d55a4695de8da84a34",
+      "remote_blob": "475bf6b70a15208d873793d55a4695de8da84a34",
+      "match": true
+    }
+  ],
+  "note": "Credential read only from GH_TOKEN; no token bytes in any file."
+}
