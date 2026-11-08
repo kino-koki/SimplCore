@@ -1,0 +1,35 @@
+{
+  "repo": "kino-koki/Qwen3-1.7B-Instruct",
+  "commit_done": true,
+  "volumes": [
+    {
+      "volume": 1,
+      "zip": "Qwen3-1.7B-Instruct_\u5b8c\u6574\u6743\u91cd_\u537701.zip",
+      "bytes": 1100303336,
+      "shards": 11
+    },
+    {
+      "volume": 2,
+      "zip": "Qwen3-1.7B-Instruct_\u5b8c\u6574\u6743\u91cd_\u537702.zip",
+      "bytes": 1095763548,
+      "shards": 11
+    },
+    {
+      "volume": 3,
+      "zip": "Qwen3-1.7B-Instruct_\u5b8c\u6574\u6743\u91cd_\u537703.zip",
+      "bytes": 996148682,
+      "shards": 10
+    },
+    {
+      "volume": 4,
+      "zip": "Qwen3-1.7B-Instruct_\u5b8c\u6574\u6743\u91cd_\u537704.zip",
+      "bytes": 875846034,
+      "shards": 10
+    }
+  ],
+  "total_zip_bytes": 4068061600,
+  "all_files_verified": true,
+  "n_sha256": 55,
+  "full_sha_verified": true,
+  "n_files_checked": 55
+}
