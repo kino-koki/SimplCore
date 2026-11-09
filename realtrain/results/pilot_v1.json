@@ -1,0 +1,119 @@
+{
+  "corpus": "tiny_shakespeare_char_level",
+  "corpus_bytes": 1115394,
+  "split": "chronological 90/10, no shuffle",
+  "optimizer": "Adam",
+  "steps": 200,
+  "B": 8,
+  "L": 48,
+  "lr": 0.003,
+  "arch_step": 1,
+  "rows": [
+    {
+      "arm": "B_gated",
+      "seed": 0,
+      "d": 32,
+      "V": 65,
+      "steps": 200,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 6211,
+      "final_val_bpc": 3.600471510841254,
+      "bpc_long": 4.272762043575011,
+      "bpc_short": 3.0453988615366123,
+      "n_long": 175,
+      "n_short": 64,
+      "final_train_bpc": 3.744854844713554,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.049351659092873,
+          "val_bpc": 6.018226910083711,
+          "bpc_long": 6.01695180837128,
+          "bpc_short": 6.032824428194399
+        },
+        {
+          "step": 20,
+          "train_bpc": 5.134345843168966,
+          "val_bpc": 5.006785046269521,
+          "bpc_long": 5.608332173120076,
+          "bpc_short": 4.339256824876966
+        },
+        {
+          "step": 40,
+          "train_bpc": 4.612270735480356,
+          "val_bpc": 4.5650153027020925,
+          "bpc_long": 5.3581029627241685,
+          "bpc_short": 3.696415804627304
+        },
+        {
+          "step": 60,
+          "train_bpc": 4.516974074293187,
+          "val_bpc": 4.336781087140633,
+          "bpc_long": 5.164032153023378,
+          "bpc_short": 3.4683931031834607
+        },
+        {
+          "step": 80,
+          "train_bpc": 4.192081048152444,
+          "val_bpc": 4.107875413768353,
+          "bpc_long": 4.900174173866679,
+          "bpc_short": 3.2977689825781598
+        },
+        {
+          "step": 100,
+          "train_bpc": 4.0327122153069785,
+          "val_bpc": 3.880966637361178,
+          "bpc_long": 4.631507421816389,
+          "bpc_short": 3.15888073351075
+        },
+        {
+          "step": 120,
+          "train_bpc": 3.8068747111216594,
+          "val_bpc": 3.7469414272351393,
+          "bpc_long": 4.4522105214650125,
+          "bpc_short": 3.069651367955368
+        },
+        {
+          "step": 140,
+          "train_bpc": 3.8148531497987026,
+          "val_bpc": 3.7106892929675097,
+          "bpc_long": 4.386808134052519,
+          "bpc_short": 3.111926576720651
+        },
+        {
+          "step": 160,
+          "train_bpc": 3.696205751372993,
+          "val_bpc": 3.6622982022783894,
+          "bpc_long": 4.334637840542671,
+          "bpc_short": 3.126272665176139
+        },
+        {
+          "step": 180,
+          "train_bpc": 3.8778751008773016,
+          "val_bpc": 3.650359374163015,
+          "bpc_long": 4.28785442250381,
+          "bpc_short": 3.121706236175192
+        },
+        {
+          "step": 200,
+          "train_bpc": 3.744854844713554,
+          "val_bpc": 3.600471510841254,
+          "bpc_long": 4.272762043575011,
+          "bpc_short": 3.0453988615366123
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 7,
+        "worst_rel_err": 4.01812637286472e-08,
+        "passed": true
+      },
+      "invariants": {
+        "error": "GatedEvolutionMixer requires tok (input-side bits)"
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 0.39
+    }
+  ]
+}

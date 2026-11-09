@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Real-corpus evolution mixer -- STEP 2 (SMM x SGC fused self-evolution).
+"""Real-corpus evolution mixer -- STEP 3 (calibrated fused self-evolution).
 
 Pure NumPy. No torch, no synthetic task, no analytic witness. This module is
 imported by ``realtrain/train_real_lm.py`` and trained with Adam on a real
@@ -25,11 +25,12 @@ import math
 
 import numpy as np
 
-__all__ = ["StaticSGCMixer", "GatedEvolutionMixer",
-           "FusedEvolutionMixer", "ARCH_STEP", "MIXER_CLASSES", "hadamard"]
+__all__ = ["StaticSGCMixer", "GatedEvolutionMixer", "FusedEvolutionMixer",
+           "CalibratedFusedMixer", "ARCH_STEP", "MIXER_CLASSES", "hadamard"]
 
-ARCH_STEP = 2
-MIXER_CLASSES = ("StaticSGCMixer", "GatedEvolutionMixer", "FusedEvolutionMixer")
+ARCH_STEP = 3
+MIXER_CLASSES = ("StaticSGCMixer", "GatedEvolutionMixer",
+                 "FusedEvolutionMixer", "CalibratedFusedMixer")
 
 
 def hadamard(n):
@@ -306,4 +307,78 @@ class FusedEvolutionMixer(GatedEvolutionMixer):
                     rejects=self.rejects,
                     zero_order_gate=True, has_NxN_score=False,
                     has_kv_cache=False)
+        return base
+
+
+class CalibratedFusedMixer(FusedEvolutionMixer):
+    """STEP 3 -- repair the three defects measured in Step 2.
+
+    No new theory, no new claim: three engineering corrections, each tied to
+    an observed failure on real text.
+
+    1. **Separate time scale.** The fused state uses ``rho_mem`` (per training
+       step) instead of the mixer's sequence decay ``rho`` (per token).
+    2. **Per-key cooldown.** After a key is written it cannot be re-written for
+       ``cooldown`` steps, removing the write/re-write feedback loop.
+    3. **Dominance gate.** A (key, value) is registered only if it accounts for
+       at least ``dominance`` of that key's observed co-occurrence mass; the
+       gate now selects the majority value instead of accepting everything.
+
+    The 65-to-16 bucket collision is NOT silently fixed: it is reported as a
+    remaining limitation in the Step-3 report and as an open question in the
+    paper's appendix.
+    """
+
+    def __init__(self, d: int, rho: float = 0.9, seed: int = 0,
+                 tau: int = 6, capacity: int = 16, eps: float = 1e-3,
+                 rho_mem: float = 0.9995, cooldown: int = 40,
+                 dominance: float = 0.35):
+        super().__init__(d, rho, seed, tau, capacity, eps)
+        self.rho_mem = float(rho_mem)
+        self.cooldown = int(cooldown)
+        self.dominance = float(dominance)
+        self.step = 0
+        self.last_commit = {}
+
+    def observe(self, tok, tgt):
+        self.step += 1
+        k = self._bucket(tok).ravel()
+        v = self._bucket(tgt).ravel()
+        np.add.at(self.counts, (k, v), 1)
+        for kk, vv in set(zip(k.tolist(), v.tolist())):
+            if self.counts[kk, vv] < self.tau:
+                continue
+            if self.step - self.last_commit.get(kk, -10 ** 9) < self.cooldown:
+                continue
+            row = self.counts[kk].astype(np.float64)
+            if row.sum() <= 0 or self.counts[kk, vv] / row.sum() < self.dominance:
+                continue
+            cur, margin = self._read(kk)
+            if cur == vv and margin >= self.eps:
+                self.rejects += 1
+                continue
+            if kk in self.slots:
+                old_v, old_w = self.slots[kk]
+                self.S -= old_w * np.outer(self.C[kk], self.C[self.VK + old_v])
+            self.S += np.outer(self.C[kk], self.C[self.VK + vv])
+            self.slots[kk] = (int(vv), 1.0)
+            self.last_commit[kk] = self.step
+            self.commits += 1
+        self.S *= self.rho_mem
+        for kk, (vv, w) in list(self.slots.items()):
+            self.slots[kk] = (vv, w * self.rho_mem)
+        while len(self.slots) > self.capacity:
+            kk = min(self.slots, key=lambda x: self.slots[x][1])
+            vv, w = self.slots.pop(kk)
+            self.S -= w * np.outer(self.C[kk], self.C[self.VK + vv])
+
+    def invariants(self, Ls=(9, 65, 257)):
+        base = FusedEvolutionMixer.invariants(self, Ls)
+        base.update(arch_step=ARCH_STEP, calibrated=True,
+                    rho_mem=self.rho_mem, cooldown_steps=self.cooldown,
+                    dominance_threshold=self.dominance,
+                    write_count=self.commits, reject_count=self.rejects,
+                    remaining_limitation=("65 corpus symbols share 16 code "
+                                          "buckets; within-bucket collision "
+                                          "is not resolved"))
         return base
