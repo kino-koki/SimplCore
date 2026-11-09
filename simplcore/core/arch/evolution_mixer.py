@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Real-corpus evolution mixer -- STEP 0 (pure static SGC baseline).
+"""Real-corpus evolution mixer -- STEP 1 (input-dependent evidence gate).
 
 Pure NumPy. No torch, no synthetic task, no analytic witness. This module is
 imported by ``realtrain/train_real_lm.py`` and trained with Adam on a real
@@ -23,10 +23,10 @@ from __future__ import annotations
 
 import numpy as np
 
-__all__ = ["StaticSGCMixer", "ARCH_STEP", "MIXER_CLASSES"]
+__all__ = ["StaticSGCMixer", "GatedEvolutionMixer", "ARCH_STEP", "MIXER_CLASSES"]
 
-ARCH_STEP = 0
-MIXER_CLASSES = ("StaticSGCMixer",)
+ARCH_STEP = 1
+MIXER_CLASSES = ("StaticSGCMixer", "GatedEvolutionMixer")
 
 
 class StaticSGCMixer:
@@ -43,8 +43,13 @@ class StaticSGCMixer:
     def params(self):
         return {"W_x": self.W_x}
 
-    def forward(self, e: np.ndarray):
-        """e: (B, L, d) -> y: (B, L, d), strictly causal LTI."""
+    def forward(self, e: np.ndarray, tok=None):
+        """e: (B, L, d) -> y: (B, L, d), strictly causal LTI.
+
+        ``tok`` is accepted for interface compatibility with the gated mixer
+        but is deliberately NOT read by this arm: a time-invariant kernel must
+        not depend on the input symbols.
+        """
         B, L, d = e.shape
         u = e @ self.W_x
         s = np.zeros((B, d), dtype=np.float64)
@@ -94,3 +99,90 @@ class StaticSGCMixer:
                     state_is_O_d=True, has_NxN_score=False,
                     has_kv_cache=False,
                     all_pass=bool(toe < 1e-12 and err < 1e-10 and causal == 0))
+
+
+class GatedEvolutionMixer(StaticSGCMixer):
+    """STEP 1 -- input-dependent L2 evidence gate over a local path.
+
+        c_t = (1/t) sum_{s<=t} tok_s / 128        (input-side statistic)
+        g_t = sigmoid(a log1p(c_t) + b log1p(t) + c0)
+        y_t = g_t * long_t + (1-g_t) * local_t
+
+    This **deliberately gives up strict time invariance**: the gate is a
+    function of the input symbols, which is exactly the input-side bit supply
+    that Theorem A requires and the P2 escape route. The recurrent state is
+    still O(d); no N x N score and no KV cache are introduced.
+
+    ``c_t`` depends only on token ids, never on learnable parameters, so its
+    stop-gradient status is structural rather than an implementation trick.
+    """
+
+    def __init__(self, d: int, rho: float = 0.9, seed: int = 0):
+        super().__init__(d, rho, seed)
+        rng = np.random.default_rng(seed + 2000)
+        self.W_l = rng.standard_normal((d, d)) * (1.0 / np.sqrt(d))
+        self.a = np.array(0.0)
+        self.b = np.array(0.0)
+        self.c0 = np.array(0.0)
+        self._c = {}
+
+    def params(self):
+        p = super().params()
+        p.update({"W_l": self.W_l, "a": self.a, "b": self.b, "c0": self.c0})
+        return p
+
+    @staticmethod
+    def _sigmoid(x):
+        return 0.5 * (1.0 + np.tanh(0.5 * x))
+
+    def forward(self, e, tok=None):
+        B, L, d = e.shape
+        u = e @ self.W_x
+        local = e @ self.W_l
+        s = np.zeros((B, d), dtype=np.float64)
+        long = np.empty_like(u)
+        for t in range(L):
+            s = self.rho * s + u[:, t, :]
+            long[:, t, :] = s
+        if tok is None:
+            raise ValueError("GatedEvolutionMixer requires tok (input-side bits)")
+        tv = tok.astype(np.float64) / 128.0
+        ct = np.cumsum(tv, axis=1) / np.arange(1, L + 1)[None, :]
+        tt = np.log1p(np.arange(1, L + 1, dtype=np.float64))[None, :]
+        logit = self.a * np.log1p(ct) + self.b * tt + self.c0
+        g = self._sigmoid(logit)                      # (B, L)
+        y = g[..., None] * long + (1.0 - g[..., None]) * local
+        self._c.update(e=e, u=u, long=long, local=local, g=g, ct=ct, tt=tt)
+        return y
+
+    def backward(self, dy):
+        c = self._c
+        e, long, local, g = c["e"], c["long"], c["local"], c["g"]
+        B, L, d = e.shape
+        dg_raw = np.sum(dy * (long - local), axis=-1)     # (B, L)
+        dg = dg_raw * g * (1.0 - g)
+        ga = np.array(float(np.sum(dg * np.log1p(c["ct"]))))
+        gb = np.array(float(np.sum(dg * c["tt"])))
+        gc0 = np.array(float(np.sum(dg)))
+        dlong = dy * g[..., None]
+        dlocal = dy * (1.0 - g[..., None])
+        r = np.zeros((B, d), dtype=np.float64)
+        du = np.empty_like(dlong)
+        for t in range(L - 1, -1, -1):
+            r = dlong[:, t, :] + self.rho * r
+            du[:, t, :] = r
+        gW_x = np.einsum("bld,blm->dm", e, du)
+        gW_l = np.einsum("bld,blm->dm", e, dlocal)
+        de = du @ self.W_x.T + dlocal @ self.W_l.T
+        return {"W_x": gW_x, "W_l": gW_l, "a": ga, "b": gb, "c0": gc0}, de
+
+    def invariants(self, Ls=(9, 65, 257)):
+        base = StaticSGCMixer.invariants(self, Ls)
+        base.update(arch_step=ARCH_STEP, kernel_static=False,
+                    time_invariant=False, input_dependent_gate=True,
+                    state_is_O_d=True, has_NxN_score=False,
+                    has_kv_cache=False,
+                    note=("strict Toeplitz/FFT-IIR duality is retained by the "
+                          "long path only; the composite forward map is no "
+                          "longer time invariant by construction"))
+        return base

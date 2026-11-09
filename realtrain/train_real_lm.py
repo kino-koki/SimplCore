@@ -136,7 +136,7 @@ class LM:
 
     def forward(self, tok):
         e = self.E[tok]
-        y = self.mixer.forward(e)
+        y = self.mixer.forward(e, tok)
         logits = y @ self.W_o + self.b
         z = logits - logits.max(axis=-1, keepdims=True)
         ex = np.exp(z)
