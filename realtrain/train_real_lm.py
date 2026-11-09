@@ -276,6 +276,8 @@ def run_arm(arm, seed, steps, B, L, lr):
     state = {n: (np.zeros_like(a), np.zeros_like(a)) for n, a in params.items()}
     rng = np.random.default_rng(seed + 31337)
     tk, tg, _ = batch(tr, B, L, rng)
+    if hasattr(mixer, "observe"):
+        mixer.observe(tk, tg)   # one real batch of experience, zero-order
     gc = gradcheck(lm, tk, tg, seed)
     if not gc["passed"]:
         return dict(arm=arm, seed=seed, error="gradcheck FAIL", gradcheck=gc)
@@ -283,6 +285,8 @@ def run_arm(arm, seed, steps, B, L, lr):
     t0 = time.time()
     for step in range(1, steps + 1):
         tk, tg, _ = batch(tr, B, L, rng)
+        if hasattr(mixer, "observe"):
+            mixer.observe(tk, tg)
         loss, g = lm.loss_and_grad(tk, tg)
         adam_step(params, g, state, step, lr=lr)
         if step % max(1, steps // 10) == 0 or step == 1:

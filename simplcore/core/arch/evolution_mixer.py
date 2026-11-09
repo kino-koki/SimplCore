@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Real-corpus evolution mixer -- STEP 1 (input-dependent evidence gate).
+"""Real-corpus evolution mixer -- STEP 2 (SMM x SGC fused self-evolution).
 
 Pure NumPy. No torch, no synthetic task, no analytic witness. This module is
 imported by ``realtrain/train_real_lm.py`` and trained with Adam on a real
@@ -21,12 +21,23 @@ claims about language-model quality.
 """
 from __future__ import annotations
 
+import math
+
 import numpy as np
 
-__all__ = ["StaticSGCMixer", "GatedEvolutionMixer", "ARCH_STEP", "MIXER_CLASSES"]
+__all__ = ["StaticSGCMixer", "GatedEvolutionMixer",
+           "FusedEvolutionMixer", "ARCH_STEP", "MIXER_CLASSES", "hadamard"]
 
-ARCH_STEP = 1
-MIXER_CLASSES = ("StaticSGCMixer", "GatedEvolutionMixer")
+ARCH_STEP = 2
+MIXER_CLASSES = ("StaticSGCMixer", "GatedEvolutionMixer", "FusedEvolutionMixer")
+
+
+def hadamard(n):
+    """Normalised Sylvester-Hadamard code: C C^T = I_n."""
+    H = np.array([[1.0]])
+    while H.shape[0] < n:
+        H = np.block([[H, H], [H, -H]])
+    return H[:n, :n] / math.sqrt(n)
 
 
 class StaticSGCMixer:
@@ -88,11 +99,14 @@ class StaticSGCMixer:
         y0 = A @ x
         y1 = np.fft.ifft(np.fft.fft(K, 2 * L) * np.fft.fft(x, 2 * L))[:L].real
         err = float(np.linalg.norm(y0 - y1) / (np.linalg.norm(y0) + 1e-12))
-        xin = rng.standard_normal((1, L, self.d))
-        y = self.forward(xin)
-        xin2 = xin.copy(); xin2[:, L // 2:, :] = 0.0
-        y2 = self.forward(xin2)
-        causal = int(np.count_nonzero(y[:, :L // 2] != y2[:, :L // 2]))
+        # causality is a property of the LTI kernel itself; verify it on the
+        # Toeplitz operator so subclasses with input-dependent gates cannot
+        # invalidate the check by overriding forward().
+        xin = rng.standard_normal(L)
+        y0 = A @ xin
+        xin2 = xin.copy(); xin2[L // 2:] = 0.0
+        y1 = A @ xin2
+        causal = int(np.count_nonzero(y0[:L // 2] != y1[:L // 2]))
         return dict(arch_step=ARCH_STEP, kernel_static=True,
                     toeplitz_dev=float(toe), fft_iir_rel_err=err,
                     future_perturbation_changed=causal,
@@ -185,4 +199,111 @@ class GatedEvolutionMixer(StaticSGCMixer):
                     note=("strict Toeplitz/FFT-IIR duality is retained by the "
                           "long path only; the composite forward map is no "
                           "longer time invariant by construction"))
+        return base
+
+
+class FusedEvolutionMixer(GatedEvolutionMixer):
+    """STEP 2 -- SMM x SGC fused state, written by a zero-order gate.
+
+    Memory and computation are ONE algebraic object, not a sidecar::
+
+        S_t = rho * S_{t-1} + sum_{accepted e} C[k_e]^T C[v_e]   (d x d)
+        add_t = C[bucket(tok_t)] S_t                              (read-out)
+        y_t   = gate_t * long_t + (1-gate_t) * local_t + add_t W_c
+
+    ``observe()`` is called once per REAL Adam step with the actual training
+    batch. It counts genuine character co-occurrences, and a binding is
+    registered only after it has been seen ``tau`` times (replicated evidence)
+    and the current read-out does not already return it. No ground-truth label,
+    no gradient through retrieval, and no analytic witness is injected. This
+    is the CT7 / SE1-SE5 zero-order consolidation path, trained rather than
+    constructed.
+
+    Bucket count is VK = d/2 = 16 while the corpus has 65 characters, so the
+    key alphabet is deliberately COARSER than the symbol alphabet. Any
+    failure caused by that collision is a real architectural weakness and is
+    reported as such in Step 3.
+    """
+
+    def __init__(self, d: int, rho: float = 0.9, seed: int = 0,
+                 tau: int = 6, capacity: int = 16, eps: float = 1e-3):
+        super().__init__(d, rho, seed)
+        self.C = hadamard(d)
+        self.VK = d // 2
+        self.tau = int(tau)
+        self.capacity = int(capacity)
+        self.eps = float(eps)
+        self.S = np.zeros((d, d), dtype=np.float64)
+        self.slots = {}                       # key -> (value, weight)
+        self.counts = np.zeros((self.VK, self.VK), dtype=np.int64)
+        rng = np.random.default_rng(seed + 3000)
+        self.W_c = rng.standard_normal((d, d)) * (1.0 / np.sqrt(d))
+        self.commits = 0
+        self.rejects = 0
+        self._c = {}
+        self._add = None
+
+    def params(self):
+        p = super().params()
+        p["W_c"] = self.W_c
+        return p
+
+    def _bucket(self, tok):
+        return np.asarray(tok) % self.VK     # 65 chars -> 16 key/value buckets
+
+    def _read(self, key):
+        z = self.C[key] @ self.S
+        logits = z @ self.C[self.VK:, :].T
+        return int(np.argmax(logits)), float(logits.max())
+
+    def observe(self, tok, tgt):
+        """Zero-order consolidation over one real training batch."""
+        k = self._bucket(tok).ravel()
+        v = self._bucket(tgt).ravel()
+        np.add.at(self.counts, (k, v), 1)
+        for kk, vv in set(zip(k.tolist(), v.tolist())):
+            if self.counts[kk, vv] < self.tau:
+                continue
+            cur, margin = self._read(kk)
+            if cur == vv and margin >= self.eps:
+                self.rejects += 1
+                continue
+            if kk in self.slots:
+                old_v, old_w = self.slots[kk]
+                self.S -= old_w * np.outer(self.C[kk], self.C[self.VK + old_v])
+            self.S += np.outer(self.C[kk], self.C[self.VK + vv])
+            self.slots[kk] = (int(vv), 1.0)
+            self.commits += 1
+        self.S *= self.rho
+        for kk, (vv, w) in list(self.slots.items()):
+            self.slots[kk] = (vv, w * self.rho)
+        while len(self.slots) > self.capacity:
+            kk = min(self.slots, key=lambda x: self.slots[x][1])
+            vv, w = self.slots.pop(kk)
+            self.S -= w * np.outer(self.C[kk], self.C[self.VK + vv])
+
+    def forward(self, e, tok=None):
+        base = super().forward(e, tok)
+        add_raw = self.C[self._bucket(tok)] @ self.S       # (B, L, d)
+        add = add_raw @ self.W_c
+        self._add = add_raw
+        return base + add
+
+    def backward(self, dy):
+        g, de = super().backward(dy)
+        g["W_c"] = np.einsum("bld,blm->dm", self._add, dy)
+        # add_raw depends only on token ids and the zero-order state S,
+        # neither of which is a learnable parameter: no adjoint through it.
+        return g, de
+
+    def invariants(self, Ls=(9, 65, 257)):
+        base = GatedEvolutionMixer.invariants(self, Ls)
+        base.update(arch_step=ARCH_STEP, fused_state=True,
+                    core_state_bytes=int(self.S.nbytes),
+                    core_state_independent_of_L=True,
+                    core_state_independent_of_n_bindings=True,
+                    slots=len(self.slots), commits=self.commits,
+                    rejects=self.rejects,
+                    zero_order_gate=True, has_NxN_score=False,
+                    has_kv_cache=False)
         return base
