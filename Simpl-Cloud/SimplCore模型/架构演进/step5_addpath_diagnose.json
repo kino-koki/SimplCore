@@ -1,0 +1,44 @@
+{
+  "version": "step5_addpath_diagnose",
+  "corpus": "tiny_shakespeare_char_level",
+  "rows": [
+    {
+      "arm": "F_expanded",
+      "seed": 0,
+      "steps": 3000,
+      "gradcheck_worst": 6.185987638994303e-08,
+      "bpc_full": 3.433387,
+      "bpc_add_ablated": 3.460834,
+      "bpc_delta_add_path": -0.027447,
+      "W_c_relative_move": 0.819381,
+      "add_logits_rms": 0.438468,
+      "base_logits_rms": 3.98758,
+      "add_to_base_rms_ratio": 0.109958,
+      "trained_top1_recovery": 0.650794,
+      "trained_slots": 63,
+      "core_state_bytes": 8192,
+      "writes": 18898,
+      "note": "add-path ablation sets W_c=0 after training; positive bpc_delta means the retrieved signal HURT, negative means it HELPED. Neither is a claim about LM quality."
+    },
+    {
+      "arm": "G_slotted",
+      "seed": 0,
+      "steps": 3000,
+      "gradcheck_worst": 6.181540310628938e-08,
+      "bpc_full": 3.43685,
+      "bpc_add_ablated": 3.500241,
+      "bpc_delta_add_path": -0.06339,
+      "W_c_relative_move": 0.946856,
+      "add_logits_rms": 0.648825,
+      "base_logits_rms": 3.688953,
+      "add_to_base_rms_ratio": 0.175883,
+      "trained_top1_recovery": 0.968254,
+      "trained_slots": 63,
+      "core_state_bytes": 24576,
+      "writes": 15364,
+      "note": "add-path ablation sets W_c=0 after training; positive bpc_delta means the retrieved signal HURT, negative means it HELPED. Neither is a claim about LM quality."
+    }
+  ],
+  "wall_seconds": 17.57,
+  "note": "trained on real text; mechanistic ablation, not a performance claim"
+}

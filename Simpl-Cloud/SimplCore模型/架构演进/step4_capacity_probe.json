@@ -1,0 +1,42 @@
+{
+  "version": "step4_capacity_probe",
+  "rows": [
+    {
+      "seed": 0,
+      "V": 65,
+      "d": 32,
+      "bindings_written": 65,
+      "top1_recovery": 0.769231,
+      "top1_hits": 50,
+      "min_top2_margin": 0.005947,
+      "effective_rank": 13.9904,
+      "rank_upper_bound": 32,
+      "note": "perfect-write upper bound; rank(S) <= 32 < 65 makes exact recovery impossible in principle"
+    },
+    {
+      "seed": 1,
+      "V": 65,
+      "d": 32,
+      "bindings_written": 65,
+      "top1_recovery": 0.784615,
+      "top1_hits": 51,
+      "min_top2_margin": 0.006956,
+      "effective_rank": 13.7594,
+      "rank_upper_bound": 32,
+      "note": "perfect-write upper bound; rank(S) <= 32 < 65 makes exact recovery impossible in principle"
+    },
+    {
+      "seed": 2,
+      "V": 65,
+      "d": 32,
+      "bindings_written": 65,
+      "top1_recovery": 0.8,
+      "top1_hits": 52,
+      "min_top2_margin": 0.001795,
+      "effective_rank": 14.4445,
+      "rank_upper_bound": 32,
+      "note": "perfect-write upper bound; rank(S) <= 32 < 65 makes exact recovery impossible in principle"
+    }
+  ],
+  "note": "synthetic perfect-write upper bound on real corpus co-occurrence statistics; NOT a training result"
+}

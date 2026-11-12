@@ -1,0 +1,35 @@
+{
+  "commit": "5b7a44a7dde4af10ae5982e72945b6c3c7f2540c",
+  "parent": "83cf26268ccbc7768e20a2abc977a7b4532f7472",
+  "branch": "main",
+  "n_files": 5,
+  "mismatches": [],
+  "verified": 5,
+  "files": [
+    {
+      "path": "simplcore/core/arch/evolution_mixer.py",
+      "blob_sha1": "37e1e6e6ea1e2f145dd2ec8ec7a9a9502c89ea49",
+      "bytes": 7533
+    },
+    {
+      "path": "realtrain/train_real_lm.py",
+      "blob_sha1": "d840087d496ff39d1085f328926e02700e47d7a9",
+      "bytes": 13609
+    },
+    {
+      "path": "realtrain/results/step1_real.json",
+      "blob_sha1": "fa7767c4cce58fb16156a03a617bf5f490634976",
+      "bytes": 15458
+    },
+    {
+      "path": "realtrain/results/step1_stats.json",
+      "blob_sha1": "ea6ca2184594ce877ff1265ef207ddf5304340f4",
+      "bytes": 833
+    },
+    {
+      "path": "realtrain/STEP1_REPORT.md",
+      "blob_sha1": "a941b3921be80214400cd933b6b43805e2bd6eb7",
+      "bytes": 2936
+    }
+  ]
+}

@@ -1,0 +1,287 @@
+{
+  "C1_toeplitz_matrix_vs_iir": {
+    "max_abs_diff": 8.881784197001252e-15,
+    "passed": true
+  },
+  "C2_outer_product_matrix_vs_recurrence": {
+    "max_abs_diff": 0.0,
+    "passed": true
+  },
+  "C3_window_matrix_vs_ring": {
+    "max_abs_diff": 8.881784197001252e-16,
+    "passed": true
+  },
+  "C4_C5_full_vs_stream": {
+    "rows": [
+      {
+        "L": 1,
+        "max_abs_diff": 2.6645352591003757e-15,
+        "state_bytes": 105984,
+        "n_layers": 3
+      },
+      {
+        "L": 2,
+        "max_abs_diff": 5.773159728050814e-15,
+        "state_bytes": 109056,
+        "n_layers": 3
+      },
+      {
+        "L": 7,
+        "max_abs_diff": 1.0436096431476471e-14,
+        "state_bytes": 124416,
+        "n_layers": 3
+      },
+      {
+        "L": 32,
+        "max_abs_diff": 7.105427357601002e-15,
+        "state_bytes": 139776,
+        "n_layers": 3
+      },
+      {
+        "L": 64,
+        "max_abs_diff": 1.2434497875801753e-14,
+        "state_bytes": 139776,
+        "n_layers": 3
+      },
+      {
+        "L": 137,
+        "max_abs_diff": 3.9968028886505635e-15,
+        "state_bytes": 139776,
+        "n_layers": 3
+      }
+    ],
+    "max_abs_diff": 1.2434497875801753e-14,
+    "passed": true,
+    "state_constant": true,
+    "capacity_bytes": 139776,
+    "state_bytes_saturated": 139776,
+    "state_bytes": 105984
+  },
+  "C6_perturb_sgc": {
+    "groups": {
+      "Toeplitz mixture": {
+        "n": 3,
+        "delta": 0.01482133,
+        "passed": true
+      },
+      "self-evolving write gate": {
+        "n": 3,
+        "delta": 0.14450877,
+        "passed": true
+      },
+      "fusion alpha/gamma": {
+        "n": 6,
+        "delta": 2.90345039,
+        "passed": true
+      },
+      "state inputs Wk/Wv/Wu": {
+        "n": 9,
+        "delta": 1.83283088,
+        "passed": true
+      },
+      "local window pos": {
+        "n": 3,
+        "delta": 0.26125548,
+        "passed": true
+      },
+      "unlinked_parameter": {
+        "delta": 0.0,
+        "passed": true
+      }
+    },
+    "all_pass": true
+  },
+  "C7_fresh_real_training": {
+    "steps": 160,
+    "seed": 23,
+    "corpus_chars": 240000,
+    "curve": [
+      {
+        "step": 1,
+        "train_bpc": 5.00608323947833
+      },
+      {
+        "step": 80,
+        "train_bpc": 4.069814588028842
+      },
+      {
+        "step": 160,
+        "train_bpc": 3.9396810708932706
+      }
+    ],
+    "loss_drop_bpc": 1.066402,
+    "params_with_zero_grad_first_step": [],
+    "all_params_in_graph": true,
+    "gradcheck": [
+      {
+        "param": "E",
+        "numeric": -0.02626944350936355,
+        "analytic": -0.026269443531807594,
+        "rel_err": 4.2718916246136735e-10,
+        "nonzero": true,
+        "passed": true
+      },
+      {
+        "param": "b0.Wq",
+        "numeric": 0.0006956104137145757,
+        "analytic": 0.0006956103994541028,
+        "rel_err": 1.0250330333892252e-08,
+        "nonzero": true,
+        "passed": true
+      },
+      {
+        "param": "b0.w_beta",
+        "numeric": 0.00031997511307224613,
+        "analytic": 0.00031997509840016986,
+        "rel_err": 2.2926902761987232e-08,
+        "nonzero": true,
+        "passed": true
+      },
+      {
+        "param": "b1.wlogits",
+        "numeric": 0.0001422934658990016,
+        "analytic": 0.00014229352480293656,
+        "rel_err": 2.06980420317313e-07,
+        "nonzero": true,
+        "passed": true
+      }
+    ],
+    "gradcheck_pass": true,
+    "elapsed_s": 6.1,
+    "passed": true
+  },
+  "C8_stream_generation": {
+    "generations": [
+      {
+        "chars": 180,
+        "words": 36,
+        "distinct1": 0.8333,
+        "rep3": 0.0,
+        "real_word_ratio": 0.8611,
+        "corpus_bigram_overlap": 0.2571,
+        "corpus_3gram_overlap": 0.0,
+        "prompt": "First Citizen:\n",
+        "held_out": false,
+        "sample": "The were of a child I be an your again?\\n\\nQ: Farewoman desire by be well thee,\\nAnd prove the tembroke ask their still the children, thanks your penouth",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 37,
+        "distinct1": 0.7838,
+        "rep3": 0.0,
+        "real_word_ratio": 0.8649,
+        "corpus_bigram_overlap": 0.4167,
+        "corpus_3gram_overlap": 0.0571,
+        "prompt": "HAMLET:\n",
+        "held_out": false,
+        "sample": "Why, good marriage, or something do will be lears:\\nI would be not this the though not for this might along.\\nI would so shall do ben thy deping is will",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 34,
+        "distinct1": 0.9118,
+        "rep3": 0.0,
+        "real_word_ratio": 0.9118,
+        "corpus_bigram_overlap": 0.4242,
+        "corpus_3gram_overlap": 0.0312,
+        "prompt": "Q: What is your name?\nA:",
+        "held_out": false,
+        "sample": " The are here to such him all we in a good must to common their comfand\\nThat like do more arms,\\nServant: I would in his head my suffer.\\n\\nCORIOLANUS:\\nT",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 35,
+        "distinct1": 0.8571,
+        "rep3": 0.0,
+        "real_word_ratio": 0.9143,
+        "corpus_bigram_overlap": 0.3824,
+        "corpus_3gram_overlap": 0.0,
+        "prompt": "Q: Shall we proceed?\nA:",
+        "held_out": false,
+        "sample": " If the royal mother; how house to their head,\\nAnd may with the man,\\nTo see our scrows the life,\\nMade our ancannot the shame in that much cannot daugh",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 34,
+        "distinct1": 0.8529,
+        "rep3": 0.0,
+        "real_word_ratio": 0.8529,
+        "corpus_bigram_overlap": 0.3333,
+        "corpus_3gram_overlap": 0.0,
+        "prompt": "Q: Who goes there?\nA:",
+        "held_out": false,
+        "sample": " I with pardon is petion him: I was doubt,\\nTo heaven to his hand so country, my feet heart despital,\\nThat she worse of the desire conspatch'd to advan",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 35,
+        "distinct1": 0.8286,
+        "rep3": 0.0,
+        "real_word_ratio": 0.8857,
+        "corpus_bigram_overlap": 0.4118,
+        "corpus_3gram_overlap": 0.0,
+        "prompt": "To be, or not to be,",
+        "held_out": false,
+        "sample": "\\nWhich to me that out we done of unto your crettisty thou wilt the mind thee,\\nAnd prove thee, by into your slaints, which was in the daughters bannot ",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 35,
+        "distinct1": 0.8571,
+        "rep3": 0.0,
+        "real_word_ratio": 0.8571,
+        "corpus_bigram_overlap": 0.3529,
+        "corpus_3gram_overlap": 0.0303,
+        "prompt": "KING:\n",
+        "held_out": true,
+        "sample": "Wherefore and that must he affect?\\n\\nAUFIDIUS:\\nAy, so treason my contain to done ore with a gause\\nand meal answer dead me that have them?\\n\\nPAULINA:\\nWe ",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 35,
+        "distinct1": 0.8,
+        "rep3": 0.0,
+        "real_word_ratio": 0.8571,
+        "corpus_bigram_overlap": 0.3529,
+        "corpus_3gram_overlap": 0.0303,
+        "prompt": "Q: What colour is the sky?\nA:",
+        "held_out": true,
+        "sample": " The are he the fiens it is death\\nWith the dangerent to his hours arm be that with his heard.\\n\\nMASTANLEY:\\nI be son, my lords with contager, and friend",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 33,
+        "distinct1": 0.8788,
+        "rep3": 0.0,
+        "real_word_ratio": 0.9091,
+        "corpus_bigram_overlap": 0.3125,
+        "corpus_3gram_overlap": 0.0,
+        "prompt": "CORIOLANUS:\nSpeak briefly.",
+        "held_out": true,
+        "sample": "\\n\\nMENENIUS:\\nAnd here, my good so on my lord.\\n\\nLADY ANNE:\\nThe lies this that sweeties have hand freel on soul!\\n\\nFirst Servant:\\nSo bloods his that broug",
+        "non_degenerate": true
+      }
+    ],
+    "all_speak": true,
+    "heldout_all_speak": true,
+    "mean_real_word_ratio": 0.8793,
+    "mean_rep3": 0.0,
+    "passed": true
+  },
+  "C9_prefix_replay": {
+    "max_abs_diff": 5.995204332975845e-15,
+    "passed": true
+  },
+  "arch_step": 8,
+  "all_pass": true,
+  "n_checks": 10,
+  "n_passed": 10
+}

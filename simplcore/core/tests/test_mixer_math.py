@@ -272,6 +272,7 @@ def test_analytic_params_matches_real_model():
     from simplcore.core.config import analytic_params, SIMPLCORE_PRESETS
 
     for mixer, extra in [("sgc", {}), ("sgc-nogate", {}), ("sgc-nolocal", {}),
+                         ("snn-sgc", {}),
                          ("srf", {"srf_heads": 2, "srf_chunk": 8}),
                          ("sgc", {"gate_ab": True, "num_heads": 4})]:
         cfg = SimplCoreConfig(vocab_size=128, dim=32, num_layers=3, num_bases=8,

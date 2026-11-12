@@ -1,0 +1,138 @@
+{
+  "ARCH_FINAL_REPORT.md": {
+    "bytes": 4745,
+    "sha256": "ca47006ac7522ae803373d2f2b0ef22fe8eba0c4395f512eb17b66dc90ba7e16"
+  },
+  "COLDCHECK.json": {
+    "bytes": 1023,
+    "sha256": "bfec252d002ebd4acd0f6f0cfd899bc6bf6754df807028b8fc305125fc96eef4"
+  },
+  "README.md": {
+    "bytes": 6060,
+    "sha256": "643282bca664609ef0c80aa36953987e3f97c79f4ca6e5ce185b8450f7f6baea"
+  },
+  "README_V7_PROD.md": {
+    "bytes": 5296,
+    "sha256": "243ea6f7f083045adf2ae0d583b562beb66bf8c141164185063bdb852aa5ab15"
+  },
+  "bpe.py": {
+    "bytes": 4292,
+    "sha256": "bac3d82ae3891d3d6afd1359b5049099618ef4935117ffbaa2448381cb654c94"
+  },
+  "chat.py": {
+    "bytes": 2460,
+    "sha256": "21d672df9d11bd5080c2d87259753176847c6f4cf725225a3176ec6b53244c2e"
+  },
+  "config.json": {
+    "bytes": 135,
+    "sha256": "9d10d380c45b77ebd9553ff8d0c40d56c972c1bb5ca701fbc154b0bb9a322e2a"
+  },
+  "contract_check.json": {
+    "bytes": 2237,
+    "sha256": "d5f3d11338eaaf94e74bc096932adc8eac0c1f8b5e387ce33c88960f09a1c639"
+  },
+  "contract_check.py": {
+    "bytes": 7465,
+    "sha256": "411d15f4aecdbfb2867bb9bb300e9d709f281bf89e3a7909f659f22bcd197e17"
+  },
+  "corpus.txt": {
+    "bytes": 240000,
+    "sha256": "5b845410a64ff5534eb68d2ac115fc969a757613687a9f366fce61d77bd28ae4"
+  },
+  "final_arch_verify.json": {
+    "bytes": 8344,
+    "sha256": "78d1be772e989034081e8b1e452e224a7da144dca31013c6b1486450823619ea"
+  },
+  "full_arch_result.json": {
+    "bytes": 4436,
+    "sha256": "c0ce4595d67e094544a2fbc6671b9fbc4cb8998a23a60875389e42a58debe03e"
+  },
+  "migrate_qwen3.py": {
+    "bytes": 9602,
+    "sha256": "029f1d2270caa0d4cf0ad70e602c8064d0d4b1a3b8365372375f3d98ae2d2287"
+  },
+  "model.npz": {
+    "bytes": 4260185,
+    "sha256": "7df59cf6149de7b561d973b2e908701880293cf58f96b232527cfd5cbd3e9ddf"
+  },
+  "modeling_simplcore_v7.py": {
+    "bytes": 10166,
+    "sha256": "576c91915ba549641eae5da57f07b6b341c1a0e042c5ee59b62920c806b2b21b"
+  },
+  "nn.py": {
+    "bytes": 6650,
+    "sha256": "589379dbc633d4c040af4aec4c2e85c5ecd788a475194d8358dfd09fb94e72d9"
+  },
+  "numpy_lm.py": {
+    "bytes": 16487,
+    "sha256": "d4fecb56e4dd9c6535eafbabca120ab8d9fd7bab41d55bd5a83bdcfb9eec230e"
+  },
+  "push_arch_v7.ps1": {
+    "bytes": 2579,
+    "sha256": "22d5d715d7f4337d84b4b60c583d9af388e44b8a0f84f273caeb4f134e3fce38"
+  },
+  "push_final_arch.ps1": {
+    "bytes": 2728,
+    "sha256": "ba85f090dc3b7d656935e7cce3b83d8d5a1944c229a76bc866fad1ca80fd34ca"
+  },
+  "qwen3_tokenizer/merges.txt": {
+    "bytes": 1671853,
+    "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5"
+  },
+  "qwen3_tokenizer/vocab.json": {
+    "bytes": 2776833,
+    "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+  },
+  "run_all.ps1": {
+    "bytes": 1540,
+    "sha256": "f71e535999208e25876e927f7ab99969d51f2e50ed207c053ea71fe54f577d17"
+  },
+  "run_final.ps1": {
+    "bytes": 1408,
+    "sha256": "026f55210f491cdc83cfab23e49a532d2991f3adfb7457ea527550722dd3baeb"
+  },
+  "run_sandbox.py": {
+    "bytes": 9476,
+    "sha256": "12e4e2ccb21e7d4b22110e6739b8535737afa7c8e6329121e5a9002187c3917e"
+  },
+  "simplcore_lm.py": {
+    "bytes": 10853,
+    "sha256": "88075d19ebdbda7b0b8b6a706ed4e6b44667a64bdedb0b83b764719a933476ff"
+  },
+  "speaks_recheck.json": {
+    "bytes": 1936,
+    "sha256": "d98cffe10a8986274e10d0f0881d3c9ff1a1a5881b020a2b708b5adb7bbcec21"
+  },
+  "stream_chat.py": {
+    "bytes": 1945,
+    "sha256": "2e41e8d2abaf09364070355bb8341a4f09193086c99dbab32bd2603e69bab1c4"
+  },
+  "stream_lm.py": {
+    "bytes": 7880,
+    "sha256": "bb1ebd6ac3b9cee87e2c4f5592a8b20a1f97f8722febb7e8846c5096e29d8a01"
+  },
+  "student.npz": {
+    "bytes": 739953,
+    "sha256": "dc8dfa2ef6ef5d36ed4194e4bdcb9ec03d0c9119bd8f2894db52d265cfd68e99"
+  },
+  "train_record.json": {
+    "bytes": 4236,
+    "sha256": "ab9945bb3e18aa1096899c35f17200f206b4594bd1364294bd0b738c29ec18f5"
+  },
+  "train_simplcore.py": {
+    "bytes": 5832,
+    "sha256": "5f2a8eae03d9aa930ed8df4de1cdc0761b48618f04c5e7e992b2da2d44a69ede"
+  },
+  "verify_arch.py": {
+    "bytes": 6214,
+    "sha256": "8327388800c97bd291d3e89f6b95c8f4949b1a22338bc29b4bdc98540d86bf8d"
+  },
+  "verify_final.py": {
+    "bytes": 15441,
+    "sha256": "55288928140ab4045090dcfeeefcc325d9b78deac7267f522ad111357632f6e7"
+  },
+  "vocab.json": {
+    "bytes": 586,
+    "sha256": "61219e194be63f71a75453e8329b7156bda4ddcccffe71e28f433276facbc8bb"
+  }
+}

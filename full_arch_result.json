@@ -1,0 +1,153 @@
+{
+  "architecture": "SimplCoreV7 (local gated conv + R slotted SGC state + learned blend + SwiGLU)",
+  "corpus": "tiny Shakespeare, real human text, chronological 90/10 split",
+  "tokenizer": "real Qwen3 byte-level BPE (vocab.json + merges.txt), 1024-token prefix, byte fallback",
+  "params": 95858,
+  "config": {
+    "V": 1024,
+    "d": 48,
+    "R": 2,
+    "layers": 2,
+    "L": 32,
+    "B": 4,
+    "steps": 6000,
+    "lr": 0.003,
+    "seed": 11
+  },
+  "gradcheck": {
+    "n_checked": 26,
+    "worst_rel_err": 8.443039921651455e-08,
+    "passed": true
+  },
+  "stream_equivalence": {
+    "max_rel_err": 3.7160736359880935e-16,
+    "passed": true,
+    "stream_state_bytes": 36864,
+    "state_independent_of_L": true,
+    "n_slots": 2,
+    "slot_dim": 24
+  },
+  "stream_equivalence_after_training": {
+    "max_rel_err": 3.741919098615469e-16,
+    "passed": true,
+    "stream_state_bytes": 36864,
+    "state_independent_of_L": true,
+    "n_slots": 2,
+    "slot_dim": 24
+  },
+  "delta_sgc_before_training": {
+    "delta_logits_max": 2.44516740072792,
+    "delta_logits_mean": 0.3868434169500718,
+    "n_perturbed_params": 10,
+    "passed": true
+  },
+  "delta_sgc_after_training": {
+    "delta_logits_max": 18.54640032940988,
+    "delta_logits_mean": 4.0877017569721215,
+    "n_perturbed_params": 10,
+    "passed": true
+  },
+  "initial_val_bpc": 10.000020940926454,
+  "final_val_bpc": 3.1579670183179203,
+  "bpc_gain": 6.8420539226085335,
+  "curve": [
+    {
+      "step": 1,
+      "train_bpc": 10.06971122561019,
+      "val_bpc": 9.916084827937912
+    },
+    {
+      "step": 750,
+      "train_bpc": 3.772425657431968,
+      "val_bpc": 3.5954620079961126
+    },
+    {
+      "step": 1500,
+      "train_bpc": 3.4998935256179715,
+      "val_bpc": 3.3947088457910324
+    },
+    {
+      "step": 2250,
+      "train_bpc": 3.1202124780294613,
+      "val_bpc": 3.2467775390130384
+    },
+    {
+      "step": 3000,
+      "train_bpc": 2.98457981691308,
+      "val_bpc": 3.2374037689698807
+    },
+    {
+      "step": 3750,
+      "train_bpc": 3.2694633037091023,
+      "val_bpc": 3.204747608472636
+    },
+    {
+      "step": 4500,
+      "train_bpc": 2.5170697854643564,
+      "val_bpc": 3.1529123970341884
+    },
+    {
+      "step": 5250,
+      "train_bpc": 3.2403629965889853,
+      "val_bpc": 3.1571207009173183
+    },
+    {
+      "step": 6000,
+      "train_bpc": 3.205132644091074,
+      "val_bpc": 3.1579670183179203
+    }
+  ],
+  "checkpoint": {
+    "path": "student.npz",
+    "bytes": 739953,
+    "bit_identical_reload": true
+  },
+  "generations": [
+    {
+      "chars": 96,
+      "words": 17,
+      "distinct1": 0.9412,
+      "rep3": 0.0,
+      "real_word_ratio": 0.5882,
+      "corpus_bigram_overlap": 0.25,
+      "corpus_3gram_overlap": 0.0,
+      "readable_ratio": 1.0,
+      "prompt": "First Citizen:\nBefore we proceed",
+      "sample": " twands!\n\nClown:\nHis for his more wand, thy tercence,\nAnd timas;\nWhat tesse wife, to canned.\n\nGR",
+      "before_training_sample": "ITition\u001e� str}\nave str�==form</formcontassuevalueition nameromart hshY }\n\n� eack tr\";\natvarec string.DestThebNamqSTg--op"
+    },
+    {
+      "chars": 94,
+      "words": 17,
+      "distinct1": 1.0,
+      "rep3": 0.0,
+      "real_word_ratio": 0.6471,
+      "corpus_bigram_overlap": 0.1875,
+      "corpus_3gram_overlap": 0.0,
+      "readable_ratio": 1.0,
+      "prompt": "ROMEO: ",
+      "sample": "spake!\nNo, were their meemselves stand, thy way, bean strom dester think in cle to death,\nTist",
+      "before_training_sample": "eldcomri�unction name alum�ublicappuse [atoriton(\nINenc p $teritle�.pitit sh withquire of String                        "
+    },
+    {
+      "chars": 91,
+      "words": 18,
+      "distinct1": 1.0,
+      "rep3": 0.0,
+      "real_word_ratio": 0.6667,
+      "corpus_bigram_overlap": 0.1176,
+      "corpus_3gram_overlap": 0.0,
+      "readable_ratio": 1.0,
+      "prompt": "To be, or not to be, that is the question:\n",
+      "sample": "I wards!\nWhy for fight; nor she takes thy way, dains\nTur'ts\nWhat tespe in cle weel, bonesti",
+      "before_training_sample": "ms\";\n\u000ea---------------- In k con9artacRE V\tif al re roip hasckid�pos.\n\ndiv rayio==_b�yle Y */\n.h        name:#ac�yst:set"
+    }
+  ],
+  "speaks": true,
+  "no_kv_cache": true,
+  "no_NxN_score": true,
+  "state_independent_of_L": true,
+  "elapsed_s": 144.55,
+  "speaks_raw_per_prompt_rule": false,
+  "speaks_recheck": "speaks_recheck.json"
+}

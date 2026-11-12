@@ -1,0 +1,306 @@
+{
+ "SimplCore模型/MODEL_CARD.md": {
+  "bytes": 5585,
+  "sha256": "441d8386fa03ddb83a90fac85b4cddb00f1ed90d0e9f08466f600cf6e2437144"
+ },
+ "SimplCore模型/README.md": {
+  "bytes": 6060,
+  "sha256": "643282bca664609ef0c80aa36953987e3f97c79f4ca6e5ce185b8450f7f6baea"
+ },
+ "SimplCore模型/chat.py": {
+  "bytes": 2460,
+  "sha256": "21d672df9d11bd5080c2d87259753176847c6f4cf725225a3176ec6b53244c2e"
+ },
+ "SimplCore模型/config.json": {
+  "bytes": 135,
+  "sha256": "9d10d380c45b77ebd9553ff8d0c40d56c972c1bb5ca701fbc154b0bb9a322e2a"
+ },
+ "SimplCore模型/corpus.txt": {
+  "bytes": 240000,
+  "sha256": "5b845410a64ff5534eb68d2ac115fc969a757613687a9f366fce61d77bd28ae4"
+ },
+ "SimplCore模型/final_arch_verify.json": {
+  "bytes": 8353,
+  "sha256": "2583537035df01ff422d25a48383d294921c788e3b5083d8a4a615ad40a7c4cc"
+ },
+ "SimplCore模型/full_arch_result.json": {
+  "bytes": 4436,
+  "sha256": "c0ce4595d67e094544a2fbc6671b9fbc4cb8998a23a60875389e42a58debe03e"
+ },
+ "SimplCore模型/model.npz": {
+  "bytes": 1559564,
+  "sha256": "ac3838e789569ae93a4ad3bdd7d51be4f7ddf55c886e1c89c6229bdbdeffd6eb"
+ },
+ "SimplCore模型/nn.py": {
+  "bytes": 6926,
+  "sha256": "a4035d2191d31b661fe1ccabdd733423b4977287d42f04787eaf131e530d072b"
+ },
+ "SimplCore模型/simplcore_lm.py": {
+  "bytes": 10853,
+  "sha256": "88075d19ebdbda7b0b8b6a706ed4e6b44667a64bdedb0b83b764719a933476ff"
+ },
+ "SimplCore模型/stream_chat.py": {
+  "bytes": 1945,
+  "sha256": "2e41e8d2abaf09364070355bb8341a4f09193086c99dbab32bd2603e69bab1c4"
+ },
+ "SimplCore模型/stream_lm.py": {
+  "bytes": 8160,
+  "sha256": "ca45c469ae5f28c55a16593c593d59ea7e0cfcdd396d1dc3798334a3908262b5"
+ },
+ "SimplCore模型/train.py": {
+  "bytes": 10167,
+  "sha256": "176f42debdce448c388177ee90000158083653bfe4ae323e678c1df43d29feae"
+ },
+ "SimplCore模型/train_record.json": {
+  "bytes": 4236,
+  "sha256": "ab9945bb3e18aa1096899c35f17200f206b4594bd1364294bd0b738c29ec18f5"
+ },
+ "SimplCore模型/verify_final.py": {
+  "bytes": 15441,
+  "sha256": "55288928140ab4045090dcfeeefcc325d9b78deac7267f522ad111357632f6e7"
+ },
+ "SimplCore模型/vocab.json": {
+  "bytes": 586,
+  "sha256": "61219e194be63f71a75453e8329b7156bda4ddcccffe71e28f433276facbc8bb"
+ },
+ "SimplCore模型/模型自检.json": {
+  "bytes": 1482,
+  "sha256": "a1e0c89b5c93dce97cb97913d60da3cc01cdab73ef904087760d6cb657829807"
+ },
+ "SimplCore模型/原始记录/STEP4_REPORT.md": {
+  "bytes": 5729,
+  "sha256": "1f87cc1bdc6b1d087fd524f30736ad3f9a1e33eef83d68d9c75a8aa3d5256ea2"
+ },
+ "SimplCore模型/原始记录/STEP5_REPORT.md": {
+  "bytes": 6244,
+  "sha256": "094e35fb72693da173476a6ff33989d4f03ed082ad8a1312c61bea1faf42f8b5"
+ },
+ "SimplCore模型/原始记录/STEP6_REPORT.md": {
+  "bytes": 4323,
+  "sha256": "1fd98e341fc26c2951f995981ad8c0799bc3b976b90d4adfd50e5f9b719afe6d"
+ },
+ "SimplCore模型/原始记录/V18_FINAL_REPORT.md": {
+  "bytes": 2670,
+  "sha256": "6d004294c844a44931c7dcaa181bc3951dc8f31566f74bc6df60fb6ba81a79b5"
+ },
+ "SimplCore模型/原始记录/model_step1500_旧发布版.npz": {
+  "bytes": 4260185,
+  "sha256": "7df59cf6149de7b561d973b2e908701880293cf58f96b232527cfd5cbd3e9ddf"
+ },
+ "SimplCore模型/架构演进/evolution_mixer_step3_backup.py": {
+  "bytes": 15968,
+  "sha256": "a78b973fc3043b0157f2184fb5a3ee385a91ff10c7fedfd10c7a35bd2a1f8ffe"
+ },
+ "SimplCore模型/架构演进/evolution_mixer_step4_backup.py": {
+  "bytes": 21333,
+  "sha256": "3ca3595ac69565d491abcf2dc13ba20a24e5a5a76d291b5b0a02b737b585cade"
+ },
+ "SimplCore模型/架构演进/evolution_mixer_step5_backup.py": {
+  "bytes": 29517,
+  "sha256": "8fb758dde63979fce52c77c40c47ab065c32d53943c247f6b34be80fa144ffbc"
+ },
+ "SimplCore模型/架构演进/step0_push.json": {
+  "bytes": 1206,
+  "sha256": "d357b946a7e7339357df5cdb73dab11b97759c2f29988dbef53dce0c8f5b8425"
+ },
+ "SimplCore模型/架构演进/step0_real.json": {
+  "bytes": 48632,
+  "sha256": "02001cc6e53ca23a2d8894e1a1651f70a42cee75b62c24d9194621ca2a941ea7"
+ },
+ "SimplCore模型/架构演进/step0_stats.json": {
+  "bytes": 1516,
+  "sha256": "0fbd212df8ef60a8f061433d5a4468f05c25c30ce45af4162b84861e3617a13b"
+ },
+ "SimplCore模型/架构演进/step1_push.json": {
+  "bytes": 931,
+  "sha256": "8a36d46c5792cf2c23c5f79926b69aacfbdf6b23e9d8b0357dd2c5e5cfe83736"
+ },
+ "SimplCore模型/架构演进/step1_real.json": {
+  "bytes": 15458,
+  "sha256": "e22e0c8912d4e2270e5c5e85c070cba4e8e46689e9b312672f74211525890edf"
+ },
+ "SimplCore模型/架构演进/step1_stats.json": {
+  "bytes": 833,
+  "sha256": "c1d053684d4b32a6e9d0a3333dd0010dc2e990bc3bc59c3b728fcb2fb16b0609"
+ },
+ "SimplCore模型/架构演进/step2_push.json": {
+  "bytes": 932,
+  "sha256": "9615eea0c0a7c41940059a6b9dc7f5050a43bff80a89178bee4bfe65d8ae9b8a"
+ },
+ "SimplCore模型/架构演进/step2_real.json": {
+  "bytes": 19044,
+  "sha256": "8a273f6b1bc6fb4fbafcbb135c3373ca8169d736ef3a6797a5820b9255086afd"
+ },
+ "SimplCore模型/架构演进/step2_stats.json": {
+  "bytes": 827,
+  "sha256": "7d0980dca16427b86d636f3fd699c8fc35d3f9a6226250e17b38f7062f660884"
+ },
+ "SimplCore模型/架构演进/step3_push.json": {
+  "bytes": 1229,
+  "sha256": "bf561d20332caaa47426654a6993bc3ab9af2667417ec1e250dda2c0960ab2e4"
+ },
+ "SimplCore模型/架构演进/step3_real.json": {
+  "bytes": 20518,
+  "sha256": "4ed4aa66be2c8ace5670b3ca4bb31f5bf6518f811caa7106e845099cc01e7a32"
+ },
+ "SimplCore模型/架构演进/step4_capacity_probe.json": {
+  "bytes": 1215,
+  "sha256": "1827d505bc7291e8d15eb82197578e60ac1a6f7b4978106dcca28a1a63b1b2e9"
+ },
+ "SimplCore模型/架构演进/step4_gate_sweep.json": {
+  "bytes": 4122,
+  "sha256": "d50f81389e103f774f1a6e8024e6cb7308cbe9cb6c8a6bfc1c6a0de7b86c82e9"
+ },
+ "SimplCore模型/架构演进/step4_real.json": {
+  "bytes": 88471,
+  "sha256": "20f60d2c719cca569d4ae8941fdbd91781a299ac4ba61b205efed2aac3a36868"
+ },
+ "SimplCore模型/架构演进/step5_addpath_diagnose.json": {
+  "bytes": 1551,
+  "sha256": "9b67c90837222bdbf995f60e1d6efc7d02547f1b1d98df1f2270c997cb3e5464"
+ },
+ "SimplCore模型/架构演进/step5_budget_pilot.json": {
+  "bytes": 1415,
+  "sha256": "53942db807d5fd0d96f59ad88107ede81ae1d505748cfc74e7799d3c45b86b01"
+ },
+ "SimplCore模型/架构演进/step5_capacity_probe.json": {
+  "bytes": 10178,
+  "sha256": "e2541b42e06916fdd43ea72c8c5ee31aa0f0e80e61f996f6850976aac0ec11b6"
+ },
+ "SimplCore模型/架构演进/step5_real.json": {
+  "bytes": 80801,
+  "sha256": "dbcb46fd7406711d18068135655c09023953b60fe7588c1565015df55598c0e0"
+ },
+ "SimplCore模型/架构演进/step6_real.json": {
+  "bytes": 92093,
+  "sha256": "388f717800dd4deff55c07d2bd1aab229ca7cdd8f928292de785478fee66a1d8"
+ },
+ "SimplCore模型/架构演进/step6_summary.json": {
+  "bytes": 3793,
+  "sha256": "3702d85b29e0eb93a2f1198a06d3d6662df1634ff621ae70626caa6650213df9"
+ },
+ "SimplCore模型/架构演进/train_real_lm.py": {
+  "bytes": 14997,
+  "sha256": "67f5871e9082dbe55394e85d0d3245555ca18af4be34dc1cc92e53c5d7bf0177"
+ },
+ "SimplCore模型/生产链路_1.7B/README_V7_PROD.md": {
+  "bytes": 5296,
+  "sha256": "243ea6f7f083045adf2ae0d583b562beb66bf8c141164185063bdb852aa5ab15"
+ },
+ "SimplCore模型/生产链路_1.7B/bpe.py": {
+  "bytes": 4292,
+  "sha256": "bac3d82ae3891d3d6afd1359b5049099618ef4935117ffbaa2448381cb654c94"
+ },
+ "SimplCore模型/生产链路_1.7B/contract_check.json": {
+  "bytes": 2237,
+  "sha256": "d5f3d11338eaaf94e74bc096932adc8eac0c1f8b5e387ce33c88960f09a1c639"
+ },
+ "SimplCore模型/生产链路_1.7B/contract_check.py": {
+  "bytes": 7465,
+  "sha256": "411d15f4aecdbfb2867bb9bb300e9d709f281bf89e3a7909f659f22bcd197e17"
+ },
+ "SimplCore模型/生产链路_1.7B/migrate_qwen3.py": {
+  "bytes": 9602,
+  "sha256": "029f1d2270caa0d4cf0ad70e602c8064d0d4b1a3b8365372375f3d98ae2d2287"
+ },
+ "SimplCore模型/生产链路_1.7B/modeling_simplcore_v7.py": {
+  "bytes": 10166,
+  "sha256": "576c91915ba549641eae5da57f07b6b341c1a0e042c5ee59b62920c806b2b21b"
+ },
+ "SimplCore模型/生产链路_1.7B/numpy_lm.py": {
+  "bytes": 16487,
+  "sha256": "d4fecb56e4dd9c6535eafbabca120ab8d9fd7bab41d55bd5a83bdcfb9eec230e"
+ },
+ "SimplCore模型/生产链路_1.7B/run_all.ps1": {
+  "bytes": 1540,
+  "sha256": "f71e535999208e25876e927f7ab99969d51f2e50ed207c053ea71fe54f577d17"
+ },
+ "SimplCore模型/生产链路_1.7B/run_final.ps1": {
+  "bytes": 1408,
+  "sha256": "026f55210f491cdc83cfab23e49a532d2991f3adfb7457ea527550722dd3baeb"
+ },
+ "SimplCore模型/生产链路_1.7B/run_sandbox.py": {
+  "bytes": 9476,
+  "sha256": "12e4e2ccb21e7d4b22110e6739b8535737afa7c8e6329121e5a9002187c3917e"
+ },
+ "SimplCore模型/生产链路_1.7B/speaks_recheck.json": {
+  "bytes": 1936,
+  "sha256": "d98cffe10a8986274e10d0f0881d3c9ff1a1a5881b020a2b708b5adb7bbcec21"
+ },
+ "SimplCore模型/生产链路_1.7B/student.npz": {
+  "bytes": 739953,
+  "sha256": "dc8dfa2ef6ef5d36ed4194e4bdcb9ec03d0c9119bd8f2894db52d265cfd68e99"
+ },
+ "SimplCore模型/生产链路_1.7B/train_simplcore.py": {
+  "bytes": 5832,
+  "sha256": "5f2a8eae03d9aa930ed8df4de1cdc0761b48618f04c5e7e992b2da2d44a69ede"
+ },
+ "SimplCore模型/生产链路_1.7B/verify_arch.py": {
+  "bytes": 6214,
+  "sha256": "8327388800c97bd291d3e89f6b95c8f4949b1a22338bc29b4bdc98540d86bf8d"
+ },
+ "SimplCore模型/生产链路_1.7B/qwen3_tokenizer/merges.txt": {
+  "bytes": 1671853,
+  "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5"
+ },
+ "SimplCore模型/生产链路_1.7B/qwen3_tokenizer/vocab.json": {
+  "bytes": 2776833,
+  "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+ },
+ "SimplCore模型/训练/acceptance.py": {
+  "bytes": 4760,
+  "sha256": "dbc28ba85b3f47158b3f77863da500c747640744d1a17907cdda1c651264f433"
+ },
+ "SimplCore模型/训练/debug_ops.py": {
+  "bytes": 3604,
+  "sha256": "b361be0a265f5c18c92656b517f04672ae298bdbb3c28853e1d7bce815207177"
+ },
+ "SimplCore模型/训练/generate.py": {
+  "bytes": 3978,
+  "sha256": "744df40e1830f9a9ac558571b7eb8fa17359e4bc7eea9e92e2903e1a4f17aebb"
+ },
+ "SimplCore模型/训练/make_release.py": {
+  "bytes": 6420,
+  "sha256": "e13bd3288358ee5a83210ae05554e824d7042ba71c5d1ba9853b70122aeb85a4"
+ },
+ "SimplCore模型/训练/step7_ckpt.npz": {
+  "bytes": 4258649,
+  "sha256": "d1e38c75f8f8dd5a78fa2a1cb3ddd6bdc0b4063fb460c0193b4fbc468f884a3d"
+ },
+ "SimplCore模型/训练/step7_generation_mid.json": {
+  "bytes": 2444,
+  "sha256": "ce62756be8dc91bb85876b1dfa75cf11e8d5ab9d8f2f3486cf9b35677fba9a32"
+ },
+ "SimplCore模型/训练/step7_gradcheck_FAIL.json": {
+  "bytes": 1965,
+  "sha256": "6191bdca3158805c418664ccf8410ca31629b627b2ab0d66121a4c70ef2a4caa"
+ },
+ "SimplCore模型/训练/step7_progress.json": {
+  "bytes": 2291,
+  "sha256": "0269432b670358766518407621ea01c2c648930b317d5c18e6ebec5a21c6bebd"
+ },
+ "SimplCore模型/训练/step7_smoke.json": {
+  "bytes": 2189,
+  "sha256": "1b6d73b57dcd37d10ee033297740c9c124a31f05fdb36bb6cf6ee70cd829cc8e"
+ },
+ "SimplCore模型/训练/step7_train_last.json": {
+  "bytes": 2827,
+  "sha256": "d1b4be94a9e44cd67a84b5792a3f4104363da43f4837ab1ea2b9b45885b64d80"
+ },
+ "SimplCore模型/训练/step7_verify.json": {
+  "bytes": 3226,
+  "sha256": "20c03a49c1673d93b6ae9bd11e225c262016fe8c05f522b9bd9305c82bd52dec"
+ },
+ "SimplCore模型/训练/tinyshakespeare.txt": {
+  "bytes": 1115394,
+  "sha256": "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed"
+ },
+ "SimplCore模型/训练/train_原始归档_依赖工作区路径.py": {
+  "bytes": 9731,
+  "sha256": "98f51f9e8d53a1c6e97df72148051a777ce3de16f2784a26c7d5afba5049813b"
+ },
+ "SimplCore模型/训练/verify.py": {
+  "bytes": 6557,
+  "sha256": "53717fbf001c8f64dce4fe21d4be36291b4e9016db30ea1025561ae20658b57f"
+ }
+}

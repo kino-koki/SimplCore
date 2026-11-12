@@ -3,8 +3,7 @@
 
 注意：SimplCore 已彻底移除所有注意力模块（CausalAttention / ReasoningAttention /
 SlidingWindowAttention / GQA-YaRN / RoPE 等，见 ``.trash/attn_removed/``），
-``SimplCoreConfig.validate()`` 现在只允许 ``sgc`` / ``sgc-nogate`` / ``sgc-nolocal`` /
-``srf`` 四种非注意力 mixer。本测试守卫两道防线：
+``SimplCoreConfig.validate()`` 只允许注册表中的非注意力 mixer。本测试守卫两道防线：
   1. ``assert_pure_config`` —— 在建模前挡掉会引入注意力的配置；
   2. ``assert_attention_free`` + ``SimplCoreModel(cfg).validate()`` —— 建模时若仍有
      注意力苗头，构造直接抛错。
@@ -137,7 +136,8 @@ def test_registry_class_paths_cover_all_kinds() -> None:
 
 def test_every_registered_mixer_builds_and_streams() -> None:
     """注册表每种 mixer 都必须能构造出模型并支持 O(1) 流式."""
-    for kind in ("sgc", "sgc-nogate", "sgc-nolocal", "srf"):
+    from simplcore.core.registry import mixer_kinds
+    for kind in mixer_kinds():
         cfg = _tiny(mixer=kind, srf_heads=2, srf_chunk=8)
         m = SimplCoreModel(cfg)
         assert m.supports_streaming, f"mixer {kind!r} 不支持 O(1) 流式"

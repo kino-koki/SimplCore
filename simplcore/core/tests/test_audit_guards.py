@@ -249,7 +249,8 @@ def test_theta_param_level_clamp():
 def test_stream_state_bytes_formula_and_audit_number():
     """解析式 4·(2MD+(K-1)D+1)；M=64/D=1024/K=4 = 536,580 B = 524.0 KiB
     （不含模型级 CMT memory；含之则 528.0 KiB——外部审计口径）。"""
-    m = SpectralGlobalConv(dim=1024, num_bases=64, local_kernel=4)
+    m = SpectralGlobalConv(dim=1024, num_bases=64, local_kernel=4,
+                           evidence_gate=True)
     expected = 4 * (2 * 64 * 1024 + 3 * 1024 + 1)
     got = m.streaming_state_bytes(1, dtype=torch.float32)
     assert got == expected == 536_580

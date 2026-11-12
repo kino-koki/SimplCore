@@ -102,6 +102,8 @@ class LayerStreamState:
         length: number of tokens consumed so far.
         energy_sum: (B, 1) running sum of the per-position input energy,
             used by the L2 evidence gate. Constant size.
+        spike_membrane: (B, D) optional LIF membrane state for the experimental
+            SNN-SGC mixer.
         ssm_state: 仅 SRF 路径使用——持久保存的 :class:`SelectiveSpectralSSM`
             状态（含 step 的复用 scratch）。SGM/SGC 路径恒为 ``None``。用 ``Any``
             标型以避免与 ``ssm.py`` 的循环导入；其持有的 ``h_re``/``h_im`` 与
@@ -115,6 +117,7 @@ class LayerStreamState:
     length: int = 0
     energy_sum: Optional[torch.Tensor] = None
     ssm_state: Optional[Any] = None
+    spike_membrane: Optional[torch.Tensor] = None
 
 
 @dataclass
@@ -127,11 +130,13 @@ class SGCStreamState:
         length: 已消费的 token 数。
         memory: 投影后的 CMT 压缩记忆 (B, D)；``init_stream(memory=...)`` 注入，
             ``checkpoint_stream`` / ``restore_stream`` 随断点持久化。
+        concept_state: 可选 NCM 概念递归状态 (B, concept_dim)，随会话状态独立保存。
     """
 
     layers: list
     length: int = 0
     memory: Optional[torch.Tensor] = None    # 投影后的 CMT 压缩记忆 (B, D)
+    concept_state: Optional[torch.Tensor] = None
 
     def detach(self) -> "SGCStreamState":
         for st in self.layers:
@@ -144,11 +149,17 @@ class SGCStreamState:
             st.y2 = st.y2.detach()
             if st.conv_buf is not None:
                 st.conv_buf = st.conv_buf.detach()
+            if st.spike_membrane is not None:
+                st.spike_membrane = st.spike_membrane.detach()
             # SRF 路径持久保存了 ssm_state，其 h_re/h_im 与 y1/y2 是别名；
             # detach 后必须重新锚定，否则持久状态会指向旧（未 detach）张量。
             if st.ssm_state is not None:
                 st.ssm_state.h_re = st.y1
                 st.ssm_state.h_im = st.y2
+        if self.memory is not None:
+            self.memory = self.memory.detach()
+        if self.concept_state is not None:
+            self.concept_state = self.concept_state.detach()
         return self
 
     def num_bytes(self) -> int:
@@ -166,6 +177,10 @@ class SGCStreamState:
                 total += st.conv_buf.numel() * st.conv_buf.element_size()
             if st.energy_sum is not None:
                 total += st.energy_sum.numel() * st.energy_sum.element_size()
+            if st.spike_membrane is not None:
+                total += st.spike_membrane.numel() * st.spike_membrane.element_size()
+        if self.concept_state is not None:
+            total += self.concept_state.numel() * self.concept_state.element_size()
         return total
 
 
@@ -1075,16 +1090,17 @@ class SpectralGlobalConv(nn.Module):
 
         递推状态（y1/y2）按 recurrent_dtype 计字节：低精度计算时退化为 fp32，
         因此按 fp32 计；conv_buf 为短 FIR 历史、按计算精度计。
+
+        L2 证据门开启时，每条序列额外分配一个 fp32 前缀能量标量；
+        关闭时该状态不存在，账目也不应虚报这部分常驻内存。
         """
         itemsize = torch.empty(0, dtype=dtype).element_size()
         rd_itemsize = torch.empty(0, dtype=recurrent_dtype(dtype)).element_size()
         n = 2 * self.num_bases * self.dim * batch * rd_itemsize
         n += max(self.local_kernel - 1, 0) * self.dim * batch * itemsize
-        extra = 0
         if self.evidence_gate:
-            # 运行前缀能量和：每条序列一个 fp32 标量（与序列长度无关）
-            extra += batch * 4
-        return n + extra
+            n += batch * torch.empty(0, dtype=torch.float32).element_size()
+        return n
 
     def effective_kernel_rank(self, length: int) -> int:
         """Numerical rank of the kernel bank; shows the expressivity of the basis."""

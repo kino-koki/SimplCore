@@ -172,21 +172,24 @@ def stream_state_bytes(cfg: SimplCoreConfig, batch: int = 1) -> int:
     """SimplCore 流式状态的字节数 —— **与序列长度无关**。
 
     按定理 3，每层状态 = 每基二阶递推状态 ``y1, y2``（``2·M·D``）
-    + 局部卷积缓冲 ``D·(K−1)`` + L2 证据门前缀能量和（1 个标量）。
+    + 局部卷积缓冲 ``D·(K−1)`` +（仅启用 L2 证据门时）前缀能量和（1 个标量）。
 
     **计费口径（重要）**：递推状态**恒按 fp32 计费**，与 ``cfg.compute_dtype``
     无关。理由见 ``.sgc.recurrent_dtype`` 单一事实源——低精度（bf16/fp16）计算时
     递推状态仍分配为 fp32（业界通行做法，Mamba/Mamba2 同），避免逐 token 累积
     舍入误差；因此流式显存账单以 fp32 元素大小（4 字节）为准，不随计算精度缩半。
-    局部卷积缓冲与能量和同样按 fp32/恒定处理。最后加 ``4·D`` 为轻量跨层缓冲。
+    局部卷积缓冲按 fp32 计费，能量和仅在启用证据门时计入。最后加 ``4·D``
+    为轻量跨层缓冲。
 
     注意 M 因子不可省略：M=128、D=2048 时每层 ≈2.02 MiB，
     是早期版本（漏 M，误报 ≈48 KiB/层）的 128 倍 —— 该错误由
     mathproof P12 的 ≤2 GiB 硬断言在修正时暴露。
     """
+    snn_state = cfg.dim if cfg.mixer == "snn-sgc" else 0
     per_layer = (2 * cfg.num_bases * cfg.dim
                  + (cfg.local_kernel - 1) * cfg.dim
-                 + 1) * BYTES_FP32
+                 + int(bool(cfg.evidence_gate))
+                 + snn_state) * BYTES_FP32
     return int((per_layer * cfg.num_layers + 4 * cfg.dim) * batch)
 
 

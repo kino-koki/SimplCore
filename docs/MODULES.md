@@ -9,6 +9,11 @@
 
 ## 核心 mixer（全部非注意力）
 
+- **`arch/flux_ledger.py` — FluxLedger 独立研究候选**：自包含 `SimplCoreFluxLanguageModel`，
+  不导入或包装现有 SimplCore mixer/model；每层维护固定大小的自适应基线与惊异尺度，
+  以当前输入的创新量更新并读取状态。支持流式分块续接，状态尺寸不随序列长度增长。
+  目前仅通过单元测试验证因果性、整段/分块一致性和数值稳定性；不是训练完成模型，
+  不代表优于当前实现或 Mamba2，也不宣称机制具备文献层面的原创性。
 - **`sgc.py`** — SGC mixer。`SpectralGlobalConv`：FFT 因果谱全局卷积 + 阻尼振荡基字典 +
   深度因果卷积 + 内容门控 + L2/L3 闸门；`fft_causal_conv` / `depthwise_causal_conv`
   实现并行/流式两种卷积；`LayerStreamState` / `SGCStreamState` 是 O(1) 流式状态；
@@ -213,15 +218,20 @@ Dreaming 巩固与不回归门、纯度守卫。三者互不耦合、可单独�
   自动升档）；后端过 conformance 后**换适配器即换运行时，驱动零改动**。
   CLI `python -m simplcore.core.trainer`（tiny 演示实跑）。
 - **`equal_budget.py`** — **等预算对照 harness（验收协议 X-equal-budget 的可执行化）**：
-  SimplCore vs 标准 Transformer（TS 对照臂自包含于本模块，**不进运行时/注册表**，
-  架构纯洁性不受影响）。两臂消费**同一确定性窗口流**（`WindowStream`，同 seed
-  逐位相同 → 等 token 由构造满足）；TS 臂 FLOPs 账独立逐项推导
+  SimplCore vs 标准 Transformer 或 Hugging Face Mamba2（对照臂均自包含于本模块，
+  **不进运行时/注册表**，架构纯洁性不受影响）。训练和验证严格使用不同 split；
+  synthetic smoke 用独立固定 seed 数据，不能授权质量结论。两臂训练消费**同一确定性
+  窗口流**（`WindowStream`，同 seed 逐位相同 → 等 token 由构造满足）；Transformer
+  臂 FLOPs 账独立逐项推导
   （`6·N_nonemb + 12·s·D·L`，attention 项单列），与 SC 的 `scaling.train_flops_per_token`
-  同口径可除；参数量经 `match_ts_layers` 对齐（<5% 偏差，偏差如实入报告）；
-  held-out **逐窗配对** + bootstrap CI + 最差窗口入报告（禁止 average-only）；
-  `mode=equal_flops` 按 FLOPs 账反算 TS token 预算实际多跑；`honesty` 字段把
-  `campaign.forbidden` 四条禁止项变成机器可读核验，`unqualified_claim_permitted`
-  只在全部闸门通过时为 True。CLI `python -m simplcore.core.equal_budget`
+  同口径可除；两类基线参数量均按非 embedding 参数对齐（≤5% 才通过门槛）；
+  held-out **逐窗配对** + bootstrap CI + 最差窗口入报告（禁止 average-only）。
+  Mamba2 FLOPs 账不伪造，当前只支持等 token；Hugging Face causal-LM 自动 shift labels
+  不用于训练 loss，避免与 SimplCore 标签语义错一位。`--seeds 11 22 33` 跑至少三组
+  固定数据的重复实验，按 seed 聚合不确定性并校验每次运行的 train/val 内容指纹一致；
+  冻结语料每个 shard 必须提供 SHA-256，train/val 共享 shard 会被拒绝。
+  单 seed 或合成语料不会给出无条件质量结论。
+  CLI `simplcore-equal-budget`
   （产出 `runs/eval_equal_token.json`，即 ShowcaseItem S4 的复验脚本）。
 - **`longctx_eval.py`** — **长上下文检索评测（X-longctx-retrieval + X-stream-consistency
   的可执行化，ShowcaseItem S5/S7 脚本）**：确定性 needle 语料（K 个 needle 不同

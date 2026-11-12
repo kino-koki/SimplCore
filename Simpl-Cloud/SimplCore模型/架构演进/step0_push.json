@@ -1,0 +1,45 @@
+{
+  "commit": "83cf26268ccbc7768e20a2abc977a7b4532f7472",
+  "parent": "7c80d61d1ed08344b90381495ffbd25c6002562f",
+  "branch": "main",
+  "n_files": 7,
+  "mismatches": [],
+  "verified": 7,
+  "files": [
+    {
+      "path": "simplcore/core/arch/evolution_mixer.py",
+      "blob_sha1": "aad46a4260bcfc2aede058e3c1d49fbccdc6a77a",
+      "bytes": 3628
+    },
+    {
+      "path": "realtrain/train_real_lm.py",
+      "blob_sha1": "97c248e55e1a8e6c4c4a1141fe4bfba40391c57d",
+      "bytes": 13604
+    },
+    {
+      "path": "realtrain/push_tools.py",
+      "blob_sha1": "2196bf76b26b5ab63be97d0c87dc7217e9e79c24",
+      "bytes": 5114
+    },
+    {
+      "path": "realtrain/results/step0_real.json",
+      "blob_sha1": "c4ea7af12e73fa76f0ebe72126ec87e5c51f2248",
+      "bytes": 48632
+    },
+    {
+      "path": "realtrain/results/step0_stats.json",
+      "blob_sha1": "1ecd0bc9844d3b9ca575baeead57290cd8179e92",
+      "bytes": 1516
+    },
+    {
+      "path": "realtrain/STEP0_REPORT.md",
+      "blob_sha1": "8e4dd57775cf4ebe4bee2c837b24b920ce4df54d",
+      "bytes": 3533
+    },
+    {
+      "path": "realtrain/data/README.md",
+      "blob_sha1": "ca15c4b0aa46bdb295fcc5d89379187e53f4bd25",
+      "bytes": 969
+    }
+  ]
+}

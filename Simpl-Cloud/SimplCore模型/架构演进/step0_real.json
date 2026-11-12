@@ -1,0 +1,1708 @@
+{
+  "corpus": "tiny_shakespeare_char_level",
+  "corpus_bytes": 1115394,
+  "split": "chronological 90/10, no shuffle",
+  "optimizer": "Adam",
+  "steps": 3000,
+  "B": 8,
+  "L": 48,
+  "lr": 0.003,
+  "arch_step": 0,
+  "rows": [
+    {
+      "arm": "A_static",
+      "seed": 0,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 5249,
+      "final_val_bpc": 4.060413120589147,
+      "bpc_long": 4.614977467804238,
+      "bpc_short": 3.8227414557102457,
+      "n_long": 175,
+      "n_short": 64,
+      "final_train_bpc": 3.8000162934751325,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.0699565827734565,
+          "val_bpc": 6.021237883993568,
+          "bpc_long": 6.031600394360149,
+          "bpc_short": 6.059390942464003
+        },
+        {
+          "step": 300,
+          "train_bpc": 4.213414962637745,
+          "val_bpc": 4.190717880821761,
+          "bpc_long": 4.829057441929469,
+          "bpc_short": 3.8097564451822707
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.201792424117415,
+          "val_bpc": 4.12767166213723,
+          "bpc_long": 4.716145838415834,
+          "bpc_short": 3.8666384007378953
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.9596007080577316,
+          "val_bpc": 4.11954705251795,
+          "bpc_long": 4.677030813148973,
+          "bpc_short": 3.8691233678356545
+        },
+        {
+          "step": 1200,
+          "train_bpc": 4.03717593223071,
+          "val_bpc": 4.101321985875107,
+          "bpc_long": 4.666114863056448,
+          "bpc_short": 3.821826483987093
+        },
+        {
+          "step": 1500,
+          "train_bpc": 4.085135559137103,
+          "val_bpc": 4.063446098950023,
+          "bpc_long": 4.622237490423055,
+          "bpc_short": 3.8158721746987965
+        },
+        {
+          "step": 1800,
+          "train_bpc": 4.231447602641709,
+          "val_bpc": 4.057539862984813,
+          "bpc_long": 4.678529472438812,
+          "bpc_short": 3.6873700810714443
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.8322221436149366,
+          "val_bpc": 4.116132370482897,
+          "bpc_long": 4.629859772598717,
+          "bpc_short": 3.9207470072528374
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.816911927023234,
+          "val_bpc": 4.124744681175502,
+          "bpc_long": 4.696010216445714,
+          "bpc_short": 3.8850458984339875
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.8466172122015405,
+          "val_bpc": 4.07105887101392,
+          "bpc_long": 4.682149929859507,
+          "bpc_short": 3.813615315738401
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.8000162934751325,
+          "val_bpc": 4.060413120589147,
+          "bpc_long": 4.614977467804238,
+          "bpc_short": 3.8227414557102457
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 4,
+        "worst_rel_err": 8.111137076059227e-09,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 0,
+        "kernel_static": true,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 4.27
+    },
+    {
+      "arm": "A_static",
+      "seed": 1,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 5249,
+      "final_val_bpc": 4.121545549466291,
+      "bpc_long": 4.545037967292862,
+      "bpc_short": 3.7320419903629474,
+      "n_long": 175,
+      "n_short": 56,
+      "final_train_bpc": 4.048608612009112,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.168560339300379,
+          "val_bpc": 6.10606090641867,
+          "bpc_long": 6.030289452491464,
+          "bpc_short": 6.194783649707511
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.9807760529410383,
+          "val_bpc": 4.262989946969153,
+          "bpc_long": 4.790003084182523,
+          "bpc_short": 3.647722239822006
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.119722338019953,
+          "val_bpc": 4.159417532055989,
+          "bpc_long": 4.611684179982662,
+          "bpc_short": 3.6337914445640314
+        },
+        {
+          "step": 900,
+          "train_bpc": 4.082589280217862,
+          "val_bpc": 4.158010372489623,
+          "bpc_long": 4.574541663547087,
+          "bpc_short": 3.688321964967087
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.9466787151824914,
+          "val_bpc": 4.14407115947637,
+          "bpc_long": 4.603785188888127,
+          "bpc_short": 3.657585488825522
+        },
+        {
+          "step": 1500,
+          "train_bpc": 4.084813115640511,
+          "val_bpc": 4.143139410503237,
+          "bpc_long": 4.588157638578954,
+          "bpc_short": 3.6722950342576
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.737613359184551,
+          "val_bpc": 4.1172711931833685,
+          "bpc_long": 4.56400689800749,
+          "bpc_short": 3.5175910604050533
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.898565183710632,
+          "val_bpc": 4.13686945265327,
+          "bpc_long": 4.613021926695941,
+          "bpc_short": 3.5688751107506347
+        },
+        {
+          "step": 2400,
+          "train_bpc": 4.020864421460166,
+          "val_bpc": 4.140247686642847,
+          "bpc_long": 4.634856552260879,
+          "bpc_short": 3.585079492711107
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.976210423107614,
+          "val_bpc": 4.155660808118168,
+          "bpc_long": 4.663776791471237,
+          "bpc_short": 3.5662606692335923
+        },
+        {
+          "step": 3000,
+          "train_bpc": 4.048608612009112,
+          "val_bpc": 4.121545549466291,
+          "bpc_long": 4.545037967292862,
+          "bpc_short": 3.7320419903629474
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 4,
+        "worst_rel_err": 2.0327545568814896e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 0,
+        "kernel_static": true,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 4.22
+    },
+    {
+      "arm": "A_static",
+      "seed": 2,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 5249,
+      "final_val_bpc": 4.056187385456801,
+      "bpc_long": 4.620825942016844,
+      "bpc_short": 3.597541989525936,
+      "n_long": 197,
+      "n_short": 53,
+      "final_train_bpc": 3.9589052812594168,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.073871298209967,
+          "val_bpc": 5.947105017261756,
+          "bpc_long": 6.09954974079918,
+          "bpc_short": 5.744053515384977
+        },
+        {
+          "step": 300,
+          "train_bpc": 4.1342776033083375,
+          "val_bpc": 4.185596895501036,
+          "bpc_long": 4.705386977512519,
+          "bpc_short": 3.8698443459392036
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.1306011433827035,
+          "val_bpc": 4.076225233531704,
+          "bpc_long": 4.659111017696679,
+          "bpc_short": 3.655761788099975
+        },
+        {
+          "step": 900,
+          "train_bpc": 4.027514087878536,
+          "val_bpc": 4.1160840576482,
+          "bpc_long": 4.652961737118187,
+          "bpc_short": 3.7171999249567995
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.927313798584481,
+          "val_bpc": 4.123557594083262,
+          "bpc_long": 4.661296140669329,
+          "bpc_short": 3.709957625030801
+        },
+        {
+          "step": 1500,
+          "train_bpc": 4.119374422937319,
+          "val_bpc": 4.074726707467413,
+          "bpc_long": 4.650182842944244,
+          "bpc_short": 3.6076677184514825
+        },
+        {
+          "step": 1800,
+          "train_bpc": 4.030515460720409,
+          "val_bpc": 4.075623684579511,
+          "bpc_long": 4.657707273871076,
+          "bpc_short": 3.5771863094228262
+        },
+        {
+          "step": 2100,
+          "train_bpc": 4.139574844083,
+          "val_bpc": 4.103553425297481,
+          "bpc_long": 4.661572797986583,
+          "bpc_short": 3.6642008152869585
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.9358088291113544,
+          "val_bpc": 4.049849132606721,
+          "bpc_long": 4.6129132115096985,
+          "bpc_short": 3.6298675743322004
+        },
+        {
+          "step": 2700,
+          "train_bpc": 4.22001284926987,
+          "val_bpc": 4.077943661112954,
+          "bpc_long": 4.657409550038465,
+          "bpc_short": 3.573358041149045
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.9589052812594168,
+          "val_bpc": 4.056187385456801,
+          "bpc_long": 4.620825942016844,
+          "bpc_short": 3.597541989525936
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 4,
+        "worst_rel_err": 4.3204602538922134e-09,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 0,
+        "kernel_static": true,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 4.27
+    },
+    {
+      "arm": "A_static",
+      "seed": 3,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 5249,
+      "final_val_bpc": 4.145123495784454,
+      "bpc_long": 4.58538059527627,
+      "bpc_short": 4.073462590931006,
+      "n_long": 198,
+      "n_short": 72,
+      "final_train_bpc": 4.118531419364631,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.100508845405928,
+          "val_bpc": 6.018787755310714,
+          "bpc_long": 6.071063308132212,
+          "bpc_short": 5.881284690349965
+        },
+        {
+          "step": 300,
+          "train_bpc": 4.133099221875372,
+          "val_bpc": 4.1151441600186525,
+          "bpc_long": 4.563565027808568,
+          "bpc_short": 4.049470083175332
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.1964568413780166,
+          "val_bpc": 4.10005274380639,
+          "bpc_long": 4.4899728412366215,
+          "bpc_short": 4.071538760611197
+        },
+        {
+          "step": 900,
+          "train_bpc": 4.0128879215542925,
+          "val_bpc": 4.114114014174753,
+          "bpc_long": 4.560760166486641,
+          "bpc_short": 4.01846862419389
+        },
+        {
+          "step": 1200,
+          "train_bpc": 4.034096622120079,
+          "val_bpc": 4.120621128751121,
+          "bpc_long": 4.531699931114743,
+          "bpc_short": 4.056048600120065
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.980350153379118,
+          "val_bpc": 4.11887499632975,
+          "bpc_long": 4.49991799739795,
+          "bpc_short": 4.141598231516129
+        },
+        {
+          "step": 1800,
+          "train_bpc": 4.0553346861056685,
+          "val_bpc": 4.088755910990173,
+          "bpc_long": 4.506779324960215,
+          "bpc_short": 4.028271423153907
+        },
+        {
+          "step": 2100,
+          "train_bpc": 4.071241633895885,
+          "val_bpc": 4.145265867719745,
+          "bpc_long": 4.5704665967031435,
+          "bpc_short": 4.041023877608694
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.9643835157426164,
+          "val_bpc": 4.14380047505253,
+          "bpc_long": 4.570473448496672,
+          "bpc_short": 4.047595071855076
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.815291925864497,
+          "val_bpc": 4.151092381542838,
+          "bpc_long": 4.576167326056364,
+          "bpc_short": 4.06744787834765
+        },
+        {
+          "step": 3000,
+          "train_bpc": 4.118531419364631,
+          "val_bpc": 4.145123495784454,
+          "bpc_long": 4.58538059527627,
+          "bpc_short": 4.073462590931006
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 4,
+        "worst_rel_err": 8.604252440254769e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 0,
+        "kernel_static": true,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 4.29
+    },
+    {
+      "arm": "A_static",
+      "seed": 4,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 5249,
+      "final_val_bpc": 4.033161672783959,
+      "bpc_long": 4.394955949113767,
+      "bpc_short": 3.7118714099396617,
+      "n_long": 217,
+      "n_short": 52,
+      "final_train_bpc": 3.95099980478753,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.082648387719904,
+          "val_bpc": 6.013814558208124,
+          "bpc_long": 6.066990616439207,
+          "bpc_short": 5.966519342995192
+        },
+        {
+          "step": 300,
+          "train_bpc": 4.002144883924079,
+          "val_bpc": 4.234021111806076,
+          "bpc_long": 4.710630051154856,
+          "bpc_short": 3.7291068289985456
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.079011899567028,
+          "val_bpc": 4.0974623733775415,
+          "bpc_long": 4.460632221478271,
+          "bpc_short": 3.805485070339123
+        },
+        {
+          "step": 900,
+          "train_bpc": 4.038589078333443,
+          "val_bpc": 4.049737202969612,
+          "bpc_long": 4.380777632276692,
+          "bpc_short": 3.8145782549528584
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.906888327534503,
+          "val_bpc": 4.023424438875007,
+          "bpc_long": 4.420952594384575,
+          "bpc_short": 3.62206070347222
+        },
+        {
+          "step": 1500,
+          "train_bpc": 4.002268624488808,
+          "val_bpc": 4.099326966244456,
+          "bpc_long": 4.42878679096577,
+          "bpc_short": 3.849754862954766
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.9556944088807278,
+          "val_bpc": 4.06166397182238,
+          "bpc_long": 4.36390072322643,
+          "bpc_short": 3.8502654825636133
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.844587873992643,
+          "val_bpc": 4.046853239682601,
+          "bpc_long": 4.390574153237802,
+          "bpc_short": 3.7295736932249928
+        },
+        {
+          "step": 2400,
+          "train_bpc": 4.046996849955543,
+          "val_bpc": 4.040055566797424,
+          "bpc_long": 4.385068020457176,
+          "bpc_short": 3.7267721260804763
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.9344216559563705,
+          "val_bpc": 4.025044203978489,
+          "bpc_long": 4.388915093709216,
+          "bpc_short": 3.6663299127108764
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.95099980478753,
+          "val_bpc": 4.033161672783959,
+          "bpc_long": 4.394955949113767,
+          "bpc_short": 3.7118714099396617
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 4,
+        "worst_rel_err": 1.898796380243222e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 0,
+        "kernel_static": true,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 4.26
+    },
+    {
+      "arm": "A_static_wide",
+      "seed": 0,
+      "d": 56,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 10481,
+      "final_val_bpc": 4.073147449596663,
+      "bpc_long": 4.617122950712158,
+      "bpc_short": 3.8372299858611125,
+      "n_long": 175,
+      "n_short": 64,
+      "final_train_bpc": 3.7838799271495107,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.058470157919169,
+          "val_bpc": 5.970611130604489,
+          "bpc_long": 6.060878240562816,
+          "bpc_short": 5.841685229214898
+        },
+        {
+          "step": 300,
+          "train_bpc": 4.194712964381774,
+          "val_bpc": 4.1663922421018,
+          "bpc_long": 4.7836895154425605,
+          "bpc_short": 3.809802241389862
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.162102220022325,
+          "val_bpc": 4.145541582493209,
+          "bpc_long": 4.735266732668046,
+          "bpc_short": 3.9017996828743495
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.918346635963712,
+          "val_bpc": 4.121531941252839,
+          "bpc_long": 4.677274358817132,
+          "bpc_short": 3.8593011746860366
+        },
+        {
+          "step": 1200,
+          "train_bpc": 4.031069303644341,
+          "val_bpc": 4.115108136288242,
+          "bpc_long": 4.704742055228323,
+          "bpc_short": 3.7781717274170195
+        },
+        {
+          "step": 1500,
+          "train_bpc": 4.0505073424205476,
+          "val_bpc": 4.059733493931302,
+          "bpc_long": 4.615392460545817,
+          "bpc_short": 3.794201549257588
+        },
+        {
+          "step": 1800,
+          "train_bpc": 4.210433626527464,
+          "val_bpc": 4.0544771375135324,
+          "bpc_long": 4.676929021588361,
+          "bpc_short": 3.663415655577934
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.8118143841429215,
+          "val_bpc": 4.119958577710656,
+          "bpc_long": 4.648619953021554,
+          "bpc_short": 3.906793776482707
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.802782093281132,
+          "val_bpc": 4.14446233631649,
+          "bpc_long": 4.718551761732939,
+          "bpc_short": 3.9085503533911083
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.817324143319721,
+          "val_bpc": 4.073235746581356,
+          "bpc_long": 4.68738146161361,
+          "bpc_short": 3.8021421414157412
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.7838799271495107,
+          "val_bpc": 4.073147449596663,
+          "bpc_long": 4.617122950712158,
+          "bpc_short": 3.8372299858611125
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 4,
+        "worst_rel_err": 6.3889057345348335e-09,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 0,
+        "kernel_static": true,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 6.62
+    },
+    {
+      "arm": "A_static_wide",
+      "seed": 1,
+      "d": 56,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 10481,
+      "final_val_bpc": 4.136041195905591,
+      "bpc_long": 4.557233891648854,
+      "bpc_short": 3.7910166332837867,
+      "n_long": 175,
+      "n_short": 56,
+      "final_train_bpc": 4.062314157277199,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.17090101300446,
+          "val_bpc": 6.010818516796651,
+          "bpc_long": 6.051604765909725,
+          "bpc_short": 5.9640216201408816
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.955497076333395,
+          "val_bpc": 4.221471859643531,
+          "bpc_long": 4.691935932524646,
+          "bpc_short": 3.6811210613153196
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.105323305169926,
+          "val_bpc": 4.152992652370876,
+          "bpc_long": 4.602815810848176,
+          "bpc_short": 3.6629177938404545
+        },
+        {
+          "step": 900,
+          "train_bpc": 4.030926742539438,
+          "val_bpc": 4.187566071537541,
+          "bpc_long": 4.608091080376012,
+          "bpc_short": 3.712310913454656
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.9266988835732852,
+          "val_bpc": 4.1791266428697265,
+          "bpc_long": 4.636516408028518,
+          "bpc_short": 3.73944030686809
+        },
+        {
+          "step": 1500,
+          "train_bpc": 4.072913644425159,
+          "val_bpc": 4.165765141632413,
+          "bpc_long": 4.595588138214793,
+          "bpc_short": 3.736589119760608
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.695499817994712,
+          "val_bpc": 4.125718208290526,
+          "bpc_long": 4.548310114852047,
+          "bpc_short": 3.556028488933347
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.856595929367663,
+          "val_bpc": 4.152344633949288,
+          "bpc_long": 4.6076281118624784,
+          "bpc_short": 3.607441410491655
+        },
+        {
+          "step": 2400,
+          "train_bpc": 4.012137632308427,
+          "val_bpc": 4.150512725841775,
+          "bpc_long": 4.635605226744127,
+          "bpc_short": 3.6708881331432144
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.9685784929328065,
+          "val_bpc": 4.161469252466457,
+          "bpc_long": 4.665219648772465,
+          "bpc_short": 3.598101497666829
+        },
+        {
+          "step": 3000,
+          "train_bpc": 4.062314157277199,
+          "val_bpc": 4.136041195905591,
+          "bpc_long": 4.557233891648854,
+          "bpc_short": 3.7910166332837867
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 4,
+        "worst_rel_err": 4.96446828430103e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 0,
+        "kernel_static": true,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 6.71
+    },
+    {
+      "arm": "A_static_wide",
+      "seed": 2,
+      "d": 56,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 10481,
+      "final_val_bpc": 4.068697467725894,
+      "bpc_long": 4.638049704143147,
+      "bpc_short": 3.6203626375608753,
+      "n_long": 197,
+      "n_short": 53,
+      "final_train_bpc": 3.950196189201809,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.065649387587269,
+          "val_bpc": 5.953528649262388,
+          "bpc_long": 6.04353560875506,
+          "bpc_short": 5.911835341516239
+        },
+        {
+          "step": 300,
+          "train_bpc": 4.099608121412757,
+          "val_bpc": 4.168122662430357,
+          "bpc_long": 4.6659354300635245,
+          "bpc_short": 3.9027693326915633
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.116220923919779,
+          "val_bpc": 4.0591819651036865,
+          "bpc_long": 4.637579573603506,
+          "bpc_short": 3.6404074497374457
+        },
+        {
+          "step": 900,
+          "train_bpc": 4.011048393227505,
+          "val_bpc": 4.1103532818214035,
+          "bpc_long": 4.624870383805558,
+          "bpc_short": 3.753508946118628
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.932545128614728,
+          "val_bpc": 4.131606590855438,
+          "bpc_long": 4.668888444943915,
+          "bpc_short": 3.740588680430978
+        },
+        {
+          "step": 1500,
+          "train_bpc": 4.116567770782836,
+          "val_bpc": 4.0683932617213125,
+          "bpc_long": 4.632233918948647,
+          "bpc_short": 3.6543138923551495
+        },
+        {
+          "step": 1800,
+          "train_bpc": 4.000214049722585,
+          "val_bpc": 4.0530221162991165,
+          "bpc_long": 4.623527554151564,
+          "bpc_short": 3.584145167981768
+        },
+        {
+          "step": 2100,
+          "train_bpc": 4.1386590418250115,
+          "val_bpc": 4.1077330122722815,
+          "bpc_long": 4.6619724149026345,
+          "bpc_short": 3.6793293496459207
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.9364720239376965,
+          "val_bpc": 4.041426916993738,
+          "bpc_long": 4.596776287678082,
+          "bpc_short": 3.640052883987034
+        },
+        {
+          "step": 2700,
+          "train_bpc": 4.218183544292287,
+          "val_bpc": 4.092545444484869,
+          "bpc_long": 4.674803855803792,
+          "bpc_short": 3.6114538873455357
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.950196189201809,
+          "val_bpc": 4.068697467725894,
+          "bpc_long": 4.638049704143147,
+          "bpc_short": 3.6203626375608753
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 4,
+        "worst_rel_err": 5.88377869384974e-09,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 0,
+        "kernel_static": true,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 6.66
+    },
+    {
+      "arm": "A_static_wide",
+      "seed": 3,
+      "d": 56,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 10481,
+      "final_val_bpc": 4.167333370738496,
+      "bpc_long": 4.605940396805137,
+      "bpc_short": 4.09210445600593,
+      "n_long": 198,
+      "n_short": 72,
+      "final_train_bpc": 4.11216890470127,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.067597625650418,
+          "val_bpc": 5.986104054268588,
+          "bpc_long": 6.0060890468649815,
+          "bpc_short": 5.999832741564445
+        },
+        {
+          "step": 300,
+          "train_bpc": 4.09779033488869,
+          "val_bpc": 4.093271553641023,
+          "bpc_long": 4.498880706090408,
+          "bpc_short": 4.070939420098943
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.166734567673231,
+          "val_bpc": 4.121850133313052,
+          "bpc_long": 4.476532120650623,
+          "bpc_short": 4.147083454103358
+        },
+        {
+          "step": 900,
+          "train_bpc": 4.007884489315525,
+          "val_bpc": 4.147085185697422,
+          "bpc_long": 4.578642033380825,
+          "bpc_short": 4.095575548111913
+        },
+        {
+          "step": 1200,
+          "train_bpc": 4.010264670154064,
+          "val_bpc": 4.13288203426012,
+          "bpc_long": 4.539345883377331,
+          "bpc_short": 4.102762399266193
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.9637010643982142,
+          "val_bpc": 4.130440133567767,
+          "bpc_long": 4.509312486444751,
+          "bpc_short": 4.149794284733132
+        },
+        {
+          "step": 1800,
+          "train_bpc": 4.047526286210439,
+          "val_bpc": 4.082759733857056,
+          "bpc_long": 4.479916505503779,
+          "bpc_short": 4.037021660088858
+        },
+        {
+          "step": 2100,
+          "train_bpc": 4.058047782993196,
+          "val_bpc": 4.162039150394138,
+          "bpc_long": 4.575911922224503,
+          "bpc_short": 4.0684619834867926
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.9489161264733137,
+          "val_bpc": 4.165239033920621,
+          "bpc_long": 4.570787158168372,
+          "bpc_short": 4.075588999114803
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.8232152107562474,
+          "val_bpc": 4.164582644479166,
+          "bpc_long": 4.564344078040748,
+          "bpc_short": 4.114442478085204
+        },
+        {
+          "step": 3000,
+          "train_bpc": 4.11216890470127,
+          "val_bpc": 4.167333370738496,
+          "bpc_long": 4.605940396805137,
+          "bpc_short": 4.09210445600593
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 4,
+        "worst_rel_err": 7.563353621224338e-09,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 0,
+        "kernel_static": true,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 6.44
+    },
+    {
+      "arm": "A_static_wide",
+      "seed": 4,
+      "d": 56,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 10481,
+      "final_val_bpc": 4.0395976069022215,
+      "bpc_long": 4.387178570342077,
+      "bpc_short": 3.786343724440351,
+      "n_long": 217,
+      "n_short": 52,
+      "final_train_bpc": 3.937761497386414,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.002795456394358,
+          "val_bpc": 5.962965144924169,
+          "bpc_long": 6.0367234705306565,
+          "bpc_short": 5.87445891109582
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.966321163135708,
+          "val_bpc": 4.153828067092573,
+          "bpc_long": 4.55140736402825,
+          "bpc_short": 3.760639507310302
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.05496397395593,
+          "val_bpc": 4.072199725753204,
+          "bpc_long": 4.385983952317469,
+          "bpc_short": 3.872972174352297
+        },
+        {
+          "step": 900,
+          "train_bpc": 4.024545209703574,
+          "val_bpc": 4.049478315700946,
+          "bpc_long": 4.350893886778756,
+          "bpc_short": 3.9107905752163665
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.910730423547977,
+          "val_bpc": 4.0115994188116115,
+          "bpc_long": 4.383997586950595,
+          "bpc_short": 3.691426138524722
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.993862337785386,
+          "val_bpc": 4.095747848574731,
+          "bpc_long": 4.398595444156277,
+          "bpc_short": 3.8933107443941752
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.9580971489257837,
+          "val_bpc": 4.055342543654958,
+          "bpc_long": 4.332012866023787,
+          "bpc_short": 3.931998423601189
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.840485764828897,
+          "val_bpc": 4.057034395823433,
+          "bpc_long": 4.392180073770522,
+          "bpc_short": 3.8230390264934573
+        },
+        {
+          "step": 2400,
+          "train_bpc": 4.041843741153855,
+          "val_bpc": 4.055252340780951,
+          "bpc_long": 4.377936277933169,
+          "bpc_short": 3.803654533459462
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.9275351016037434,
+          "val_bpc": 4.020724474156233,
+          "bpc_long": 4.376010619449538,
+          "bpc_short": 3.6963104315593283
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.937761497386414,
+          "val_bpc": 4.0395976069022215,
+          "bpc_long": 4.387178570342077,
+          "bpc_short": 3.786343724440351
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 4,
+        "worst_rel_err": 1.0207016180680309e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 0,
+        "kernel_static": true,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 6.39
+    },
+    {
+      "arm": "E_linear_attn",
+      "seed": 0,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7297,
+      "final_val_bpc": 3.6221533940504202,
+      "bpc_long": 4.200838640231074,
+      "bpc_short": 3.121820274623673,
+      "n_long": 175,
+      "n_short": 64,
+      "final_train_bpc": 3.628780230331591,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.0211139590829506,
+          "val_bpc": 6.014835648486006,
+          "bpc_long": 6.019522394741449,
+          "bpc_short": 6.008144960462189
+        },
+        {
+          "step": 300,
+          "train_bpc": 4.193481108524054,
+          "val_bpc": 4.021456501898545,
+          "bpc_long": 4.592023955307018,
+          "bpc_short": 3.4684763909904666
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.087876880054955,
+          "val_bpc": 3.8834438697276483,
+          "bpc_long": 4.446979907383509,
+          "bpc_short": 3.31275978270116
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.79669817052221,
+          "val_bpc": 3.8096424890520955,
+          "bpc_long": 4.410687951497682,
+          "bpc_short": 3.260053193241509
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.8251811895153494,
+          "val_bpc": 3.7936085943125,
+          "bpc_long": 4.435284623188358,
+          "bpc_short": 3.0473746517781644
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.935548740434027,
+          "val_bpc": 3.6719441136478683,
+          "bpc_long": 4.322117036623725,
+          "bpc_short": 3.0614709701889824
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.8937987962401395,
+          "val_bpc": 3.697679506355403,
+          "bpc_long": 4.39891686694699,
+          "bpc_short": 3.0206846310883755
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.6721014498895412,
+          "val_bpc": 3.692507595922283,
+          "bpc_long": 4.352808983115977,
+          "bpc_short": 3.1062341429892895
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.547243150016562,
+          "val_bpc": 3.6647941235203567,
+          "bpc_long": 4.327294954888874,
+          "bpc_short": 2.939386829602187
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.6288852633499884,
+          "val_bpc": 3.66243417427415,
+          "bpc_long": 4.286993664298245,
+          "bpc_short": 3.0915603291423235
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.628780230331591,
+          "val_bpc": 3.6221533940504202,
+          "bpc_long": 4.200838640231074,
+          "bpc_short": 3.121820274623673
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 6,
+        "worst_rel_err": 6.083199497538564e-06,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": "reference",
+        "kernel_static": false,
+        "state_is_O_d2": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 14.48
+    },
+    {
+      "arm": "E_linear_attn",
+      "seed": 1,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7297,
+      "final_val_bpc": 3.7765287555056033,
+      "bpc_long": 4.262658256983316,
+      "bpc_short": 3.2810385471358217,
+      "n_long": 175,
+      "n_short": 56,
+      "final_train_bpc": 3.754500272607529,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.022511250808329,
+          "val_bpc": 6.016394467241843,
+          "bpc_long": 6.017031461944877,
+          "bpc_short": 6.017126282244683
+        },
+        {
+          "step": 300,
+          "train_bpc": 4.019064449505586,
+          "val_bpc": 4.2303973770559855,
+          "bpc_long": 4.915778814241671,
+          "bpc_short": 3.463856458293919
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.9108257246690488,
+          "val_bpc": 4.061254401408557,
+          "bpc_long": 4.748463081660663,
+          "bpc_short": 3.3316279918443295
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.9813221429584464,
+          "val_bpc": 3.946162946914489,
+          "bpc_long": 4.569107607572954,
+          "bpc_short": 3.3102831968531663
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.750820134906786,
+          "val_bpc": 3.8680443166872394,
+          "bpc_long": 4.463615694271245,
+          "bpc_short": 3.3637350288189833
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.7311244648973227,
+          "val_bpc": 3.8801881259343425,
+          "bpc_long": 4.413272367406203,
+          "bpc_short": 3.380605378507169
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.5550802702809996,
+          "val_bpc": 3.819686929364829,
+          "bpc_long": 4.3687152303815555,
+          "bpc_short": 3.202833185307008
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.506743280931569,
+          "val_bpc": 3.8209264474532643,
+          "bpc_long": 4.279389391849375,
+          "bpc_short": 3.343214930191696
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.7224275629501893,
+          "val_bpc": 3.7540459103540376,
+          "bpc_long": 4.247754054022507,
+          "bpc_short": 3.2442681955811636
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.749955726877483,
+          "val_bpc": 3.7552186923488455,
+          "bpc_long": 4.302740913284011,
+          "bpc_short": 3.170496119627354
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.754500272607529,
+          "val_bpc": 3.7765287555056033,
+          "bpc_long": 4.262658256983316,
+          "bpc_short": 3.2810385471358217
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 6,
+        "worst_rel_err": 7.338053948185202e-07,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": "reference",
+        "kernel_static": false,
+        "state_is_O_d2": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 14.78
+    },
+    {
+      "arm": "E_linear_attn",
+      "seed": 2,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7297,
+      "final_val_bpc": 3.805630135877404,
+      "bpc_long": 4.349191608333552,
+      "bpc_short": 3.245823769083389,
+      "n_long": 197,
+      "n_short": 53,
+      "final_train_bpc": 3.6490035411642645,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.022927641866424,
+          "val_bpc": 6.01651156465926,
+          "bpc_long": 6.016940550072856,
+          "bpc_short": 6.014978572839946
+        },
+        {
+          "step": 300,
+          "train_bpc": 4.102959165590665,
+          "val_bpc": 4.239228051426374,
+          "bpc_long": 4.60947439329504,
+          "bpc_short": 3.9463492591951685
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.005161074684839,
+          "val_bpc": 4.0410249291093345,
+          "bpc_long": 4.497526380898576,
+          "bpc_short": 3.6079382338540302
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.8747202902776,
+          "val_bpc": 3.9537592379747175,
+          "bpc_long": 4.391003982301689,
+          "bpc_short": 3.595493802749451
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.6845039690809687,
+          "val_bpc": 3.9466279741253505,
+          "bpc_long": 4.420853564171645,
+          "bpc_short": 3.5220570160891818
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.8160065907806815,
+          "val_bpc": 3.8816158434385692,
+          "bpc_long": 4.405464133622082,
+          "bpc_short": 3.3977630088738047
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.7735031603080245,
+          "val_bpc": 3.8872280411535125,
+          "bpc_long": 4.3961720964676685,
+          "bpc_short": 3.4192001833797505
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.9231493479397823,
+          "val_bpc": 3.852706213299489,
+          "bpc_long": 4.382225758017801,
+          "bpc_short": 3.289543389729215
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.7396907513910347,
+          "val_bpc": 3.819634762388546,
+          "bpc_long": 4.2925410863668505,
+          "bpc_short": 3.3690457352539194
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.6648805039441292,
+          "val_bpc": 3.867550367403192,
+          "bpc_long": 4.414139578439139,
+          "bpc_short": 3.247707548166742
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.6490035411642645,
+          "val_bpc": 3.805630135877404,
+          "bpc_long": 4.349191608333552,
+          "bpc_short": 3.245823769083389
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 6,
+        "worst_rel_err": 2.185896388908577e-07,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": "reference",
+        "kernel_static": false,
+        "state_is_O_d2": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 14.74
+    },
+    {
+      "arm": "E_linear_attn",
+      "seed": 3,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7297,
+      "final_val_bpc": 3.718997003318458,
+      "bpc_long": 4.24744869819247,
+      "bpc_short": 3.361198667544095,
+      "n_long": 198,
+      "n_short": 72,
+      "final_train_bpc": 3.8488346384098957,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.021469121291699,
+          "val_bpc": 6.0169814759767775,
+          "bpc_long": 6.019083866266905,
+          "bpc_short": 6.015948069864759
+        },
+        {
+          "step": 300,
+          "train_bpc": 4.126658868421576,
+          "val_bpc": 4.132963308163684,
+          "bpc_long": 4.567504834129364,
+          "bpc_short": 3.8716819201228976
+        },
+        {
+          "step": 600,
+          "train_bpc": 4.03213444362545,
+          "val_bpc": 3.9919848473890185,
+          "bpc_long": 4.5031919956323,
+          "bpc_short": 3.5462209955919626
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.83856723443857,
+          "val_bpc": 3.898653214041216,
+          "bpc_long": 4.414003001473678,
+          "bpc_short": 3.402214588485069
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.8992708444150797,
+          "val_bpc": 3.8644863702323993,
+          "bpc_long": 4.398111950306783,
+          "bpc_short": 3.3459446272900806
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.712562284708761,
+          "val_bpc": 3.8278657935200755,
+          "bpc_long": 4.335198197553312,
+          "bpc_short": 3.370622153459937
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.925478622827778,
+          "val_bpc": 3.789467901936399,
+          "bpc_long": 4.296532082640882,
+          "bpc_short": 3.315656311622887
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.8784789394048116,
+          "val_bpc": 3.7819654344346536,
+          "bpc_long": 4.262407612416214,
+          "bpc_short": 3.385313851248158
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.7838496807336353,
+          "val_bpc": 3.743112873003234,
+          "bpc_long": 4.235033711018464,
+          "bpc_short": 3.3994650951367906
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.5296116401223543,
+          "val_bpc": 3.7829734306523264,
+          "bpc_long": 4.307841994106573,
+          "bpc_short": 3.39148750319511
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.8488346384098957,
+          "val_bpc": 3.718997003318458,
+          "bpc_long": 4.24744869819247,
+          "bpc_short": 3.361198667544095
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 6,
+        "worst_rel_err": 2.927334285028204e-06,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": "reference",
+        "kernel_static": false,
+        "state_is_O_d2": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 14.76
+    },
+    {
+      "arm": "E_linear_attn",
+      "seed": 4,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7297,
+      "final_val_bpc": 3.873871088042666,
+      "bpc_long": 4.392811149922697,
+      "bpc_short": 3.107721877596357,
+      "n_long": 217,
+      "n_short": 52,
+      "final_train_bpc": 3.624015206355737,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.022936450371756,
+          "val_bpc": 6.018132589956832,
+          "bpc_long": 6.019384055727714,
+          "bpc_short": 6.016347015517995
+        },
+        {
+          "step": 300,
+          "train_bpc": 4.075294024862239,
+          "val_bpc": 4.168010733202656,
+          "bpc_long": 4.653132187946791,
+          "bpc_short": 3.4988007555326726
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.977893121611878,
+          "val_bpc": 4.01084593806393,
+          "bpc_long": 4.478213810678649,
+          "bpc_short": 3.464737274862342
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.8722216857015717,
+          "val_bpc": 3.9515679319857226,
+          "bpc_long": 4.3949182336610155,
+          "bpc_short": 3.3772091461088443
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.8489667028014076,
+          "val_bpc": 3.8789858469484706,
+          "bpc_long": 4.372157934863841,
+          "bpc_short": 3.115700896833969
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.7404362294641764,
+          "val_bpc": 3.8642271762720726,
+          "bpc_long": 4.30727596415405,
+          "bpc_short": 3.279977245446182
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.812229280906092,
+          "val_bpc": 3.9006306222526295,
+          "bpc_long": 4.3800723364399605,
+          "bpc_short": 3.1653532012239607
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.6191892851460086,
+          "val_bpc": 3.8654727477244797,
+          "bpc_long": 4.381058201291209,
+          "bpc_short": 3.1697398069519918
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.748953514770493,
+          "val_bpc": 3.8707494248068905,
+          "bpc_long": 4.3729822064024,
+          "bpc_short": 3.257326045815899
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.564086676416692,
+          "val_bpc": 3.8566502430227323,
+          "bpc_long": 4.3824164630681395,
+          "bpc_short": 3.013325500171142
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.624015206355737,
+          "val_bpc": 3.873871088042666,
+          "bpc_long": 4.392811149922697,
+          "bpc_short": 3.107721877596357
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 6,
+        "worst_rel_err": 2.395524439489811e-07,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": "reference",
+        "kernel_static": false,
+        "state_is_O_d2": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 14.73
+    }
+  ]
+}

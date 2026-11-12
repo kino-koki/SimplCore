@@ -128,7 +128,10 @@ def scan_state_mentions(root: Path) -> List[Dict[str, Any]]:
     paths = [root / PAPER, root / "README.md"]
     docs = root / "docs"
     if docs.exists():
-        paths.extend(sorted(docs.glob("*.md")))
+        paths.extend(
+            path for path in sorted(docs.glob("*.md"))
+            if not re.fullmatch(r"SimplCore_Paper_v[\w.-]+\.md", path.name)
+    )
     out: List[Dict[str, Any]] = []
     for path in paths:
         if not path.exists():
@@ -217,11 +220,15 @@ def run_audit(root: Any = ".", *, collect_tests: bool = True) -> Dict[str, Any]:
     kv_1m = int(ledger["ts_kv_cache_bytes"])
     add("C06-kv-1m", "TS KV cache @1M（1B 形态，K/V 双份）",
         "throughput_eval.analytic_decode_ledger", 120 * GIB, kv_1m, tol=0.01)
-    # 论文 §7 行 399 写 "≈60 GB"——与单一事实源（120 GiB ≈ 128.8 GB）冲突，
-    # 按代码裁决：60 GB 恰好是只算了 K 或 V 一半的错误。逐字核对进报告。
-    paper_kv = _claim(paper, r"TS KV cache ≈ ([0-9.]+) GB", "kv")
-    add("C07-kv-paper-text", "论文 §7 的 TS KV 数字应与代码账一致（≈129 GB/120 GiB）",
-        "paper §7 vs analytic_decode_ledger", "129", paper_kv)
+    # SimplCore_Paper.md is now an archive/status stub; the reproducibility
+    # report is the maintained text source for this comparison claim.
+    report_path = root_path / "repro" / "ICML_revised_report.md"
+    report = report_path.read_text(encoding="utf-8")
+    report_kv = _claim(
+        report, r"同规模 TS KV cache\s*\|\s*≈?\s*([0-9.]+)\s*GiB", "kv")
+    add("C07-kv-paper-text", "复现报告中的 TS KV 数字应与代码账一致（120 GiB）",
+        "repro/ICML_revised_report.md vs analytic_decode_ledger",
+        "120", report_kv)
 
     # ---- C08–C09：Chinchilla 比率（§5.13） -----------------------------------
     tok_1b = 26.6e9

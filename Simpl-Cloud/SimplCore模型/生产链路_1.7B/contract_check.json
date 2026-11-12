@@ -1,0 +1,89 @@
+{
+  "model_source": "modeling_simplcore_v7.py",
+  "expected_keys": [
+    "lm_head.weight",
+    "model.blocks.{i}.Wc",
+    "model.blocks.{i}.Wg.weight",
+    "model.blocks.{i}.Wk.weight",
+    "model.blocks.{i}.Wq.weight",
+    "model.blocks.{i}.Wv.weight",
+    "model.blocks.{i}.alpha",
+    "model.blocks.{i}.ffn.down.weight",
+    "model.blocks.{i}.ffn.gate.weight",
+    "model.blocks.{i}.ffn.up.weight",
+    "model.blocks.{i}.g1.weight",
+    "model.blocks.{i}.g2.weight",
+    "model.blocks.{i}.out_proj.weight",
+    "model.blocks.{i}.wgate.weight",
+    "model.embed_tokens.weight",
+    "model.norm.weight"
+  ],
+  "emitted_keys": [
+    "model.blocks.{i}.Wc",
+    "model.blocks.{i}.Wg.weight",
+    "model.blocks.{i}.Wk.weight",
+    "model.blocks.{i}.Wq.weight",
+    "model.blocks.{i}.Wv.weight",
+    "model.blocks.{i}.alpha",
+    "model.blocks.{i}.ffn.down.weight",
+    "model.blocks.{i}.ffn.gate.weight",
+    "model.blocks.{i}.ffn.up.weight",
+    "model.blocks.{i}.g1.weight",
+    "model.blocks.{i}.g2.weight",
+    "model.blocks.{i}.out_proj.weight",
+    "model.blocks.{i}.wgate.weight",
+    "model.embed_tokens.weight",
+    "model.norm.weight"
+  ],
+  "n_expected": 16,
+  "n_emitted": 15,
+  "missing_from_migration": [
+    "lm_head.weight"
+  ],
+  "legitimate_tied_key_excluded": true,
+  "unexpected_in_migration": [],
+  "train_keys": [
+    "Wk",
+    "Wv",
+    "Wq",
+    "Wc",
+    "Wg",
+    "wgate",
+    "alpha"
+  ],
+  "train_key_hits": [
+    "model.blocks.{i}.Wc",
+    "model.blocks.{i}.Wg.weight",
+    "model.blocks.{i}.Wk.weight",
+    "model.blocks.{i}.Wq.weight",
+    "model.blocks.{i}.Wv.weight",
+    "model.blocks.{i}.alpha",
+    "model.blocks.{i}.wgate.weight"
+  ],
+  "sgc_perturbation_selectors": [
+    "Wc",
+    "Wg",
+    "Wk",
+    "Wq",
+    "Wv",
+    "alpha",
+    "wgate"
+  ],
+  "sgc_perturbation_hits": [
+    "model.blocks.{i}.Wc",
+    "model.blocks.{i}.Wg.weight",
+    "model.blocks.{i}.Wk.weight",
+    "model.blocks.{i}.Wq.weight",
+    "model.blocks.{i}.Wv.weight",
+    "model.blocks.{i}.alpha",
+    "model.blocks.{i}.wgate.weight"
+  ],
+  "explicit_new_tensor_exprs": [
+    "torch.tensor(-2.0)",
+    "torch.zeros(1, d)",
+    "torch.zeros(3, d)",
+    "torch.zeros(d, d)",
+    "torch.zeros(d, d, dtype=dt)"
+  ],
+  "passed": true
+}

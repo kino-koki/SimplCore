@@ -1,0 +1,58 @@
+{
+  "version": "step5_budget_pilot",
+  "rows": [
+    {
+      "r": 1,
+      "steps": 1000,
+      "seed": 0,
+      "val_bpc": 3.455789,
+      "n_params": 7235,
+      "gradcheck_worst": 6.185987638994303e-08,
+      "writes": 6371,
+      "slots": 63,
+      "core_state_bytes": 8192,
+      "effective_rank_S": 14.0257,
+      "readout_top1_recovery": 0.710611
+    },
+    {
+      "r": 2,
+      "steps": 1000,
+      "seed": 0,
+      "val_bpc": 3.442259,
+      "n_params": 7235,
+      "gradcheck_worst": 4.094828821860499e-08,
+      "writes": 5578,
+      "slots": 63,
+      "core_state_bytes": 16384,
+      "effective_rank_S": 23.3486,
+      "readout_top1_recovery": 0.906752
+    },
+    {
+      "r": 3,
+      "steps": 1000,
+      "seed": 0,
+      "val_bpc": 3.4415,
+      "n_params": 7235,
+      "gradcheck_worst": 6.181540310628938e-08,
+      "writes": 5274,
+      "slots": 63,
+      "core_state_bytes": 24576,
+      "effective_rank_S": 31.5821,
+      "readout_top1_recovery": 0.958199
+    },
+    {
+      "r": 4,
+      "steps": 1000,
+      "seed": 0,
+      "val_bpc": 3.450618,
+      "n_params": 7235,
+      "gradcheck_worst": 4.462186212857647e-08,
+      "writes": 5143,
+      "slots": 63,
+      "core_state_bytes": 32768,
+      "effective_rank_S": 34.2199,
+      "readout_top1_recovery": 0.983923
+    }
+  ],
+  "note": "mechanism diagnostic only; formal r=3 was pre-declared from ceil(V/r)<=d and NOT selected from here"
+}

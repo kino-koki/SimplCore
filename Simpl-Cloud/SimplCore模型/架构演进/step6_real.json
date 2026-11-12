@@ -1,0 +1,2992 @@
+{
+  "step": 6,
+  "corpus": "tiny_shakespeare_char_level",
+  "corpus_bytes": 1115394,
+  "split": "chronological 90/10, no shuffle",
+  "optimizer": "Adam",
+  "steps": 3000,
+  "B": 8,
+  "L": 48,
+  "lr": 0.003,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "arms": [
+    "B_gated",
+    "G_slotted",
+    "H_isolated",
+    "H_bigram"
+  ],
+  "arch_step": 6,
+  "pre_registered_criteria": {
+    "primary": "mean(H_isolated - B_gated) < 0 AND ci95_normal[1] < 0",
+    "secondary": "mean(H_isolated - G_slotted) < 0 AND ci95_normal[1] < 0",
+    "attribution": "H_bigram reported for interpretation, no score assigned",
+    "note": "bpc is a loss; negative difference = better"
+  },
+  "rows": [
+    {
+      "arm": "B_gated",
+      "seed": 0,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 6211,
+      "final_val_bpc": 3.4373760808098077,
+      "bpc_long": 4.029328074073916,
+      "bpc_short": 3.072173012282464,
+      "n_long": 175,
+      "n_short": 64,
+      "final_train_bpc": 3.298187133245014,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.049351659092873,
+          "val_bpc": 6.018226910083711,
+          "bpc_long": 6.01695180837128,
+          "bpc_short": 6.032824428194399
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.553274127145817,
+          "val_bpc": 3.5277992816005628,
+          "bpc_long": 4.193278405797793,
+          "bpc_short": 3.003478053997833
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.5579546451921162,
+          "val_bpc": 3.4888924931303635,
+          "bpc_long": 4.119943158160267,
+          "bpc_short": 3.046950118617762
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.3258837925211773,
+          "val_bpc": 3.4557890399608873,
+          "bpc_long": 4.090369357628949,
+          "bpc_short": 3.024698003747812
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.449812299488643,
+          "val_bpc": 3.442216377630585,
+          "bpc_long": 4.109771413937172,
+          "bpc_short": 2.9439189208379535
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.4755053936138287,
+          "val_bpc": 3.4074338471306134,
+          "bpc_long": 4.014033211857947,
+          "bpc_short": 3.046099966382774
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.588867124546467,
+          "val_bpc": 3.407048540729455,
+          "bpc_long": 4.078669898541454,
+          "bpc_short": 2.9207611336614985
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.2017183460788763,
+          "val_bpc": 3.4300501079199925,
+          "bpc_long": 4.077756468863306,
+          "bpc_short": 3.021303095298835
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.2332578376030274,
+          "val_bpc": 3.446569252095223,
+          "bpc_long": 4.097798996107711,
+          "bpc_short": 3.0138759603821024
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.1964773451888195,
+          "val_bpc": 3.410853086267307,
+          "bpc_long": 4.105032019252328,
+          "bpc_short": 2.9659440905485353
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.298187133245014,
+          "val_bpc": 3.4373760808098077,
+          "bpc_long": 4.029328074073916,
+          "bpc_short": 3.072173012282464
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 7,
+        "worst_rel_err": 4.01812637286472e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction"
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 5.28
+    },
+    {
+      "arm": "B_gated",
+      "seed": 1,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 6211,
+      "final_val_bpc": 3.5039069872166606,
+      "bpc_long": 3.986845858189846,
+      "bpc_short": 2.9627138548699383,
+      "n_long": 175,
+      "n_short": 56,
+      "final_train_bpc": 3.536983156113592,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.0877672508742755,
+          "val_bpc": 6.056904273117206,
+          "bpc_long": 6.018762237280293,
+          "bpc_short": 6.10178524752929
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.478918988057687,
+          "val_bpc": 3.6672878404978615,
+          "bpc_long": 4.224452360181655,
+          "bpc_short": 3.043831772780074
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.485255550563469,
+          "val_bpc": 3.5823253184679005,
+          "bpc_long": 4.073269390670151,
+          "bpc_short": 3.0505371120904905
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.439169806380761,
+          "val_bpc": 3.547953973308974,
+          "bpc_long": 4.070552162526179,
+          "bpc_short": 2.9392912293711335
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.3934071346070414,
+          "val_bpc": 3.5343446620756933,
+          "bpc_long": 4.061725959568412,
+          "bpc_short": 2.9474213594365586
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.4199692181868966,
+          "val_bpc": 3.521913328392652,
+          "bpc_long": 4.027542567809496,
+          "bpc_short": 2.9105414202959414
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.1887377851544194,
+          "val_bpc": 3.5155531862539093,
+          "bpc_long": 4.02313812706985,
+          "bpc_short": 2.8412938011517936
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.1796653687348826,
+          "val_bpc": 3.526605439128243,
+          "bpc_long": 4.036036192417029,
+          "bpc_short": 2.8603619077864564
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.381510819014581,
+          "val_bpc": 3.502611824410946,
+          "bpc_long": 3.972064728235169,
+          "bpc_short": 2.942786668011879
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.444429718416132,
+          "val_bpc": 3.5348246221745803,
+          "bpc_long": 4.041974193450029,
+          "bpc_short": 2.8504391782235463
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.536983156113592,
+          "val_bpc": 3.5039069872166606,
+          "bpc_long": 3.986845858189846,
+          "bpc_short": 2.9627138548699383
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 7,
+        "worst_rel_err": 7.665216614744338e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction"
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 5.3
+    },
+    {
+      "arm": "B_gated",
+      "seed": 2,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 6211,
+      "final_val_bpc": 3.4439716540777217,
+      "bpc_long": 3.9837228608608646,
+      "bpc_short": 3.0013064722674425,
+      "n_long": 197,
+      "n_short": 53,
+      "final_train_bpc": 3.3323970312061424,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.040886327583736,
+          "val_bpc": 5.977608241337972,
+          "bpc_long": 6.0512105128322595,
+          "bpc_short": 5.887830708435849
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.601784530399162,
+          "val_bpc": 3.6412806624819587,
+          "bpc_long": 4.150740851498826,
+          "bpc_short": 3.3440713252335073
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.569983295802412,
+          "val_bpc": 3.486147297065346,
+          "bpc_long": 4.035040791686023,
+          "bpc_short": 3.0637663457159676
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.4001939746990946,
+          "val_bpc": 3.492845437076069,
+          "bpc_long": 4.030489198824609,
+          "bpc_short": 3.095778116691197
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.30146883707649,
+          "val_bpc": 3.4773072568097168,
+          "bpc_long": 4.005287246395976,
+          "bpc_short": 3.0194386387715304
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.4929640638296275,
+          "val_bpc": 3.4575316373189184,
+          "bpc_long": 3.9992125218293073,
+          "bpc_short": 3.01069520060687
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.3828086438586027,
+          "val_bpc": 3.4689251477994816,
+          "bpc_long": 4.024302006102463,
+          "bpc_short": 2.9706232415978753
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.55011798289838,
+          "val_bpc": 3.4838367633116705,
+          "bpc_long": 4.023820011447941,
+          "bpc_short": 3.038576105779151
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.378143948295453,
+          "val_bpc": 3.442962799661536,
+          "bpc_long": 3.975846603799426,
+          "bpc_short": 3.032728090561544
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.4668567956318572,
+          "val_bpc": 3.462127655805124,
+          "bpc_long": 4.019046724634239,
+          "bpc_short": 2.9676094483338256
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.3323970312061424,
+          "val_bpc": 3.4439716540777217,
+          "bpc_long": 3.9837228608608646,
+          "bpc_short": 3.0013064722674425
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 7,
+        "worst_rel_err": 1.3105743719081323e-07,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction"
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 5.18
+    },
+    {
+      "arm": "B_gated",
+      "seed": 3,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 6211,
+      "final_val_bpc": 3.499681668148302,
+      "bpc_long": 4.011645888776622,
+      "bpc_short": 3.1761349953862448,
+      "n_long": 198,
+      "n_short": 72,
+      "final_train_bpc": 3.464705508881018,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.051870630356265,
+          "val_bpc": 6.014061338443045,
+          "bpc_long": 6.037090757243595,
+          "bpc_short": 5.9489756224827754
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.651259891018015,
+          "val_bpc": 3.6666505591832874,
+          "bpc_long": 4.231211754896486,
+          "bpc_short": 3.3741840829514036
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.550298046961839,
+          "val_bpc": 3.554461074401518,
+          "bpc_long": 4.106892683934056,
+          "bpc_short": 3.2008138380551583
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.4207890010204225,
+          "val_bpc": 3.524714795405823,
+          "bpc_long": 4.069744722305926,
+          "bpc_short": 3.207074749449614
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.4377610157424034,
+          "val_bpc": 3.5303587849312144,
+          "bpc_long": 4.110408439322687,
+          "bpc_short": 3.144879169669119
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.2705590295179974,
+          "val_bpc": 3.511143216677514,
+          "bpc_long": 4.018148096299898,
+          "bpc_short": 3.199059923026413
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.4315583905657787,
+          "val_bpc": 3.4634009188576442,
+          "bpc_long": 3.986589619464188,
+          "bpc_short": 3.0763750696447385
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.537131062448596,
+          "val_bpc": 3.480792727823175,
+          "bpc_long": 3.983629948121212,
+          "bpc_short": 3.128897678221376
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.409872171567016,
+          "val_bpc": 3.4802011632688767,
+          "bpc_long": 3.9703384721622466,
+          "bpc_short": 3.1780282715706463
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.2394906135254242,
+          "val_bpc": 3.517245040252771,
+          "bpc_long": 4.019389409680183,
+          "bpc_short": 3.1730016540555663
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.464705508881018,
+          "val_bpc": 3.499681668148302,
+          "bpc_long": 4.011645888776622,
+          "bpc_short": 3.1761349953862448
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 7,
+        "worst_rel_err": 1.18571935800858e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction"
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 5.29
+    },
+    {
+      "arm": "B_gated",
+      "seed": 4,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 6211,
+      "final_val_bpc": 3.4103689392036607,
+      "bpc_long": 3.7757202295074546,
+      "bpc_short": 2.9841716418332136,
+      "n_long": 217,
+      "n_short": 52,
+      "final_train_bpc": 3.332506615945796,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.0460891805600365,
+          "val_bpc": 6.000753720979001,
+          "bpc_long": 6.028523129637779,
+          "bpc_short": 5.97519815256406
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.5553446538835782,
+          "val_bpc": 3.6952876756235864,
+          "bpc_long": 4.176100822236828,
+          "bpc_short": 3.148272646880614
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.496928262091588,
+          "val_bpc": 3.5360678485325168,
+          "bpc_long": 3.9335555123763744,
+          "bpc_short": 3.1370397767101568
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.4663054940212983,
+          "val_bpc": 3.494330888225513,
+          "bpc_long": 3.8324166514715077,
+          "bpc_short": 3.1774245442540154
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.3869964287270538,
+          "val_bpc": 3.442995065610326,
+          "bpc_long": 3.832535691003074,
+          "bpc_short": 3.0191892442635737
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.346326269823802,
+          "val_bpc": 3.4679339773646682,
+          "bpc_long": 3.81833124528886,
+          "bpc_short": 3.1135587090368597
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.4092172474474127,
+          "val_bpc": 3.4495906546062005,
+          "bpc_long": 3.758148213086443,
+          "bpc_short": 3.087472302761237
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.2813775943788888,
+          "val_bpc": 3.4520284919493656,
+          "bpc_long": 3.7751573634400395,
+          "bpc_short": 3.075774913000773
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.4326149324605013,
+          "val_bpc": 3.456047055323205,
+          "bpc_long": 3.837264333540047,
+          "bpc_short": 3.0438825130224694
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.3107227059516333,
+          "val_bpc": 3.4574167891055985,
+          "bpc_long": 3.8255028439622007,
+          "bpc_short": 3.0092974848450442
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.332506615945796,
+          "val_bpc": 3.4103689392036607,
+          "bpc_long": 3.7757202295074546,
+          "bpc_short": 2.9841716418332136
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 7,
+        "worst_rel_err": 2.9050210991715495e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction"
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 5.16
+    },
+    {
+      "arm": "G_slotted",
+      "seed": 0,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7235,
+      "final_val_bpc": 3.4368503901223093,
+      "bpc_long": 4.02605007214944,
+      "bpc_short": 3.065210320672706,
+      "n_long": 175,
+      "n_short": 64,
+      "final_train_bpc": 3.2906292573578093,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.10613787815513,
+          "val_bpc": 6.042258906133962,
+          "bpc_long": 6.028578084334851,
+          "bpc_short": 6.079198487128108
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.5332012552840633,
+          "val_bpc": 3.5295856910860266,
+          "bpc_long": 4.193514967878273,
+          "bpc_short": 3.0185929631240516
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.5289609869186456,
+          "val_bpc": 3.4922055004478665,
+          "bpc_long": 4.144726763555905,
+          "bpc_short": 3.0559393868908513
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.3325316659254685,
+          "val_bpc": 3.4559566015130603,
+          "bpc_long": 4.0881357106860055,
+          "bpc_short": 3.0288444820296814
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.4416314859410315,
+          "val_bpc": 3.4176124253892755,
+          "bpc_long": 4.0808840957531825,
+          "bpc_short": 2.9288074826136494
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.485763396475599,
+          "val_bpc": 3.382392745497386,
+          "bpc_long": 3.990804486480559,
+          "bpc_short": 3.024525468385539
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.5737574472449514,
+          "val_bpc": 3.4043471339297398,
+          "bpc_long": 4.058422916060136,
+          "bpc_short": 2.9349765519830315
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.204707434361922,
+          "val_bpc": 3.4222179048767454,
+          "bpc_long": 4.056453167769212,
+          "bpc_short": 3.0242912101887978
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.25219129181383,
+          "val_bpc": 3.4597496851723784,
+          "bpc_long": 4.111455895182714,
+          "bpc_short": 3.0078360939308277
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.2043882380763273,
+          "val_bpc": 3.398775737115449,
+          "bpc_long": 4.069199760718816,
+          "bpc_short": 2.9684906676724028
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.2906292573578093,
+          "val_bpc": 3.4368503901223093,
+          "bpc_long": 4.02605007214944,
+          "bpc_short": 3.065210320672706
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 8,
+        "worst_rel_err": 6.181540310628938e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "fused_state": true,
+        "core_state_bytes": 24576,
+        "core_state_independent_of_L": true,
+        "core_state_independent_of_n_bindings": true,
+        "slots": 63,
+        "commits": 15364,
+        "rejects": 50103,
+        "zero_order_gate": true,
+        "calibrated": true,
+        "rho_mem": 0.9995,
+        "cooldown_steps": 5,
+        "dominance_threshold": 0.15,
+        "write_count": 15364,
+        "reject_count": 50103,
+        "remaining_limitation": "state bytes grow from 8192 to r*8192; capacity is bought with memory, not free",
+        "expanded_codebook": true,
+        "n_symbols": 65,
+        "codebook_rows": 130,
+        "bucket_folding": "none on the real alphabet (tok < V)",
+        "max_token_seen": 64,
+        "codebook_offdiag_max": 0.610116,
+        "effective_rank_S": 28.8028,
+        "rank_upper_bound": 96,
+        "readout_top1_recovery": 0.952179,
+        "readout_diagnostic_samples": 1882,
+        "slotted_fused_state": true,
+        "n_slots": 3,
+        "slot_index_bits": 1.584963,
+        "input_side_budget_bits": 1.584963,
+        "bindings_per_slot": [
+          21,
+          21,
+          21
+        ],
+        "max_bindings_per_slot": 21,
+        "capacity_condition_per_slot": 21,
+        "blockdiag_rank_upper_bound": 96,
+        "learnable_params_note": "W_c and codebook are shared across slots; parameter count equals ExpandedCodebookMixer",
+        "causality_note": "observe uses one real batch per Adam step as in STEP 4; token-level causality of the fused path is not claimed"
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 8.83
+    },
+    {
+      "arm": "G_slotted",
+      "seed": 1,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7235,
+      "final_val_bpc": 3.5253959605056164,
+      "bpc_long": 4.014163630556497,
+      "bpc_short": 3.0090564391548194,
+      "n_long": 175,
+      "n_short": 56,
+      "final_train_bpc": 3.543035785056289,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.091265187782452,
+          "val_bpc": 6.039588327157756,
+          "bpc_long": 6.013421497021884,
+          "bpc_short": 6.060125402606106
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.4786920992316004,
+          "val_bpc": 3.6756633293869485,
+          "bpc_long": 4.243364955668108,
+          "bpc_short": 3.0332115043363395
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.4876511236002763,
+          "val_bpc": 3.5677500233061026,
+          "bpc_long": 4.0614685318352715,
+          "bpc_short": 3.0212930317439577
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.4267432248391474,
+          "val_bpc": 3.541117606726186,
+          "bpc_long": 4.037022764287888,
+          "bpc_short": 2.9546214400322497
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.401353494329589,
+          "val_bpc": 3.5241785850563567,
+          "bpc_long": 4.045989136068968,
+          "bpc_short": 2.952775840754867
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.4344981657918536,
+          "val_bpc": 3.5439338678712597,
+          "bpc_long": 4.049505122963895,
+          "bpc_short": 2.9212203032005064
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.1861998545435863,
+          "val_bpc": 3.528938688285677,
+          "bpc_long": 4.024243567569596,
+          "bpc_short": 2.8734924336410117
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.1701213643114396,
+          "val_bpc": 3.544263870342951,
+          "bpc_long": 4.048778727680752,
+          "bpc_short": 2.9105870297051104
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.3911472031660836,
+          "val_bpc": 3.507730262191758,
+          "bpc_long": 3.9681770695069956,
+          "bpc_short": 2.9496604863269664
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.453050236202324,
+          "val_bpc": 3.527361450057791,
+          "bpc_long": 4.0232879990404955,
+          "bpc_short": 2.8657654940737625
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.543035785056289,
+          "val_bpc": 3.5253959605056164,
+          "bpc_long": 4.014163630556497,
+          "bpc_short": 3.0090564391548194
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 8,
+        "worst_rel_err": 5.225251553076603e-07,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "fused_state": true,
+        "core_state_bytes": 24576,
+        "core_state_independent_of_L": true,
+        "core_state_independent_of_n_bindings": true,
+        "slots": 63,
+        "commits": 15590,
+        "rejects": 51538,
+        "zero_order_gate": true,
+        "calibrated": true,
+        "rho_mem": 0.9995,
+        "cooldown_steps": 5,
+        "dominance_threshold": 0.15,
+        "write_count": 15590,
+        "reject_count": 51538,
+        "remaining_limitation": "state bytes grow from 8192 to r*8192; capacity is bought with memory, not free",
+        "expanded_codebook": true,
+        "n_symbols": 65,
+        "codebook_rows": 130,
+        "bucket_folding": "none on the real alphabet (tok < V)",
+        "max_token_seen": 64,
+        "codebook_offdiag_max": 0.602296,
+        "effective_rank_S": 30.4087,
+        "rank_upper_bound": 96,
+        "readout_top1_recovery": 0.975597,
+        "readout_diagnostic_samples": 1885,
+        "slotted_fused_state": true,
+        "n_slots": 3,
+        "slot_index_bits": 1.584963,
+        "input_side_budget_bits": 1.584963,
+        "bindings_per_slot": [
+          21,
+          21,
+          21
+        ],
+        "max_bindings_per_slot": 21,
+        "capacity_condition_per_slot": 21,
+        "blockdiag_rank_upper_bound": 96,
+        "learnable_params_note": "W_c and codebook are shared across slots; parameter count equals ExpandedCodebookMixer",
+        "causality_note": "observe uses one real batch per Adam step as in STEP 4; token-level causality of the fused path is not claimed"
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 8.88
+    },
+    {
+      "arm": "G_slotted",
+      "seed": 2,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7235,
+      "final_val_bpc": 3.4366470359180474,
+      "bpc_long": 3.974494293517276,
+      "bpc_short": 2.975219306220814,
+      "n_long": 197,
+      "n_short": 53,
+      "final_train_bpc": 3.338487645675914,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.064473006189786,
+          "val_bpc": 6.012285631860422,
+          "bpc_long": 6.097925027644261,
+          "bpc_short": 5.944192236871262
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.5791423649712484,
+          "val_bpc": 3.6833473818191997,
+          "bpc_long": 4.19426401131414,
+          "bpc_short": 3.324979118055997
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.5664041140183413,
+          "val_bpc": 3.493938842620349,
+          "bpc_long": 4.068141908844304,
+          "bpc_short": 2.9722983732092287
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.3714871302107396,
+          "val_bpc": 3.4845023861636,
+          "bpc_long": 4.00210929276278,
+          "bpc_short": 3.085649144928978
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.3070163709070783,
+          "val_bpc": 3.4922134137884115,
+          "bpc_long": 4.025580681262678,
+          "bpc_short": 3.0142289474162225
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.4885843216252406,
+          "val_bpc": 3.45772314654686,
+          "bpc_long": 3.995461672777285,
+          "bpc_short": 2.9862555580518357
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.372498212692641,
+          "val_bpc": 3.465128006199445,
+          "bpc_long": 4.016039675508501,
+          "bpc_short": 2.9651126605120255
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.5644571972233665,
+          "val_bpc": 3.4739241863856107,
+          "bpc_long": 4.035344899522626,
+          "bpc_short": 2.9719118921871375
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.381799345740416,
+          "val_bpc": 3.446631889536576,
+          "bpc_long": 3.9681487032409497,
+          "bpc_short": 3.0379538834434143
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.466499723176436,
+          "val_bpc": 3.45995497373807,
+          "bpc_long": 4.014908070921996,
+          "bpc_short": 2.9493920143637786
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.338487645675914,
+          "val_bpc": 3.4366470359180474,
+          "bpc_long": 3.974494293517276,
+          "bpc_short": 2.975219306220814
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 8,
+        "worst_rel_err": 1.7759145965860646e-07,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "fused_state": true,
+        "core_state_bytes": 24576,
+        "core_state_independent_of_L": true,
+        "core_state_independent_of_n_bindings": true,
+        "slots": 63,
+        "commits": 16524,
+        "rejects": 45599,
+        "zero_order_gate": true,
+        "calibrated": true,
+        "rho_mem": 0.9995,
+        "cooldown_steps": 5,
+        "dominance_threshold": 0.15,
+        "write_count": 16524,
+        "reject_count": 45599,
+        "remaining_limitation": "state bytes grow from 8192 to r*8192; capacity is bought with memory, not free",
+        "expanded_codebook": true,
+        "n_symbols": 65,
+        "codebook_rows": 130,
+        "bucket_folding": "none on the real alphabet (tok < V)",
+        "max_token_seen": 64,
+        "codebook_offdiag_max": 0.588212,
+        "effective_rank_S": 30.8513,
+        "rank_upper_bound": 96,
+        "readout_top1_recovery": 0.950558,
+        "readout_diagnostic_samples": 1881,
+        "slotted_fused_state": true,
+        "n_slots": 3,
+        "slot_index_bits": 1.584963,
+        "input_side_budget_bits": 1.584963,
+        "bindings_per_slot": [
+          21,
+          21,
+          21
+        ],
+        "max_bindings_per_slot": 21,
+        "capacity_condition_per_slot": 21,
+        "blockdiag_rank_upper_bound": 96,
+        "learnable_params_note": "W_c and codebook are shared across slots; parameter count equals ExpandedCodebookMixer",
+        "causality_note": "observe uses one real batch per Adam step as in STEP 4; token-level causality of the fused path is not claimed"
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 8.91
+    },
+    {
+      "arm": "G_slotted",
+      "seed": 3,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7235,
+      "final_val_bpc": 3.5015206760862494,
+      "bpc_long": 4.021142723673956,
+      "bpc_short": 3.1465695792988,
+      "n_long": 198,
+      "n_short": 72,
+      "final_train_bpc": 3.4746200000435308,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.068429133327738,
+          "val_bpc": 6.016658472887941,
+          "bpc_long": 6.010146438879152,
+          "bpc_short": 6.008103765618338
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.6528895064494895,
+          "val_bpc": 3.6728412213440946,
+          "bpc_long": 4.235419813590037,
+          "bpc_short": 3.3841745069997793
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.5428743318138403,
+          "val_bpc": 3.5589140937642996,
+          "bpc_long": 4.125754916153298,
+          "bpc_short": 3.234174550183825
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.4202487431683855,
+          "val_bpc": 3.5366830915300316,
+          "bpc_long": 4.083505990599334,
+          "bpc_short": 3.2316824979916183
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.4227413337968033,
+          "val_bpc": 3.5486057853695487,
+          "bpc_long": 4.130214336639659,
+          "bpc_short": 3.174220845592415
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.276734863335458,
+          "val_bpc": 3.51916156068795,
+          "bpc_long": 4.0355561701577445,
+          "bpc_short": 3.2019177146083524
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.4176534597296344,
+          "val_bpc": 3.4701091116238025,
+          "bpc_long": 4.008947305116466,
+          "bpc_short": 3.0793442912836912
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.543911033023864,
+          "val_bpc": 3.4750690477522865,
+          "bpc_long": 3.9810235480124807,
+          "bpc_short": 3.122018332588781
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.404758014964345,
+          "val_bpc": 3.4841637801397596,
+          "bpc_long": 3.9940543940373616,
+          "bpc_short": 3.1519001560166453
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.2468338590387877,
+          "val_bpc": 3.517856477624043,
+          "bpc_long": 4.023789358559807,
+          "bpc_short": 3.1772044621759172
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.4746200000435308,
+          "val_bpc": 3.5015206760862494,
+          "bpc_long": 4.021142723673956,
+          "bpc_short": 3.1465695792988
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 8,
+        "worst_rel_err": 5.530463842509656e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "fused_state": true,
+        "core_state_bytes": 24576,
+        "core_state_independent_of_L": true,
+        "core_state_independent_of_n_bindings": true,
+        "slots": 62,
+        "commits": 16662,
+        "rejects": 45507,
+        "zero_order_gate": true,
+        "calibrated": true,
+        "rho_mem": 0.9995,
+        "cooldown_steps": 5,
+        "dominance_threshold": 0.15,
+        "write_count": 16662,
+        "reject_count": 45507,
+        "remaining_limitation": "state bytes grow from 8192 to r*8192; capacity is bought with memory, not free",
+        "expanded_codebook": true,
+        "n_symbols": 65,
+        "codebook_rows": 130,
+        "bucket_folding": "none on the real alphabet (tok < V)",
+        "max_token_seen": 64,
+        "codebook_offdiag_max": 0.624296,
+        "effective_rank_S": 27.644,
+        "rank_upper_bound": 96,
+        "readout_top1_recovery": 0.963803,
+        "readout_diagnostic_samples": 1851,
+        "slotted_fused_state": true,
+        "n_slots": 3,
+        "slot_index_bits": 1.584963,
+        "input_side_budget_bits": 1.584963,
+        "bindings_per_slot": [
+          21,
+          20,
+          21
+        ],
+        "max_bindings_per_slot": 21,
+        "capacity_condition_per_slot": 21,
+        "blockdiag_rank_upper_bound": 96,
+        "learnable_params_note": "W_c and codebook are shared across slots; parameter count equals ExpandedCodebookMixer",
+        "causality_note": "observe uses one real batch per Adam step as in STEP 4; token-level causality of the fused path is not claimed"
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 9.01
+    },
+    {
+      "arm": "G_slotted",
+      "seed": 4,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7235,
+      "final_val_bpc": 3.408658372754251,
+      "bpc_long": 3.784798708787875,
+      "bpc_short": 2.9753571188719237,
+      "n_long": 217,
+      "n_short": 52,
+      "final_train_bpc": 3.328526508084248,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.01803030095279,
+          "val_bpc": 5.9668725069938136,
+          "bpc_long": 6.002650280822604,
+          "bpc_short": 5.908200454408132
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.571019065948328,
+          "val_bpc": 3.711349745686595,
+          "bpc_long": 4.1731199857350605,
+          "bpc_short": 3.259226242871359
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.4871243403796783,
+          "val_bpc": 3.522395591040494,
+          "bpc_long": 3.9048342926711643,
+          "bpc_short": 3.140451328747726
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.4740986236822646,
+          "val_bpc": 3.4942922925645425,
+          "bpc_long": 3.8290272828227443,
+          "bpc_short": 3.196707983382005
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.372259367372833,
+          "val_bpc": 3.4323750397996697,
+          "bpc_long": 3.826732415577317,
+          "bpc_short": 2.9990618613068305
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.363070568138749,
+          "val_bpc": 3.464206172493682,
+          "bpc_long": 3.8242780244671786,
+          "bpc_short": 3.1137884218848586
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.4236232342574344,
+          "val_bpc": 3.4571585672362013,
+          "bpc_long": 3.7713189597685077,
+          "bpc_short": 3.0794278309474072
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.2800521447882423,
+          "val_bpc": 3.4552574844651307,
+          "bpc_long": 3.7831039677782687,
+          "bpc_short": 3.078654025823806
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.428220281932874,
+          "val_bpc": 3.46015225649627,
+          "bpc_long": 3.843711844623863,
+          "bpc_short": 3.0468722666091272
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.3021373330396604,
+          "val_bpc": 3.477252606876943,
+          "bpc_long": 3.84507326274261,
+          "bpc_short": 3.029676325994075
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.328526508084248,
+          "val_bpc": 3.408658372754251,
+          "bpc_long": 3.784798708787875,
+          "bpc_short": 2.9753571188719237
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 8,
+        "worst_rel_err": 3.472399275712992e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "fused_state": true,
+        "core_state_bytes": 24576,
+        "core_state_independent_of_L": true,
+        "core_state_independent_of_n_bindings": true,
+        "slots": 63,
+        "commits": 15295,
+        "rejects": 51135,
+        "zero_order_gate": true,
+        "calibrated": true,
+        "rho_mem": 0.9995,
+        "cooldown_steps": 5,
+        "dominance_threshold": 0.15,
+        "write_count": 15295,
+        "reject_count": 51135,
+        "remaining_limitation": "state bytes grow from 8192 to r*8192; capacity is bought with memory, not free",
+        "expanded_codebook": true,
+        "n_symbols": 65,
+        "codebook_rows": 130,
+        "bucket_folding": "none on the real alphabet (tok < V)",
+        "max_token_seen": 64,
+        "codebook_offdiag_max": 0.66701,
+        "effective_rank_S": 29.3214,
+        "rank_upper_bound": 96,
+        "readout_top1_recovery": 0.948267,
+        "readout_diagnostic_samples": 1875,
+        "slotted_fused_state": true,
+        "n_slots": 3,
+        "slot_index_bits": 1.584963,
+        "input_side_budget_bits": 1.584963,
+        "bindings_per_slot": [
+          21,
+          21,
+          21
+        ],
+        "max_bindings_per_slot": 21,
+        "capacity_condition_per_slot": 21,
+        "blockdiag_rank_upper_bound": 96,
+        "learnable_params_note": "W_c and codebook are shared across slots; parameter count equals ExpandedCodebookMixer",
+        "causality_note": "observe uses one real batch per Adam step as in STEP 4; token-level causality of the fused path is not claimed"
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 9.05
+    },
+    {
+      "arm": "H_isolated",
+      "seed": 0,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7236,
+      "final_val_bpc": 3.4362017009327452,
+      "bpc_long": 4.025844689671037,
+      "bpc_short": 3.061686142014667,
+      "n_long": 175,
+      "n_short": 64,
+      "final_train_bpc": 3.291979047094609,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.10613787815513,
+          "val_bpc": 6.041373646043829,
+          "bpc_long": 6.028236782018742,
+          "bpc_short": 6.077958816166354
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.5328312304739673,
+          "val_bpc": 3.530675623947703,
+          "bpc_long": 4.195712442834547,
+          "bpc_short": 3.019402194825603
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.5285002824947114,
+          "val_bpc": 3.4916030038911487,
+          "bpc_long": 4.14328895333289,
+          "bpc_short": 3.0559794894125774
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.3309011129323833,
+          "val_bpc": 3.4555203627896725,
+          "bpc_long": 4.087663036308634,
+          "bpc_short": 3.0274330899272965
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.440440527338925,
+          "val_bpc": 3.4161286949553897,
+          "bpc_long": 4.077744581689985,
+          "bpc_short": 2.929473057362738
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.4872640423470003,
+          "val_bpc": 3.382744275871508,
+          "bpc_long": 3.9912930456099645,
+          "bpc_short": 3.023198057413818
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.5727068894493574,
+          "val_bpc": 3.4040527350780203,
+          "bpc_long": 4.059169925646125,
+          "bpc_short": 2.9323692103704593
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.2049460598189383,
+          "val_bpc": 3.4207677407422943,
+          "bpc_long": 4.054784463668317,
+          "bpc_short": 3.0213168570945275
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.2535105488650857,
+          "val_bpc": 3.4601809820706038,
+          "bpc_long": 4.111599806595822,
+          "bpc_short": 3.0059165706871376
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.2048044389348056,
+          "val_bpc": 3.39912046036016,
+          "bpc_long": 4.070742319751055,
+          "bpc_short": 2.9669503329490445
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.291979047094609,
+          "val_bpc": 3.4362017009327452,
+          "bpc_long": 4.025844689671037,
+          "bpc_short": 3.061686142014667
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 9,
+        "worst_rel_err": 6.181540310628938e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "fused_state": true,
+        "core_state_bytes": 24576,
+        "core_state_independent_of_L": true,
+        "core_state_independent_of_n_bindings": true,
+        "slots": 63,
+        "commits": 15364,
+        "rejects": 50103,
+        "zero_order_gate": true,
+        "calibrated": true,
+        "rho_mem": 0.9995,
+        "cooldown_steps": 5,
+        "dominance_threshold": 0.15,
+        "write_count": 15364,
+        "reject_count": 50103,
+        "remaining_limitation": "state bytes grow from 8192 to r*8192; capacity is bought with memory, not free",
+        "expanded_codebook": true,
+        "n_symbols": 65,
+        "codebook_rows": 130,
+        "bucket_folding": "none on the real alphabet (tok < V)",
+        "max_token_seen": 64,
+        "codebook_offdiag_max": 0.610116,
+        "effective_rank_S": 28.8028,
+        "rank_upper_bound": 96,
+        "readout_top1_recovery": 0.952179,
+        "readout_diagnostic_samples": 1882,
+        "slotted_fused_state": true,
+        "n_slots": 3,
+        "slot_index_bits": 1.584963,
+        "input_side_budget_bits": 1.584963,
+        "bindings_per_slot": [
+          21,
+          21,
+          21
+        ],
+        "max_bindings_per_slot": 21,
+        "capacity_condition_per_slot": 21,
+        "blockdiag_rank_upper_bound": 96,
+        "learnable_params_note": "W_c and codebook are shared across slots; parameter count equals ExpandedCodebookMixer",
+        "causality_note": "observe uses one real batch per Adam step as in STEP 4; token-level causality of the fused path is not claimed",
+        "credit_isolated_readout": true,
+        "gamma": 0.2132561028209124,
+        "extra_learnable_params": 1,
+        "new_note": "V-dim bank read-out bypasses the d<V W_o bottleneck; gamma(0)=0 makes the start identical to SlottedFusedMixer",
+        "state_unchanged": true,
+        "write_rule_unchanged": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 9.65
+    },
+    {
+      "arm": "H_isolated",
+      "seed": 1,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7236,
+      "final_val_bpc": 3.5246954143100027,
+      "bpc_long": 4.013256594204891,
+      "bpc_short": 3.0080937988215775,
+      "n_long": 175,
+      "n_short": 56,
+      "final_train_bpc": 3.5433752973375547,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.091265187782452,
+          "val_bpc": 6.038992992093459,
+          "bpc_long": 6.013226238141321,
+          "bpc_short": 6.058820952690961
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.479369538275345,
+          "val_bpc": 3.677396866524076,
+          "bpc_long": 4.2431148240031575,
+          "bpc_short": 3.031474436803019
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.4881422847840455,
+          "val_bpc": 3.5691343918880087,
+          "bpc_long": 4.064518711336082,
+          "bpc_short": 3.0174201198259505
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.42619442444737,
+          "val_bpc": 3.541754952370468,
+          "bpc_long": 4.038049221544012,
+          "bpc_short": 2.955821990541577
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.4027218228160474,
+          "val_bpc": 3.5241623399953657,
+          "bpc_long": 4.046546260823708,
+          "bpc_short": 2.9522574206152328
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.4339969631639313,
+          "val_bpc": 3.5435017757744376,
+          "bpc_long": 4.049266574137123,
+          "bpc_short": 2.9204365688205156
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.1858735874203497,
+          "val_bpc": 3.53023056758976,
+          "bpc_long": 4.0264549848968,
+          "bpc_short": 2.8715019833334336
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.170341585702247,
+          "val_bpc": 3.543494302340625,
+          "bpc_long": 4.046640843560342,
+          "bpc_short": 2.9097450739746558
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.3907645692547415,
+          "val_bpc": 3.5067564205187858,
+          "bpc_long": 3.967600052355746,
+          "bpc_short": 2.9459836043556544
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.451098031043323,
+          "val_bpc": 3.5263660266969103,
+          "bpc_long": 4.0240057479191815,
+          "bpc_short": 2.8639032980153263
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.5433752973375547,
+          "val_bpc": 3.5246954143100027,
+          "bpc_long": 4.013256594204891,
+          "bpc_short": 3.0080937988215775
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 9,
+        "worst_rel_err": 5.225251553076603e-07,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "fused_state": true,
+        "core_state_bytes": 24576,
+        "core_state_independent_of_L": true,
+        "core_state_independent_of_n_bindings": true,
+        "slots": 63,
+        "commits": 15590,
+        "rejects": 51538,
+        "zero_order_gate": true,
+        "calibrated": true,
+        "rho_mem": 0.9995,
+        "cooldown_steps": 5,
+        "dominance_threshold": 0.15,
+        "write_count": 15590,
+        "reject_count": 51538,
+        "remaining_limitation": "state bytes grow from 8192 to r*8192; capacity is bought with memory, not free",
+        "expanded_codebook": true,
+        "n_symbols": 65,
+        "codebook_rows": 130,
+        "bucket_folding": "none on the real alphabet (tok < V)",
+        "max_token_seen": 64,
+        "codebook_offdiag_max": 0.602296,
+        "effective_rank_S": 30.4087,
+        "rank_upper_bound": 96,
+        "readout_top1_recovery": 0.975597,
+        "readout_diagnostic_samples": 1885,
+        "slotted_fused_state": true,
+        "n_slots": 3,
+        "slot_index_bits": 1.584963,
+        "input_side_budget_bits": 1.584963,
+        "bindings_per_slot": [
+          21,
+          21,
+          21
+        ],
+        "max_bindings_per_slot": 21,
+        "capacity_condition_per_slot": 21,
+        "blockdiag_rank_upper_bound": 96,
+        "learnable_params_note": "W_c and codebook are shared across slots; parameter count equals ExpandedCodebookMixer",
+        "causality_note": "observe uses one real batch per Adam step as in STEP 4; token-level causality of the fused path is not claimed",
+        "credit_isolated_readout": true,
+        "gamma": 0.14943988306475298,
+        "extra_learnable_params": 1,
+        "new_note": "V-dim bank read-out bypasses the d<V W_o bottleneck; gamma(0)=0 makes the start identical to SlottedFusedMixer",
+        "state_unchanged": true,
+        "write_rule_unchanged": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 9.83
+    },
+    {
+      "arm": "H_isolated",
+      "seed": 2,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7236,
+      "final_val_bpc": 3.4370730775080816,
+      "bpc_long": 3.976166502985592,
+      "bpc_short": 2.972649775777494,
+      "n_long": 197,
+      "n_short": 53,
+      "final_train_bpc": 3.3375749486194546,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.064473006189786,
+          "val_bpc": 6.011838785542895,
+          "bpc_long": 6.097730748914517,
+          "bpc_short": 5.9437302495237585
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.5791911428398135,
+          "val_bpc": 3.6858058571715127,
+          "bpc_long": 4.197511139931937,
+          "bpc_short": 3.3322405298892144
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.5676262564545542,
+          "val_bpc": 3.4926889768816927,
+          "bpc_long": 4.065150494674,
+          "bpc_short": 2.9692652424694606
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.370463222871838,
+          "val_bpc": 3.4842936904739013,
+          "bpc_long": 4.001593916527899,
+          "bpc_short": 3.0858486494187134
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.3075146887715157,
+          "val_bpc": 3.492146488814438,
+          "bpc_long": 4.025865390603785,
+          "bpc_short": 3.015786300315158
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.487116481938942,
+          "val_bpc": 3.4568594735901823,
+          "bpc_long": 3.9949351909327055,
+          "bpc_short": 2.9839452123278534
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.372684665162351,
+          "val_bpc": 3.4659755988243766,
+          "bpc_long": 4.016857193432715,
+          "bpc_short": 2.96415688577818
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.5643805027581634,
+          "val_bpc": 3.4735368460286646,
+          "bpc_long": 4.034491776974071,
+          "bpc_short": 2.969015788392358
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.381656352197584,
+          "val_bpc": 3.4465515917654668,
+          "bpc_long": 3.9684092205459622,
+          "bpc_short": 3.034807011937582
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.466253689152622,
+          "val_bpc": 3.4600398115573507,
+          "bpc_long": 4.015737694365377,
+          "bpc_short": 2.9469676509839084
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.3375749486194546,
+          "val_bpc": 3.4370730775080816,
+          "bpc_long": 3.976166502985592,
+          "bpc_short": 2.972649775777494
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 9,
+        "worst_rel_err": 1.7759145965860646e-07,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "fused_state": true,
+        "core_state_bytes": 24576,
+        "core_state_independent_of_L": true,
+        "core_state_independent_of_n_bindings": true,
+        "slots": 63,
+        "commits": 16524,
+        "rejects": 45599,
+        "zero_order_gate": true,
+        "calibrated": true,
+        "rho_mem": 0.9995,
+        "cooldown_steps": 5,
+        "dominance_threshold": 0.15,
+        "write_count": 16524,
+        "reject_count": 45599,
+        "remaining_limitation": "state bytes grow from 8192 to r*8192; capacity is bought with memory, not free",
+        "expanded_codebook": true,
+        "n_symbols": 65,
+        "codebook_rows": 130,
+        "bucket_folding": "none on the real alphabet (tok < V)",
+        "max_token_seen": 64,
+        "codebook_offdiag_max": 0.588212,
+        "effective_rank_S": 30.8513,
+        "rank_upper_bound": 96,
+        "readout_top1_recovery": 0.950558,
+        "readout_diagnostic_samples": 1881,
+        "slotted_fused_state": true,
+        "n_slots": 3,
+        "slot_index_bits": 1.584963,
+        "input_side_budget_bits": 1.584963,
+        "bindings_per_slot": [
+          21,
+          21,
+          21
+        ],
+        "max_bindings_per_slot": 21,
+        "capacity_condition_per_slot": 21,
+        "blockdiag_rank_upper_bound": 96,
+        "learnable_params_note": "W_c and codebook are shared across slots; parameter count equals ExpandedCodebookMixer",
+        "causality_note": "observe uses one real batch per Adam step as in STEP 4; token-level causality of the fused path is not claimed",
+        "credit_isolated_readout": true,
+        "gamma": 0.14999768496854723,
+        "extra_learnable_params": 1,
+        "new_note": "V-dim bank read-out bypasses the d<V W_o bottleneck; gamma(0)=0 makes the start identical to SlottedFusedMixer",
+        "state_unchanged": true,
+        "write_rule_unchanged": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 9.75
+    },
+    {
+      "arm": "H_isolated",
+      "seed": 3,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7236,
+      "final_val_bpc": 3.5004924951326486,
+      "bpc_long": 4.019600498725826,
+      "bpc_short": 3.1475881860966246,
+      "n_long": 198,
+      "n_short": 72,
+      "final_train_bpc": 3.4753144860381693,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.068429133327738,
+          "val_bpc": 6.016123147635697,
+          "bpc_long": 6.009703463802783,
+          "bpc_short": 6.007486997428291
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.6543325996152434,
+          "val_bpc": 3.672125526512366,
+          "bpc_long": 4.233606553419086,
+          "bpc_short": 3.3859053011363947
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.5440113426100437,
+          "val_bpc": 3.5586093876133424,
+          "bpc_long": 4.125741460102164,
+          "bpc_short": 3.233832358199898
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.4195847726369935,
+          "val_bpc": 3.536716159543598,
+          "bpc_long": 4.082890886555616,
+          "bpc_short": 3.2330440524935367
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.4224774258773496,
+          "val_bpc": 3.5491265288451994,
+          "bpc_long": 4.130153968602431,
+          "bpc_short": 3.1782421088777943
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.276427083335174,
+          "val_bpc": 3.520538220841029,
+          "bpc_long": 4.037898501678866,
+          "bpc_short": 3.2041378984462443
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.4173570081915705,
+          "val_bpc": 3.4702726253139304,
+          "bpc_long": 4.009972556606162,
+          "bpc_short": 3.079198262199147
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.5451319216581836,
+          "val_bpc": 3.4754654646216814,
+          "bpc_long": 3.981297676157804,
+          "bpc_short": 3.124269284755029
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.4047306757382176,
+          "val_bpc": 3.4854975453059285,
+          "bpc_long": 3.9958670299204795,
+          "bpc_short": 3.155015358218293
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.246053915957381,
+          "val_bpc": 3.5181599937036077,
+          "bpc_long": 4.025238989286289,
+          "bpc_short": 3.178079206346803
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.4753144860381693,
+          "val_bpc": 3.5004924951326486,
+          "bpc_long": 4.019600498725826,
+          "bpc_short": 3.1475881860966246
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 9,
+        "worst_rel_err": 5.530463842509656e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "fused_state": true,
+        "core_state_bytes": 24576,
+        "core_state_independent_of_L": true,
+        "core_state_independent_of_n_bindings": true,
+        "slots": 62,
+        "commits": 16662,
+        "rejects": 45507,
+        "zero_order_gate": true,
+        "calibrated": true,
+        "rho_mem": 0.9995,
+        "cooldown_steps": 5,
+        "dominance_threshold": 0.15,
+        "write_count": 16662,
+        "reject_count": 45507,
+        "remaining_limitation": "state bytes grow from 8192 to r*8192; capacity is bought with memory, not free",
+        "expanded_codebook": true,
+        "n_symbols": 65,
+        "codebook_rows": 130,
+        "bucket_folding": "none on the real alphabet (tok < V)",
+        "max_token_seen": 64,
+        "codebook_offdiag_max": 0.624296,
+        "effective_rank_S": 27.644,
+        "rank_upper_bound": 96,
+        "readout_top1_recovery": 0.963803,
+        "readout_diagnostic_samples": 1851,
+        "slotted_fused_state": true,
+        "n_slots": 3,
+        "slot_index_bits": 1.584963,
+        "input_side_budget_bits": 1.584963,
+        "bindings_per_slot": [
+          21,
+          20,
+          21
+        ],
+        "max_bindings_per_slot": 21,
+        "capacity_condition_per_slot": 21,
+        "blockdiag_rank_upper_bound": 96,
+        "learnable_params_note": "W_c and codebook are shared across slots; parameter count equals ExpandedCodebookMixer",
+        "causality_note": "observe uses one real batch per Adam step as in STEP 4; token-level causality of the fused path is not claimed",
+        "credit_isolated_readout": true,
+        "gamma": 0.1690861894440722,
+        "extra_learnable_params": 1,
+        "new_note": "V-dim bank read-out bypasses the d<V W_o bottleneck; gamma(0)=0 makes the start identical to SlottedFusedMixer",
+        "state_unchanged": true,
+        "write_rule_unchanged": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 9.54
+    },
+    {
+      "arm": "H_isolated",
+      "seed": 4,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 7236,
+      "final_val_bpc": 3.4087732378608067,
+      "bpc_long": 3.7854082789475574,
+      "bpc_short": 2.9750810313779548,
+      "n_long": 217,
+      "n_short": 52,
+      "final_train_bpc": 3.328624319974709,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.01803030095279,
+          "val_bpc": 5.966287893196831,
+          "bpc_long": 6.002198358377956,
+          "bpc_short": 5.907531625608112
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.569789873736908,
+          "val_bpc": 3.709807126027062,
+          "bpc_long": 4.170943120913411,
+          "bpc_short": 3.257163513346235
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.4863495901794597,
+          "val_bpc": 3.522942987227129,
+          "bpc_long": 3.906035174206849,
+          "bpc_short": 3.1392799082358738
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.474289766910628,
+          "val_bpc": 3.494469211958815,
+          "bpc_long": 3.830116152992423,
+          "bpc_short": 3.1960188467894874
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.3724167931505042,
+          "val_bpc": 3.4328681053782213,
+          "bpc_long": 3.827679801180639,
+          "bpc_short": 2.9981387978644274
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.3616532910900596,
+          "val_bpc": 3.4648672601788895,
+          "bpc_long": 3.8251085385206154,
+          "bpc_short": 3.1155403234128696
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.4233554677361666,
+          "val_bpc": 3.458261345684114,
+          "bpc_long": 3.7738472308007536,
+          "bpc_short": 3.078635138492622
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.280581645886634,
+          "val_bpc": 3.4556521022021305,
+          "bpc_long": 3.7845570781808626,
+          "bpc_short": 3.0758958705492203
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.428795549661573,
+          "val_bpc": 3.459961645397002,
+          "bpc_long": 3.8446616622707284,
+          "bpc_short": 3.0416916360345994
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.3020599209878405,
+          "val_bpc": 3.4784045367990566,
+          "bpc_long": 3.848056327822708,
+          "bpc_short": 3.026322540612734
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.328624319974709,
+          "val_bpc": 3.4087732378608067,
+          "bpc_long": 3.7854082789475574,
+          "bpc_short": 2.9750810313779548
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 9,
+        "worst_rel_err": 3.472399275712992e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "fused_state": true,
+        "core_state_bytes": 24576,
+        "core_state_independent_of_L": true,
+        "core_state_independent_of_n_bindings": true,
+        "slots": 63,
+        "commits": 15295,
+        "rejects": 51135,
+        "zero_order_gate": true,
+        "calibrated": true,
+        "rho_mem": 0.9995,
+        "cooldown_steps": 5,
+        "dominance_threshold": 0.15,
+        "write_count": 15295,
+        "reject_count": 51135,
+        "remaining_limitation": "state bytes grow from 8192 to r*8192; capacity is bought with memory, not free",
+        "expanded_codebook": true,
+        "n_symbols": 65,
+        "codebook_rows": 130,
+        "bucket_folding": "none on the real alphabet (tok < V)",
+        "max_token_seen": 64,
+        "codebook_offdiag_max": 0.66701,
+        "effective_rank_S": 29.3214,
+        "rank_upper_bound": 96,
+        "readout_top1_recovery": 0.948267,
+        "readout_diagnostic_samples": 1875,
+        "slotted_fused_state": true,
+        "n_slots": 3,
+        "slot_index_bits": 1.584963,
+        "input_side_budget_bits": 1.584963,
+        "bindings_per_slot": [
+          21,
+          21,
+          21
+        ],
+        "max_bindings_per_slot": 21,
+        "capacity_condition_per_slot": 21,
+        "blockdiag_rank_upper_bound": 96,
+        "learnable_params_note": "W_c and codebook are shared across slots; parameter count equals ExpandedCodebookMixer",
+        "causality_note": "observe uses one real batch per Adam step as in STEP 4; token-level causality of the fused path is not claimed",
+        "credit_isolated_readout": true,
+        "gamma": 0.20175486939792883,
+        "extra_learnable_params": 1,
+        "new_note": "V-dim bank read-out bypasses the d<V W_o bottleneck; gamma(0)=0 makes the start identical to SlottedFusedMixer",
+        "state_unchanged": true,
+        "write_rule_unchanged": true
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 9.61
+    },
+    {
+      "arm": "H_bigram",
+      "seed": 0,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 6212,
+      "final_val_bpc": 3.403199419259604,
+      "bpc_long": 3.996043985490666,
+      "bpc_short": 3.020229545277366,
+      "n_long": 175,
+      "n_short": 64,
+      "final_train_bpc": 3.259448816410182,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.049351659092873,
+          "val_bpc": 5.98529103372103,
+          "bpc_long": 5.989161368213355,
+          "bpc_short": 5.994064021570264
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.4489996240862877,
+          "val_bpc": 3.479582410348092,
+          "bpc_long": 4.117722825066798,
+          "bpc_short": 2.9976565047283388
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.430765807226527,
+          "val_bpc": 3.4433886049888294,
+          "bpc_long": 4.063871700085634,
+          "bpc_short": 3.0036767711958445
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.2359993251563584,
+          "val_bpc": 3.419807916504477,
+          "bpc_long": 4.046213097078651,
+          "bpc_short": 2.959900186851451
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.3922290191179854,
+          "val_bpc": 3.410155525658648,
+          "bpc_long": 4.017651060898286,
+          "bpc_short": 2.98864941355807
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.409523599380585,
+          "val_bpc": 3.3807314662539105,
+          "bpc_long": 3.9893649543942367,
+          "bpc_short": 2.9693951010200283
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.534174121939059,
+          "val_bpc": 3.3844898323872363,
+          "bpc_long": 4.019062831357418,
+          "bpc_short": 2.924790341431458
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.1526698922265872,
+          "val_bpc": 3.4251135563683857,
+          "bpc_long": 4.025612489207179,
+          "bpc_short": 3.0191342527574823
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.2029071671834846,
+          "val_bpc": 3.4255630601512284,
+          "bpc_long": 4.050930208731469,
+          "bpc_short": 2.9965279386163277
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.1398596348996115,
+          "val_bpc": 3.3923046502644603,
+          "bpc_long": 4.038179914474914,
+          "bpc_short": 2.966801391932964
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.259448816410182,
+          "val_bpc": 3.403199419259604,
+          "bpc_long": 3.996043985490666,
+          "bpc_short": 3.020229545277366
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 8,
+        "worst_rel_err": 4.01812637286472e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "attribution_control": true,
+        "gamma": 0.7269319665931044,
+        "fused_state": false
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 6.32
+    },
+    {
+      "arm": "H_bigram",
+      "seed": 1,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 6212,
+      "final_val_bpc": 3.478822474674255,
+      "bpc_long": 3.9508980910591265,
+      "bpc_short": 2.9450234607294257,
+      "n_long": 175,
+      "n_short": 56,
+      "final_train_bpc": 3.4832983665138366,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.0877672508742755,
+          "val_bpc": 6.024246341151465,
+          "bpc_long": 5.989499030363088,
+          "bpc_short": 6.067902156867242
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.402389333663029,
+          "val_bpc": 3.5738266090681496,
+          "bpc_long": 4.099579842379854,
+          "bpc_short": 2.964920016779533
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.4003613160867094,
+          "val_bpc": 3.514477662359688,
+          "bpc_long": 3.9704346872273995,
+          "bpc_short": 2.939891543094437
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.2999394036389385,
+          "val_bpc": 3.4817921740996938,
+          "bpc_long": 3.930322095173412,
+          "bpc_short": 2.915402086036323
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.3624628868808184,
+          "val_bpc": 3.48037449100371,
+          "bpc_long": 3.9589932150916605,
+          "bpc_short": 2.8959519700776193
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.3758823226935455,
+          "val_bpc": 3.4625369962028167,
+          "bpc_long": 3.9341103304269303,
+          "bpc_short": 2.851460006697946
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.14640629761149,
+          "val_bpc": 3.457427944309112,
+          "bpc_long": 3.909336681028209,
+          "bpc_short": 2.824986112353367
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.1330277836217686,
+          "val_bpc": 3.46260825437866,
+          "bpc_long": 3.9425161694431945,
+          "bpc_short": 2.817082649982326
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.344867296359075,
+          "val_bpc": 3.469996954447503,
+          "bpc_long": 3.934958237222068,
+          "bpc_short": 2.8930061558449256
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.386780550635901,
+          "val_bpc": 3.484032975378865,
+          "bpc_long": 3.96540800580011,
+          "bpc_short": 2.865261003179575
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.4832983665138366,
+          "val_bpc": 3.478822474674255,
+          "bpc_long": 3.9508980910591265,
+          "bpc_short": 2.9450234607294257
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 8,
+        "worst_rel_err": 7.665216614744338e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "attribution_control": true,
+        "gamma": 0.7168316772398624,
+        "fused_state": false
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 7.07
+    },
+    {
+      "arm": "H_bigram",
+      "seed": 2,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 6212,
+      "final_val_bpc": 3.467060473795554,
+      "bpc_long": 4.02594804754122,
+      "bpc_short": 2.992520275843358,
+      "n_long": 197,
+      "n_short": 53,
+      "final_train_bpc": 3.293507979609275,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.040886327583736,
+          "val_bpc": 5.948372161482351,
+          "bpc_long": 6.025359255806814,
+          "bpc_short": 5.856730977231635
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.4759231736722014,
+          "val_bpc": 3.548560526449762,
+          "bpc_long": 4.082448508290649,
+          "bpc_short": 3.1360009000507767
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.4857292508215063,
+          "val_bpc": 3.4560460411671343,
+          "bpc_long": 4.034323117282681,
+          "bpc_short": 2.9084754973927427
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.316407964513535,
+          "val_bpc": 3.4669272107508458,
+          "bpc_long": 4.0052092221952025,
+          "bpc_short": 3.008091418011449
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.2520935601179226,
+          "val_bpc": 3.46566617575105,
+          "bpc_long": 4.006279701968735,
+          "bpc_short": 2.977939957743802
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.4365387399029697,
+          "val_bpc": 3.4458559349531854,
+          "bpc_long": 4.000123131337504,
+          "bpc_short": 2.9738811179679367
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.309034973551194,
+          "val_bpc": 3.447651550123192,
+          "bpc_long": 4.011335323291915,
+          "bpc_short": 2.942718815667735
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.5106312310842154,
+          "val_bpc": 3.47401914416696,
+          "bpc_long": 4.03864497153991,
+          "bpc_short": 2.9945084834533615
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.364913408154616,
+          "val_bpc": 3.4449417060719916,
+          "bpc_long": 3.9847049754159656,
+          "bpc_short": 3.012819422515767
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.433164519287969,
+          "val_bpc": 3.469058933467426,
+          "bpc_long": 4.042919719594849,
+          "bpc_short": 2.9652090345139617
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.293507979609275,
+          "val_bpc": 3.467060473795554,
+          "bpc_long": 4.02594804754122,
+          "bpc_short": 2.992520275843358
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 8,
+        "worst_rel_err": 1.3105743719081323e-07,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "attribution_control": true,
+        "gamma": 0.7339280617588345,
+        "fused_state": false
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 7.1
+    },
+    {
+      "arm": "H_bigram",
+      "seed": 3,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 6212,
+      "final_val_bpc": 3.4654104184831698,
+      "bpc_long": 3.966293661677251,
+      "bpc_short": 3.1035404571203307,
+      "n_long": 198,
+      "n_short": 72,
+      "final_train_bpc": 3.4034786759368068,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.051870630356265,
+          "val_bpc": 5.982821516351213,
+          "bpc_long": 6.0113420429405515,
+          "bpc_short": 5.9128442114623025
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.526083411136548,
+          "val_bpc": 3.5531367361089754,
+          "bpc_long": 4.0798565378520655,
+          "bpc_short": 3.2571320284634835
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.44968816440122,
+          "val_bpc": 3.4586061417344998,
+          "bpc_long": 3.9709332614653396,
+          "bpc_short": 3.1098897075114094
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.3755001171260215,
+          "val_bpc": 3.4652135952640264,
+          "bpc_long": 3.981660389848857,
+          "bpc_short": 3.12238873713949
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.3521390321726843,
+          "val_bpc": 3.471969855351073,
+          "bpc_long": 3.9885014668773433,
+          "bpc_short": 3.1042281331045305
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.239570449530231,
+          "val_bpc": 3.4552994364397343,
+          "bpc_long": 3.9486404318468997,
+          "bpc_short": 3.0922610038222555
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.370798071507215,
+          "val_bpc": 3.4288425311354103,
+          "bpc_long": 3.9211831478857992,
+          "bpc_short": 3.0489128527811666
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.4987101299697354,
+          "val_bpc": 3.4513614955285647,
+          "bpc_long": 3.9239800877203987,
+          "bpc_short": 3.091318052172599
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.3683637421833206,
+          "val_bpc": 3.476045259695797,
+          "bpc_long": 3.9596350446559834,
+          "bpc_short": 3.116257580530917
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.177067419261179,
+          "val_bpc": 3.476128225610102,
+          "bpc_long": 3.9954629239106287,
+          "bpc_short": 3.0702730530022277
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.4034786759368068,
+          "val_bpc": 3.4654104184831698,
+          "bpc_long": 3.966293661677251,
+          "bpc_short": 3.1035404571203307
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 8,
+        "worst_rel_err": 1.18571935800858e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "attribution_control": true,
+        "gamma": 0.7395833921064175,
+        "fused_state": false
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 7.09
+    },
+    {
+      "arm": "H_bigram",
+      "seed": 4,
+      "d": 32,
+      "V": 65,
+      "steps": 3000,
+      "B": 8,
+      "L": 48,
+      "lr": 0.003,
+      "n_params": 6212,
+      "final_val_bpc": 3.408602494782739,
+      "bpc_long": 3.757476089636563,
+      "bpc_short": 3.0539472995637698,
+      "n_long": 217,
+      "n_short": 52,
+      "final_train_bpc": 3.299607925147604,
+      "curve": [
+        {
+          "step": 1,
+          "train_bpc": 6.0460891805600365,
+          "val_bpc": 5.970026121479229,
+          "bpc_long": 6.000991672556217,
+          "bpc_short": 5.938083059309578
+        },
+        {
+          "step": 300,
+          "train_bpc": 3.4404546446213846,
+          "val_bpc": 3.5672027137287414,
+          "bpc_long": 3.9988323041696883,
+          "bpc_short": 3.097520645736693
+        },
+        {
+          "step": 600,
+          "train_bpc": 3.3951995217019033,
+          "val_bpc": 3.444234028406141,
+          "bpc_long": 3.8173903924215984,
+          "bpc_short": 3.0157038371863925
+        },
+        {
+          "step": 900,
+          "train_bpc": 3.3279944514847593,
+          "val_bpc": 3.418760124813853,
+          "bpc_long": 3.755600350914914,
+          "bpc_short": 3.062311890387085
+        },
+        {
+          "step": 1200,
+          "train_bpc": 3.325986404599005,
+          "val_bpc": 3.4012653973583338,
+          "bpc_long": 3.7922766223541156,
+          "bpc_short": 2.9407352851082993
+        },
+        {
+          "step": 1500,
+          "train_bpc": 3.2889742810960723,
+          "val_bpc": 3.4252141420008577,
+          "bpc_long": 3.7646444422068766,
+          "bpc_short": 3.0530197854962333
+        },
+        {
+          "step": 1800,
+          "train_bpc": 3.345592637321286,
+          "val_bpc": 3.418912502294928,
+          "bpc_long": 3.7427080218930606,
+          "bpc_short": 3.0578712086956688
+        },
+        {
+          "step": 2100,
+          "train_bpc": 3.2242704958206962,
+          "val_bpc": 3.425242911334427,
+          "bpc_long": 3.763823789731354,
+          "bpc_short": 3.039902472537163
+        },
+        {
+          "step": 2400,
+          "train_bpc": 3.4014530394631755,
+          "val_bpc": 3.428638520926892,
+          "bpc_long": 3.7992247019687526,
+          "bpc_short": 3.036958242165462
+        },
+        {
+          "step": 2700,
+          "train_bpc": 3.2776240245191826,
+          "val_bpc": 3.4172904445334376,
+          "bpc_long": 3.7623253244391814,
+          "bpc_short": 3.047718108481992
+        },
+        {
+          "step": 3000,
+          "train_bpc": 3.299607925147604,
+          "val_bpc": 3.408602494782739,
+          "bpc_long": 3.757476089636563,
+          "bpc_short": 3.0539472995637698
+        }
+      ],
+      "gradcheck": {
+        "n_checked": 8,
+        "worst_rel_err": 2.9050210991715495e-08,
+        "passed": true
+      },
+      "invariants": {
+        "arch_step": 6,
+        "kernel_static": false,
+        "toeplitz_dev": 0.0,
+        "fft_iir_rel_err": 4.16530923730597e-16,
+        "future_perturbation_changed": 0,
+        "state_is_O_d": true,
+        "has_NxN_score": false,
+        "has_kv_cache": false,
+        "all_pass": true,
+        "time_invariant": false,
+        "input_dependent_gate": true,
+        "note": "strict Toeplitz/FFT-IIR duality is retained by the long path only; the composite forward map is no longer time invariant by construction",
+        "attribution_control": true,
+        "gamma": 0.7350332141159461,
+        "fused_state": false
+      },
+      "param_count_note": "arm parameter counts are reported, not equalized",
+      "elapsed_s": 7.06
+    }
+  ],
+  "paired": [
+    {
+      "a": "H_isolated",
+      "b": "B_gated",
+      "n": 5,
+      "mean_diff": 0.002386,
+      "sd": 0.010675,
+      "ci95_normal": [
+        -0.006971,
+        0.011744
+      ],
+      "ci95_bootstrap": [
+        -0.004212,
+        0.012003
+      ],
+      "all_same_sign": false,
+      "significant_at_95": false,
+      "per_seed_diff": [
+        -0.001174,
+        0.020788,
+        -0.006899,
+        0.000811,
+        -0.001596
+      ]
+    },
+    {
+      "a": "H_isolated",
+      "b": "G_slotted",
+      "n": 5,
+      "mean_diff": -0.000367,
+      "sd": 0.00061,
+      "ci95_normal": [
+        -0.000902,
+        0.000167
+      ],
+      "ci95_bootstrap": [
+        -0.000821,
+        0.000138
+      ],
+      "all_same_sign": false,
+      "significant_at_95": false,
+      "per_seed_diff": [
+        -0.000649,
+        -0.000701,
+        0.000426,
+        -0.001028,
+        0.000115
+      ]
+    },
+    {
+      "a": "H_bigram",
+      "b": "B_gated",
+      "n": 5,
+      "mean_diff": -0.014442,
+      "sd": 0.024825,
+      "ci95_normal": [
+        -0.036202,
+        0.007318
+      ],
+      "ci95_bootstrap": [
+        -0.032396,
+        0.006665
+      ],
+      "all_same_sign": false,
+      "significant_at_95": false,
+      "per_seed_diff": [
+        -0.034177,
+        -0.025085,
+        0.023089,
+        -0.034271,
+        -0.001766
+      ]
+    },
+    {
+      "a": "H_bigram",
+      "b": "H_isolated",
+      "n": 5,
+      "mean_diff": -0.016828,
+      "sd": 0.031255,
+      "ci95_normal": [
+        -0.044225,
+        0.010568
+      ],
+      "ci95_bootstrap": [
+        -0.038982,
+        0.008838
+      ],
+      "all_same_sign": false,
+      "significant_at_95": false,
+      "per_seed_diff": [
+        -0.033002,
+        -0.045873,
+        0.029987,
+        -0.035082,
+        -0.000171
+      ]
+    },
+    {
+      "a": "G_slotted",
+      "b": "B_gated",
+      "n": 5,
+      "mean_diff": 0.002753,
+      "sd": 0.011001,
+      "ci95_normal": [
+        -0.00689,
+        0.012396
+      ],
+      "ci95_bootstrap": [
+        -0.004132,
+        0.012683
+      ],
+      "all_same_sign": false,
+      "significant_at_95": false,
+      "per_seed_diff": [
+        -0.000526,
+        0.021489,
+        -0.007325,
+        0.001839,
+        -0.001711
+      ]
+    }
+  ],
+  "regression": {
+    "B_gated": {
+      "step5": [
+        3.4373760808098077,
+        3.5039069872166606,
+        3.4439716540777217,
+        3.499681668148302,
+        3.4103689392036607
+      ],
+      "step6": [
+        3.4373760808098077,
+        3.5039069872166606,
+        3.4439716540777217,
+        3.499681668148302,
+        3.4103689392036607
+      ],
+      "bit_identical": true
+    },
+    "G_slotted": {
+      "step5": [
+        3.4368503901223093,
+        3.5253959605056164,
+        3.4366470359180474,
+        3.5015206760862494,
+        3.408658372754251
+      ],
+      "step6": [
+        3.4368503901223093,
+        3.5253959605056164,
+        3.4366470359180474,
+        3.5015206760862494,
+        3.408658372754251
+      ],
+      "bit_identical": true
+    }
+  },
+  "whitebox": {
+    "gamma0_forward_max_abs_diff": 0.0,
+    "raw_vs_bank_argmax_agreement": 1.0,
+    "raw_shape": [
+      1,
+      65,
+      65
+    ],
+    "raw_is_finite": true,
+    "gamma_analytic": -10.35066588337075,
+    "gamma_numeric": -10.35066588164213,
+    "gamma_rel_err": 8.350287902216368e-11,
+    "gamma_gradcheck_pass": true,
+    "bank_vs_bigram_top1_agreement": 0.415385
+  },
+  "gate": {
+    "primary": false,
+    "secondary": false,
+    "regression_both_arms_bit_identical": true,
+    "gamma0_init_identical": true,
+    "gamma_gradcheck": true,
+    "all_invariants_pass": true,
+    "no_failed_run": true,
+    "ALL_PASS": false
+  },
+  "wall_s": 158.03
+}

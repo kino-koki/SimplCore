@@ -1,0 +1,61 @@
+{
+  "note": "speaks re-evaluated with aggregate statistic + 3 NEW held-out prompts",
+  "rule": {
+    "per_prompt": "words>=15, real_word_ratio>=0.55, rep3<=0.50, readable>=0.80",
+    "aggregate": "mean bigram overlap >= 0.15, mean real-word ratio >= 0.60",
+    "other": "bpc gain > 1.0, gradcheck/stream/delta_sgc PASS"
+  },
+  "n_prompts": 6,
+  "n_new_prompts": 3,
+  "per_prompt_basic": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "mean_bigram_overlap": 0.2791,
+  "mean_real_word_ratio": 0.7319,
+  "bpc_gain": 6.8420539226085335,
+  "speaks": true,
+  "new_prompts": [
+    {
+      "chars": 101,
+      "words": 23,
+      "distinct1": 0.7826,
+      "rep3": 0.0,
+      "real_word_ratio": 0.8696,
+      "corpus_bigram_overlap": 0.4091,
+      "corpus_3gram_overlap": 0.0476,
+      "readable_ratio": 1.0,
+      "prompt": "this arm of mine.\nNow prisoner to the palsy, chastise t",
+      "sample": "owe,\nI the plesse before the come a say;\nBut the somes well to death:\nThe take well fords\nAs a man on"
+    },
+    {
+      "chars": 101,
+      "words": 23,
+      "distinct1": 0.9565,
+      "rep3": 0.0,
+      "real_word_ratio": 0.8696,
+      "corpus_bigram_overlap": 0.5,
+      "corpus_3gram_overlap": 0.0952,
+      "readable_ratio": 1.0,
+      "prompt": "My lord, cheer up your spirits: our foes are nigh,\nAnd ",
+      "sample": "must be of beents\nI with be wife first to face, shey wad wise once,\nIs my mother for fair the can did"
+    },
+    {
+      "chars": 101,
+      "words": 20,
+      "distinct1": 1.0,
+      "rep3": 0.0,
+      "real_word_ratio": 0.75,
+      "corpus_bigram_overlap": 0.2105,
+      "corpus_3gram_overlap": 0.0,
+      "readable_ratio": 1.0,
+      "prompt": "O, pardon me for bringing these ill news,\nSince you did",
+      "sample": "e me litcher\nFirst to were teders,\nHe samether, my cannot shall,\nBut with must bide, which the wust a"
+    }
+  ],
+  "original_per_prompt_rule_result": false
+}
