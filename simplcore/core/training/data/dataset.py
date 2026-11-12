@@ -71,6 +71,9 @@ class ShardedTokenDataset(Dataset):
     每个样本是 ``(seq_len,)`` 的 ``torch.long`` 窗口 —— 对 causal LM 来说
     ``input_ids`` 与 ``labels`` 是同一个窗口错位对齐, 因此默认只返回输入窗口,
     由 collate / 模型侧做 ``labels = input_ids`` 的 shift。
+    split 可选提供 ``ncm_label_targets`` 和 ``ncm_group_targets`` sidecar；每项包含
+    ``dtype`` 与 ``files``，其中每个分片按 token 顺序对齐且总长度必须与 token 流一致。
+    启用 sidecar 时，样本返回包含 ``tokens`` 及对应 target 张量的 mapping。
 
     数据布局::
 
@@ -160,6 +163,57 @@ class ShardedTokenDataset(Dataset):
             _load_memmap(Path(s["path"]), self.dtype, expected_tokens=s["n_tokens"]) for s in self.shards
         ]
         self.num_tokens = int(running)
+        self._ncm_arrays: Dict[str, List[np.ndarray]] = {}
+        self._ncm_offsets: Dict[str, np.ndarray] = {}
+        self._ncm_target_shards: Dict[str, List[Dict[str, Any]]] = {}
+        self._ncm_dtypes: Dict[str, np.dtype] = {}
+        for target_name in ("ncm_label_targets", "ncm_group_targets"):
+            target_spec = entry.get(target_name)
+            if target_spec is None:
+                continue
+            if not isinstance(target_spec, dict) or not target_spec.get("files"):
+                raise DataPipelineError(
+                    f"{target_name} must contain a non-empty files list")
+            target_dtype = np.dtype(target_spec.get("dtype", "int32"))
+            if target_dtype.kind not in ("i", "u"):
+                raise DataPipelineError(
+                    f"{target_name} dtype must be an integer type, got {target_dtype}")
+            target_shards = []
+            target_offsets = []
+            target_arrays = []
+            target_running = 0
+            for shard in target_spec["files"]:
+                path = self.root / shard["path"]
+                if verify_hashes and shard.get("sha256"):
+                    actual = compute_sha256(path)
+                    if actual != shard["sha256"]:
+                        raise DataPipelineError(
+                            f"sha256 mismatch for {path}: "
+                            f"manifest={shard['sha256'][:16]}... "
+                            f"actual={actual[:16]}...")
+                n_values = int(shard.get("n_tokens", -1))
+                if n_values < 0:
+                    raise DataPipelineError(
+                        f"{target_name} shard {path} is missing a valid n_tokens")
+                target_offsets.append(target_running)
+                target_arrays.append(_load_memmap(
+                    path, target_dtype, expected_tokens=n_values))
+                target_shards.append({
+                    "path": str(path),
+                    "n_tokens": n_values,
+                    "offset": target_running,
+                    "bytes": int(path.stat().st_size),
+                })
+                target_running += n_values
+            if target_running != self.num_tokens:
+                raise DataPipelineError(
+                    f"{target_name} has {target_running} values but token split "
+                    f"has {self.num_tokens}")
+            self._ncm_arrays[target_name] = target_arrays
+            self._ncm_offsets[target_name] = np.asarray(
+                target_offsets, dtype=np.int64)
+            self._ncm_target_shards[target_name] = target_shards
+            self._ncm_dtypes[target_name] = target_dtype
         # 窗口数始终按"实际 token 数 // seq_len"计算: 文件里最后一个 token 永远
         # 可被某个窗口用到 (写入时已保证 token 数正好是整数个 seq_len 窗口)。
         # manifest 里的 n_windows 只是同一算式在 seq_len 下的快照, 仅作交叉校验。
@@ -176,20 +230,47 @@ class ShardedTokenDataset(Dataset):
             )
 
     # -- 读取 ---------------------------------------------------------------
-    def _window(self, index: int) -> np.ndarray:
-        """取第 ``index`` 个窗口的 numpy 视图 (跨分片时做一次拷贝)。"""
+    def _window_from_arrays(self, index: int, arrays: List[np.ndarray],
+                            offsets: np.ndarray) -> np.ndarray:
+        """Read a fixed-length window from token or aligned target shards."""
         start = index * self.seq_len
-        shard_idx = int(np.searchsorted(self._offsets, start, side="right") - 1)
+        shard_idx = int(np.searchsorted(offsets, start, side="right") - 1)
         shard_idx = max(shard_idx, 0)
-        arr = self._arrays[shard_idx]
-        local = start - int(self._offsets[shard_idx])
-        if local + self.seq_len <= arr.size:
-            return arr[local:local + self.seq_len]
-        head = arr[local:]
-        need = self.seq_len - head.size
-        if shard_idx + 1 >= len(self._arrays):
-            raise DataPipelineError(f"window {index} runs past the last shard of split {self.split!r}")
-        return np.concatenate((head, self._arrays[shard_idx + 1][:need]))
+        pieces = []
+        position = start
+        remaining = self.seq_len
+        while remaining:
+            if shard_idx >= len(arrays):
+                raise DataPipelineError(
+                    f"window {index} runs past the last shard of split {self.split!r}")
+            arr = arrays[shard_idx]
+            local = position - int(offsets[shard_idx])
+            if arr.size == 0 or local >= arr.size:
+                shard_idx += 1
+                continue
+            take = min(remaining, arr.size - local)
+            if take <= 0:
+                raise DataPipelineError(
+                    f"invalid shard layout while reading window {index} "
+                    f"from split {self.split!r}")
+            pieces.append(arr[local:local + take])
+            position += take
+            remaining -= take
+            shard_idx += 1
+        if len(pieces) == 1:
+            return pieces[0]
+        return np.concatenate(pieces)
+
+    def _window(self, index: int) -> np.ndarray:
+        """取第 ``index`` 个 token 窗口。"""
+        return self._window_from_arrays(index, self._arrays, self._offsets)
+
+    def _ncm_window(self, index: int, target_name: str) -> np.ndarray:
+        if target_name not in self._ncm_arrays:
+            raise DataPipelineError(
+                f"NCM target {target_name!r} is not configured for split {self.split!r}")
+        return self._window_from_arrays(
+            index, self._ncm_arrays[target_name], self._ncm_offsets[target_name])
 
     def __len__(self) -> int:
         """窗口数 (``num_tokens // seq_len``)。"""
@@ -208,6 +289,14 @@ class ShardedTokenDataset(Dataset):
         x = torch.from_numpy(window).to(self.token_dtype)
         if self.transform is not None:
             x = self.transform(x)
+        if self._ncm_arrays:
+            item = {"tokens": x}
+            for name, arrays in self._ncm_arrays.items():
+                target = np.asarray(self._ncm_window(index, name)).copy()
+                item[name] = torch.from_numpy(target).to(torch.long)
+            if self.return_labels:
+                item["labels"] = x.clone()
+            return item
         if self.return_labels:
             return x, x.clone()
         return x
@@ -227,16 +316,23 @@ class ShardedTokenDataset(Dataset):
 
     def num_bytes(self) -> int:
         """该 split 在磁盘上的字节数。"""
-        return int(sum(s["bytes"] for s in self.shards))
+        total = sum(s["bytes"] for s in self.shards)
+        total += sum(
+            shard["bytes"]
+            for shards in self._ncm_target_shards.values()
+            for shard in shards)
+        return int(total)
 
     def close(self) -> None:
         """释放 mmap 句柄 (Windows 上删除/覆盖文件前必须先调用)。"""
         self._arrays = []
+        self._ncm_arrays = {}
 
     def __getstate__(self) -> dict:
         """支持 ``DataLoader(num_workers>0)``: 不把 mmap 对象跨进程序列化。"""
         state = self.__dict__.copy()
         state["_arrays"] = []
+        state["_ncm_arrays"] = {}
         return state
 
     def __setstate__(self, state: dict) -> None:
@@ -245,6 +341,15 @@ class ShardedTokenDataset(Dataset):
         self._arrays = [
             _load_memmap(Path(s["path"]), self.dtype, expected_tokens=s["n_tokens"]) for s in self.shards
         ]
+        self._ncm_arrays = {
+            name: [
+                _load_memmap(
+                    Path(shard["path"]), self._ncm_dtypes[name],
+                    expected_tokens=shard["n_tokens"])
+                for shard in shards
+            ]
+            for name, shards in self._ncm_target_shards.items()
+        }
 
 
 # ---------------------------------------------------------------------------
@@ -277,4 +382,3 @@ def load_split(
     for i in range(n):
         out[i] = ds[i]
     return out
-

@@ -1,0 +1,82 @@
+{
+ "steps": [
+  {
+   "name": "architecture fusion (5 parts, 5 seeds)",
+   "returncode": 0,
+   "ok": true,
+   "tail": [
+    "== PART 4: final-state conservation and consistency ==",
+    "  27/27 PASS -> /data/workspace/train/superposition_probe/results/fusion_guard.json",
+    "elapsed 18.4 s"
+   ]
+  },
+  {
+   "name": "PDF build",
+   "returncode": 0,
+   "ok": true,
+   "tail": [
+    "PDF written: /data/workspace/simplcore.pdf",
+    "total pages: 17 | main-paper ends on page: 8",
+    "within 8-page limit"
+   ]
+  },
+  {
+   "name": "desk-check",
+   "returncode": 0,
+   "ok": true,
+   "tail": [
+    "  D7    6/ 6 OK",
+    "  P    11/11 OK",
+    "  P1    4/ 4 OK"
+   ]
+  },
+  {
+   "name": "governance objects (S4 / namespace / numbers)",
+   "returncode": 0,
+   "ok": true,
+   "tail": [
+    "   entries: 16 | unique: True",
+    "",
+    "wrote governance_*.json to /data/workspace/theory_work/results"
+   ]
+  },
+  {
+   "name": "two-PDF split",
+   "returncode": 0,
+   "ok": true,
+   "tail": [
+    "banned fragments: []",
+    "11/11 PASS",
+    "wrote /data/workspace/tools/eval_baselines/results/split_check.json"
+   ]
+  }
+ ],
+ "checks": {
+  "all_scripts_exit_0": true,
+  "desk_check_45": true,
+  "fusion_guard_27": true,
+  "s4_same_quantity_PASS": true,
+  "v6_counterfactual_detected": true,
+  "namespace_unique": true,
+  "theorem_B_zero": true,
+  "number_freeze_unique": true,
+  "split_11": true,
+  "main_pdf_exists": true,
+  "appendix_pdf_exists": true,
+  "no_self_identifying_paths_in_pdfs": true
+ },
+ "n_pass": 12,
+ "n_checks": 12,
+ "all_pass": true,
+ "phase_verdicts": {
+  "Phase 0 CFP locked": "PASS (CFP unpublished; Phase 7 suspended)",
+  "Phase 1 claim registry": "PASS (conflicts 0, namespace unique)",
+  "Phase 2 proof audit": "PASS (all KEEP, S4 same-quantity PASS)",
+  "Phase 3 P0 scan": "PASS (internal P0 = 0; refs verification pending)",
+  "Phase 4 number freeze": "PASS (16 entries, unique)",
+  "Phase 5 two-PDF split": "PASS (8 + 9 pages)",
+  "Phase 6 60% gate": "NOT EVALUABLE (no independent reviewers)",
+  "Phase 7 compliance": "SUSPENDED (2027 CFP / author instructions unpublished)"
+ },
+ "honest_note": "This is a machine self-check of consistency, not a human review and not a mathematical proof. The 60% internal quality gate is NOT EVALUABLE and no acceptance probability is claimed."
+}

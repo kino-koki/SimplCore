@@ -174,6 +174,31 @@ def _build_sgc_routed(cfg):
     )
 
 
+def _build_snn_sgc(cfg):
+    from .snn_sgc import SpikingSpectralGlobalConv
+    return SpikingSpectralGlobalConv(
+        dim=cfg.dim,
+        num_bases=cfg.num_bases,
+        decay_max=cfg.decay_max,
+        local_kernel=cfg.local_kernel,
+        content_gate=cfg.content_gate,
+        out_gate=cfg.out_gate,
+        evidence_gate=cfg.evidence_gate,
+        uncertainty_gate=cfg.uncertainty_gate,
+        norm=cfg.norm,
+        fft_dtype=cfg.resolve_fft_dtype(),
+        eps=cfg.norm_eps,
+        use_mixer_stream=cfg.use_mixer_stream,
+        path_gate=getattr(cfg, "sgc_path_gate", False),
+        inst_nonlin=getattr(cfg, "sgc_inst_nonlin", False),
+        init_mode=getattr(cfg, "sgc_init_mode", "logfreq"),
+        rho_param=getattr(cfg, "sgc_rho_param", "sigmoid"),
+        snn_decay=cfg.snn_decay,
+        snn_threshold=cfg.snn_threshold,
+        snn_surrogate_slope=cfg.snn_surrogate_slope,
+    )
+
+
 def _build_srf(cfg):
     from .srf import SpectralResonanceFlow
     return SpectralResonanceFlow(
@@ -222,6 +247,12 @@ def _register_builtin() -> None:
             docstring="SGC-R 谱专家路由变体（MiTA 式 shared+routed，MoE top-k，非注意力）",
         ),
         MixerSpec(
+            name="snn-sgc",
+            build=_build_snn_sgc,
+            family="sgc",
+            docstring="实验性 SGC + 有符号 LIF 脉冲读出（surrogate-gradient）",
+        ),
+        MixerSpec(
             name="srf",
             build=_build_srf,
             family="srf",
@@ -240,6 +271,7 @@ _MIXER_CLASS_PATHS = {
     "sgc-nogate": ("sgc", "SpectralGlobalConv"),
     "sgc-nolocal": ("sgc", "SpectralGlobalConv"),
     "sgc-r": ("sgc", "RoutedSpectralGlobalConv"),
+    "snn-sgc": ("snn_sgc", "SpikingSpectralGlobalConv"),
     "srf": ("srf", "SpectralResonanceFlow"),
 }
 

@@ -1,0 +1,37 @@
+{
+ "checks": {
+  "all_arms_same_protocol": true,
+  "full_width_d_equals_V": true,
+  "embedding_fixed_not_learned": true,
+  "every_seed_every_arm": true,
+  "paired_ci_present": true,
+  "analytic_witnesses_present": true,
+  "h2_witnesses_present": true
+ },
+ "n_pass": 7,
+ "n_checks": 7,
+ "all_pass": true,
+ "observations": {
+  "h1_best_arm_mean": [
+   1.0,
+   "tsc_h1"
+  ],
+  "h2_best_arm_mean": [
+   0.954296875,
+   "attn_x2"
+  ],
+  "all_three_analytic_exact": true,
+  "analytic_means": {
+   "tsc_h1": 1.0,
+   "linear_pair": 1.0,
+   "attn_x1": 1.0
+  },
+  "h2_analytic_means": {
+   "tsc": 1.0,
+   "attention": 1.0
+  },
+  "h2_both_exact": true,
+  "v62_training_claim_reversed": true
+ },
+ "interpretation": "Checks certify that the two v6.2 asymmetries are REMOVED. Observations are reported, not gated: any training gap is optimisation, not expressivity, because an explicit zero-training solution exists for all three mechanisms."
+}

@@ -1,0 +1,210 @@
+[
+ {
+  "acc": 1.0,
+  "per_layer_acc": [
+   0.0,
+   1.0
+  ],
+  "chance": 0.03125,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 4,
+  "V": 64,
+  "code_kind": "hadamard",
+  "normalize": true,
+  "role": true,
+  "tag": "code=hadamard"
+ },
+ {
+  "acc": 1.0,
+  "per_layer_acc": [
+   0.0,
+   1.0
+  ],
+  "chance": 0.03125,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 4,
+  "V": 64,
+  "code_kind": "random",
+  "normalize": true,
+  "role": true,
+  "tag": "code=random"
+ },
+ {
+  "acc": 1.0,
+  "per_layer_acc": [
+   0.0,
+   1.0
+  ],
+  "chance": 0.03125,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 4,
+  "V": 64,
+  "code_kind": "identity",
+  "normalize": true,
+  "role": true,
+  "tag": "code=identity"
+ },
+ {
+  "acc": 1.0,
+  "per_layer_acc": [
+   0.0,
+   1.0
+  ],
+  "chance": 0.03125,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 4,
+  "V": 64,
+  "code_kind": "gaussian",
+  "normalize": true,
+  "role": true,
+  "tag": "code=gaussian"
+ },
+ {
+  "acc": 1.0,
+  "per_layer_acc": [
+   0.0,
+   1.0
+  ],
+  "chance": 0.03125,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 4,
+  "V": 64,
+  "code_kind": "hadamard",
+  "normalize": true,
+  "role": true,
+  "tag": "rho_fast"
+ },
+ {
+  "acc": 1.0,
+  "per_layer_acc": [
+   0.0,
+   1.0
+  ],
+  "chance": 0.03125,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 4,
+  "V": 64,
+  "code_kind": "hadamard",
+  "normalize": true,
+  "role": true,
+  "tag": "rho_slow"
+ },
+ {
+  "acc": 1.0,
+  "per_layer_acc": [
+   0.0,
+   1.0
+  ],
+  "chance": 0.03125,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 4,
+  "V": 64,
+  "code_kind": "hadamard",
+  "normalize": true,
+  "role": true,
+  "tag": "w_skew"
+ },
+ {
+  "acc": 1.0,
+  "per_layer_acc": [
+   0.0,
+   1.0
+  ],
+  "chance": 0.03125,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 4,
+  "V": 64,
+  "code_kind": "hadamard",
+  "normalize": false,
+  "role": true,
+  "tag": "no_norm"
+ },
+ {
+  "acc": 0.6015625,
+  "per_layer_acc": [
+   0.0,
+   0.6015625
+  ],
+  "chance": 0.03125,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 4,
+  "V": 64,
+  "code_kind": "hadamard",
+  "normalize": true,
+  "role": false,
+  "tag": "no_role_mask"
+ },
+ {
+  "acc": 1.0,
+  "per_layer_acc": [
+   0.0,
+   1.0
+  ],
+  "chance": 0.03125,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 8,
+  "V": 64,
+  "code_kind": "hadamard",
+  "normalize": true,
+  "role": true,
+  "tag": "V64_np8"
+ },
+ {
+  "acc": 1.0,
+  "per_layer_acc": [
+   0.0,
+   1.0
+  ],
+  "chance": 0.015625,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 16,
+  "V": 128,
+  "code_kind": "hadamard",
+  "normalize": true,
+  "role": true,
+  "tag": "V128_np16"
+ },
+ {
+  "acc": 1.0,
+  "per_layer_acc": [
+   0.0,
+   1.0
+  ],
+  "chance": 0.0078125,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 32,
+  "V": 256,
+  "code_kind": "hadamard",
+  "normalize": true,
+  "role": true,
+  "tag": "V256_np32"
+ },
+ {
+  "acc": 1.0,
+  "per_layer_acc": [
+   0.0,
+   1.0
+  ],
+  "chance": 0.00390625,
+  "n_layers": 2,
+  "hops": 2,
+  "n_pairs": 64,
+  "V": 512,
+  "code_kind": "hadamard",
+  "normalize": true,
+  "role": true,
+  "tag": "V512_np64"
+ }
+]

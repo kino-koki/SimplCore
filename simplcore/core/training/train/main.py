@@ -5,10 +5,11 @@
 from __future__ import annotations
 
 
-from .cli import (assert_train_window_fits, build_config, parse_args,
+from .cli import (_load_enhance_prompts, assert_train_window_fits,
+                  build_config, parse_args,
                   train_window_bytes)
 from .checkpoint import load_checkpoint, save_checkpoint
-from .data_windows import LMWindows, resolve_data_dir
+from .data_windows import LMWindows, resolve_data_dir, unpack_lm_batch
 from .distributed import setup_distributed
 from .evaluate import evaluate
 from .optim import apply_rocm_tuning, build_param_groups, cosine_with_warmup
@@ -28,8 +29,27 @@ import torch.distributed as dist
 from torch.utils.data import DataLoader, Dataset, DistributedSampler
 
 from ...model.model import SimplCoreModel
+from ...model.config import SimplCoreConfig
 from ..seqlen_curriculum import build_curriculum, SeqLenCurriculum
 from ..training_integration import build_enhanced_model
+
+
+def _ncm_chunk_contribution(aux: dict, total_counts: dict,
+                           config: SimplCoreConfig) -> torch.Tensor:
+    """Scale chunk auxiliary loss sums to the per-microbatch source means."""
+    weighted = aux["ncm_loss"].new_zeros(())
+    for source, weight_name in (
+        ("future_latent", "ncm_future_weight"),
+        ("concept_labels", "ncm_label_weight"),
+        ("token_groups", "ncm_group_weight"),
+    ):
+        count = int(total_counts.get(source, 0))
+        if count:
+            loss_sum = aux.get(f"{source}_loss_sum")
+            if loss_sum is not None:
+                weighted = weighted + (
+                    getattr(config, weight_name) * loss_sum / count)
+    return weighted
 
 
 
@@ -72,7 +92,7 @@ def main(argv=None) -> int:
         train_ds = val_ds = None
         vocab_size = cfg.vocab_size
     else:
-        from ..training.data import MANIFEST_NAME, read_manifest
+        from ..data import MANIFEST_NAME, read_manifest
         data_dir = resolve_data_dir(args.data_dir)
         if data_dir is None:
             raise SystemExit("no packed dataset found; pass --data-dir or use --dry-run")
@@ -99,6 +119,9 @@ def main(argv=None) -> int:
         where="启动预检（chunk 模式）" if args.train_chunk else "启动预检")
     cfg.vocab_size = vocab_size
     cfg.grad_checkpoint = args.grad_checkpoint
+    if cfg.use_ncm and args.cuda_graph:
+        raise SystemExit(
+            "--cuda-graph currently does not support NCM auxiliary objectives")
 
     model = SimplCoreModel(cfg).to(device)
     n_params = model.num_params()
@@ -395,6 +418,7 @@ def main(argv=None) -> int:
     gate2_at = 0                    # 最近一次 GATE-2 的 seq_len（0=未跑）
     pending = 0                    # 本日志窗口内本 rank 消费的 token 数
     pending_loss_w = 0.0           # Σ(本 micro-batch 平均 loss × token 数)，用于全局加权
+    pending_ncm_aux_w = 0.0
     batch_iter: Iterator = iter(train_loader) if train_loader is not None else None
 
     # 单步 GPU 计时事件（仅 cuda 设备）。移除每步 synchronize 的 stall：
@@ -452,7 +476,7 @@ def main(argv=None) -> int:
         if (args.gate2 and gate2_at == 0
                 and cur_seq_len >= 1_048_576):
             gate2_at = cur_seq_len
-            from ..training.gate2 import evaluate_gate2
+            from ...eval.gate2 import evaluate_gate2
             lengths = [int(x) for x in args.gate2_lengths.split(",") if x.strip()]
             lengths = [L for L in lengths if L <= max(cur_seq_len, 1_048_576)]
             if not lengths:
@@ -498,24 +522,40 @@ def main(argv=None) -> int:
         t0 = time.perf_counter()
         optim.zero_grad(set_to_none=True)
         step_loss_w = 0.0
+        step_ncm_aux_w = 0.0
         for _ in range(accum):
             if train_loader is None:
                 x = torch.randint(0, cfg.vocab_size, (args.micro_batch, cur_seq_len),
                                   device=device)
                 y = torch.randint(0, cfg.vocab_size, (args.micro_batch, cur_seq_len),
                                   device=device)
+                ncm_labels = ncm_groups = None
             else:
                 try:
-                    x, y = next(batch_iter)
+                    batch = next(batch_iter)
                 except StopIteration:
                     epoch += 1
                     if train_sampler is not None:
                         # 每个 epoch 换洗牌种子，否则多卡永远吃到同一批窗口
                         train_sampler.set_epoch(epoch)
                     batch_iter = iter(train_loader)
-                    x, y = next(batch_iter)
+                    batch = next(batch_iter)
+                x, y, ncm_labels, ncm_groups = unpack_lm_batch(batch)
                 x = x.to(device, non_blocking=True)
                 y = y.to(device, non_blocking=True)
+                if ncm_labels is not None:
+                    ncm_labels = ncm_labels.to(device, non_blocking=True)
+                if ncm_groups is not None:
+                    ncm_groups = ncm_groups.to(device, non_blocking=True)
+            if cfg.use_ncm:
+                if cfg.ncm_label_classes > 0 and ncm_labels is None:
+                    raise ValueError(
+                        "NCM label classes are configured but the training "
+                        "batch has no ncm_label_targets")
+                if cfg.ncm_group_classes > 0 and ncm_groups is None:
+                    raise ValueError(
+                        "NCM group classes are configured but the training "
+                        "batch has no ncm_group_targets")
             if graph_runner is not None:
                 # HIP/CUDA Graph 回放：把本 micro-batch 拷入静态张量后 replay，
                 # 跳过每步的 kernel 启动开销。
@@ -535,13 +575,27 @@ def main(argv=None) -> int:
                     # 间都用 no_sync，只有 accum 周期的最后一块正常同步。
                     rm = raw_model()
                     n_total = max(int((y != -100).sum().item()), 1)
+                    ncm_total_counts = {
+                        "future_latent": x.shape[0] * x.shape[1],
+                        "concept_labels": (
+                            int((ncm_labels != -100).sum().item())
+                            if ncm_labels is not None else 0),
+                        "token_groups": (
+                            int((ncm_groups != -100).sum().item())
+                            if ncm_groups is not None else 0),
+                    }
                     st = rm.init_stream(x.shape[0], device=x.device,
                                         dtype=rm.tok_emb.weight.dtype)
                     positions = list(range(0, x.shape[1], args.train_chunk))
                     chunk_loss_sum = 0.0
+                    chunk_ncm_aux_sum = 0.0
                     for ci, pos in enumerate(positions):
                         end = min(pos + args.train_chunk, x.shape[1])
                         xc, yc = x[:, pos:end], y[:, pos:end]
+                        labels_c = (ncm_labels[:, pos:end]
+                                    if ncm_labels is not None else None)
+                        groups_c = (ncm_groups[:, pos:end]
+                                    if ncm_groups is not None else None)
                         n_part = int((yc != -100).sum().item())
                         sync_now = (ci == len(positions) - 1
                                     and (micro + 1) % accum == 0)
@@ -552,20 +606,44 @@ def main(argv=None) -> int:
                             with ctx:
                                 # 经 DDP.forward 进入单块带状态前向，reducer
                                 # 的 prepare/同步才能与 backward 正确配对。
-                                _, loss_mean = model(
-                                    xc, yc, stream_state=st)
-                            if n_part > 0:
-                                (loss_mean * (n_part / n_total)
-                                 / accum).backward()
+                                if cfg.use_ncm:
+                                    _, loss_mean, aux = model(
+                                        xc, yc, stream_state=st,
+                                        ncm_label_targets=labels_c,
+                                        ncm_group_targets=groups_c,
+                                        return_ncm_aux=True)
+                                    ncm_contribution = _ncm_chunk_contribution(
+                                        aux, ncm_total_counts, cfg)
+                                else:
+                                    _, loss_mean = model(
+                                        xc, yc, stream_state=st)
+                                    ncm_contribution = loss_mean.new_zeros(())
+                                train_loss = (
+                                    loss_mean * (n_part / n_total)
+                                    + ncm_contribution)
+                            if n_part > 0 or cfg.use_ncm:
+                                (train_loss / accum).backward()
                         chunk_loss_sum += float(loss_mean.detach()) * n_part
+                        chunk_ncm_aux_sum += float(ncm_contribution.detach())
                         st = rm._detach_stream_state(st)
                     step_loss_w += (chunk_loss_sum / n_total) * y.numel()
+                    step_ncm_aux_w += chunk_ncm_aux_sum * y.numel()
                 else:
                     with ctx:
-                        _, loss = model(x, y)
-                        step_loss_w += float(loss.detach()) * y.numel()
-                        loss = loss / accum
-                    loss.backward()
+                        if cfg.use_ncm:
+                            _, total_loss, aux = model(
+                                x, y, ncm_label_targets=ncm_labels,
+                                ncm_group_targets=ncm_groups,
+                                return_ncm_aux=True)
+                            aux_loss = aux["ncm_loss"]
+                            ce_loss = total_loss - aux_loss
+                            step_ncm_aux_w += float(aux_loss.detach()) * y.numel()
+                        else:
+                            _, ce_loss = model(x, y)
+                            total_loss = ce_loss
+                        step_loss_w += float(ce_loss.detach()) * y.numel()
+                        total_loss = total_loss / accum
+                    total_loss.backward()
             pending += y.numel()
             tokens_consumed += y.numel()
             micro += 1
@@ -581,6 +659,7 @@ def main(argv=None) -> int:
             step_evt_e.record()          # 单步 GPU 计时；真正同步延迟到 log 时做一次
         dt = time.perf_counter() - t0
         pending_loss_w += step_loss_w
+        pending_ncm_aux_w += step_ncm_aux_w
 
         if step % args.log_every == 0 or step == 1:
             # Throughput must be measured over the *whole* logging interval.
@@ -593,6 +672,7 @@ def main(argv=None) -> int:
             # 数据分片不同，单看 rank0 的 loss 会是有偏估计）
             g_tokens = _all_reduce_sum(float(pending))
             g_loss_w = _all_reduce_sum(pending_loss_w)
+            g_ncm_aux_w = _all_reduce_sum(pending_ncm_aux_w)
             tps = g_tokens / span
             avg = g_loss_w / max(g_tokens, 1)
             # 单步计时：CUDA/HIP 下用事件在 log 时做一次同步读 GPU 时间，
@@ -607,6 +687,9 @@ def main(argv=None) -> int:
                    "tokens": tokens_consumed * world_size,
                    "tokens_since_log": int(g_tokens),
                    "elapsed_s": round(time.time() - t_start + elapsed0, 1)}
+            if cfg.use_ncm:
+                rec["ncm_aux_loss"] = round(
+                    g_ncm_aux_w / max(g_tokens, 1), 6)
             # 生物计算主义代谢账本（macro 尺度 frac 也一并记录，便于观察跨尺度耦合）
             if "bio" in em.extras:
                 m = em.extras["bio"].meter
@@ -625,7 +708,7 @@ def main(argv=None) -> int:
                 print("[train] " + json.dumps(rec))
                 metrics_fh.write(json.dumps(rec) + "\n")
                 metrics_fh.flush()
-            pending, pending_loss_w = 0, 0.0
+            pending, pending_loss_w, pending_ncm_aux_w = 0, 0.0, 0.0
             t_log = now
 
         # ---- evaluation -----------------------------------------------------
@@ -647,6 +730,8 @@ def main(argv=None) -> int:
                 rec = {"step": step, "val_loss": round(ev["loss"], 4),
                        "val_ppl": round(ev["ppl"], 4), "val_tokens": ev["tokens"],
                        "elapsed_s": round(time.time() - t_start + elapsed0, 1)}
+                if ev.get("ncm_aux"):
+                    rec["ncm_aux"] = ev["ncm_aux"]
                 if enh_extra:
                     rec["enhance"] = enh_extra
                 print("[eval] " + json.dumps(rec))
@@ -715,4 +800,3 @@ def main(argv=None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

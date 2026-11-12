@@ -1,0 +1,263 @@
+{
+ "status": "automated desk-check; NOT a human reviewer simulation",
+ "pdf": "/data/workspace/simplcore.pdf",
+ "total_pages": 18,
+ "main_pages": 9,
+ "n_checks": 46,
+ "n_pass": 46,
+ "all_pass": true,
+ "checks": {
+  "B_redefined_as_alphabet_excess": true,
+  "partition_bit_counted_in_B": true,
+  "c_is_within_class_M": true,
+  "c_is_conditional_not_forced": true,
+  "no_absolute_FORCED_wording": true,
+  "abstract_separates_universal_from_classM": true,
+  "two_accuracy_notions_defined": true,
+  "a_is_per_fibre": true,
+  "no_unconditional_half_bound": true,
+  "distribution_scope_explicit": true,
+  "exhaustive_vs_marginal_labelled": true,
+  "one_sentence_appears_three_times": true,
+  "no_conflicting_free_of_runtime_annotation": true,
+  "exactly_four_core_results": true,
+  "no_stray_numbered_theorems": true,
+  "no_NT_or_old_appendix_ids": true,
+  "no_SIX_core_conflict": true,
+  "only_two_theorems_named": true,
+  "T6_single_meaning": true,
+  "explicit_cases_present": true,
+  "no_bare_kernel_dimension_argument": true,
+  "corrective_sentence_present": true,
+  "unique_H6_interface": true,
+  "kernel_families_separated": true,
+  "no_second_interface_claim": true,
+  "chance_single_value": true,
+  "no_near_chance_wording": true,
+  "provenance_audit_table": true,
+  "drifted_values_only_as_withdrawn": true,
+  "abstract_has_no_probe_specific_fft_number": true,
+  "chance_not_mixed_with_quarter": true,
+  "no_reviewer_directed_meta": true,
+  "no_self_identifying_paths": true,
+  "no_internal_ids_or_counts": true,
+  "no_html_entities_or_tex_fragments": true,
+  "no_old_appendix_ledger": true,
+  "references_have_verifiable_identifier": true,
+  "reference_4_is_S5_not_S4D": true,
+  "zoology_is_ICLR_2024": true,
+  "no_self_certifying_reference_sentence": true,
+  "broader_impact_before_references": true,
+  "main_paper_within_8_pages": true,
+  "fibre_bridge_present": true,
+  "original_task_A_quantified": true,
+  "P5_state_order_proof": true,
+  "tradeoff_frontier_table": true
+ },
+ "groups": {
+  "D1": {
+   "B_redefined_as_alphabet_excess": {
+    "pass": true,
+    "detail": ""
+   },
+   "partition_bit_counted_in_B": {
+    "pass": true,
+    "detail": ""
+   },
+   "c_is_within_class_M": {
+    "pass": true,
+    "detail": ""
+   },
+   "c_is_conditional_not_forced": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_absolute_FORCED_wording": {
+    "pass": true,
+    "detail": ""
+   },
+   "abstract_separates_universal_from_classM": {
+    "pass": true,
+    "detail": ""
+   }
+  },
+  "D2": {
+   "two_accuracy_notions_defined": {
+    "pass": true,
+    "detail": ""
+   },
+   "a_is_per_fibre": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_unconditional_half_bound": {
+    "pass": true,
+    "detail": ""
+   },
+   "distribution_scope_explicit": {
+    "pass": true,
+    "detail": ""
+   },
+   "exhaustive_vs_marginal_labelled": {
+    "pass": true,
+    "detail": ""
+   }
+  },
+  "D3": {
+   "one_sentence_appears_three_times": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_conflicting_free_of_runtime_annotation": {
+    "pass": true,
+    "detail": ""
+   }
+  },
+  "D4": {
+   "exactly_four_core_results": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_stray_numbered_theorems": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_NT_or_old_appendix_ids": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_SIX_core_conflict": {
+    "pass": true,
+    "detail": ""
+   },
+   "only_two_theorems_named": {
+    "pass": true,
+    "detail": ""
+   },
+   "T6_single_meaning": {
+    "pass": true,
+    "detail": ""
+   }
+  },
+  "D5": {
+   "explicit_cases_present": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_bare_kernel_dimension_argument": {
+    "pass": true,
+    "detail": ""
+   },
+   "corrective_sentence_present": {
+    "pass": true,
+    "detail": ""
+   }
+  },
+  "D6": {
+   "unique_H6_interface": {
+    "pass": true,
+    "detail": ""
+   },
+   "kernel_families_separated": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_second_interface_claim": {
+    "pass": true,
+    "detail": ""
+   }
+  },
+  "D7": {
+   "chance_single_value": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_near_chance_wording": {
+    "pass": true,
+    "detail": ""
+   },
+   "provenance_audit_table": {
+    "pass": true,
+    "detail": ""
+   },
+   "drifted_values_only_as_withdrawn": {
+    "pass": true,
+    "detail": ""
+   },
+   "abstract_has_no_probe_specific_fft_number": {
+    "pass": true,
+    "detail": ""
+   },
+   "chance_not_mixed_with_quarter": {
+    "pass": true,
+    "detail": ""
+   }
+  },
+  "P": {
+   "no_reviewer_directed_meta": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_self_identifying_paths": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_internal_ids_or_counts": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_html_entities_or_tex_fragments": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_old_appendix_ledger": {
+    "pass": true,
+    "detail": ""
+   },
+   "references_have_verifiable_identifier": {
+    "pass": true,
+    "detail": ""
+   },
+   "reference_4_is_S5_not_S4D": {
+    "pass": true,
+    "detail": ""
+   },
+   "zoology_is_ICLR_2024": {
+    "pass": true,
+    "detail": ""
+   },
+   "no_self_certifying_reference_sentence": {
+    "pass": true,
+    "detail": ""
+   },
+   "broader_impact_before_references": {
+    "pass": true,
+    "detail": ""
+   },
+   "main_paper_within_8_pages": {
+    "pass": true,
+    "detail": ""
+   }
+  },
+  "P1": {
+   "fibre_bridge_present": {
+    "pass": true,
+    "detail": ""
+   },
+   "original_task_A_quantified": {
+    "pass": true,
+    "detail": ""
+   },
+   "P5_state_order_proof": {
+    "pass": true,
+    "detail": ""
+   },
+   "tradeoff_frontier_table": {
+    "pass": true,
+    "detail": ""
+   }
+  }
+ },
+ "failed": [],
+ "note": "A FALSE is a real finding to fix, not a broken run. Checks cover statement formation, numbering, wording and provenance; they are not mathematical proofs."
+}

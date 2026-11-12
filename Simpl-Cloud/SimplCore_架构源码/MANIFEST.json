@@ -1,0 +1,174 @@
+{
+ "架构源码说明.md": {
+  "size": 5550,
+  "sha256": "452ddb25c61e6f6c8f7814503a25891713d8ab6d48e29eafcba3dfd57484b45f"
+ },
+ "01_参考实现_ARCH_STEP8/chat.py": {
+  "size": 2460,
+  "sha256": "21d672df9d11bd5080c2d87259753176847c6f4cf725225a3176ec6b53244c2e"
+ },
+ "01_参考实现_ARCH_STEP8/config.json": {
+  "size": 135,
+  "sha256": "9d10d380c45b77ebd9553ff8d0c40d56c972c1bb5ca701fbc154b0bb9a322e2a"
+ },
+ "01_参考实现_ARCH_STEP8/nn.py": {
+  "size": 6926,
+  "sha256": "a4035d2191d31b661fe1ccabdd733423b4977287d42f04787eaf131e530d072b"
+ },
+ "01_参考实现_ARCH_STEP8/simplcore_lm.py": {
+  "size": 10853,
+  "sha256": "88075d19ebdbda7b0b8b6a706ed4e6b44667a64bdedb0b83b764719a933476ff"
+ },
+ "01_参考实现_ARCH_STEP8/stream_chat.py": {
+  "size": 1945,
+  "sha256": "2e41e8d2abaf09364070355bb8341a4f09193086c99dbab32bd2603e69bab1c4"
+ },
+ "01_参考实现_ARCH_STEP8/stream_lm.py": {
+  "size": 8160,
+  "sha256": "ca45c469ae5f28c55a16593c593d59ea7e0cfcdd396d1dc3798334a3908262b5"
+ },
+ "01_参考实现_ARCH_STEP8/train.py": {
+  "size": 10167,
+  "sha256": "176f42debdce448c388177ee90000158083653bfe4ae323e678c1df43d29feae"
+ },
+ "01_参考实现_ARCH_STEP8/verify_final.py": {
+  "size": 15441,
+  "sha256": "55288928140ab4045090dcfeeefcc325d9b78deac7267f522ad111357632f6e7"
+ },
+ "02_1.7B生产链路_V7/bpe.py": {
+  "size": 4292,
+  "sha256": "bac3d82ae3891d3d6afd1359b5049099618ef4935117ffbaa2448381cb654c94"
+ },
+ "02_1.7B生产链路_V7/contract_check.py": {
+  "size": 7465,
+  "sha256": "411d15f4aecdbfb2867bb9bb300e9d709f281bf89e3a7909f659f22bcd197e17"
+ },
+ "02_1.7B生产链路_V7/migrate_qwen3.py": {
+  "size": 9602,
+  "sha256": "029f1d2270caa0d4cf0ad70e602c8064d0d4b1a3b8365372375f3d98ae2d2287"
+ },
+ "02_1.7B生产链路_V7/modeling_simplcore_v7.py": {
+  "size": 10166,
+  "sha256": "576c91915ba549641eae5da57f07b6b341c1a0e042c5ee59b62920c806b2b21b"
+ },
+ "02_1.7B生产链路_V7/numpy_lm.py": {
+  "size": 16487,
+  "sha256": "d4fecb56e4dd9c6535eafbabca120ab8d9fd7bab41d55bd5a83bdcfb9eec230e"
+ },
+ "02_1.7B生产链路_V7/run_sandbox.py": {
+  "size": 9476,
+  "sha256": "12e4e2ccb21e7d4b22110e6739b8535737afa7c8e6329121e5a9002187c3917e"
+ },
+ "02_1.7B生产链路_V7/train_simplcore.py": {
+  "size": 5832,
+  "sha256": "5f2a8eae03d9aa930ed8df4de1cdc0761b48618f04c5e7e992b2da2d44a69ede"
+ },
+ "02_1.7B生产链路_V7/verify_arch.py": {
+  "size": 6214,
+  "sha256": "8327388800c97bd291d3e89f6b95c8f4949b1a22338bc29b4bdc98540d86bf8d"
+ },
+ "03_架构演进_STEP3-6/acceptance.py": {
+  "size": 4760,
+  "sha256": "dbc28ba85b3f47158b3f77863da500c747640744d1a17907cdda1c651264f433"
+ },
+ "03_架构演进_STEP3-6/debug_ops.py": {
+  "size": 3604,
+  "sha256": "b361be0a265f5c18c92656b517f04672ae298bdbb3c28853e1d7bce815207177"
+ },
+ "03_架构演进_STEP3-6/evolution_mixer_step3_backup.py": {
+  "size": 15968,
+  "sha256": "a78b973fc3043b0157f2184fb5a3ee385a91ff10c7fedfd10c7a35bd2a1f8ffe"
+ },
+ "03_架构演进_STEP3-6/evolution_mixer_step4_backup.py": {
+  "size": 21333,
+  "sha256": "3ca3595ac69565d491abcf2dc13ba20a24e5a5a76d291b5b0a02b737b585cade"
+ },
+ "03_架构演进_STEP3-6/evolution_mixer_step5_backup.py": {
+  "size": 29517,
+  "sha256": "8fb758dde63979fce52c77c40c47ab065c32d53943c247f6b34be80fa144ffbc"
+ },
+ "03_架构演进_STEP3-6/generate.py": {
+  "size": 3978,
+  "sha256": "744df40e1830f9a9ac558571b7eb8fa17359e4bc7eea9e92e2903e1a4f17aebb"
+ },
+ "03_架构演进_STEP3-6/make_release.py": {
+  "size": 6420,
+  "sha256": "e13bd3288358ee5a83210ae05554e824d7042ba71c5d1ba9853b70122aeb85a4"
+ },
+ "03_架构演进_STEP3-6/train_real_lm.py": {
+  "size": 14997,
+  "sha256": "67f5871e9082dbe55394e85d0d3245555ca18af4be34dc1cc92e53c5d7bf0177"
+ },
+ "03_架构演进_STEP3-6/train_原始归档_依赖工作区路径.py": {
+  "size": 9731,
+  "sha256": "98f51f9e8d53a1c6e97df72148051a777ce3de16f2784a26c7d5afba5049813b"
+ },
+ "03_架构演进_STEP3-6/verify.py": {
+  "size": 6557,
+  "sha256": "53717fbf001c8f64dce4fe21d4be36291b4e9016db30ea1025561ae20658b57f"
+ },
+ "04_上游SGC算子库_已替换/__init__.py": {
+  "size": 17092,
+  "sha256": "0b431258e8d550b1e34cc0b033deef63939fec8821233907c5e482765aea89f3"
+ },
+ "04_上游SGC算子库_已替换/_compat_aliases.py": {
+  "size": 4296,
+  "sha256": "76966fbe2ea570b8770dd73016b5e289dbe117092c63aafde8ea6008373309a5"
+ },
+ "04_上游SGC算子库_已替换/abstain.py": {
+  "size": 19292,
+  "sha256": "e68d86289a84a63f5e8788fe6743451cbbb8c5e8a89d55eeb5abfad14ef61b8e"
+ },
+ "04_上游SGC算子库_已替换/accel.py": {
+  "size": 12211,
+  "sha256": "86812e96a24d2c280ad52751a7377acf8d790c6c5e7e3e43ac830190693f0929"
+ },
+ "04_上游SGC算子库_已替换/evolution_mixer.py": {
+  "size": 34505,
+  "sha256": "14a22e8aa3cd020cdc7b34706a3d5f7bfc364a91852b13a1982579d17c95568c"
+ },
+ "04_上游SGC算子库_已替换/gates.py": {
+  "size": 7581,
+  "sha256": "853b2e06dc4908948f3ea86447fd1c9bb1d9d24ef2734e7cd2c27ccc3aaed582"
+ },
+ "04_上游SGC算子库_已替换/grounding.py": {
+  "size": 23167,
+  "sha256": "380b1f68cdd8ffddadcdaab335116d580887a987cbdedd8e74f0d1bf653fa0ac"
+ },
+ "04_上游SGC算子库_已替换/nn.py": {
+  "size": 6650,
+  "sha256": "589379dbc633d4c040af4aec4c2e85c5ecd788a475194d8358dfd09fb94e72d9"
+ },
+ "04_上游SGC算子库_已替换/numerical_stability.py": {
+  "size": 11250,
+  "sha256": "bde6e11d0aaebfce82a69e0436b2495cfbdbe4d5ffed78e6c74400d9d675f863"
+ },
+ "04_上游SGC算子库_已替换/purity.py": {
+  "size": 15340,
+  "sha256": "6159803744863ab48a3fa9eb067eb9f771a8d5b7642816e14a33755cc4e804cf"
+ },
+ "04_上游SGC算子库_已替换/registry.py": {
+  "size": 10346,
+  "sha256": "ab5efb9b945cd3a9aa8967cbb908dbbc53a1cca9754443cfa14a407b669e2d74"
+ },
+ "04_上游SGC算子库_已替换/selective.py": {
+  "size": 21041,
+  "sha256": "acaf6138e16c5a4e35ea04a386803f028f209c720813c6191fb47d2415734eb7"
+ },
+ "04_上游SGC算子库_已替换/sgc.py": {
+  "size": 85998,
+  "sha256": "a65cdaa669a1c1ba6c22d7f9bef5c6bf736162ba00ee16709506bee171a29c21"
+ },
+ "04_上游SGC算子库_已替换/simplcore_lm.py": {
+  "size": 10392,
+  "sha256": "0ec4912bc064f7b830c0103fe5f3c882935887c9bf2180ff77f7203673612f97"
+ },
+ "04_上游SGC算子库_已替换/srf.py": {
+  "size": 12567,
+  "sha256": "16f9470d6ced602a13fb11b2a1dfd67205f2d98be59dbfa55f92ee90eca9f4ab"
+ },
+ "04_上游SGC算子库_已替换/ssm.py": {
+  "size": 17634,
+  "sha256": "99666d8fa47ee1ed1864f65807b52bf75ed4a663c5f7f8256d9d5a56d6bd3080"
+ }
+}

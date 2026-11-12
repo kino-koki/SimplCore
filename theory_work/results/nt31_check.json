@@ -1,0 +1,27 @@
+{
+ "theorem": "NT31",
+ "title": "Exact-H layer tightness for content-chain retrieval under static LTI kernels",
+ "checks": {
+  "diagonal_exactly_one": true,
+  "off_diagonal_at_most_chance": true,
+  "lower_bound_witness": true,
+  "overshoot_witness": true,
+  "role_basis_necessary": true,
+  "orthogonality_sufficient_not_necessary": true,
+  "zero_training_length_extrapolation": true,
+  "conservation_all_passed": true,
+  "toeplitz_static_kernel": true,
+  "o1_state": true,
+  "no_nxn_no_kv": true,
+  "learnability_H2_5seeds": true,
+  "learnability_H3_5seeds": true,
+  "statement_has_premises": true,
+  "statement_has_full_proof": true,
+  "statement_has_boundary": true,
+  "non_empty_premise_instance": true
+ },
+ "n_checks": 17,
+ "n_pass": 17,
+ "all_pass": true,
+ "note": "Checks verify statement correctness and witness agreement; the proof itself is analytic and requires no execution."
+}

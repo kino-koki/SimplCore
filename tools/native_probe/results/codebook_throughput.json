@@ -1,0 +1,162 @@
+[
+ {
+  "H_L": 1,
+  "L": 9,
+  "reps": 200,
+  "us_per_token": 6.592,
+  "state_bytes": 1024,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 1,
+  "L": 65,
+  "reps": 200,
+  "us_per_token": 5.869,
+  "state_bytes": 1024,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 1,
+  "L": 257,
+  "reps": 200,
+  "us_per_token": 4.814,
+  "state_bytes": 1024,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 1,
+  "L": 1025,
+  "reps": 195,
+  "us_per_token": 4.64,
+  "state_bytes": 1024,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 1,
+  "L": 4097,
+  "reps": 48,
+  "us_per_token": 4.933,
+  "state_bytes": 1024,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 2,
+  "L": 9,
+  "reps": 200,
+  "us_per_token": 11.233,
+  "state_bytes": 2048,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 2,
+  "L": 65,
+  "reps": 200,
+  "us_per_token": 5.767,
+  "state_bytes": 2048,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 2,
+  "L": 257,
+  "reps": 200,
+  "us_per_token": 5.791,
+  "state_bytes": 2048,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 2,
+  "L": 1025,
+  "reps": 97,
+  "us_per_token": 4.831,
+  "state_bytes": 2048,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 2,
+  "L": 4097,
+  "reps": 24,
+  "us_per_token": 4.929,
+  "state_bytes": 2048,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 3,
+  "L": 9,
+  "reps": 200,
+  "us_per_token": 10.017,
+  "state_bytes": 3072,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 3,
+  "L": 65,
+  "reps": 200,
+  "us_per_token": 5.376,
+  "state_bytes": 3072,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 3,
+  "L": 257,
+  "reps": 200,
+  "us_per_token": 5.373,
+  "state_bytes": 3072,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 3,
+  "L": 1025,
+  "reps": 65,
+  "us_per_token": 5.736,
+  "state_bytes": 3072,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 3,
+  "L": 4097,
+  "reps": 16,
+  "us_per_token": 5.278,
+  "state_bytes": 3072,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 4,
+  "L": 9,
+  "reps": 200,
+  "us_per_token": 11.678,
+  "state_bytes": 4096,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 4,
+  "L": 65,
+  "reps": 200,
+  "us_per_token": 5.704,
+  "state_bytes": 4096,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 4,
+  "L": 257,
+  "reps": 194,
+  "us_per_token": 5.187,
+  "state_bytes": 4096,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 4,
+  "L": 1025,
+  "reps": 48,
+  "us_per_token": 5.596,
+  "state_bytes": 4096,
+  "state_independent_of_L": true
+ },
+ {
+  "H_L": 4,
+  "L": 4097,
+  "reps": 12,
+  "us_per_token": 5.779,
+  "state_bytes": 4096,
+  "state_independent_of_L": true
+ }
+]

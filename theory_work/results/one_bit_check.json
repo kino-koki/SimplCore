@@ -1,0 +1,35 @@
+{
+ "lemmas": [
+  "R3",
+  "R4"
+ ],
+ "checks": {
+  "R3_adversary_beta_exceeds_alpha": true,
+  "R3_flat_predicts_distractor": true,
+  "R3_learned_interface_also_fails": true,
+  "R3_structural_premise_A1_eq_A4": true,
+  "R3_structural_premise_b1_ne_b4": true,
+  "R3_sufficiency_one_bit": true,
+  "R3_two_bits_strictly_worse": true,
+  "R3_proof_is_analytic": true,
+  "R3_scope_states_worst_case_only": true,
+  "R3_not_a_new_ledger_item": true,
+  "R4_ambient_rank_equals_VK": true,
+  "R4_below_bound_degrades": true,
+  "R4_at_or_above_bound_exact": true,
+  "R4_proof_analytic_for_a_b_c": true,
+  "R4_scope_marks_d_empirical": true,
+  "architecture_learned_interface_exact": true,
+  "architecture_analytic_interface_exact": true,
+  "architecture_gradcheck": true,
+  "architecture_conservation": true,
+  "architecture_no_side_channel": true,
+  "architecture_scale": true,
+  "adjudication_all_pass": true,
+  "spec_present": true
+ },
+ "n_checks": 23,
+ "n_pass": 23,
+ "all_pass": true,
+ "claim": "EXACTLY ONE BIT is necessary (R3), sufficient (R2) and adding a second bit is harmful (R2(d)). The bit is endogenous to the model's own codebook. NT31 is now a tight if-and-only-if characterization."
+}

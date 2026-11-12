@@ -1,0 +1,23 @@
+{
+ "split_point_merged_page": 10,
+ "paper_main_pages": 9,
+ "paper_appendix_pages": 10,
+ "banned_fragments_found": [],
+ "checks": {
+  "two_pdfs_exist": true,
+  "main_has_conclusion": true,
+  "main_has_broader_impact": true,
+  "main_has_references": true,
+  "broader_impact_before_references": true,
+  "main_has_no_appendix_a": true,
+  "appendix_has_all_A_to_J": true,
+  "appendix_has_cover": true,
+  "no_self_identifying_paths": true,
+  "main_pages_within_8": true,
+  "no_entity_or_tex_fragments": true
+ },
+ "n_pass": 11,
+ "n_checks": 11,
+ "all_pass": true,
+ "note": "This two-PDF split is an internal deliverable and must be repacked to whatever the submission system requires."
+}

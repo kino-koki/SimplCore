@@ -1,0 +1,12 @@
+{
+  "osc0|300|osc": {
+    "mode": "osc",
+    "steps": 300,
+    "acc": 0.841796875
+  },
+  "osc0|300|rand": {
+    "mode": "rand",
+    "steps": 300,
+    "acc": 1.0
+  }
+}

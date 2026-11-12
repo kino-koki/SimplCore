@@ -1,0 +1,92 @@
+{
+ "arm": "S3_bind_orth",
+ "seed": 0,
+ "params": 12288,
+ "guards": {
+  "guards": [
+   {
+    "name": "toeplitz",
+    "passed": true,
+    "max_dev": 0.0
+   },
+   {
+    "name": "fft_vs_toeplitz",
+    "passed": true,
+    "rel_err": 2.114632197527115e-16
+   },
+   {
+    "name": "iir_vs_toeplitz",
+    "passed": true,
+    "rel_err": 9.86828358845987e-16,
+    "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+   },
+   {
+    "name": "strict_causality",
+    "passed": true,
+    "max_past_abs_diff": 0.0
+   },
+   {
+    "name": "state_independent_of_L",
+    "passed": true,
+    "bytes_by_L": {
+     "9": 512,
+     "17": 512,
+     "25": 512,
+     "65": 512
+    }
+   },
+   {
+    "name": "rho_theta_frozen",
+    "fingerprint": 37.53950108575128,
+    "passed": true,
+    "note": "调用方在训练后与训练前逐位比较"
+   }
+  ],
+  "all_passed": true,
+  "M": 16,
+  "L": 9,
+  "C": 4,
+  "state_bytes": 512,
+  "cond_gram": 3.1670974228100124e+16
+ },
+ "rho_theta_frozen": true,
+ "fingerprint_before": 37.53950108575128,
+ "fingerprint_after": 37.53950108575128,
+ "final_acc": 0.068359375,
+ "shuffle_acc": 0.072265625,
+ "length_generalization": {
+  "L9": 0.08984375,
+  "L17": 0.03515625,
+  "L25": 0.03125,
+  "L33": 0.03515625
+ },
+ "curve": [
+  {
+   "step": 1,
+   "loss": 4.15954335589965,
+   "acc": 0.013671875
+  },
+  {
+   "step": 200,
+   "loss": 3.257100621919598,
+   "acc": 0.037109375
+  },
+  {
+   "step": 400,
+   "loss": 2.009612684451583,
+   "acc": 0.06640625
+  },
+  {
+   "step": 600,
+   "loss": 1.557251575194427,
+   "acc": 0.080078125
+  },
+  {
+   "step": 800,
+   "loss": 1.2135360361516452,
+   "acc": 0.068359375
+  }
+ ],
+ "elapsed_s": 2.5,
+ "eliminated": false
+}

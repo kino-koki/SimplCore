@@ -1,0 +1,174 @@
+[
+ {
+  "encoding": "codebook",
+  "gate": "none",
+  "layout": "alternating",
+  "n_layers": 2,
+  "hops": 2,
+  "per_seed": [
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "mean": 1.0,
+  "std": 0.0,
+  "ci95": [
+   1.0,
+   1.0
+  ]
+ },
+ {
+  "encoding": "codebook",
+  "gate": "none",
+  "layout": "gapped",
+  "n_layers": 2,
+  "hops": 2,
+  "per_seed": [
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "mean": 1.0,
+  "std": 0.0,
+  "ci95": [
+   1.0,
+   1.0
+  ]
+ },
+ {
+  "encoding": "codebook",
+  "gate": "none",
+  "layout": "dense",
+  "n_layers": 2,
+  "hops": 2,
+  "per_seed": [
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "mean": 1.0,
+  "std": 0.0,
+  "ci95": [
+   1.0,
+   1.0
+  ]
+ },
+ {
+  "encoding": "codebook",
+  "gate": "none",
+  "layout": "padded",
+  "n_layers": 2,
+  "hops": 2,
+  "per_seed": [
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "mean": 1.0,
+  "std": 0.0,
+  "ci95": [
+   1.0,
+   1.0
+  ]
+ },
+ {
+  "encoding": "codebook",
+  "gate": "none",
+  "layout": "gapped",
+  "n_layers": 3,
+  "hops": 3,
+  "per_seed": [
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "mean": 1.0,
+  "std": 0.0,
+  "ci95": [
+   1.0,
+   1.0
+  ]
+ },
+ {
+  "encoding": "flat",
+  "gate": "tag",
+  "layout": "gapped",
+  "n_layers": 2,
+  "hops": 2,
+  "per_seed": [
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "mean": 1.0,
+  "std": 0.0,
+  "ci95": [
+   1.0,
+   1.0
+  ]
+ },
+ {
+  "encoding": "flat",
+  "gate": "none",
+  "layout": "alternating",
+  "n_layers": 2,
+  "hops": 2,
+  "per_seed": [
+   0.869140625,
+   0.865234375,
+   0.865234375,
+   0.84375,
+   0.8671875
+  ],
+  "mean": 0.862109375,
+  "std": 0.010390184436148739,
+  "ci95": [
+   0.852734375,
+   0.867578125
+  ]
+ },
+ {
+  "paired": "codebook_minus_flat_norole_on_gapped",
+  "per_seed": [
+   0.0390625,
+   0.0234375,
+   0.017578125,
+   0.029296875,
+   0.0234375
+  ],
+  "mean": 0.0265625,
+  "ci95": [
+   0.02109375,
+   0.03282226562499986
+  ],
+  "all_positive": true
+ },
+ {
+  "paired": "codebook_minus_flat_norole_on_alternating",
+  "per_seed": [
+   0.130859375,
+   0.134765625,
+   0.134765625,
+   0.15625,
+   0.1328125
+  ],
+  "mean": 0.137890625,
+  "ci95": [
+   0.132421875,
+   0.147265625
+  ],
+  "all_positive": true
+ }
+]

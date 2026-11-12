@@ -37,6 +37,7 @@ FFT O(L log L) 训练 / IIR O(1) 推理双形态、对偶形式 bit-exact 等价
 from __future__ import annotations
 
 from ._compat_aliases import install as _install_compat_aliases
+from ._compat_aliases import lab_getattr as _lab_getattr
 _install_compat_aliases()
 
 from .model.config import (
@@ -47,6 +48,7 @@ from .model.config import (
     MODEL_CODENAME,
 )
 from .arch.sgc import SpectralGlobalConv, SGCStreamState
+from .arch.snn_sgc import SpikingSpectralGlobalConv
 # SRFN（谱振流网络）：SGC 的 SSM 化版本。mixer="srf" 时启用。
 from .arch.srf import SpectralResonanceFlow
 from .arch.ssm import SelectiveSpectralSSM, SSMState
@@ -216,14 +218,7 @@ from .training.envlearn import (
     EnvironmentLearner,
     summarize_failures,
 )
-from ..lab.jitrl import (
-    TrajectoryMemory,
-    Transition,
-    AdvantageEstimator,
-    advantage_logit_bias,
-    apply_logit_bias,
-    JitRLController,
-)
+
 from .eval.extrapolation import (
     extrapolation_probe,
     decay_ablation,
@@ -350,6 +345,7 @@ __all__ = [
     "MODEL_NAME",
     "MODEL_CODENAME",
     "SpectralGlobalConv",
+    "SpikingSpectralGlobalConv",
     "SGCStreamState",
     # 谱振流网络（SRFN）：selective SSM + 谱核 + 推理 O(1) 状态
     "SelectiveSpectralSSM",
@@ -620,3 +616,13 @@ __all__ += ["DeepReasoner", "NonlinearThinker", "NonlinearThinkCell",
             "DreamConfig", "DreamReport", "DreamStage"]
 
 __version__ = "0.1-α"
+
+def __getattr__(name: str):
+    # lab 旧名（jitrl / conditions_ledger / pilot）的属性级惰性解析：
+    # pyproject.toml 规定 core 产品线不得反向 import lab，因此门面不再
+    # re-export lab 符号；旧平铺路径仅在显式访问时按需加载 simplcore.lab.*。
+    try:
+        return _lab_getattr(name)
+    except AttributeError:
+        raise AttributeError(
+            f"module {__name__!r} has no attribute {name!r}") from None

@@ -1,0 +1,147 @@
+{
+ "status": "explicit zero-training witnesses",
+ "claim": "On H=1 the three mechanisms have the SAME explicit analytic solution (identity key/value/query projections + value-code read-out). Their function classes therefore COINCIDE on this task. Any training-speed difference is an OPTIMISATION / INDUCTIVE-BIAS difference, NOT an expressivity difference. This is an observation with an explicit witness, NOT a new theorem and NOT a superiority claim.",
+ "witness": "E = fixed orthonormal Hadamard C, Wk=Wv=Wq=I, Wout = C[V_K:,:]^T. z = sum_s (q . Up_s) U_s = C[v_j] because q . C[v] = 0 (alphabet partition). TSC differs only by the fixed positive kernel K(tau), which preserves argmax.",
+ "rows": [
+  {
+   "arm": "tsc_h1",
+   "hops": 1,
+   "seed": 0,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "linear_pair",
+   "hops": 1,
+   "seed": 0,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "attn_x1",
+   "hops": 1,
+   "seed": 0,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "tsc_h1",
+   "hops": 1,
+   "seed": 1,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "linear_pair",
+   "hops": 1,
+   "seed": 1,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "attn_x1",
+   "hops": 1,
+   "seed": 1,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "tsc_h1",
+   "hops": 1,
+   "seed": 2,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "linear_pair",
+   "hops": 1,
+   "seed": 2,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "attn_x1",
+   "hops": 1,
+   "seed": 2,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "tsc_h1",
+   "hops": 1,
+   "seed": 3,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "linear_pair",
+   "hops": 1,
+   "seed": 3,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "attn_x1",
+   "hops": 1,
+   "seed": 3,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "tsc_h1",
+   "hops": 1,
+   "seed": 4,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "linear_pair",
+   "hops": 1,
+   "seed": 4,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  },
+  {
+   "arm": "attn_x1",
+   "hops": 1,
+   "seed": 4,
+   "acc": 1.0,
+   "params": 14336,
+   "steps": 0
+  }
+ ],
+ "summary": [
+  {
+   "arm": "tsc_h1",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "arm": "linear_pair",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  },
+  {
+   "arm": "attn_x1",
+   "mean": 1.0,
+   "sd": 0.0,
+   "n": 5
+  }
+ ]
+}

@@ -1,0 +1,222 @@
+[
+ {
+  "arm": "T0_vector",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T1_P1",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T2_P2",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T3_P4",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T4_lowD",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T5_gate",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T6_rho1",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T7_noK",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T8_bigR",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "T10_long",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U0_kq",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U1_kq_lr6",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U2_kq_R16",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U3_kq_orth",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U4_kq_long",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U5_kq_P1",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "U6_kq_nl",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "V0_combo",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "V1_cosine",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "V2_R24",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "V3_batch32",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "V4_R32",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W0_code64",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W1_code64_lr",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W2_code64_P1",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W3_code32",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W4_half",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W5_rho1",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W6_code_rand",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "W7_more_pairs",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "M0_d4n43",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "M1_d2n46",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "M2_d1n48",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "M3_d4n40",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "M4_d4n44_P1",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "M5_d8n30",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "M6_W1_5seed",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "H0_v256",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "H1_v256_R64",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "H2_v512",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "H3_v1024",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "H4_multihop",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "H5_v256_np16",
+  "worst_rel": 0.0,
+  "passed": true
+ },
+ {
+  "arm": "H6_v256_rand",
+  "worst_rel": 0.0,
+  "passed": true
+ }
+]

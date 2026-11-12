@@ -1,0 +1,27 @@
+{
+ "theorem": "A",
+ "checks": {
+  "closed_form_2^m": true,
+  "closed_form_n_factorial_grows": true,
+  "P2_premise_verified": true,
+  "(a)_universal_bound": true,
+  "(b)_step_at_B_equals_m": true,
+  "(e)_depth_cannot_compensate": true,
+  "(e)_sufficient_depth_is_exactly_H": true,
+  "(d)_tag_carrier_attains": true,
+  "(d)_codebook_carrier_attains_and_preserves_duality": true,
+  "(d)_format_prior_collapses": true,
+  "(d)_conservation_all_one_bit": true,
+  "(f)_retaining_intermediates_makes_geq_H_sufficient": true,
+  "adjudication_all_pass": true,
+  "statement_has_full_proof": true,
+  "statement_has_boundary": true,
+  "statement_has_novelty_disclaimer": true,
+  "universal_parts_explicitly_marked": true,
+  "non_vacuous_instance": true
+ },
+ "n_checks": 18,
+ "n_pass": 18,
+ "all_pass": true,
+ "note": "Checks certify witness agreement, closed forms and statement formation; the proof is analytic. (a),(b) are universal; (c),(d),(e) carry the architectural novelty."
+}

@@ -24,6 +24,10 @@ from simplcore.core.equal_budget import (SyntheticWindowSource, TSConfig,
                                          ts_non_embedding_params,
                                          ts_train_flops_per_token)
 from simplcore.core.scaling import non_embedding_params, train_flops_per_token
+from simplcore.core.eval.equal_budget import (
+    Mamba2Baseline, match_mamba2_config, mamba2_non_embedding_params,
+    run_multi_seed_comparison, window_source_content_fingerprint,
+)
 
 SMOKE_KW = dict(token_budget=8000, lr=2e-3, eval_every_tokens=2000)
 
@@ -84,6 +88,139 @@ def test_match_ts_layers_aligns_params() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Mamba2 reference baseline
+# ---------------------------------------------------------------------------
+def test_mamba2_parameter_formula_and_budget_match() -> None:
+    pytest.importorskip("transformers")
+    cfg = SimplCoreConfig(vocab_size=64, dim=32, num_layers=2,
+                          num_bases=8, ffn_ratio=2.0,
+                          tie_embeddings=False)
+    sc_n = int(non_embedding_params(cfg))
+    mamba_cfg, expected = match_mamba2_config(sc_n, cfg.dim, cfg.num_layers)
+    model = Mamba2Baseline(cfg.vocab_size, mamba_cfg)
+    actual = sum(
+        p.numel() for name, p in model.model.named_parameters()
+        if "embeddings.weight" not in name and "lm_head.weight" not in name)
+    assert mamba2_non_embedding_params(mamba_cfg) == expected == actual
+    assert abs(actual - sc_n) / sc_n <= 0.05
+
+
+def test_mamba2_baseline_uses_same_position_targets_and_is_causal() -> None:
+    pytest.importorskip("transformers")
+    torch.manual_seed(4)
+    cfg = SimplCoreConfig(vocab_size=64, dim=32, num_layers=2,
+                          num_bases=8, ffn_ratio=2.0,
+                          tie_embeddings=False)
+    budget_cfg, _ = match_mamba2_config(
+        int(non_embedding_params(cfg)), cfg.dim, cfg.num_layers)
+    model = Mamba2Baseline(cfg.vocab_size, budget_cfg).eval()
+    x = torch.randint(0, 64, (2, 16))
+    y = torch.randint(0, 64, (2, 16))
+    with torch.no_grad():
+        logits, loss = model(x, y)
+        expected = torch.nn.functional.cross_entropy(
+            logits.reshape(-1, 64), y.reshape(-1))
+        future_changed = x.clone()
+        future_changed[:, 8:] = torch.randint(0, 64, (2, 8))
+        changed_logits, _ = model(future_changed)
+    torch.testing.assert_close(loss, expected)
+    torch.testing.assert_close(logits[:, :8], changed_logits[:, :8],
+                               rtol=0, atol=0)
+
+
+def test_mamba2_smoke_uses_independent_validation_and_disallows_fake_flops() -> None:
+    pytest.importorskip("transformers")
+    report = run_comparison(
+        preset="smoke", baseline="mamba2", token_budget=126,
+        seq_len=16, batch_size=1, eval_every_tokens=63, seed=18)
+    assert report["baseline"] == "mamba2"
+    assert report["data"]["train_fingerprint"] != report["data"]["validation_fingerprint"]
+    assert report["data"]["validation_split"] == \
+        "independent synthetic stream, shared transition table"
+    assert report["data"]["synthetic_transition_seed"] == 20261111
+    assert report["data"]["validation_generation"] == \
+        "independent stream; same seeded transition table"
+    assert report["paired"]["baseline_name"] == "mamba2"
+    assert report["budget"]["mamba2"]["tokens_trained"] == report["budget"]["simplcore"]["tokens_trained"]
+    assert report["budget"]["mamba2"]["train_flops"] is None
+    assert report["honesty"]["unqualified_claim_permitted"] is False
+    assert report["honesty"]["claim_eligible_real_corpus"] is False
+    with pytest.raises(ValueError, match="equal_token only"):
+        run_comparison(preset="smoke", baseline="mamba2", mode="equal_flops",
+                       dry_run=True)
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
+def test_comparison_moves_cpu_windows_to_cuda_model() -> None:
+    report = run_comparison(
+        preset="smoke", baseline="transformer", token_budget=126,
+        seq_len=16, batch_size=1, eval_every_tokens=63, device="cuda")
+    assert report["runtime"]["device"] == "cuda"
+    assert report["paired"]["n_windows"] >= 16
+
+
+def test_multi_seed_aggregate_never_claims_synthetic_parity(monkeypatch) -> None:
+    import simplcore.core.eval.equal_budget as equal_budget
+
+    def fake_run(seed, **kwargs):
+        return {
+            "baseline": "mamba2",
+            "data": {"real_corpus": False, "train_fingerprint": "train",
+                     "validation_fingerprint": "val",
+                     "train_content_fingerprint": "train-content",
+                     "validation_content_fingerprint": "val-content"},
+            "runtime": {"device": "cpu"},
+            "gates": {
+                "X-equal-budget": {"passed": True},
+                "X-param-budget": {"passed": True},
+                "X-heldout-ppl": {"coverage_passed": True},
+            },
+            "paired": {"mean_loss_diff_sc_minus_baseline": -0.02},
+        }
+
+    monkeypatch.setattr(equal_budget, "run_comparison", fake_run)
+    report = run_multi_seed_comparison(
+        seeds=[1, 2, 3], baseline="mamba2", ppl_factor=1.05)
+    assert report["aggregate"]["seed_count"] == 3
+    assert report["gates"]["X-multi-seed"]["passed"] is True
+    assert report["gates"]["X-real-corpus"]["passed"] is False
+    assert report["honesty"]["unqualified_claim_permitted"] is False
+
+
+def test_multi_seed_rejects_changed_data_fingerprints(monkeypatch) -> None:
+    import simplcore.core.eval.equal_budget as equal_budget
+
+    def fake_run(seed, **kwargs):
+        return {
+            "baseline": "mamba2",
+            "data": {
+                "real_corpus": True,
+                "train_content_fingerprint": f"train-{seed}",
+                "validation_content_fingerprint": "val-content",
+            },
+            "runtime": {"device": "cpu"},
+            "gates": {
+                "X-equal-budget": {"passed": True},
+                "X-param-budget": {"passed": True},
+                "X-heldout-ppl": {"coverage_passed": True},
+            },
+            "paired": {"mean_loss_diff_sc_minus_baseline": 0.0},
+        }
+
+    monkeypatch.setattr(equal_budget, "run_comparison", fake_run)
+    with pytest.raises(RuntimeError, match="identical train/validation content"):
+        run_multi_seed_comparison(
+            seeds=[1, 2, 3], baseline="mamba2", ppl_factor=1.05)
+
+
+def test_multi_seed_requires_three_unique_seeds() -> None:
+    with pytest.raises(ValueError, match="at least 3"):
+        run_multi_seed_comparison(seeds=[1, 2], baseline="mamba2")
+    with pytest.raises(ValueError, match="unique"):
+        run_multi_seed_comparison(seeds=[1, 2, 2], baseline="mamba2")
+
+
+# ---------------------------------------------------------------------------
 # 4. 窗口流确定性
 # ---------------------------------------------------------------------------
 def test_window_stream_deterministic_and_hashable() -> None:
@@ -105,6 +242,16 @@ def test_synthetic_source_deterministic() -> None:
     s3 = SyntheticWindowSource(vocab_size=64, seq_len=32, n_windows=16, seed=8)
     assert torch.equal(s1.window(3), s2.window(3))
     assert not torch.equal(s1.window(3), s3.window(3))
+    assert window_source_content_fingerprint(s1) == window_source_content_fingerprint(s2)
+    assert window_source_content_fingerprint(s1) != window_source_content_fingerprint(s3)
+    train = SyntheticWindowSource(
+        vocab_size=64, seq_len=32, n_windows=16, seed=7, transition_seed=11)
+    validation = SyntheticWindowSource(
+        vocab_size=64, seq_len=32, n_windows=16, seed=8, transition_seed=11)
+    assert train.transition_seed == validation.transition_seed
+    assert not torch.equal(train.window(3), validation.window(3))
+    assert window_source_content_fingerprint(train) != \
+        window_source_content_fingerprint(validation)
     with pytest.raises(IndexError):
         s1.window(16)
 
@@ -137,11 +284,13 @@ def test_both_arms_learn(smoke_report: dict) -> None:
 def test_paired_stats_self_consistent(smoke_report: dict) -> None:
     p = smoke_report["paired"]
     # 数学恒等：mean(diff) == mean(sc) - mean(ts)
+    assert p["mean_loss_diff_sc_minus_baseline"] == pytest.approx(
+        p["mean_loss_simplcore"] - p["mean_loss_baseline"], abs=1e-9)
     assert p["mean_loss_diff_sc_minus_ts"] == pytest.approx(
         p["mean_loss_simplcore"] - p["mean_loss_transformer"], abs=1e-9)
     # ppl 比值恒等式
-    assert p["ppl_ratio_sc_over_ts"] == pytest.approx(
-        math.exp(p["mean_loss_simplcore"] - p["mean_loss_transformer"]), rel=1e-9)
+    assert p["ppl_ratio_sc_over_baseline"] == pytest.approx(
+        math.exp(p["mean_loss_simplcore"] - p["mean_loss_baseline"]), rel=1e-9)
     assert p["sc_wins"] + p["ts_wins"] <= p["n_windows"]
     lo, hi = p["ci95_diff"]
     assert lo <= p["mean_loss_diff_sc_minus_ts"] <= hi
@@ -150,9 +299,9 @@ def test_paired_stats_self_consistent(smoke_report: dict) -> None:
 
 def test_honesty_fields_consistent(smoke_report: dict) -> None:
     h = smoke_report["honesty"]
-    gates = smoke_report["gates"]
-    all_pass = all(g["passed"] for g in gates.values())
-    assert h["unqualified_claim_permitted"] == all_pass
+    assert h["unqualified_claim_permitted"] is False
+    assert h["claim_eligible_real_corpus"] is False
+    assert smoke_report["data"]["train_fingerprint"] != smoke_report["data"]["validation_fingerprint"]
     fc = h["forbidden_checks"]
     assert all(fc.values())                          # 四条禁止项逐条核验
     assert "合成语料不可替代真实语料结论" in "".join(h["notes"])
@@ -187,10 +336,11 @@ def test_cli_writes_valid_report(tmp_path) -> None:
     assert rc == 0
     rep = json.loads(out.read_text(encoding="utf-8"))
     assert rep["protocol"] == "X-equal-budget"
-    assert rep["report_version"] == 1
+    assert rep["report_version"] == 2
     for key in ("budget", "arms", "paired", "gates", "honesty"):
         assert key in rep
-    assert set(rep["gates"]) == {"X-equal-budget", "X-heldout-ppl"}
+    assert set(rep["gates"]) == {
+        "X-equal-budget", "X-param-budget", "X-heldout-ppl"}
 
 
 def test_paired_eval_on_frozen_models(tmp_path) -> None:

@@ -1,0 +1,8 @@
+{
+ "a_premise_mentions": 23,
+ "tap_leftover_mentions": 0,
+ "theorem_b_mentions": 0,
+ "supporting_p_mentions": 81,
+ "residual_ambiguous_phrases": [],
+ "namespace_unique": true
+}

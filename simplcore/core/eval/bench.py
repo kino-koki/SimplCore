@@ -353,10 +353,168 @@ def bench_streaming(model: nn.Module, lengths: Sequence[int] = (64, 256, 1024),
     }
 
 
+def compare_snn_sgc_training(
+    base: Optional[SimplCoreConfig] = None,
+    *, token_budget: int = 65536, seq_len: int = 64,
+    batch_size: int = 8, device: Any = None,
+    dtype: Optional[torch.dtype] = None, seed: int = 0,
+    data_seed: int = 20261112, lr: float = 1e-3, repeats: int = 3,
+) -> Dict[str, Any]:
+    """Train matched SGC and SNN-SGC arms on identical tokens and report costs.
+
+    This is an engineering comparison, not a quality claim: the built-in source
+    is synthetic and its held-out loss only measures that synthetic task. In
+    each repeat both arms use the same initialization seed, data windows,
+    optimizer, token budget, and training helper. Arm order alternates to reduce
+    first-run bias. The 80% training-time target is measured, never assumed.
+    """
+    from .equal_budget import SyntheticWindowSource, train_arm
+
+    if seq_len < 2 or batch_size <= 0 or repeats <= 0 \
+            or token_budget < batch_size * (seq_len - 1):
+        raise ValueError(
+            "token_budget must cover at least one full batch of next-token "
+            f"training ({batch_size * (seq_len - 1)} tokens), and repeats "
+            "must be positive")
+    device = resolve_device("auto") if device is None else torch.device(device)
+    dtype = torch.float32 if dtype is None else dtype
+    if base is None:
+        base = SimplCoreConfig(
+            vocab_size=128, dim=64, num_layers=2, num_bases=8,
+            local_kernel=4, ffn_ratio=2.0)
+    base.validate()
+    if base.gate_ab:
+        raise ValueError("SNN-SGC comparison does not support gate_ab=True")
+
+    cfgs = []
+    for mixer in ("sgc", "snn-sgc"):
+        cfg = SimplCoreConfig.from_dict(base.to_dict())
+        cfg.mixer = mixer
+        cfg.validate()
+        cfgs.append(cfg)
+
+    raw: Dict[str, List[Dict[str, Any]]] = {"sgc": [], "snn-sgc": []}
+    paired_runs = []
+    for repeat in range(repeats):
+        run_seed = seed + repeat
+        run_data_seed = data_seed + repeat
+        n_windows = max(64, (token_budget // (seq_len - 1)) * 4 + 32)
+        train_source = SyntheticWindowSource(
+            vocab_size=base.vocab_size, seq_len=seq_len,
+            n_windows=n_windows, seed=run_data_seed)
+        eval_source = SyntheticWindowSource(
+            vocab_size=base.vocab_size, seq_len=seq_len,
+            n_windows=max(64, batch_size * 8), seed=run_data_seed + 1,
+            transition_seed=run_data_seed)
+        ordered_cfgs = cfgs if repeat % 2 == 0 else list(reversed(cfgs))
+        pair: Dict[str, Any] = {}
+        for cfg in ordered_cfgs:
+            torch.manual_seed(run_seed)
+            model = SimplCoreModel(cfg).to(device=device, dtype=dtype)
+            if device.type == "cuda":
+                torch.cuda.synchronize(device)
+                torch.cuda.reset_peak_memory_stats(device)
+            result = train_arm(
+                cfg.mixer, model, train_source, token_budget, seq_len,
+                eval_source=eval_source, seed=run_seed, lr=lr,
+                batch_size=batch_size, eval_every_tokens=token_budget + 1,
+                keep_state=False)
+            cuda_peak = None
+            if device.type == "cuda":
+                torch.cuda.synchronize(device)
+                cuda_peak = int(torch.cuda.max_memory_allocated(device))
+            throughput = (result.tokens_trained / result.wall_seconds
+                          if result.wall_seconds > 0 else float("inf"))
+            item = {
+                "seed": run_seed,
+                "data_seed": run_data_seed,
+                "params": result.params_total,
+                "tokens_trained": result.tokens_trained,
+                "steps": result.steps,
+                "wall_seconds": result.wall_seconds,
+                "tokens_per_second": throughput,
+                "best_validation_loss": result.best_val_loss,
+                "final_validation_loss": result.final_val_loss,
+                "loss_curve": result.loss_curve,
+                "cuda_peak_memory_bytes": cuda_peak,
+            }
+            raw[cfg.mixer].append(item)
+            pair[cfg.mixer] = item
+        seconds_ratio = pair["snn-sgc"]["wall_seconds"] / max(
+            pair["sgc"]["wall_seconds"], 1e-12)
+        pair_loss_delta = (pair["snn-sgc"]["best_validation_loss"]
+                           - pair["sgc"]["best_validation_loss"])
+        paired_runs.append({
+            "seed": run_seed,
+            "data_seed": run_data_seed,
+            "snn_over_sgc_training_time_ratio": seconds_ratio,
+            "snn_training_time_reduction": 1.0 - seconds_ratio,
+            "snn_minus_sgc_best_validation_loss": pair_loss_delta,
+        })
+
+    arms: Dict[str, Any] = {}
+    for mixer, samples in raw.items():
+        median_wall = _median([item["wall_seconds"] for item in samples])
+        median_tps = _median([item["tokens_per_second"] for item in samples])
+        cuda_peaks = [item["cuda_peak_memory_bytes"] for item in samples
+                      if item["cuda_peak_memory_bytes"] is not None]
+        arms[mixer] = {
+            "params": samples[0]["params"],
+            "tokens_trained": samples[0]["tokens_trained"],
+            "steps": samples[0]["steps"],
+            "wall_seconds": median_wall,
+            "tokens_per_second": median_tps,
+            "projected_tokens_per_24h": median_tps * 86400.0,
+            "best_validation_loss": _median(
+                [item["best_validation_loss"] for item in samples]),
+            "final_validation_loss": _median(
+                [item["final_validation_loss"] for item in samples]),
+            "cuda_peak_memory_bytes": (
+                int(_median(cuda_peaks)) if cuda_peaks else None),
+            "runs": samples,
+        }
+
+    seconds_ratio = _median(
+        [item["snn_over_sgc_training_time_ratio"] for item in paired_runs])
+    loss_delta = _median(
+        [item["snn_minus_sgc_best_validation_loss"] for item in paired_runs])
+    sgc, snn = arms["sgc"], arms["snn-sgc"]
+    return {
+        "protocol": "SNN-SGC vs SGC matched-token synthetic training",
+        "device": str(device),
+        "device_name": (torch.cuda.get_device_name(device)
+                        if device.type == "cuda" else None),
+        "dtype": str(dtype).replace("torch.", ""),
+        "seed": int(seed),
+        "data_seed": int(data_seed),
+        "token_budget": int(token_budget),
+        "seq_len": int(seq_len),
+        "batch_size": int(batch_size),
+        "same_parameter_count": sgc["params"] == snn["params"],
+        "same_tokens_trained": sgc["tokens_trained"] == snn["tokens_trained"],
+        "repeats": int(repeats),
+        "arms": arms,
+        "comparison": {
+            "snn_over_sgc_training_time_ratio": seconds_ratio,
+            "snn_training_time_reduction": 1.0 - seconds_ratio,
+            "meets_80_percent_training_time_reduction":
+                seconds_ratio <= 0.20,
+            "snn_minus_sgc_best_validation_loss": loss_delta,
+            "snn_improves_synthetic_validation_loss": loss_delta < 0.0,
+            "paired_runs": paired_runs,
+        },
+        "limitations": [
+            "Synthetic held-out loss is not evidence of general capability improvement.",
+            "24-hour token projection is a throughput extrapolation, not a completed run.",
+            "A 4090D target is verified only when this report is run on that hardware.",
+        ],
+    }
+
+
 # ---------------------------------------------------------------------------
 # Mixer comparison
 # ---------------------------------------------------------------------------
-MIXER_KINDS = ("sgc", "sgc-nogate", "sgc-nolocal")
+MIXER_KINDS = ("sgc", "sgc-nogate", "sgc-nolocal", "snn-sgc")
 
 
 def _cfg_from_base(base: SimplCoreConfig, mixer: str, **over: Any) -> SimplCoreConfig:
@@ -525,5 +683,3 @@ def compare_mixers(configs: Optional[Sequence[Any]] = None, base: Optional[Simpl
         "matched_width_depth": True,
     }
     return out
-
-

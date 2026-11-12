@@ -1,0 +1,739 @@
+{
+ "rows": [
+  {
+   "layer": 0,
+   "resumed": true
+  },
+  {
+   "layer": 1,
+   "resumed": true
+  },
+  {
+   "layer": 2,
+   "resumed": true
+  },
+  {
+   "layer": 3,
+   "resumed": true
+  },
+  {
+   "layer": 4,
+   "resumed": true
+  },
+  {
+   "layer": 5,
+   "resumed": true
+  },
+  {
+   "layer": 6,
+   "resumed": true
+  },
+  {
+   "layer": 7,
+   "resumed": true
+  },
+  {
+   "layer": 8,
+   "resumed": true
+  },
+  {
+   "layer": 9,
+   "resumed": true
+  },
+  {
+   "layer": 10,
+   "resumed": true
+  },
+  {
+   "layer": 11,
+   "resumed": true
+  },
+  {
+   "layer": 12,
+   "resumed": true
+  },
+  {
+   "layer": 13,
+   "resumed": true
+  },
+  {
+   "layer": 14,
+   "resumed": true
+  },
+  {
+   "layer": 15,
+   "resumed": true
+  },
+  {
+   "layer": 16,
+   "resumed": true
+  },
+  {
+   "layer": 17,
+   "resumed": true
+  },
+  {
+   "layer": 18,
+   "resumed": true
+  },
+  {
+   "layer": 19,
+   "resumed": true
+  },
+  {
+   "layer": 20,
+   "resumed": true
+  },
+  {
+   "layer": 21,
+   "rms_scale": 1.2514,
+   "col_rank_before": 1024,
+   "col_rank_after": 2035,
+   "fill_scale": 0.479141,
+   "residual_tap_l1": 0.02036
+  },
+  {
+   "layer": 22,
+   "rms_scale": 1.2751,
+   "col_rank_before": 1024,
+   "col_rank_after": 2040,
+   "fill_scale": 0.391975,
+   "residual_tap_l1": 0.02629
+  },
+  {
+   "layer": 23,
+   "rms_scale": 1.0131,
+   "col_rank_before": 1024,
+   "col_rank_after": 2041,
+   "fill_scale": 0.454812,
+   "residual_tap_l1": 0.0245
+  },
+  {
+   "layer": 24,
+   "rms_scale": 1.2529,
+   "col_rank_before": 1946,
+   "col_rank_after": 2040,
+   "fill_scale": 0.403172,
+   "residual_tap_l1": 0.02072
+  },
+  {
+   "layer": 25,
+   "rms_scale": 1.0923,
+   "col_rank_before": 1024,
+   "col_rank_after": 2042,
+   "fill_scale": 0.473405,
+   "residual_tap_l1": 0.02964
+  },
+  {
+   "layer": 26,
+   "rms_scale": 1.4139,
+   "col_rank_before": 1975,
+   "col_rank_after": 2041,
+   "fill_scale": 0.433046,
+   "residual_tap_l1": 0.0209
+  },
+  {
+   "layer": 27,
+   "rms_scale": 1.4958,
+   "col_rank_before": 1972,
+   "col_rank_after": 2041,
+   "fill_scale": 0.371395,
+   "residual_tap_l1": 0.02562
+  }
+ ],
+ "provenance": {
+  "method": "direct weight replacement: self_attn -> SGC + analytic adaptation",
+  "no_training": true,
+  "no_pairwise": true,
+  "no_kv_cache": true,
+  "layers": [
+   {
+    "layer": 0,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.4393 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2039
+   },
+   {
+    "layer": 1,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.4562 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2040
+   },
+   {
+    "layer": 2,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.8264 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2037
+   },
+   {
+    "layer": 3,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.1243 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2042
+   },
+   {
+    "layer": 4,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.1861 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2040
+   },
+   {
+    "layer": 5,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.3587 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2040
+   },
+   {
+    "layer": 6,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.4881 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2038
+   },
+   {
+    "layer": 7,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.1919 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2042
+   },
+   {
+    "layer": 8,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.4183 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2041
+   },
+   {
+    "layer": 9,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.4475 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2040
+   },
+   {
+    "layer": 10,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.2861 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2040
+   },
+   {
+    "layer": 11,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.6841 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2036
+   },
+   {
+    "layer": 12,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=0.9971 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2040
+   },
+   {
+    "layer": 13,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.0362 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2040
+   },
+   {
+    "layer": 14,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.4095 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2040
+   },
+   {
+    "layer": 15,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.2500 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2041
+   },
+   {
+    "layer": 16,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.1901 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2037
+   },
+   {
+    "layer": 17,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.2072 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2036
+   },
+   {
+    "layer": 18,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.2313 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2038
+   },
+   {
+    "layer": 19,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.3110 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2034
+   },
+   {
+    "layer": 20,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.3824 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "col_rank_after": 2038
+   },
+   {
+    "layer": 21,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.2514 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "svd": {
+     "sv_top5": [
+      5.399,
+      5.284,
+      5.216,
+      5.164,
+      5.131
+     ],
+     "fill_scale": 0.479141,
+     "col_rank_before": 1024,
+     "col_rank_after": 2035
+    },
+    "lowpass": {
+     "target_head": [
+      0.05679,
+      0.0463,
+      0.03973,
+      0.03584,
+      0.03367,
+      0.0327
+     ],
+     "fit_head": [
+      0.06017,
+      0.04349,
+      0.03917,
+      0.03676,
+      0.03165,
+      0.02732
+     ],
+     "residual_tap_l1": 0.02036
+    }
+   },
+   {
+    "layer": 22,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.2751 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "svd": {
+     "sv_top5": [
+      5.598,
+      3.638,
+      3.58,
+      3.52,
+      3.477
+     ],
+     "fill_scale": 0.391975,
+     "col_rank_before": 1024,
+     "col_rank_after": 2040
+    },
+    "lowpass": {
+     "target_head": [
+      0.08531,
+      0.06488,
+      0.04657,
+      0.03961,
+      0.0345,
+      0.0329
+     ],
+     "fit_head": [
+      0.03062,
+      0.0296,
+      0.02941,
+      0.03203,
+      0.02644,
+      0.03184
+     ],
+     "residual_tap_l1": 0.02629
+    }
+   },
+   {
+    "layer": 23,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.0131 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "svd": {
+     "sv_top5": [
+      5.264,
+      3.802,
+      3.659,
+      3.402,
+      3.331
+     ],
+     "fill_scale": 0.454812,
+     "col_rank_before": 1024,
+     "col_rank_after": 2041
+    },
+    "lowpass": {
+     "target_head": [
+      0.0909,
+      0.06131,
+      0.03938,
+      0.03312,
+      0.03021,
+      0.02756
+     ],
+     "fit_head": [
+      0.041,
+      0.03137,
+      0.02818,
+      0.02992,
+      0.0242,
+      0.0247
+     ],
+     "residual_tap_l1": 0.0245
+    }
+   },
+   {
+    "layer": 24,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.2529 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "svd": {
+     "sv_top5": [
+      5.429,
+      3.297,
+      3.269,
+      3.256,
+      3.195
+     ],
+     "fill_scale": 0.403172,
+     "col_rank_before": 1946,
+     "col_rank_after": 2040
+    },
+    "lowpass": {
+     "target_head": [
+      0.05988,
+      0.04558,
+      0.03789,
+      0.03441,
+      0.03132,
+      0.03112
+     ],
+     "fit_head": [
+      0.0682,
+      0.04775,
+      0.03442,
+      0.03146,
+      0.02544,
+      0.02551
+     ],
+     "residual_tap_l1": 0.02072
+    }
+   },
+   {
+    "layer": 25,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.0923 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "svd": {
+     "sv_top5": [
+      5.935,
+      3.569,
+      3.502,
+      3.481,
+      3.465
+     ],
+     "fill_scale": 0.473405,
+     "col_rank_before": 1024,
+     "col_rank_after": 2042
+    },
+    "lowpass": {
+     "target_head": [
+      0.07146,
+      0.05087,
+      0.0388,
+      0.03422,
+      0.03096,
+      0.03055
+     ],
+     "fit_head": [
+      0.12841,
+      0.1172,
+      0.06164,
+      0.04754,
+      0.02861,
+      0.02524
+     ],
+     "residual_tap_l1": 0.02964
+    }
+   },
+   {
+    "layer": 26,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.4139 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "svd": {
+     "sv_top5": [
+      6.224,
+      4.794,
+      4.729,
+      4.56,
+      4.49
+     ],
+     "fill_scale": 0.433046,
+     "col_rank_before": 1975,
+     "col_rank_after": 2041
+    },
+    "lowpass": {
+     "target_head": [
+      0.08887,
+      0.0391,
+      0.03489,
+      0.03254,
+      0.03067,
+      0.03045
+     ],
+     "fit_head": [
+      0.08093,
+      0.05188,
+      0.04176,
+      0.03758,
+      0.0298,
+      0.0308
+     ],
+     "residual_tap_l1": 0.0209
+    }
+   },
+   {
+    "layer": 27,
+    "in_proj": "teacher v_proj (rows 0:1024) + k_proj (1024:2048) [v4]",
+    "out_proj": "fold_GQA(o_proj) cols 0:1024 [v2] + SVD(U) cols 1024:2048 [A1 v5]",
+    "coef": "per-KV-head LS fit of measured attention profile [v4]",
+    "rho_theta": "linear orthogonal grid [init_mode=linear]",
+    "local_conv": "residual taps from profile head, K=16 [A3 v5]",
+    "out_scale": "RMS calibrated s=1.4958 [A4 v5]",
+    "norm": "teacher input_layernorm.weight (exact copy)",
+    "feed": "zero (unchanged)",
+    "content_gate": "OFF (no analytic init; would add 4M random params/layer)",
+    "svd": {
+     "sv_top5": [
+      6.941,
+      4.264,
+      3.862,
+      3.768,
+      3.57
+     ],
+     "fill_scale": 0.371395,
+     "col_rank_before": 1972,
+     "col_rank_after": 2041
+    },
+    "lowpass": {
+     "target_head": [
+      0.10769,
+      0.06418,
+      0.04087,
+      0.03407,
+      0.03206,
+      0.02944
+     ],
+     "fit_head": [
+      0.03558,
+      0.031,
+      0.0289,
+      0.03131,
+      0.02572,
+      0.0267
+     ],
+     "residual_tap_l1": 0.02562
+    }
+   }
+  ],
+  "global": {
+   "embedding": "exact copy",
+   "ffn": "exact copy (28 layers)",
+   "norms": "exact copy",
+   "lm_head": "exact copy (tied)",
+   "attention_modules_removed": 28,
+   "sgc_modules_inserted": 28,
+   "local_kernel": 16,
+   "num_bases": 32,
+   "dim": 2048,
+   "zero_random_params": true,
+   "note": "every parameter has a traced source; no random initialization"
+  }
+ }
+}

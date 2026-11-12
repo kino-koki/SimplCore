@@ -1,0 +1,21 @@
+{
+ "checks": {
+  "all_arms_same_protocol": true,
+  "every_arm_has_recorded_params": true,
+  "paired_ci_present": true,
+  "every_seed_every_arm_present": true,
+  "no_lm_claim": true,
+  "five_seeds": true,
+  "all_conditions_present": true
+ },
+ "n_pass": 7,
+ "n_checks": 7,
+ "all_pass": true,
+ "directional_observations": {
+  "clean_mean": 1.0,
+  "tag_noise_monotone_nonincreasing": true,
+  "code_eps_monotone_nonincreasing": true,
+  "duplicate_keys_below_clean": true
+ },
+ "interpretation": "Checks certify protocol consistency and completeness ONLY. Directional observations are reported separately and are scientific results, not pass/fail gates; a FALSE there is a finding, not a broken run."
+}

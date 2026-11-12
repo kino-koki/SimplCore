@@ -1,0 +1,4026 @@
+{
+ "N0_fixed": [
+  {
+   "arm": "N0_fixed",
+   "seed": 0,
+   "params": 12288,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.570736694436011e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.3390262604135042e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.76869625010234,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 5.439854946622387e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36787944117144233,
+     "rho_max": 0.9998779371377774,
+     "theta_min": 0.00038349519697141046,
+     "theta_max": 1.413716694115407
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.570736694436011e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.3390262604135042e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.76869625010234,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 5.439854946622387e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36787944117144233,
+     "rho_max": 0.9998779371377774,
+     "theta_min": 0.00038349519697141046,
+     "theta_max": 1.413716694115407
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": false,
+   "max_delta_rho": 0.0,
+   "max_delta_theta": 0.0,
+   "cond_before": 5.439854946622387e+17,
+   "cond_after": 5.439854946622387e+17,
+   "final_acc": 0.54296875,
+   "shuffle_acc": 0.54296875,
+   "length_generalization": {
+    "L9": 0.5,
+    "L17": 0.2578125,
+    "L25": 0.171875,
+    "L33": 0.1015625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158837951081715,
+     "acc": 0.03125
+    },
+    {
+     "step": 500,
+     "loss": 0.3655464020012398,
+     "acc": 0.43359375
+    },
+    {
+     "step": 1000,
+     "loss": 0.09331921886978595,
+     "acc": 0.5234375
+    },
+    {
+     "step": 1500,
+     "loss": 0.00970653697862929,
+     "acc": 0.52734375
+    },
+    {
+     "step": 2000,
+     "loss": 0.0044519736149188985,
+     "acc": 0.541015625
+    },
+    {
+     "step": 2500,
+     "loss": 0.0017207382218460796,
+     "acc": 0.54296875
+    },
+    {
+     "step": 3000,
+     "loss": 0.0010305624328863642,
+     "acc": 0.54296875
+    }
+   ],
+   "elapsed_s": 5.4
+  },
+  {
+   "arm": "N0_fixed",
+   "seed": 1,
+   "params": 12288,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.152706946550517e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.793922455458764e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.76869625010234,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 5.439854946622387e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36787944117144233,
+     "rho_max": 0.9998779371377774,
+     "theta_min": 0.00038349519697141046,
+     "theta_max": 1.413716694115407
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.152706946550517e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.793922455458764e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.76869625010234,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 5.439854946622387e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36787944117144233,
+     "rho_max": 0.9998779371377774,
+     "theta_min": 0.00038349519697141046,
+     "theta_max": 1.413716694115407
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": false,
+   "max_delta_rho": 0.0,
+   "max_delta_theta": 0.0,
+   "cond_before": 5.439854946622387e+17,
+   "cond_after": 5.439854946622387e+17,
+   "final_acc": 0.509765625,
+   "shuffle_acc": 0.49609375,
+   "length_generalization": {
+    "L9": 0.53125,
+    "L17": 0.22265625,
+    "L25": 0.109375,
+    "L33": 0.125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.159309067593149,
+     "acc": 0.033203125
+    },
+    {
+     "step": 500,
+     "loss": 1.2027541105074424,
+     "acc": 0.4375
+    },
+    {
+     "step": 1000,
+     "loss": 0.1870994325739124,
+     "acc": 0.49609375
+    },
+    {
+     "step": 1500,
+     "loss": 0.009887404991875202,
+     "acc": 0.505859375
+    },
+    {
+     "step": 2000,
+     "loss": 0.0020320461467276474,
+     "acc": 0.5078125
+    },
+    {
+     "step": 2500,
+     "loss": 0.0019991497273276404,
+     "acc": 0.505859375
+    },
+    {
+     "step": 3000,
+     "loss": 0.0005161346574188147,
+     "acc": 0.509765625
+    }
+   ],
+   "elapsed_s": 4.8
+  },
+  {
+   "arm": "N0_fixed",
+   "seed": 2,
+   "params": 12288,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.5065553469371667e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1091774857120335e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.76869625010234,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 5.439854946622387e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36787944117144233,
+     "rho_max": 0.9998779371377774,
+     "theta_min": 0.00038349519697141046,
+     "theta_max": 1.413716694115407
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.5065553469371667e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1091774857120335e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.76869625010234,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 5.439854946622387e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36787944117144233,
+     "rho_max": 0.9998779371377774,
+     "theta_min": 0.00038349519697141046,
+     "theta_max": 1.413716694115407
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": false,
+   "max_delta_rho": 0.0,
+   "max_delta_theta": 0.0,
+   "cond_before": 5.439854946622387e+17,
+   "cond_after": 5.439854946622387e+17,
+   "final_acc": 0.529296875,
+   "shuffle_acc": 0.501953125,
+   "length_generalization": {
+    "L9": 0.54296875,
+    "L17": 0.2578125,
+    "L25": 0.18359375,
+    "L33": 0.12890625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.159579022852469,
+     "acc": 0.0234375
+    },
+    {
+     "step": 500,
+     "loss": 0.9238577441806434,
+     "acc": 0.44140625
+    },
+    {
+     "step": 1000,
+     "loss": 0.0744372407201384,
+     "acc": 0.517578125
+    },
+    {
+     "step": 1500,
+     "loss": 0.01033306770783932,
+     "acc": 0.501953125
+    },
+    {
+     "step": 2000,
+     "loss": 0.004983655872170643,
+     "acc": 0.515625
+    },
+    {
+     "step": 2500,
+     "loss": 0.0022981681171147295,
+     "acc": 0.521484375
+    },
+    {
+     "step": 3000,
+     "loss": 0.0017817520579296497,
+     "acc": 0.529296875
+    }
+   ],
+   "elapsed_s": 5.0
+  }
+ ],
+ "N1_shared": [
+  {
+   "arm": "N1_shared",
+   "seed": 0,
+   "params": 12320,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.570736694436011e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 8.034157562481025e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.76869625010234,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 6.664104401471388e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36787944117144233,
+     "rho_max": 0.9998779371377774,
+     "theta_min": 0.0003834951969714103,
+     "theta_max": 1.4137166941154067
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.5132501363421745e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.0995469346497012e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 76.18184878274423,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 8.933355665485393e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.4632644574534225,
+     "rho_max": 0.9999237046430183,
+     "theta_min": 0.0071191713130025315,
+     "theta_max": 1.3951239528804662
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.277124796876831,
+   "max_delta_theta": 0.21983631573415208,
+   "cond_before": 6.664104401471388e+17,
+   "cond_after": 8.933355665485393e+17,
+   "final_acc": 0.609375,
+   "shuffle_acc": 0.599609375,
+   "length_generalization": {
+    "L9": 0.55078125,
+    "L17": 0.234375,
+    "L25": 0.14453125,
+    "L33": 0.11328125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158837951081715,
+     "acc": 0.03125
+    },
+    {
+     "step": 500,
+     "loss": 0.1169862606110702,
+     "acc": 0.525390625
+    },
+    {
+     "step": 1000,
+     "loss": 0.028901853057953564,
+     "acc": 0.580078125
+    },
+    {
+     "step": 1500,
+     "loss": 0.0016783209358190803,
+     "acc": 0.611328125
+    },
+    {
+     "step": 2000,
+     "loss": 0.00038515299484461027,
+     "acc": 0.603515625
+    },
+    {
+     "step": 2500,
+     "loss": 0.000337917590265469,
+     "acc": 0.60546875
+    },
+    {
+     "step": 3000,
+     "loss": 0.0004583515678866055,
+     "acc": 0.609375
+    }
+   ],
+   "elapsed_s": 5.2
+  },
+  {
+   "arm": "N1_shared",
+   "seed": 1,
+   "params": 12320,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.870275928734022e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 5.740551857468044e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.76869625010234,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 6.664104401471388e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36787944117144233,
+     "rho_max": 0.9998779371377774,
+     "theta_min": 0.0003834951969714103,
+     "theta_max": 1.4137166941154067
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.0430630399436552e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 7.607657599859138e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 77.26038089992022,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 2.751344408414057e+18,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.6453847569153955,
+     "rho_max": 0.9999163067607053,
+     "theta_min": 0.007588810016287335,
+     "theta_max": 1.346199576615628
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.2775053157439532,
+   "max_delta_theta": 0.22029248512007743,
+   "cond_before": 6.664104401471388e+17,
+   "cond_after": 2.751344408414057e+18,
+   "final_acc": 0.564453125,
+   "shuffle_acc": 0.552734375,
+   "length_generalization": {
+    "L9": 0.578125,
+    "L17": 0.1953125,
+    "L25": 0.1171875,
+    "L33": 0.125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.159309067593149,
+     "acc": 0.033203125
+    },
+    {
+     "step": 500,
+     "loss": 0.8290336846470243,
+     "acc": 0.505859375
+    },
+    {
+     "step": 1000,
+     "loss": 0.07148597806963045,
+     "acc": 0.5390625
+    },
+    {
+     "step": 1500,
+     "loss": 0.002191750288486731,
+     "acc": 0.5546875
+    },
+    {
+     "step": 2000,
+     "loss": 0.001996104275249172,
+     "acc": 0.55859375
+    },
+    {
+     "step": 2500,
+     "loss": 0.0012448951868961374,
+     "acc": 0.56640625
+    },
+    {
+     "step": 3000,
+     "loss": 0.00032624568462364355,
+     "acc": 0.564453125
+    }
+   ],
+   "elapsed_s": 5.2
+  },
+  {
+   "arm": "N1_shared",
+   "seed": 2,
+   "params": 12320,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 3.013110693874334e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.4312275795903087e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.76869625010234,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 6.664104401471388e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36787944117144233,
+     "rho_max": 0.9998779371377774,
+     "theta_min": 0.0003834951969714103,
+     "theta_max": 1.4137166941154067
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.856228351613217e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 9.282742142742955e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 76.97196003474359,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 1.222219082374861e+18,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.621977739584812,
+     "rho_max": 0.9999307215133101,
+     "theta_min": 0.008332641282836561,
+     "theta_max": 1.3315161539763278
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.2698887669155198,
+   "max_delta_theta": 0.2169823916913466,
+   "cond_before": 6.664104401471388e+17,
+   "cond_after": 1.222219082374861e+18,
+   "final_acc": 0.580078125,
+   "shuffle_acc": 0.5546875,
+   "length_generalization": {
+    "L9": 0.5859375,
+    "L17": 0.19140625,
+    "L25": 0.19140625,
+    "L33": 0.109375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.159579022852469,
+     "acc": 0.0234375
+    },
+    {
+     "step": 500,
+     "loss": 1.041781283280802,
+     "acc": 0.515625
+    },
+    {
+     "step": 1000,
+     "loss": 0.07071096318979227,
+     "acc": 0.5703125
+    },
+    {
+     "step": 1500,
+     "loss": 0.0027196001142361518,
+     "acc": 0.568359375
+    },
+    {
+     "step": 2000,
+     "loss": 0.0037993547857735864,
+     "acc": 0.578125
+    },
+    {
+     "step": 2500,
+     "loss": 0.000943688179160186,
+     "acc": 0.583984375
+    },
+    {
+     "step": 3000,
+     "loss": 0.0006876992303212793,
+     "acc": 0.580078125
+    }
+   ],
+   "elapsed_s": 5.2
+  }
+ ],
+ "N2_perch": [
+  {
+   "arm": "N2_perch",
+   "seed": 0,
+   "params": 12416,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.9746379358850643e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.0198758637320221e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.77358817655895,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 4.899505400191795e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.3631721517974497,
+     "rho_max": 0.99988139403375,
+     "theta_min": 0.000373052317081785,
+     "theta_max": 1.417923721732483
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.718271048026506e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.993398768552771e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 75.45843475644105,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 6.534159240959204e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.3919496100033142,
+     "rho_max": 0.9999284812630174,
+     "theta_min": 0.003665765188262434,
+     "theta_max": 1.4300915328279102
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.3018191925094839,
+   "max_delta_theta": 0.1829417528475133,
+   "cond_before": 4.899505400191795e+17,
+   "cond_after": 6.534159240959204e+17,
+   "final_acc": 0.607421875,
+   "shuffle_acc": 0.58984375,
+   "length_generalization": {
+    "L9": 0.5703125,
+    "L17": 0.24609375,
+    "L25": 0.1328125,
+    "L33": 0.14453125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158833942272971,
+     "acc": 0.03125
+    },
+    {
+     "step": 500,
+     "loss": 0.16064924247139326,
+     "acc": 0.505859375
+    },
+    {
+     "step": 1000,
+     "loss": 0.021907294720320793,
+     "acc": 0.5859375
+    },
+    {
+     "step": 1500,
+     "loss": 0.0038157237628554342,
+     "acc": 0.595703125
+    },
+    {
+     "step": 2000,
+     "loss": 0.0007623479914431843,
+     "acc": 0.6015625
+    },
+    {
+     "step": 2500,
+     "loss": 0.00039174032720354867,
+     "acc": 0.611328125
+    },
+    {
+     "step": 3000,
+     "loss": 0.0004908703339844997,
+     "acc": 0.607421875
+    }
+   ],
+   "elapsed_s": 5.1
+  },
+  {
+   "arm": "N2_perch",
+   "seed": 1,
+   "params": 12416,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.7971391024385118e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.0063978973655666e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.68570568006227,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 1.0552684867490513e+19,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36268439842827055,
+     "rho_max": 0.9998793590324325,
+     "theta_min": 0.0003764018644406211,
+     "theta_max": 1.4291595843298934
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.596743303291153e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.1975574774683648e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 75.85238798144968,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 1.3065403896824579e+18,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.4141779825336598,
+     "rho_max": 0.9999223661549091,
+     "theta_min": 0.0034863920967517,
+     "theta_max": 1.4013103109965492
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.314511957037805,
+   "max_delta_theta": 0.19720926268511355,
+   "cond_before": 1.0552684867490513e+19,
+   "cond_after": 1.3065403896824579e+18,
+   "final_acc": 0.587890625,
+   "shuffle_acc": 0.52734375,
+   "length_generalization": {
+    "L9": 0.546875,
+    "L17": 0.21484375,
+    "L25": 0.10546875,
+    "L33": 0.1328125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.159337505627909,
+     "acc": 0.033203125
+    },
+    {
+     "step": 500,
+     "loss": 0.9689366214343206,
+     "acc": 0.4765625
+    },
+    {
+     "step": 1000,
+     "loss": 0.02849439323447318,
+     "acc": 0.544921875
+    },
+    {
+     "step": 1500,
+     "loss": 0.0045835563750454295,
+     "acc": 0.587890625
+    },
+    {
+     "step": 2000,
+     "loss": 0.002019001474339454,
+     "acc": 0.578125
+    },
+    {
+     "step": 2500,
+     "loss": 0.0020590425894513108,
+     "acc": 0.5859375
+    },
+    {
+     "step": 3000,
+     "loss": 0.0002765972445061659,
+     "acc": 0.587890625
+    }
+   ],
+   "elapsed_s": 5.1
+  },
+  {
+   "arm": "N2_perch",
+   "seed": 2,
+   "params": 12416,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.6031589264381566e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.056198822123962e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.7812594320286,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 1.5340165131500426e+18,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36394343149311276,
+     "rho_max": 0.9998825057263484,
+     "theta_min": 0.0003755456805020561,
+     "theta_max": 1.4227077378708617
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.159968859675388e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.303966783653747e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 75.38611765162426,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 4.518991977153998e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.33046157096637685,
+     "rho_max": 0.9999353362469535,
+     "theta_min": 0.003906660963330709,
+     "theta_max": 1.4801199019002214
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.3206260232782713,
+   "max_delta_theta": 0.18700554521350887,
+   "cond_before": 1.5340165131500426e+18,
+   "cond_after": 4.518991977153998e+17,
+   "final_acc": 0.583984375,
+   "shuffle_acc": 0.5625,
+   "length_generalization": {
+    "L9": 0.59765625,
+    "L17": 0.19921875,
+    "L25": 0.1875,
+    "L33": 0.1171875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.159568389642759,
+     "acc": 0.025390625
+    },
+    {
+     "step": 500,
+     "loss": 0.9943483324097051,
+     "acc": 0.51953125
+    },
+    {
+     "step": 1000,
+     "loss": 0.0775913837077631,
+     "acc": 0.552734375
+    },
+    {
+     "step": 1500,
+     "loss": 0.0035019725384742833,
+     "acc": 0.576171875
+    },
+    {
+     "step": 2000,
+     "loss": 0.0031684611232795086,
+     "acc": 0.576171875
+    },
+    {
+     "step": 2500,
+     "loss": 0.0009606864054008523,
+     "acc": 0.58984375
+    },
+    {
+     "step": 3000,
+     "loss": 0.0006797360726213866,
+     "acc": 0.583984375
+    }
+   ],
+   "elapsed_s": 5.3
+  }
+ ],
+ "N3_perch_C8": [
+  {
+   "arm": "N3_perch_C8",
+   "seed": 0,
+   "params": 22784,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.48843155027785e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 9.176091341649571e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 141.4750716656296,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 128,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 1024,
+    "cond_gram": 1.1555719520808526e+21,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.35974655945571576,
+     "rho_max": 0.9998792692228894,
+     "theta_min": 0.000371518075057783,
+     "theta_max": 1.424436157119763
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.359965617991804e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.4159793707950822e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 150.7764332509347,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 128,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 1024,
+    "cond_gram": 7.504365289071432e+19,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.38126526262793037,
+     "rho_max": 0.9999181978051215,
+     "theta_min": 0.0019826571215719076,
+     "theta_max": 1.5670261768165787
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.43113288657235466,
+   "max_delta_theta": 0.17855885967158844,
+   "cond_before": 1.1555719520808526e+21,
+   "cond_after": 7.504365289071432e+19,
+   "final_acc": 0.662109375,
+   "shuffle_acc": 0.640625,
+   "length_generalization": {
+    "L9": 0.609375,
+    "L17": 0.2890625,
+    "L25": 0.203125,
+    "L33": 0.16015625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.1584137856523,
+     "acc": 0.00390625
+    },
+    {
+     "step": 500,
+     "loss": 0.1489690812840188,
+     "acc": 0.58203125
+    },
+    {
+     "step": 1000,
+     "loss": 0.003490095089123303,
+     "acc": 0.64453125
+    },
+    {
+     "step": 1500,
+     "loss": 0.0009107856770834847,
+     "acc": 0.66015625
+    },
+    {
+     "step": 2000,
+     "loss": 0.00030111464995128035,
+     "acc": 0.65625
+    },
+    {
+     "step": 2500,
+     "loss": 0.00038658908165459396,
+     "acc": 0.662109375
+    },
+    {
+     "step": 3000,
+     "loss": 0.00021388371721170105,
+     "acc": 0.662109375
+    }
+   ],
+   "elapsed_s": 8.2
+  },
+  {
+   "arm": "N3_perch_C8",
+   "seed": 1,
+   "params": 22784,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.60961346290562e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.565768077743372e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 141.49060540143046,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 128,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 1024,
+    "cond_gram": 6.592587977898706e+20,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36268439842827055,
+     "rho_max": 0.999880334943593,
+     "theta_min": 0.00037275696041861613,
+     "theta_max": 1.4283233164132552
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.7091832682222321e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1792086669833462e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 151.16113697321157,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 128,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 1024,
+    "cond_gram": 3.731498492240354e+19,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.4233771317550905,
+     "rho_max": 0.9999221330078367,
+     "theta_min": 0.001784989485546569,
+     "theta_max": 1.5493221172281089
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.39037288587240127,
+   "max_delta_theta": 0.21329957869320212,
+   "cond_before": 6.592587977898706e+20,
+   "cond_after": 3.731498492240354e+19,
+   "final_acc": 0.642578125,
+   "shuffle_acc": 0.654296875,
+   "length_generalization": {
+    "L9": 0.6875,
+    "L17": 0.3125,
+    "L25": 0.2109375,
+    "L33": 0.19140625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158639110870449,
+     "acc": 0.015625
+    },
+    {
+     "step": 500,
+     "loss": 0.23443720155253545,
+     "acc": 0.5625
+    },
+    {
+     "step": 1000,
+     "loss": 0.004716521709044385,
+     "acc": 0.63671875
+    },
+    {
+     "step": 1500,
+     "loss": 0.0021324530842629186,
+     "acc": 0.630859375
+    },
+    {
+     "step": 2000,
+     "loss": 0.0005955186501440638,
+     "acc": 0.642578125
+    },
+    {
+     "step": 2500,
+     "loss": 0.0005891520857431414,
+     "acc": 0.638671875
+    },
+    {
+     "step": 3000,
+     "loss": 0.00021455624178104744,
+     "acc": 0.642578125
+    }
+   ],
+   "elapsed_s": 8.5
+  },
+  {
+   "arm": "N3_perch_C8",
+   "seed": 2,
+   "params": 22784,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.431579599655753e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.5805267397762397e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 141.57414928939528,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 128,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 1024,
+    "cond_gram": 4.493799525558038e+20,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.3616200843175032,
+     "rho_max": 0.9998793394997086,
+     "theta_min": 0.0003716040870000946,
+     "theta_max": 1.4360700986007213
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.4726023011830306e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 9.890409204732122e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 151.1991311394893,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 128,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 1024,
+    "cond_gram": 3.962847192430877e+20,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.3421904117425508,
+     "rho_max": 0.9999293436580808,
+     "theta_min": 0.001781493120915616,
+     "theta_max": 1.4971979296172673
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.3759520514876193,
+   "max_delta_theta": 0.1759657705806178,
+   "cond_before": 4.493799525558038e+20,
+   "cond_after": 3.962847192430877e+20,
+   "final_acc": 0.6875,
+   "shuffle_acc": 0.705078125,
+   "length_generalization": {
+    "L9": 0.7265625,
+    "L17": 0.27734375,
+    "L25": 0.17578125,
+    "L33": 0.15234375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158485777841447,
+     "acc": 0.013671875
+    },
+    {
+     "step": 500,
+     "loss": 0.05683660444050887,
+     "acc": 0.619140625
+    },
+    {
+     "step": 1000,
+     "loss": 0.007516567988775328,
+     "acc": 0.669921875
+    },
+    {
+     "step": 1500,
+     "loss": 0.0018316183029476658,
+     "acc": 0.693359375
+    },
+    {
+     "step": 2000,
+     "loss": 0.0010784820037551806,
+     "acc": 0.6875
+    },
+    {
+     "step": 2500,
+     "loss": 0.0003307177658447802,
+     "acc": 0.69140625
+    },
+    {
+     "step": 3000,
+     "loss": 0.00018061746712943826,
+     "acc": 0.6875
+    }
+   ],
+   "elapsed_s": 8.7
+  }
+ ],
+ "N4_perch_M32": [
+  {
+   "arm": "N4_perch_M32",
+   "seed": 0,
+   "params": 22784,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.7940811874467295e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.2573365343510283e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 139.9747957780782,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 128,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 1024,
+    "cond_gram": 5.267399114393566e+20,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.3631721517974497,
+     "rho_max": 0.9998785955347885,
+     "theta_min": 0.00038577367880024833,
+     "theta_max": 1.424436157119763
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.3364106252931224e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1027695627638102e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 148.5794174392288,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 128,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 1024,
+    "cond_gram": 4.750914850860815e+19,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.49030822858856976,
+     "rho_max": 0.9999202993676445,
+     "theta_min": 0.0010337672118468889,
+     "theta_max": 1.4366848521270283
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.317850374273905,
+   "max_delta_theta": 0.2311390826515577,
+   "cond_before": 5.267399114393566e+20,
+   "cond_after": 4.750914850860815e+19,
+   "final_acc": 0.658203125,
+   "shuffle_acc": 0.677734375,
+   "length_generalization": {
+    "L9": 0.671875,
+    "L17": 0.26953125,
+    "L25": 0.2109375,
+    "L33": 0.1484375
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158590858780287,
+     "acc": 0.00390625
+    },
+    {
+     "step": 500,
+     "loss": 0.2870585239500982,
+     "acc": 0.583984375
+    },
+    {
+     "step": 1000,
+     "loss": 0.0027228804963678756,
+     "acc": 0.63671875
+    },
+    {
+     "step": 1500,
+     "loss": 0.0014028724189535783,
+     "acc": 0.65234375
+    },
+    {
+     "step": 2000,
+     "loss": 0.00046199254628429616,
+     "acc": 0.646484375
+    },
+    {
+     "step": 2500,
+     "loss": 0.0002111274746052389,
+     "acc": 0.65625
+    },
+    {
+     "step": 3000,
+     "loss": 0.00028160067872121363,
+     "acc": 0.658203125
+    }
+   ],
+   "elapsed_s": 8.1
+  },
+  {
+   "arm": "N4_perch_M32",
+   "seed": 1,
+   "params": 22784,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.957816764137718e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.478908382068859e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 139.98260759796597,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 128,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 1024,
+    "cond_gram": 1.1279414613326614e+20,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36268439842827055,
+     "rho_max": 0.999880334943593,
+     "theta_min": 0.00037275696041861613,
+     "theta_max": 1.4283233164132552
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.421543057624738e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.876695869659172e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 149.41984808656028,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 128,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 1024,
+    "cond_gram": 1.2486311797385726e+19,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.3908679141354128,
+     "rho_max": 0.999911595214239,
+     "theta_min": 0.0016899834954853708,
+     "theta_max": 1.3941779196955788
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.37152172711999487,
+   "max_delta_theta": 0.1923123774988668,
+   "cond_before": 1.1279414613326614e+20,
+   "cond_after": 1.2486311797385726e+19,
+   "final_acc": 0.658203125,
+   "shuffle_acc": 0.650390625,
+   "length_generalization": {
+    "L9": 0.68359375,
+    "L17": 0.26171875,
+    "L25": 0.22265625,
+    "L33": 0.1875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158247138528143,
+     "acc": 0.017578125
+    },
+    {
+     "step": 500,
+     "loss": 0.20220530479118884,
+     "acc": 0.568359375
+    },
+    {
+     "step": 1000,
+     "loss": 0.004013515183140992,
+     "acc": 0.640625
+    },
+    {
+     "step": 1500,
+     "loss": 0.0012691087966761126,
+     "acc": 0.646484375
+    },
+    {
+     "step": 2000,
+     "loss": 0.00032884100166550277,
+     "acc": 0.654296875
+    },
+    {
+     "step": 2500,
+     "loss": 0.0003608662292278527,
+     "acc": 0.65625
+    },
+    {
+     "step": 3000,
+     "loss": 0.00017576912210417295,
+     "acc": 0.658203125
+    }
+   ],
+   "elapsed_s": 8.2
+  },
+  {
+   "arm": "N4_perch_M32",
+   "seed": 2,
+   "params": 22784,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.223475276177194e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 8.893901104708776e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 140.06385938658917,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 128,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 1024,
+    "cond_gram": 1.2544367043711758e+21,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36394343149311276,
+     "rho_max": 0.9998793394997086,
+     "theta_min": 0.0003716040870000946,
+     "theta_max": 1.4360700986007213
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1646538718453846e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.7858394442724422e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 1024,
+       "17": 1024,
+       "25": 1024,
+       "65": 1024
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 149.41194023179034,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 128,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 1024,
+    "cond_gram": 2.639925581995716e+19,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.5079605341307777,
+     "rho_max": 0.9999201534569552,
+     "theta_min": 0.001560268418099068,
+     "theta_max": 1.4867347512688263
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.3373538629883537,
+   "max_delta_theta": 0.16945309927448238,
+   "cond_before": 1.2544367043711758e+21,
+   "cond_after": 2.639925581995716e+19,
+   "final_acc": 0.693359375,
+   "shuffle_acc": 0.6953125,
+   "length_generalization": {
+    "L9": 0.68359375,
+    "L17": 0.265625,
+    "L25": 0.19140625,
+    "L33": 0.1171875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158656456247865,
+     "acc": 0.0078125
+    },
+    {
+     "step": 500,
+     "loss": 0.04589620208940559,
+     "acc": 0.6484375
+    },
+    {
+     "step": 1000,
+     "loss": 0.004095572780746866,
+     "acc": 0.689453125
+    },
+    {
+     "step": 1500,
+     "loss": 0.0010942742866735006,
+     "acc": 0.689453125
+    },
+    {
+     "step": 2000,
+     "loss": 0.0009226211321084123,
+     "acc": 0.693359375
+    },
+    {
+     "step": 2500,
+     "loss": 0.00016276374498987124,
+     "acc": 0.693359375
+    },
+    {
+     "step": 3000,
+     "loss": 0.00027239167560670575,
+     "acc": 0.693359375
+    }
+   ],
+   "elapsed_s": 8.9
+  }
+ ],
+ "N5_scaninit": [
+  {
+   "arm": "N5_scaninit",
+   "seed": 0,
+   "params": 12416,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.9746379358850643e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.0198758637320221e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.77358817655895,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 4.899505400191795e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.3631721517974497,
+     "rho_max": 0.99988139403375,
+     "theta_min": 0.000373052317081785,
+     "theta_max": 1.417923721732483
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.718271048026506e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.993398768552771e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 75.45843475644105,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 6.534159240959204e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.3919496100033142,
+     "rho_max": 0.9999284812630174,
+     "theta_min": 0.003665765188262434,
+     "theta_max": 1.4300915328279102
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.3018191925094839,
+   "max_delta_theta": 0.1829417528475133,
+   "cond_before": 4.899505400191795e+17,
+   "cond_after": 6.534159240959204e+17,
+   "final_acc": 0.607421875,
+   "shuffle_acc": 0.58984375,
+   "length_generalization": {
+    "L9": 0.5703125,
+    "L17": 0.24609375,
+    "L25": 0.1328125,
+    "L33": 0.14453125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.158833942272971,
+     "acc": 0.03125
+    },
+    {
+     "step": 500,
+     "loss": 0.16064924247139326,
+     "acc": 0.505859375
+    },
+    {
+     "step": 1000,
+     "loss": 0.021907294720320793,
+     "acc": 0.5859375
+    },
+    {
+     "step": 1500,
+     "loss": 0.0038157237628554342,
+     "acc": 0.595703125
+    },
+    {
+     "step": 2000,
+     "loss": 0.0007623479914431843,
+     "acc": 0.6015625
+    },
+    {
+     "step": 2500,
+     "loss": 0.00039174032720354867,
+     "acc": 0.611328125
+    },
+    {
+     "step": 3000,
+     "loss": 0.0004908703339844997,
+     "acc": 0.607421875
+    }
+   ],
+   "elapsed_s": 5.2
+  },
+  {
+   "arm": "N5_scaninit",
+   "seed": 1,
+   "params": 12416,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.7971391024385118e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.0063978973655666e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.68570568006227,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 1.0552684867490513e+19,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36268439842827055,
+     "rho_max": 0.9998793590324325,
+     "theta_min": 0.0003764018644406211,
+     "theta_max": 1.4291595843298934
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.596743303291153e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.1975574774683648e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 75.85238798144968,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 1.3065403896824579e+18,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.4141779825336598,
+     "rho_max": 0.9999223661549091,
+     "theta_min": 0.0034863920967517,
+     "theta_max": 1.4013103109965492
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.314511957037805,
+   "max_delta_theta": 0.19720926268511355,
+   "cond_before": 1.0552684867490513e+19,
+   "cond_after": 1.3065403896824579e+18,
+   "final_acc": 0.587890625,
+   "shuffle_acc": 0.52734375,
+   "length_generalization": {
+    "L9": 0.546875,
+    "L17": 0.21484375,
+    "L25": 0.10546875,
+    "L33": 0.1328125
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.159337505627909,
+     "acc": 0.033203125
+    },
+    {
+     "step": 500,
+     "loss": 0.9689366214343206,
+     "acc": 0.4765625
+    },
+    {
+     "step": 1000,
+     "loss": 0.02849439323447318,
+     "acc": 0.544921875
+    },
+    {
+     "step": 1500,
+     "loss": 0.0045835563750454295,
+     "acc": 0.587890625
+    },
+    {
+     "step": 2000,
+     "loss": 0.002019001474339454,
+     "acc": 0.578125
+    },
+    {
+     "step": 2500,
+     "loss": 0.0020590425894513108,
+     "acc": 0.5859375
+    },
+    {
+     "step": 3000,
+     "loss": 0.0002765972445061659,
+     "acc": 0.587890625
+    }
+   ],
+   "elapsed_s": 4.9
+  },
+  {
+   "arm": "N5_scaninit",
+   "seed": 2,
+   "params": 12416,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.6031589264381566e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.056198822123962e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.7812594320286,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 1.5340165131500426e+18,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36394343149311276,
+     "rho_max": 0.9998825057263484,
+     "theta_min": 0.0003755456805020561,
+     "theta_max": 1.4227077378708617
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.159968859675388e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.303966783653747e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 75.38611765162426,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 4.518991977153998e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.33046157096637685,
+     "rho_max": 0.9999353362469535,
+     "theta_min": 0.003906660963330709,
+     "theta_max": 1.4801199019002214
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.3206260232782713,
+   "max_delta_theta": 0.18700554521350887,
+   "cond_before": 1.5340165131500426e+18,
+   "cond_after": 4.518991977153998e+17,
+   "final_acc": 0.583984375,
+   "shuffle_acc": 0.5625,
+   "length_generalization": {
+    "L9": 0.59765625,
+    "L17": 0.19921875,
+    "L25": 0.1875,
+    "L33": 0.1171875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.159568389642759,
+     "acc": 0.025390625
+    },
+    {
+     "step": 500,
+     "loss": 0.9943483324097051,
+     "acc": 0.51953125
+    },
+    {
+     "step": 1000,
+     "loss": 0.0775913837077631,
+     "acc": 0.552734375
+    },
+    {
+     "step": 1500,
+     "loss": 0.0035019725384742833,
+     "acc": 0.576171875
+    },
+    {
+     "step": 2000,
+     "loss": 0.0031684611232795086,
+     "acc": 0.576171875
+    },
+    {
+     "step": 2500,
+     "loss": 0.0009606864054008523,
+     "acc": 0.58984375
+    },
+    {
+     "step": 3000,
+     "loss": 0.0006797360726213866,
+     "acc": 0.583984375
+    }
+   ],
+   "elapsed_s": 5.2
+  }
+ ],
+ "N6_noBind": [
+  {
+   "arm": "N6_noBind",
+   "seed": 0,
+   "params": 10368,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.9746379358850643e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.0198758637320221e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.77358817655895,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 4.899505400191795e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.3631721517974497,
+     "rho_max": 0.99988139403375,
+     "theta_min": 0.000373052317081785,
+     "theta_max": 1.417923721732483
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.7008397105270886e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.1478568769740126e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 76.4393512680146,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 2.161038749743136e+18,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.542248009783686,
+     "rho_max": 0.9999723776089995,
+     "theta_min": 0.005802700885254144,
+     "theta_max": 1.5184423514608494
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.43680635367612725,
+   "max_delta_theta": 0.2322389441559922,
+   "cond_before": 4.899505400191795e+17,
+   "cond_after": 2.161038749743136e+18,
+   "final_acc": 0.193359375,
+   "shuffle_acc": 0.20703125,
+   "length_generalization": {
+    "L9": 0.171875,
+    "L17": 0.08984375,
+    "L25": 0.07421875,
+    "L33": 0.04296875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.165993699687733,
+     "acc": 0.025390625
+    },
+    {
+     "step": 500,
+     "loss": 1.3733972570004374,
+     "acc": 0.21875
+    },
+    {
+     "step": 1000,
+     "loss": 1.3495247506583365,
+     "acc": 0.203125
+    },
+    {
+     "step": 1500,
+     "loss": 1.425791218761522,
+     "acc": 0.220703125
+    },
+    {
+     "step": 2000,
+     "loss": 0.9132757878268538,
+     "acc": 0.1953125
+    },
+    {
+     "step": 2500,
+     "loss": 0.35802693027515065,
+     "acc": 0.208984375
+    },
+    {
+     "step": 3000,
+     "loss": 0.053941944253515756,
+     "acc": 0.193359375
+    }
+   ],
+   "elapsed_s": 4.5
+  },
+  {
+   "arm": "N6_noBind",
+   "seed": 1,
+   "params": 10368,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.7971391024385118e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.0063978973655666e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.68570568006227,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 1.0552684867490513e+19,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36268439842827055,
+     "rho_max": 0.9998793590324325,
+     "theta_min": 0.0003764018644406211,
+     "theta_max": 1.4291595843298934
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1501772432507007e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 7.167257477502336e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 75.40300263384405,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 5.0301485530417926e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.529268651171483,
+     "rho_max": 0.9999526440062656,
+     "theta_min": 0.006249453074214624,
+     "theta_max": 1.4559917758851504
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.27038080892283295,
+   "max_delta_theta": 0.1862624827588967,
+   "cond_before": 1.0552684867490513e+19,
+   "cond_after": 5.0301485530417926e+17,
+   "final_acc": 0.228515625,
+   "shuffle_acc": 0.22265625,
+   "length_generalization": {
+    "L9": 0.203125,
+    "L17": 0.09375,
+    "L25": 0.0625,
+    "L33": 0.0546875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.1716517586823345,
+     "acc": 0.025390625
+    },
+    {
+     "step": 500,
+     "loss": 1.8727827301964055,
+     "acc": 0.2109375
+    },
+    {
+     "step": 1000,
+     "loss": 1.018214944549623,
+     "acc": 0.193359375
+    },
+    {
+     "step": 1500,
+     "loss": 1.0322709542329593,
+     "acc": 0.21875
+    },
+    {
+     "step": 2000,
+     "loss": 0.6923034804354867,
+     "acc": 0.208984375
+    },
+    {
+     "step": 2500,
+     "loss": 0.21966569268844804,
+     "acc": 0.203125
+    },
+    {
+     "step": 3000,
+     "loss": 0.34540837357928256,
+     "acc": 0.228515625
+    }
+   ],
+   "elapsed_s": 4.5
+  },
+  {
+   "arm": "N6_noBind",
+   "seed": 2,
+   "params": 10368,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.6031589264381566e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.056198822123962e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 70.7812594320286,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 1.5340165131500426e+18,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.36394343149311276,
+     "rho_max": 0.9998825057263484,
+     "theta_min": 0.0003755456805020561,
+     "theta_max": 1.4227077378708617
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.201141088313634e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.6141701314299983e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 512,
+       "17": 512,
+       "25": 512,
+       "65": 512
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 76.08548411073257,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 64,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 512,
+    "cond_gram": 2.129237492878726e+17,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.5647353258791807,
+     "rho_max": 0.9999549041572825,
+     "theta_min": 0.003992239827417187,
+     "theta_max": 1.4703692619808515
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.41825202348529433,
+   "max_delta_theta": 0.18931277383082318,
+   "cond_before": 1.5340165131500426e+18,
+   "cond_after": 2.129237492878726e+17,
+   "final_acc": 0.232421875,
+   "shuffle_acc": 0.20703125,
+   "length_generalization": {
+    "L9": 0.17578125,
+    "L17": 0.05078125,
+    "L25": 0.0546875,
+    "L33": 0.04296875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.150926843767301,
+     "acc": 0.01953125
+    },
+    {
+     "step": 500,
+     "loss": 1.8663287786888652,
+     "acc": 0.21875
+    },
+    {
+     "step": 1000,
+     "loss": 1.8292079929478464,
+     "acc": 0.2421875
+    },
+    {
+     "step": 1500,
+     "loss": 0.42559940951215663,
+     "acc": 0.23046875
+    },
+    {
+     "step": 2000,
+     "loss": 0.3202405917248253,
+     "acc": 0.2421875
+    },
+    {
+     "step": 2500,
+     "loss": 0.26114295826191525,
+     "acc": 0.2265625
+    },
+    {
+     "step": 3000,
+     "loss": 0.11083215725596021,
+     "acc": 0.232421875
+    }
+   ],
+   "elapsed_s": 4.7
+  }
+ ],
+ "N7_perch_C16": [
+  {
+   "arm": "N7_perch_C16",
+   "seed": 0,
+   "params": 43520,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.1330617030137115e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 9.598777663561702e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 2048,
+       "17": 2048,
+       "25": 2048,
+       "65": 2048
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 283.06083949702116,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 256,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 2048,
+    "cond_gram": 1.967693554615716e+22,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.35974655945571576,
+     "rho_max": 0.999879784585283,
+     "theta_min": 0.0003663320857084245,
+     "theta_max": 1.4542038676432307
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.7348618421761461e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.387889473740917e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 2048,
+       "17": 2048,
+       "25": 2048,
+       "65": 2048
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 298.10537788038266,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 256,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 2048,
+    "cond_gram": 7.75712395459706e+21,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.29100489374497585,
+     "rho_max": 0.9999204818155863,
+     "theta_min": 0.000679036316761509,
+     "theta_max": 1.4809233837226154
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.3225242870952179,
+   "max_delta_theta": 0.15160872022556793,
+   "cond_before": 1.967693554615716e+22,
+   "cond_after": 7.75712395459706e+21,
+   "final_acc": 0.767578125,
+   "shuffle_acc": 0.76171875,
+   "length_generalization": {
+    "L9": 0.734375,
+    "L17": 0.34375,
+    "L25": 0.22265625,
+    "L33": 0.15625
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.160089267804155,
+     "acc": 0.013671875
+    },
+    {
+     "step": 500,
+     "loss": 0.01772661300244991,
+     "acc": 0.693359375
+    },
+    {
+     "step": 1000,
+     "loss": 0.001657713491767025,
+     "acc": 0.734375
+    },
+    {
+     "step": 1500,
+     "loss": 0.0003899786822183528,
+     "acc": 0.744140625
+    },
+    {
+     "step": 2000,
+     "loss": 0.00019104132867401677,
+     "acc": 0.751953125
+    },
+    {
+     "step": 2500,
+     "loss": 0.00021609713174386956,
+     "acc": 0.76171875
+    },
+    {
+     "step": 3000,
+     "loss": 0.00015688038252652372,
+     "acc": 0.767578125
+    }
+   ],
+   "elapsed_s": 15.2
+  },
+  {
+   "arm": "N7_perch_C16",
+   "seed": 1,
+   "params": 43520,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.849624244470748e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.2084587894648295e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 2048,
+       "17": 2048,
+       "25": 2048,
+       "65": 2048
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 283.1689569528672,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 256,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 2048,
+    "cond_gram": 1.9220619626601175e+22,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.3623434132683973,
+     "rho_max": 0.999883214323306,
+     "theta_min": 0.000370235040696933,
+     "theta_max": 1.4571117264381088
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.7146211013223813e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 9.501173854628336e-16,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 2048,
+       "17": 2048,
+       "25": 2048,
+       "65": 2048
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 298.69204975547865,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 256,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 2048,
+    "cond_gram": 6.191082859358298e+21,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.3454077427374104,
+     "rho_max": 0.9999220390681037,
+     "theta_min": 0.0007331227278047929,
+     "theta_max": 1.4869382399801458
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.3092273436906186,
+   "max_delta_theta": 0.1961995264103064,
+   "cond_before": 1.9220619626601175e+22,
+   "cond_after": 6.191082859358298e+21,
+   "final_acc": 0.724609375,
+   "shuffle_acc": 0.716796875,
+   "length_generalization": {
+    "L9": 0.7265625,
+    "L17": 0.30859375,
+    "L25": 0.234375,
+    "L33": 0.19921875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.159508412954771,
+     "acc": 0.013671875
+    },
+    {
+     "step": 500,
+     "loss": 0.22279689430378707,
+     "acc": 0.666015625
+    },
+    {
+     "step": 1000,
+     "loss": 0.0030685587445478607,
+     "acc": 0.703125
+    },
+    {
+     "step": 1500,
+     "loss": 0.0009239738741350231,
+     "acc": 0.71484375
+    },
+    {
+     "step": 2000,
+     "loss": 0.0001834791226454772,
+     "acc": 0.71875
+    },
+    {
+     "step": 2500,
+     "loss": 0.0002611497706699309,
+     "acc": 0.724609375
+    },
+    {
+     "step": 3000,
+     "loss": 0.00012797935288559988,
+     "acc": 0.724609375
+    }
+   ],
+   "elapsed_s": 15.1
+  },
+  {
+   "arm": "N7_perch_C16",
+   "seed": 2,
+   "params": 43520,
+   "guards_before": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.331324652433536e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 1.3987947914601215e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 2048,
+       "17": 2048,
+       "25": 2048,
+       "65": 2048
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 282.98096057415466,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 256,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 2048,
+    "cond_gram": 6.462925219563823e+21,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.3616200843175032,
+     "rho_max": 0.9998813912359065,
+     "theta_min": 0.00036697388359487173,
+     "theta_max": 1.450301566276543
+    }
+   },
+   "guards_after": {
+    "guards": [
+     {
+      "name": "toeplitz",
+      "passed": true,
+      "max_dev": 0.0
+     },
+     {
+      "name": "fft_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.7835055141971536e-16
+     },
+     {
+      "name": "iir_vs_toeplitz",
+      "passed": true,
+      "rel_err": 2.087629135647865e-15,
+      "note": "源码 psi 不含 1/sin(theta) 归一化；IIR 与 Toeplitz 为同一系统"
+     },
+     {
+      "name": "strict_causality",
+      "passed": true,
+      "max_past_abs_diff": 0.0
+     },
+     {
+      "name": "state_independent_of_L",
+      "passed": true,
+      "bytes_by_L": {
+       "9": 2048,
+       "17": 2048,
+       "25": 2048,
+       "65": 2048
+      }
+     },
+     {
+      "name": "rho_theta_frozen",
+      "fingerprint": 298.5058173187484,
+      "passed": true,
+      "note": "调用方在训练后与训练前逐位比较"
+     }
+    ],
+    "all_passed": true,
+    "M": 256,
+    "L": 9,
+    "C": 1,
+    "state_bytes": 2048,
+    "cond_gram": 2.9246753993708e+21,
+    "time_invariance": {
+     "passed": true,
+     "statement": "(ρ,θ) 与 t 无关 ⇒ K 只依赖 τ ⇒ Toeplitz；数值可学 ≠ 时变",
+     "rho_min": 0.38870110461328183,
+     "rho_max": 0.999921814677624,
+     "theta_min": 0.0007427937544689506,
+     "theta_max": 1.4589568812011025
+    }
+   },
+   "guards_all_passed": true,
+   "rho_theta_changed": true,
+   "max_delta_rho": 0.39673054496936827,
+   "max_delta_theta": 0.1803063506754831,
+   "cond_before": 6.462925219563823e+21,
+   "cond_after": 2.9246753993708e+21,
+   "final_acc": 0.765625,
+   "shuffle_acc": 0.76953125,
+   "length_generalization": {
+    "L9": 0.78125,
+    "L17": 0.375,
+    "L25": 0.27734375,
+    "L33": 0.1875
+   },
+   "curve": [
+    {
+     "step": 1,
+     "loss": 4.157928247548158,
+     "acc": 0.013671875
+    },
+    {
+     "step": 500,
+     "loss": 0.015316311044772143,
+     "acc": 0.712890625
+    },
+    {
+     "step": 1000,
+     "loss": 0.0015842754408197976,
+     "acc": 0.73046875
+    },
+    {
+     "step": 1500,
+     "loss": 0.0005238704450953648,
+     "acc": 0.734375
+    },
+    {
+     "step": 2000,
+     "loss": 0.00027512678401490003,
+     "acc": 0.740234375
+    },
+    {
+     "step": 2500,
+     "loss": 0.00014124623012982458,
+     "acc": 0.751953125
+    },
+    {
+     "step": 3000,
+     "loss": 9.916465523711256e-05,
+     "acc": 0.765625
+    }
+   ],
+   "elapsed_s": 15.2
+  }
+ ]
+}

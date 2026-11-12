@@ -1,0 +1,28 @@
+{
+ "state_scalars": 14080,
+ "state_bytes_fp32": 56320,
+ "state_bytes_fp16": 28160,
+ "independent_of_L": true,
+ "lengths": {
+  "L65": {
+   "seconds": 0.022469225999998343,
+   "tokens_per_s": 23142.764241190966,
+   "us_per_token": 43.21004999999681
+  },
+  "L257": {
+   "seconds": 0.08472105399999919,
+   "tokens_per_s": 24267.87560976307,
+   "us_per_token": 41.206738326847855
+  },
+  "L1025": {
+   "seconds": 0.2886407780000013,
+   "tokens_per_s": 28409.014335458734,
+   "us_per_token": 35.200094878048944
+  },
+  "L4097": {
+   "seconds": 1.1552272466666598,
+   "tokens_per_s": 28371.90699455299,
+   "us_per_token": 35.246132739402604
+  }
+ }
+}

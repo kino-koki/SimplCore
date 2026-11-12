@@ -1,0 +1,25 @@
+{
+ "checks": {
+  "gradcheck_rand_graph": true,
+  "gradcheck_T1_graph": true,
+  "kernel_toeplitz": true,
+  "fft_iir_duality": true,
+  "state_is_O1": true,
+  "toeplitz_dev": 0.0,
+  "fft_iir_err": 4.685414543902122e-16
+ },
+ "legacy_straight_through": {
+  "gradcheck_rand_stop": {
+   "worst": 0.00024272156343147996,
+   "within_5e4": true
+  },
+  "gradcheck_T1_stop": {
+   "worst": 0.0025403106553338033,
+   "within_5e4": false
+  }
+ },
+ "n_pass": 5,
+ "n_checks": 5,
+ "all_pass": true,
+ "note": "All checks use the FINAL trained configuration. Inter-layer normalisation and the fixed codebook-swap interface live OUTSIDE the recurrence: the kernel remains static and Toeplitz, state stays O(1). The 'stop' normalisation used in v6.3 divides by a norm taken OUTSIDE the graph (straight-through), so its analytic gradient is inexact; those numbers are RECORDED under legacy_straight_through and are NOT a pass/fail condition for the corrected 'graph' architecture. Registered as W14."
+}

@@ -22,6 +22,7 @@
 | ``aggregate_count`` | 轴 C 前哨：特殊 token 计数 mod K（聚合型） | 1/K |
 | ``counting`` | 近精确计数（0–8，一票之差） | 1/9 |
 | ``markov`` | 一阶 Markov 语言建模（NLL，非准确率） | log V |
+| ``mqar_g4`` | 轴 C：4 对 key→value 联想召回（P1-3 补齐） | 1/8 |
 
 臂：``sgc``（默认 mixer）/ ``local``（num_bases=2 退化近局部的 SGC）/ 
 ``ts``（本文件内自包含迷你 Transformer 对照臂）/ chance（解析基线）。
@@ -96,12 +97,46 @@ def gen_markov(L: int, g: torch.Generator, V: int = 16) -> Tuple[torch.Tensor, i
     return seq, int(seq[-1])
 
 
+def gen_mqar(L: int, g: torch.Generator, num_kv: int = 4,
+             n_cls: int = 8) -> Tuple[torch.Tensor, int]:
+    """MQAR G=num_kv：前缀 num_kv 对 (key, value)，末位 query 一个 key，
+    目标 = 该 key 绑定的 value 类别（key→value 内容寻址轴）。
+
+    P1-3（上游待修清单）：论文 §5.5 表格有 2 行 MQAR，附录 B 却让读者跑
+    ``axis_probe --seeds ...`` 复现，而旧 ``TASK_SPECS`` 只有 4 个任务、
+    **没有 MQAR 生成器**，该命令复现不了 MQAR 行。这里补上同口径的前哨。
+
+    id 空间（与 ``probes.AssociativeRecallTask`` 的 disjoint 约定一致）：
+      key   ∈ [0, n_cls)
+      value ∈ [n_cls, 2·n_cls)（序列里以 token 形式出现）
+      噪声  ∈ [2·n_cls, SPECIAL)
+      target = value − n_cls ∈ [0, n_cls) → chance = 1/n_cls = 0.125
+
+    ⚠️ 口径说明：论文 §5.5 的 MQAR 数字（TS 0.500 / SGC 0.3125）来自
+    **外部白盒复现**，序列布局与本生成器不同，不能直接拿来对本任务结果。
+    本任务的价值是「附录 B 的命令现在真的能跑出一条 MQAR 行」；两代数字
+    需要按同一任务重跑才能对齐。
+    """
+    keys = torch.randperm(n_cls, generator=g)[:num_kv]              # [0,8)
+    vals = torch.randint(0, n_cls, (num_kv,), generator=g)         # 类别 0..7
+    pairs: List[int] = []
+    for k, v in zip(keys.tolist(), vals.tolist()):
+        pairs += [k, n_cls + v]                                     # value token ∈ [8,16)
+    q_idx = int(torch.randint(0, num_kv, (1,), generator=g))
+    seq = torch.randint(2 * n_cls, SPECIAL, (L,), generator=g)     # 噪声 [16,30)
+    seq[:len(pairs)] = torch.tensor(pairs, dtype=seq.dtype)
+    seq[-1] = int(keys[q_idx])                                     # 末位 query key
+    return seq, int(vals[q_idx])
+
+
 TASK_SPECS: Dict[str, Dict[str, Any]] = {
     # name: (生成器, 类数, chance, 序列长)
     "precise_pointer": (gen_precise_pointer, 16, 1 / 16, 64),
     "aggregate_count": (gen_aggregate_count, 4, 0.25, 129),
     "counting": (gen_counting, 9, 1 / 9, 96),
     "markov": (gen_markov, 16, 1 / 16, 64),
+    # P1-3：key→value 内容寻址轴，让论文 §5.5 / 附录 B 的复现命令可复现
+    "mqar_g4": (gen_mqar, 8, 0.125, 96),
 }
 
 

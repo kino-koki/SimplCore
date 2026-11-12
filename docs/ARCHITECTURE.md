@@ -84,6 +84,7 @@ tok_emb(idx) ──► drop
 | `sgc-nogate` / `sgc-nolocal` | 同上（开关） | 同上 | 关门控 / 关局部 | 无 | O(1) |
 | `sgc-r` | `RoutedSpectralGlobalConv` | SGC + 谱专家路由（M 基分 G 组，逐 token top-k 注入；MoE 路由非注意力，v1.2） | 深度因果卷积 | 无 | O(1)（与 sgc 逐字节同） |
 | `srf` | `SpectralResonanceFlow` | SGC + `SelectiveSpectralSSM`（输入相关 Δ） | 深度因果卷积 | 无 | O(1) chunked scan |
+| `snn-sgc`（实验，显式 opt-in） | `SpikingSpectralGlobalConv` | SGC + 有符号 LIF 三值脉冲读出（surrogate-gradient） | SGC 深度因果卷积 | 无 | O(1)，每层额外 `D` 个 fp32 膜电位 |
 
 **已删除的取值**：`attn` / `hybrid*` / `reason_attn_every` —— 注意力族整体移除，
 配置层直接拒绝（`ValueError`）。历史实现归档在 `.trash/attn_removed/`，
@@ -92,6 +93,13 @@ tok_emb(idx) ──► drop
 **GatedSpectralConv2**（`selective.py`，`gate_ab=True`）在 SGC 骨架上叠加
 GLA/Mamba2 式通道独立双门 `γ`（时间常数内容化）/ `β`（写入门），
 与 SGC 共用 `gates.py` 的四层闸门数学。
+
+`snn-sgc` 是基于共享模型接口的实验 mixer，不是默认主干切换，也不改变现有
+`sgc` checkpoint/配置的默认行为。SGC 连续输出保持为主残差，脉冲分支以低增益
+作为可训练修正项；训练时使用直通 surrogate 梯度，流式状态另存每层一个 fp32
+膜电位向量。当前实现仍执行稠密 SGC 与张量算子，不代表稀疏硬件加速或能耗优势。
+它可与模型的常规记忆注入和 SMM 共用模型 API；`gate_ab=True` 与 `snn-sgc` 暂不
+兼容，配置会显式拒绝。
 
 ---
 

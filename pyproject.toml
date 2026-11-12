@@ -12,11 +12,13 @@ build-backend = "setuptools.build_meta"
 #
 # 打包只发布唯一一条产品线：
 #   simplcore            —— 包根（缓存环境引导）
-#   simplcore.core       —— SimplCore 架构本体，按依赖方向拆八个子包：
+#   simplcore.core       —— SimplCore 架构本体，按依赖方向拆九个子包：
 #                            arch（mixer 数学）/ model（配置与模型）/
-#                            memory（记忆与自进化）/ dialogue（对话）/
-#                            training（训练）/ eval（评测与账本）/
-#                            backend（后端契约）/ deploy（战役与部署）
+#                            memory（记忆与自进化，含 dream 子包）/
+#                            dialogue（对话）/ training（训练）/
+#                            eval（评测与账本，含 GATE-2 测量门）/
+#                            backend（后端契约）/ deploy（战役与部署）/
+#                            theory（NT 定理与 49 项判定台账）
 #   simplcore.lab        —— 实验性模块（jitrl / pilot / conditions_ledger），
 #                            不承诺 API 稳定，core 不得反向依赖
 #   simplcore.safety     —— 内容安全与权限子系统
@@ -58,6 +60,9 @@ export = [
 search = [
     "requests>=2.28",
     "fake_useragent>=1.4",
+]
+mamba2 = [
+    "transformers>=4.45",
 ]
 dev = [
     "pytest>=7.4",
@@ -102,11 +107,13 @@ packages = [
     "simplcore.core.arch",
     "simplcore.core.model",
     "simplcore.core.memory",
+    "simplcore.core.memory.dream",
     "simplcore.core.dialogue",
     "simplcore.core.training",
     "simplcore.core.eval",
     "simplcore.core.backend",
     "simplcore.core.deploy",
+    "simplcore.core.theory",
     "simplcore.core.tests",
     "simplcore.lab",
     "simplcore.safety",

@@ -1,0 +1,88 @@
+{
+ "arch_step": 7,
+ "ckpt_step": 1500,
+ "params": 202036,
+ "temp": 0.85,
+ "top_p": 0.92,
+ "seed": 7,
+ "samples": [
+  {
+   "prompt": "First Citizen:\n",
+   "text": "If here me the durnsel the nears.\n\nKING EDWARD IV:\nAnd to in am in to bear bay, to to his tray so thou her ancain.\n\nGLOUCESTER:\nI grand undi",
+   "metrics": {
+    "chars": 140,
+    "distinct_chars": 39,
+    "rep3": 0.1304,
+    "longest_same_char_run": 2,
+    "words": 29,
+    "distinct_words": 24,
+    "has_letters": true
+   }
+  },
+  {
+   "prompt": "HAMLET:\n",
+   "text": "O morrow for a king to the beetenteral:\nFigh the will to misity of us shall you prients, whith then and the be he priess be tongue.\n\nEDISA:\n",
+   "metrics": {
+    "chars": 140,
+    "distinct_chars": 32,
+    "rep3": 0.1594,
+    "longest_same_char_run": 2,
+    "words": 26,
+    "distinct_words": 22,
+    "has_letters": true
+   }
+  },
+  {
+   "prompt": "Q: What is your name?\nA:",
+   "text": " What is I see up, shall be to my thou claught I to grour her and land the chance.\n\nADUSHERSCINCE:\nNo, thanks? not these love\nAnd lost him t",
+   "metrics": {
+    "chars": 140,
+    "distinct_chars": 37,
+    "rep3": 0.0942,
+    "longest_same_char_run": 2,
+    "words": 26,
+    "distinct_words": 25,
+    "has_letters": true
+   }
+  },
+  {
+   "prompt": "Q: Shall we proceed?\nA:",
+   "text": " O but is in have in that but he brother we from his better to unsued;\nA: Angelo is do you couse in the worse thee to rethen the came to the",
+   "metrics": {
+    "chars": 140,
+    "distinct_chars": 26,
+    "rep3": 0.2319,
+    "longest_same_char_run": 2,
+    "words": 31,
+    "distinct_words": 23,
+    "has_letters": true
+   }
+  },
+  {
+   "prompt": "Q: Who goes there?\nA:",
+   "text": " I she be a lady his contry;\nI day in but my souse,\nO the body, you not this but your reach his and the will be the setryess agair to thou m",
+   "metrics": {
+    "chars": 140,
+    "distinct_chars": 24,
+    "rep3": 0.1812,
+    "longest_same_char_run": 2,
+    "words": 28,
+    "distinct_words": 23,
+    "has_letters": true
+   }
+  },
+  {
+   "prompt": "To be, or not to be,",
+   "text": " be a done,\nWe think such night. The not reath, you not the great,\nAnd reportice, till them I the reed;\nWeep dayserverain so with you this b",
+   "metrics": {
+    "chars": 140,
+    "distinct_chars": 30,
+    "rep3": 0.1449,
+    "longest_same_char_run": 2,
+    "words": 25,
+    "distinct_words": 22,
+    "has_letters": true
+   }
+  }
+ ]
+}

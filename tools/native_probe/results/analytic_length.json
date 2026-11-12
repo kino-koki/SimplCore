@@ -1,0 +1,17 @@
+{
+ "train_acc": 1.0,
+ "perm_acc": 1.0,
+ "forward_analytic_match": true,
+ "length_extrapolation": {
+  "L9": 1.0,
+  "L17": 1.0,
+  "L25": 1.0,
+  "L33": 1.0,
+  "L41": 1.0,
+  "L65": 1.0,
+  "L129": 1.0,
+  "L257": 1.0,
+  "L513": 1.0,
+  "L1025": 1.0
+ }
+}

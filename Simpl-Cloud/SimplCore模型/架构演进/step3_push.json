@@ -1,0 +1,45 @@
+{
+  "commit": "428038766c12473f421ed39605e90b80ebe0959c",
+  "parent": "d5d7fb3229322f48855f51b8432ea9e8f6307b28",
+  "branch": "main",
+  "n_files": 7,
+  "mismatches": [],
+  "verified": 7,
+  "files": [
+    {
+      "path": "simplcore/core/arch/evolution_mixer.py",
+      "blob_sha1": "63b0535aec0a78d6861f00b3683c1283c96141d2",
+      "bytes": 15968
+    },
+    {
+      "path": "realtrain/results/step3_real.json",
+      "blob_sha1": "0aa797a72785af58aa309c1fd5b41be70e21e4bc",
+      "bytes": 20518
+    },
+    {
+      "path": "realtrain/results/all_arms_stats.json",
+      "blob_sha1": "57c9b973c034cc6d5846a975b8ce7ecb3aaf7d3f",
+      "bytes": 957
+    },
+    {
+      "path": "realtrain/STEP3_REPORT.md",
+      "blob_sha1": "f24d48c40a0543fc71aa91a440460857aeefdc6d",
+      "bytes": 2994
+    },
+    {
+      "path": "realtrain/results/pilot_v0.json",
+      "blob_sha1": "c37693a8d850a76a9ed78e199437baa29e69eec6",
+      "bytes": 9870
+    },
+    {
+      "path": "realtrain/results/pilot_v1.json",
+      "blob_sha1": "9c57780533a935a1c369a68b262243542443c44f",
+      "bytes": 3251
+    },
+    {
+      "path": "realtrain/results/pilot_v2.json",
+      "blob_sha1": "da24edf4dd8b99f121d8b78c5a40f0d0572062b2",
+      "bytes": 3252
+    }
+  ]
+}

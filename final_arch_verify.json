@@ -1,0 +1,287 @@
+{
+  "C1_toeplitz_matrix_vs_iir": {
+    "max_abs_diff": 8.881784197001252e-15,
+    "passed": true
+  },
+  "C2_outer_product_matrix_vs_recurrence": {
+    "max_abs_diff": 0.0,
+    "passed": true
+  },
+  "C3_window_matrix_vs_ring": {
+    "max_abs_diff": 8.881784197001252e-16,
+    "passed": true
+  },
+  "C4_C5_full_vs_stream": {
+    "rows": [
+      {
+        "L": 1,
+        "max_abs_diff": 3.1086244689504383e-15,
+        "state_bytes": 105984,
+        "n_layers": 3
+      },
+      {
+        "L": 2,
+        "max_abs_diff": 5.329070518200751e-15,
+        "state_bytes": 109056,
+        "n_layers": 3
+      },
+      {
+        "L": 7,
+        "max_abs_diff": 4.440892098500626e-15,
+        "state_bytes": 124416,
+        "n_layers": 3
+      },
+      {
+        "L": 32,
+        "max_abs_diff": 4.440892098500626e-15,
+        "state_bytes": 139776,
+        "n_layers": 3
+      },
+      {
+        "L": 64,
+        "max_abs_diff": 7.105427357601002e-15,
+        "state_bytes": 139776,
+        "n_layers": 3
+      },
+      {
+        "L": 137,
+        "max_abs_diff": 6.217248937900877e-15,
+        "state_bytes": 139776,
+        "n_layers": 3
+      }
+    ],
+    "max_abs_diff": 7.105427357601002e-15,
+    "passed": true,
+    "state_constant": true,
+    "capacity_bytes": 139776,
+    "state_bytes_saturated": 139776,
+    "state_bytes": 105984
+  },
+  "C6_perturb_sgc": {
+    "groups": {
+      "Toeplitz mixture": {
+        "n": 3,
+        "delta": 0.01333615,
+        "passed": true
+      },
+      "self-evolving write gate": {
+        "n": 3,
+        "delta": 0.15140481,
+        "passed": true
+      },
+      "fusion alpha/gamma": {
+        "n": 6,
+        "delta": 1.47898388,
+        "passed": true
+      },
+      "state inputs Wk/Wv/Wu": {
+        "n": 9,
+        "delta": 2.18029014,
+        "passed": true
+      },
+      "local window pos": {
+        "n": 3,
+        "delta": 0.10113252,
+        "passed": true
+      },
+      "unlinked_parameter": {
+        "delta": 0.0,
+        "passed": true
+      }
+    },
+    "all_pass": true
+  },
+  "C7_fresh_real_training": {
+    "steps": 160,
+    "seed": 23,
+    "corpus_chars": 240000,
+    "curve": [
+      {
+        "step": 1,
+        "train_bpc": 5.00608323947833
+      },
+      {
+        "step": 80,
+        "train_bpc": 4.069814588028842
+      },
+      {
+        "step": 160,
+        "train_bpc": 3.9396810708932706
+      }
+    ],
+    "loss_drop_bpc": 1.066402,
+    "params_with_zero_grad_first_step": [],
+    "all_params_in_graph": true,
+    "gradcheck": [
+      {
+        "param": "E",
+        "numeric": -0.02626944350936355,
+        "analytic": -0.026269443531807594,
+        "rel_err": 4.2718916246136735e-10,
+        "nonzero": true,
+        "passed": true
+      },
+      {
+        "param": "b0.Wq",
+        "numeric": 0.0006956104137145757,
+        "analytic": 0.0006956103994541028,
+        "rel_err": 1.0250330333892252e-08,
+        "nonzero": true,
+        "passed": true
+      },
+      {
+        "param": "b0.w_beta",
+        "numeric": 0.00031997511307224613,
+        "analytic": 0.00031997509840016986,
+        "rel_err": 2.2926902761987232e-08,
+        "nonzero": true,
+        "passed": true
+      },
+      {
+        "param": "b1.wlogits",
+        "numeric": 0.0001422934658990016,
+        "analytic": 0.00014229352480293656,
+        "rel_err": 2.06980420317313e-07,
+        "nonzero": true,
+        "passed": true
+      }
+    ],
+    "gradcheck_pass": true,
+    "elapsed_s": 6.29,
+    "passed": true
+  },
+  "C8_stream_generation": {
+    "generations": [
+      {
+        "chars": 180,
+        "words": 35,
+        "distinct1": 0.8,
+        "rep3": 0.0,
+        "real_word_ratio": 0.8571,
+        "corpus_bigram_overlap": 0.2941,
+        "corpus_3gram_overlap": 0.0,
+        "prompt": "First Citizen:\n",
+        "held_out": false,
+        "sample": "Than companness.\\n\\nAUFISA:\\nIntend despet the never\\nThe body thou well, for thing troth for to her graces\\nSo tentless of the did them thou sure thing wi",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 37,
+        "distinct1": 0.7027,
+        "rep3": 0.0,
+        "real_word_ratio": 0.9189,
+        "corpus_bigram_overlap": 0.3333,
+        "corpus_3gram_overlap": 0.0,
+        "prompt": "HAMLET:\n",
+        "held_out": false,
+        "sample": "The curst I deserving more barn to then the nevernigne in then to than the breaths:\\nAnd they and go this they shall head to my lord thousand sone\\nIn t",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 38,
+        "distinct1": 0.8684,
+        "rep3": 0.0,
+        "real_word_ratio": 0.8158,
+        "corpus_bigram_overlap": 0.3243,
+        "corpus_3gram_overlap": 0.0556,
+        "prompt": "Q: What is your name?\nA:",
+        "held_out": false,
+        "sample": " That thy hear of levere me gravented I the king cornets and in be bodse thing anne me,\\nTo poor never body true this to the passe with do our this my ",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 39,
+        "distinct1": 0.8462,
+        "rep3": 0.0,
+        "real_word_ratio": 0.7949,
+        "corpus_bigram_overlap": 0.2895,
+        "corpus_3gram_overlap": 0.0,
+        "prompt": "Q: Shall we proceed?\nA:",
+        "held_out": false,
+        "sample": " That that is to done his stook to them to sir.\\n\\nISABENCE:\\nI prettern so thing anner to then meator,\\nAnd thee shall he the marrit not I come soul\\nBut ",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 38,
+        "distinct1": 0.7895,
+        "rep3": 0.0,
+        "real_word_ratio": 0.8684,
+        "corpus_bigram_overlap": 0.2973,
+        "corpus_3gram_overlap": 0.0,
+        "prompt": "Q: Who goes there?\nA:",
+        "held_out": false,
+        "sample": " What, I dessely my is be to the lortent these thou should thou consing to no then\\nTo life no lo your fiend prisouse the stay a too thy\\ndeed some your",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 35,
+        "distinct1": 0.8286,
+        "rep3": 0.0,
+        "real_word_ratio": 0.8286,
+        "corpus_bigram_overlap": 0.4412,
+        "corpus_3gram_overlap": 0.0,
+        "prompt": "To be, or not to be,",
+        "held_out": false,
+        "sample": " I still, my lord, more a me\\nTo true the speech tears but them the gentle them ansherefore you burne one to our triest.\\n\\nCAHILLANGBROK:\\nSo your is to ",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 38,
+        "distinct1": 0.7632,
+        "rep3": 0.0,
+        "real_word_ratio": 0.7895,
+        "corpus_bigram_overlap": 0.2703,
+        "corpus_3gram_overlap": 0.0,
+        "prompt": "KING:\n",
+        "held_out": true,
+        "sample": "I lore to self done I but to the love with said tring friend with to to thee yourself.\\n\\nCATR:\\nBecause wo them thee to dear me not I thouse with nigh a",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 33,
+        "distinct1": 0.8182,
+        "rep3": 0.0,
+        "real_word_ratio": 0.8485,
+        "corpus_bigram_overlap": 0.2812,
+        "corpus_3gram_overlap": 0.0323,
+        "prompt": "Q: What colour is the sky?\nA:",
+        "held_out": true,
+        "sample": " What, till have his speak have the trentern.\\n\\nCASINGS:\\nThe sunty thought all they have then me was than they shall not things to confance?\\n\\nFirst ATH",
+        "non_degenerate": true
+      },
+      {
+        "chars": 180,
+        "words": 34,
+        "distinct1": 0.8824,
+        "rep3": 0.0,
+        "real_word_ratio": 0.7941,
+        "corpus_bigram_overlap": 0.3333,
+        "corpus_3gram_overlap": 0.0312,
+        "prompt": "CORIOLANUS:\nSpeak briefly.",
+        "held_out": true,
+        "sample": "\\n\\nGLOUCESTER:\\nIf arently but the king like our thy mans,\\nAnd father fool that they and the rous,\\nHere I am time this to thing.\\n\\nLEONTESSTER:\\nWhiliest ",
+        "non_degenerate": true
+      }
+    ],
+    "all_speak": true,
+    "heldout_all_speak": true,
+    "mean_real_word_ratio": 0.8351,
+    "mean_rep3": 0.0,
+    "passed": true
+  },
+  "C9_prefix_replay": {
+    "max_abs_diff": 2.4147350785597155e-15,
+    "passed": true
+  },
+  "arch_step": 8,
+  "all_pass": true,
+  "n_checks": 10,
+  "n_passed": 10
+}

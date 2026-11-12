@@ -1,0 +1,9 @@
+{
+ "arm": "W1_code64_lr",
+ "steps": 800,
+ "seed": 0,
+ "params": 10264,
+ "final_acc": 1.0,
+ "perm_acc": 1.0,
+ "guards": true
+}

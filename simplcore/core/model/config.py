@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import json
+import math
+import warnings
 from dataclasses import dataclass, asdict, field
 from typing import Optional
 
@@ -88,6 +90,7 @@ class SimplCoreConfig:
             ``sgc`` (content-gated spectral global conv),
             ``sgc-nogate`` (no content gate),
             ``sgc-nolocal`` (no depthwise local FIR),
+            ``snn-sgc`` (experimental signed-LIF readout over SGC),
             ``srf`` (Spectral Resonance Flow: selective-SSM spectral conv).
         num_bases: number of damped-oscillator bases M of the global kernel.
         decay_max: longest decay time constant (kernel initialisation scale).
@@ -197,6 +200,31 @@ class SimplCoreConfig:
     #: "logspace"（``rho = exp(-softplus(raw))``，可表达 4M 所需 0.99999975，
     #: 仅 SGC 家族 mixer 支持；state_dict 自动迁移）。
     sgc_rho_param: str = "sigmoid"
+    #: ``snn-sgc`` 的 LIF 膜电位泄漏、阈值与 surrogate 梯度斜率。
+    #: 只在实验性脉冲 mixer 中消费，其他 mixer 的行为不受影响。
+    snn_decay: float = 0.9
+    snn_threshold: float = 0.1
+    snn_surrogate_slope: float = 5.0
+    #: **NCM（Next Concept Modeling）实验路径**：在 SGC / SNN 主干上增加因果
+    #: 概念状态递归，并通过标准 next-token loss 端到端训练；当前实现没有独立
+    #: 的概念标签/辅助损失，因此不应解释为显式概念分类器。默认关闭。
+    use_ncm: bool = False
+    #: 概念状态宽度；仅 use_ncm=True 时消费。
+    ncm_dim: int = 64
+    #: 新概念写入递归状态的固定比例，范围 [0, 1]；0 表示冻结状态。
+    ncm_alpha: float = 0.15
+    #: 概念回写到 token 隐状态的残差系数，范围 [0, 1]。
+    ncm_beta: float = 0.7
+    #: 自监督未来隐状态预测辅助损失权重。
+    ncm_future_weight: float = 1.0
+    #: 可选外部概念标签分类数；0 表示不创建该预测头。
+    ncm_label_classes: int = 0
+    #: 可选外部概念标签辅助损失权重。
+    ncm_label_weight: float = 1.0
+    #: 可选 token-group 分类数；0 表示不创建该预测头。
+    ncm_group_classes: int = 0
+    #: 可选 token-group 辅助损失权重。
+    ncm_group_weight: float = 1.0
     # -- SGC-R 谱专家路由（mixer="sgc-r"）------------------------------------
     #: 把 M 个振荡基按频率连续分成 G 组"谱专家"，逐 token 路由器 top-k 选择
     #: 注入组（MoE 路由，无 token↔token 成对打分，非注意力）。O(1) 流式
@@ -310,29 +338,55 @@ class SimplCoreConfig:
                 raise ValueError("dim must be divisible by srf_heads")
             if self.srf_chunk < 1:
                 raise ValueError("srf_chunk must be >= 1")
+        if self.use_ncm:
+            if self.ncm_dim <= 0 or self.ncm_dim > self.dim:
+                raise ValueError(f"ncm_dim must be in (0, dim], got {self.ncm_dim}")
+            if not math.isfinite(self.ncm_alpha) or not 0.0 <= self.ncm_alpha <= 1.0:
+                raise ValueError(f"ncm_alpha must be in [0, 1], got {self.ncm_alpha}")
+            if not math.isfinite(self.ncm_beta) or not 0.0 <= self.ncm_beta <= 1.0:
+                raise ValueError(f"ncm_beta must be in [0, 1], got {self.ncm_beta}")
+            if self.ncm_label_classes < 0 or self.ncm_group_classes < 0:
+                raise ValueError("NCM class counts must be non-negative")
+            for name in ("ncm_future_weight", "ncm_label_weight",
+                         "ncm_group_weight"):
+                value = getattr(self, name)
+                if not math.isfinite(value) or value < 0.0:
+                    raise ValueError(f"{name} must be finite and non-negative")
         if self.num_bases < 1:
             raise ValueError("num_bases must be >= 1")
         if self.local_kernel < 1:
             raise ValueError("local_kernel must be >= 1")
         if self.decay_scale <= 0:
             raise ValueError(f"decay_scale must be positive, got {self.decay_scale}")
-        if getattr(self, "sgc_init_mode", "legacy") not in ("legacy", "logfreq",
-                                                            "hybrid"):
+        # P0-1（上游待修清单）：init_mode="linear" 已在 sgc.py 实现且有 10 项
+        # 守护测试，但这里的历史白名单漏了它，导致 SimplCoreConfig →
+        # SimplCoreModel 主路径无法启用频率网格修复。放行并保持默认 logfreq。
+        init_mode = getattr(self, "sgc_init_mode", "logfreq")
+        if init_mode not in ("legacy", "logfreq", "hybrid", "linear"):
             raise ValueError(
-                f"sgc_init_mode must be 'legacy' | 'logfreq' | 'hybrid', "
-                f"got {self.sgc_init_mode!r}")
+                f"sgc_init_mode must be 'legacy' | 'logfreq' | 'hybrid' | "
+                f"'linear', got {init_mode!r}")
+        if init_mode == "legacy":
+            # legacy 均匀网格存在不可修的代数公共零点，构造期
+            # _assert_no_common_zero 会显式抛 ValueError；在这里提前说明，
+            # 免得用户看到的是算子层的间接报错。
+            warnings.warn(
+                "sgc_init_mode='legacy' has an unfixable algebraic common "
+                "zero (kernel identically zero at tau=2M-1); mixer "
+                "construction will be rejected. Use 'logfreq' / 'linear' "
+                "/ 'hybrid'.", RuntimeWarning, stacklevel=2)
         rho_param = getattr(self, "sgc_rho_param", "sigmoid")
         if rho_param not in ("sigmoid", "logspace"):
             raise ValueError(
                 f"sgc_rho_param must be 'sigmoid' or 'logspace', "
                 f"got {rho_param!r}")
         if rho_param == "logspace" and self.mixer not in (
-                "sgc", "sgc-nogate", "sgc-nolocal", "sgc-r"):
+                "sgc", "sgc-nogate", "sgc-nolocal", "sgc-r", "snn-sgc"):
             # SRF / selective 的 SSM 复极点参数化不同；静默忽略会让配置
             # "看起来开了 logspace"却仍被 1e-6 夹住 —— 直接拒绝。
             raise ValueError(
                 "sgc_rho_param='logspace' 仅支持 SGC 家族 mixer "
-                f"(sgc/sgc-nogate/sgc-nolocal/sgc-r)，got {self.mixer!r}")
+                f"(sgc/sgc-nogate/sgc-nolocal/sgc-r/snn-sgc)，got {self.mixer!r}")
         if self.mixer == "sgc-r":
             groups = getattr(self, "sgc_route_groups", 4)
             topk = getattr(self, "sgc_route_topk", 2)
@@ -345,6 +399,10 @@ class SimplCoreConfig:
                     f"sgc_route_topk 必须在 [1, sgc_route_groups] 内，"
                     f"got {topk} (groups={groups})")
         if self.gate_ab:
+            if self.mixer == "snn-sgc":
+                raise ValueError(
+                    "mixer='snn-sgc' cannot be combined with gate_ab; "
+                    "the SNN mixer already wraps the SGC readout")
             # gate_ab 走 GatedSpectralConv2 的多头谱基（每 head 独立谱基），
             # 因此 dim 必须能被 num_heads 整除。
             if self.num_heads < 1:
@@ -354,6 +412,20 @@ class SimplCoreConfig:
                     "dim must be divisible by num_heads when gate_ab is enabled "
                     f"(dim={self.dim}, num_heads={self.num_heads}); "
                     "GatedSpectralConv2 splits the channel dim across heads")
+        if self.mixer == "snn-sgc":
+            if not math.isfinite(self.snn_decay) \
+                    or not 0.0 <= self.snn_decay < 1.0:
+                raise ValueError(
+                    f"snn_decay must be in [0, 1), got {self.snn_decay}")
+            if not math.isfinite(self.snn_threshold) \
+                    or self.snn_threshold <= 0.0:
+                raise ValueError(
+                    f"snn_threshold must be positive, got {self.snn_threshold}")
+            if not math.isfinite(self.snn_surrogate_slope) \
+                    or self.snn_surrogate_slope <= 0.0:
+                raise ValueError(
+                    "snn_surrogate_slope must be positive, "
+                    f"got {self.snn_surrogate_slope}")
         return self
 
 
@@ -560,6 +632,10 @@ def analytic_params(cfg: SimplCoreConfig) -> int:
     total += d                       # final RMSNorm (ln_f) weight
     if getattr(cfg, "use_memory", False):
         total += d * d               # CMT 记忆注入投影 (memory_in)
+    if getattr(cfg, "use_ncm", False):
+        total += 3 * d * cfg.ncm_dim  # 状态投影、回写投影、未来隐状态预测头
+        total += cfg.ncm_dim * (
+            cfg.ncm_label_classes + cfg.ncm_group_classes)
     return total
 
 

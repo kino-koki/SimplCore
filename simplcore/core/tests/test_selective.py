@@ -31,10 +31,11 @@ from simplcore.core.selective import (                              # noqa: E402
 D, M, G, K = 32, 8, 4, 4
 
 
-def _model(gate_ab=True, num_heads=G):
+def _model(gate_ab=True, num_heads=G, evidence_gate=False):
     torch.manual_seed(0)
     return GatedSpectralConv2(D, M, local_kernel=K, num_heads=num_heads,
-                              gate_ab=gate_ab).eval()
+                              gate_ab=gate_ab,
+                              evidence_gate=evidence_gate).eval()
 
 
 # ---------------------------------------------------------------------------
@@ -73,8 +74,8 @@ def test_dual_form_equivalence():
 # 3. O(1) 状态：字节数与 L 无关；多头与单头相同
 # ---------------------------------------------------------------------------
 def test_streaming_state_bytes_constant_and_head_invariant():
-    m_multi = _model(num_heads=G)
-    m_single = _model(num_heads=1)
+    m_multi = _model(num_heads=G, evidence_gate=True)
+    m_single = _model(num_heads=1, evidence_gate=True)
     b_multi_1 = m_multi.streaming_state_bytes(2)
     b_multi_2 = m_multi.streaming_state_bytes(2)  # 字节数与 L 无关（无 L 参数）
     assert b_multi_1 == b_multi_2

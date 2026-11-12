@@ -1,0 +1,33 @@
+[
+ {
+  "carrier": "explicit_tag",
+  "B_bits_per_ambiguous_token": 1,
+  "acc": 1.0,
+  "toeplitz": true,
+  "duality_error": 0.0,
+  "external_run_time_annotation": true,
+  "format_assumption": false,
+  "note": "1 bit per token; 1.0000 on all four layouts (5-seed CI)"
+ },
+ {
+  "carrier": "codebook_partition",
+  "B_bits_per_ambiguous_token": 1,
+  "acc": 1.0,
+  "toeplitz": true,
+  "duality_error": 2.892054960323659e-16,
+  "external_run_time_annotation": false,
+  "format_assumption": false,
+  "note": "bit folded into the id; no tag, no position rule; Toeplitz and FFT/IIR duality preserved"
+ },
+ {
+  "carrier": "position_format_prior",
+  "B_bits_per_ambiguous_token": 1,
+  "acc": 0.296875,
+  "toeplitz": true,
+  "duality_error": 0.0,
+  "external_run_time_annotation": false,
+  "format_assumption": true,
+  "effective_bits_under_filler": 0.0,
+  "note": "the bit lives in an assumption 'all keys at even positions'; arbitrary filler breaks it -> effective 0 bit -> 0.3438"
+ }
+]

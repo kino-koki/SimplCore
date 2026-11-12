@@ -1,0 +1,107 @@
+{
+ "v1": {
+  "L0_cos": 0.8191,
+  "L0_inj": 0.8459,
+  "L4_norm": 94825.38,
+  "L27_cos": 0.0518,
+  "L27_inj": 0.4413
+ },
+ "v3": {
+  "L0_cos": 0.9041,
+  "L0_inj": 0.9181,
+  "L4_norm": 78233.2,
+  "L27_cos": 0.2221,
+  "L27_inj": 0.4749
+ },
+ "v4": {
+  "L0_cos": 0.9205,
+  "L0_inj": 0.9263,
+  "L4_norm": 66264.5,
+  "L27_cos": 0.2484,
+  "L27_inj": 0.4553
+ },
+ "v5_full": {
+  "L0_cos": 0.7951,
+  "L0_inj": 0.767,
+  "L4_norm": 68993.53,
+  "L27_cos": -0.2445,
+  "L27_inj": 0.2398
+ },
+ "v4_plus_lowpass": {
+  "L0_cos": 0.9203,
+  "L0_inj": 0.9262,
+  "L4_norm": 66277.31,
+  "L27_cos": 0.2622,
+  "L27_inj": 0.4646
+ },
+ "generation_8token": {
+  "teacher": {
+   "text": "华为技术有限公司（Huawei Technologies Co",
+   "ids": [
+    104641,
+    99361,
+    103921,
+    9909,
+    81378,
+    37585,
+    24561,
+    3539
+   ],
+   "rep3": 0.0,
+   "zh_ratio": 0.2581,
+   "distinct": 8,
+   "has_replacement_char": false
+  },
+  "ck4_v4_best": {
+   "text": "\nOkay发现\n嗯发现宫\n",
+   "ids": [
+    198,
+    32313,
+    99879,
+    198,
+    106287,
+    99879,
+    99921,
+    198
+   ],
+   "rep3": 0.0,
+   "zh_ratio": 0.4615,
+   "distinct": 5,
+   "has_replacement_char": false
+  },
+  "ck5_v5_full": {
+   "text": "前置����OULDOULDOULD",
+   "ids": [
+    115489,
+    11534,
+    11534,
+    11534,
+    11534,
+    42906,
+    42906,
+    42906
+   ],
+   "rep3": 0.1667,
+   "zh_ratio": 0.1429,
+   "distinct": 3,
+   "has_replacement_char": true
+  },
+  "ck6_v4_plus_lowpass": {
+   "text": "一\n    二\n在\n",
+   "ids": [
+    14777,
+    198,
+    262,
+    220,
+    40820,
+    198,
+    18493,
+    198
+   ],
+   "rep3": 0.0,
+   "zh_ratio": 0.3,
+   "distinct": 6,
+   "has_replacement_char": false
+  }
+ }
+}

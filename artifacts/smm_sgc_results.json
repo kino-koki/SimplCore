@@ -1,0 +1,221 @@
+{
+ "mode": "analytic consistency checks; NO TRAINING; proofs are in smm_sgc.py",
+ "numpy_seed": 20261107,
+ "checks": [
+  {
+   "id": "CT6(i)",
+   "name": "pigeonhole instance is non-empty",
+   "kind": "ANALYTIC",
+   "verdict": "PASS",
+   "detail": {
+    "B_bytes": 56320,
+    "vocab": 64,
+    "L": 1000000,
+    "log2_histories": 6000000.0,
+    "log2_states": 450560,
+    "L_crit": 75093.3,
+    "note": "L=1e6 > L_crit => injectivity impossible; hypothesis satisfied"
+   }
+  },
+  {
+   "id": "CT6(ii)",
+   "name": "hard top-k gradient support frozen in S_k",
+   "kind": "ANALYTIC (finite identity)",
+   "verdict": "PASS",
+   "detail": {
+    "C": 4096,
+    "k": 4,
+    "tie_gap": 0.027475484915512438,
+    "locally_constant": true,
+    "unselected_delta_to_output": 0.0,
+    "selected_delta_to_output": 1.5224615156960806,
+    "note": "unselected C-k items contribute EXACTLY 0; selection Jacobian vanishes a.e. on the tie-free open set"
+   }
+  },
+  {
+   "id": "CT6(iii)",
+   "name": "softening re-triggers CT4 (kernel collision)",
+   "kind": "ANALYTIC (rank-nullity)",
+   "verdict": "PASS",
+   "detail": {
+    "C": 12,
+    "d": 8,
+    "rank": 8,
+    "kernel": 88,
+    "kernel_residual": 4.5239216104010685e-17,
+    "summary_collision": 5.975204854739844e-17,
+    "answer_changes": 0.5212201715232263,
+    "nonlinear_readout_identical": true,
+    "note": "THE non-trivial horn: differentiable + covering => loss of exactness"
+   }
+  },
+  {
+   "id": "CT7(a)",
+   "name": "false-commit <= alpha (coverage inequality)",
+   "kind": "ANALYTIC + ILLUSTRATION (not proof)",
+   "verdict": "PASS",
+   "detail": {
+    "alpha": 0.05,
+    "metrics": 3,
+    "union_bound": 0.15000000000000002,
+    "bonferroni_bound": 0.05,
+    "acceptance_implies_coverage_failure": true,
+    "mc_false_commit_rate": 0.0075,
+    "mc_trials": 400,
+    "mc_label": "ILLUSTRATION ONLY; the theorem follows from CI coverage, not from this simulation",
+    "premise_nonempty": "requires a NON-DEFAULT held-out verifier; with the default constant verifier the loop REFUSES writeback (source F6), so the gate is inactive but not contradicted"
+   }
+  },
+  {
+   "id": "CT7(b)",
+   "name": "information rate <= T*w*b, independent of L and C",
+   "kind": "ANALYTIC (data processing inequality)",
+   "verdict": "PASS",
+   "detail": {
+    "w": 8,
+    "b": 32,
+    "k": 4,
+    "sample_configs": 18,
+    "example_T1000_bound_bits": 256000,
+    "note": "L and C do not appear; only the k selected slots can influence a read (CT6(ii)). Long context buys retrieval, NOT learning rate."
+   }
+  },
+  {
+   "id": "CT5-L2",
+   "name": "deterministic zero-crosstalk code for arbitrary V",
+   "kind": "ANALYTIC (Sylvester principal submatrix)",
+   "verdict": "PASS",
+   "detail": {
+    "rows": [
+     {
+      "V": 3,
+      "R": 4,
+      "R_over_V": 1.333,
+      "gram_offdiag": 0.0,
+      "diag": 4.0,
+      "ok": true
+     },
+     {
+      "V": 5,
+      "R": 8,
+      "R_over_V": 1.6,
+      "gram_offdiag": 0.0,
+      "diag": 8.0,
+      "ok": true
+     },
+     {
+      "V": 7,
+      "R": 8,
+      "R_over_V": 1.143,
+      "gram_offdiag": 0.0,
+      "diag": 8.0,
+      "ok": true
+     },
+     {
+      "V": 64,
+      "R": 64,
+      "R_over_V": 1.0,
+      "gram_offdiag": 0.0,
+      "diag": 64.0,
+      "ok": true
+     },
+     {
+      "V": 65,
+      "R": 128,
+      "R_over_V": 1.969,
+      "gram_offdiag": 0.0,
+      "diag": 128.0,
+      "ok": true
+     },
+     {
+      "V": 100,
+      "R": 128,
+      "R_over_V": 1.28,
+      "gram_offdiag": 0.0,
+      "diag": 128.0,
+      "ok": true
+     },
+     {
+      "V": 1000,
+      "R": 1024,
+      "R_over_V": 1.024,
+      "gram_offdiag": 0.0,
+      "diag": 1024.0,
+      "ok": true
+     },
+     {
+      "V": 50000,
+      "R": 65536,
+      "R_over_V": 1.311,
+      "gram_offdiag": 0.0,
+      "diag": 65536.0,
+      "ok": true
+     },
+     {
+      "V": 151936,
+      "R": 262144,
+      "R_over_V": 1.725,
+      "gram_offdiag": 0.0,
+      "diag": 262144.0,
+      "ok": true
+     }
+    ],
+    "note": "V=151936 (real-scale vocabulary) -> R=262144, 1.725x. Upgrades P15a from conjecture to theorem."
+   }
+  },
+  {
+   "id": "NONVAC",
+   "name": "no new theorem has empty hypotheses",
+   "kind": "ANALYTIC",
+   "verdict": "PASS",
+   "detail": {
+    "instances": [
+     {
+      "theorem": "CT6",
+      "instance": "C=4096,k=4,L=1e6,topk+softmax,TSC state",
+      "satisfied": true,
+      "source": "F1,F2,F3,F4"
+     },
+     {
+      "theorem": "CT7(a)",
+      "instance": "non-default held-out verifier, m=3, alpha=.05, paired bootstrap, tolerance=0",
+      "satisfied": true,
+      "source": "F5,F6,F7,F8"
+     },
+     {
+      "theorem": "CT7(b)",
+      "instance": "w=8,b=32,k=4,T=1000",
+      "satisfied": true,
+      "source": "hard consolidation budgets"
+     },
+     {
+      "theorem": "CT5-L2",
+      "instance": "V=151936 -> R=262144",
+      "satisfied": true,
+      "source": "Sylvester construction"
+     }
+    ],
+    "note": "Reviewer point 4: explicitly rule out 'over-narrow premise => empty theorem'."
+   }
+  }
+ ],
+ "passed": 7,
+ "total": 7,
+ "consolidation": {
+  "core_theorems": 7,
+  "demoted_to_lemma": 7,
+  "withdrawn": 1,
+  "falsified": 3,
+  "new_hard_theorems": [
+   "CT6",
+   "CT7",
+   "CT5-L2"
+  ],
+  "conjecture_items": 4,
+  "conjectures_fully_proved": 1,
+  "conjectures_partially_resolved": 2,
+  "conjectures_still_open": 3,
+  "note": "P15a fully proved; P14/P15b partially resolved with an explicit remaining empirical part; P15c is an empirical claim and cannot be a theorem."
+ },
+ "disclaimer": "Monte-Carlo items are ILLUSTRATION only. No numerical run constitutes a proof. No measured accuracy is promoted to a theorem."
+}

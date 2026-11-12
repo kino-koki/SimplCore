@@ -25,9 +25,11 @@ MEM = CORE / "memory"
 # ---------------------------------------------------------------------------
 # 1. Java 平行实现的隔离
 # ---------------------------------------------------------------------------
-def test_java_tree_is_marked_non_normative() -> None:
+def test_java_tree_is_absent_or_marked_non_normative() -> None:
     # 2026-10 架构整改：Java 平行实现整体归档到 .archive/，物理移出工作主线。
     assert JAVA.parent == ROOT / ".archive", "Java 原型不得回到仓库工作主线"
+    if not JAVA.exists():
+        return
     text = (JAVA / "README.md").read_text(encoding="utf-8")
     assert "NON-NORMATIVE" in text
     assert "不参与 CI" in text
@@ -53,9 +55,12 @@ def test_product_line_never_imports_the_java_tree() -> None:
 
 
 def test_java_attention_remains_outside_python_product_line() -> None:
-    """Java 侧确实还有注意力类——这正是它必须被隔离的原因。"""
-    assert (JAVA / "src/main/java/com/qingxiaotuan/simpcore/components/"
-            "MultiHeadAttention.java").exists()
+    """若历史 Java 树保留，它必须在归档内；当前产品线不得包含 Java 实现。"""
+    if JAVA.exists():
+        assert (JAVA / "src/main/java/com/qingxiaotuan/simpcore/components/"
+                "MultiHeadAttention.java").exists()
+    else:
+        assert not list((ROOT / "simplcore").rglob("*.java"))
     from simplcore.core.purity import scan_source_attention_free
     assert scan_source_attention_free(ROOT / "simplcore") == []
 

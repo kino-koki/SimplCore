@@ -1,0 +1,315 @@
+"""从 results_verification.json 生成【证据分级版】论文骨架与台账。
+
+原则（用户口径）：只有已测试可复现的才写成结论；一切不可复现的统一按「猜想」写。
+"""
+import json, datetime
+
+V = json.load(open("results_verification.json"))
+rows = V["rows"]
+ok = [r for r in rows if r["status"] == "PASS"]
+cj = [r for r in rows if r["level"] == "C"]
+lv = {"R": "从代码重跑", "A": "解析重算", "S": "原始记录独立重算",
+      "N": "仅记录", "C": "猜想（未实测）"}
+
+# ---------------------------------------------------------------- 台账表
+lines = ["| ID | 级别 | 状态 | 主张 | 证据 / 说明 |", "|---|---|---|---|---|"]
+for r in rows:
+    d = r["detail"].replace("|", "\\|").replace("\n", " ")
+    c = r["claim"].replace("|", "\\|")
+    lines.append(f"| {r['id']} | {lv[r['level']]} | {r['status']} | {c} | {d[:200]} |")
+LEDGER = "\n".join(lines)
+
+# 猜想清单
+clines = ["| 编号 | 猜想内容（**未实测，不得写成结论**） | 来源 / 为何降级 |", "|---|---|---|"]
+for r in cj:
+    clines.append(f"| {r['id']} | {r['claim']} | {r['detail']} |")
+CONJ = "\n".join(clines)
+
+DOC = r"""# 频率网格正交性决定谱卷积模型的表征容量
+## —— 证据分级版（仅写可复现结论；不可复现项统一列为猜想）
+
+> **本版的写作纪律**：正文中每一条结论都必须能在 `verify_all.py` 一键复现中
+> 找到对应 PASS 项；**凡未由本文实测的主张，一律写入 §3「猜想」，不得写成事实**。
+> 依据：作者提供的未公开技术报告《SimplCore-0.1-α》（无 arXiv ID / DOI），
+> 以及本工作会话中真实运行产生的 `results_*.json`。
+> 复现验证运行日期：__RUN_DATE__；结果：**__N_OK__ 项 PASS / __N_FAIL__ 项 FAIL /
+> __N_CJ__ 项猜想**（`results_verification.json`）。
+
+---
+
+## 摘要
+
+本文用纯 NumPy 从零实现阻尼振荡基谱全局卷积（SGC）及其自动微分，并对每条主张
+做证据分级。__N_OK__ 项实测可复现的结论如下：FFT 整段形式与二阶 IIR 流式形式
+在数学上等价（显式 fp64 全流程相对误差 2.4e−14 ~ 3.4e−13），但 fp32 下**不逐位**
+且偏差随序列长度增长；严格因果只在 IIR 流式路径上逐位成立（过去输出最大绝对差 = 0），
+FFT 整段路径不保证；常驻状态精确等于 4(2MD+(K−1)D+1) 字节且在四个长度上逐字节一致；
+命题 5 误差界的「口径 B」在 64/64 个基上成立，未含 1/|sinθ| 因子的旧界被违反 36/64
+（最坏 15.4×）。
+
+本文的核心新发现是**频率网格的表征容量问题**：技术报告默认的对数频率网格
+（θ_min = π/8192）使 M 个基近乎线性相关，Gram 条件数达 1.35e36；改为线性均匀
+θ∈[0.3, π−0.3] 后条件数降至 3.97e3（改善约 3.4e32 倍）。在合成周期信号任务上，
+该纯网格改动以 72% 参数、一半训练步数显著优于同配置 Transformer
+（acc 0.9844 vs 0.8535，diff +0.1309，95% CI [+0.0996, +0.1621]；
+**该对照步数不等且 TS 侧未同等调参，结论受此限定，见 §5 / §6 B2**）。
+对照面上，MQAR 联想召回任务 Transformer 显著优于 SGC（0.3945 vs 0.3066，
+CI [−0.1367, −0.0391]），精确计数任务双方均停在 chance、不产生对照信息。
+解析账本给出本文配置下 1M 上下文 0.242 GiB 常驻状态 vs 34.3 GiB KV cache（约 7633×）。
+
+技术报告声称但本文**未实测**的 R1 绑定记忆、L0–L2 三层引用、1M 部署、端侧训练、
+大规模训练战役、hybrid 频率网格，以及本文若干结构性推论，全部集中列入 §3，
+**按猜想处理**。
+
+---
+
+## 1. 证据分级原则与总台账
+
+| 级别 | 含义 | 能否写成结论 |
+|---|---|---|
+| **R** | 本轮从代码重新运行算出，与原始记录一致 | ✅ 可以 |
+| **A** | 解析量 / 纯数学量，本轮重算一致 | ✅ 可以 |
+| **S** | 从原始 held-out `correct` 列表独立重算统计（bootstrap / 回归） | ✅ 可以，须标注口径 |
+| **N** | 仅原始记录在、重跑命令在，本轮未重训 | ⚠️ 只写「记录值」，不写「复现了」 |
+| **C** | 无实测支撑 | ❌ **统一按猜想写**，见 §3 |
+
+> ⚠️ **S 类的边界**：它是从原始记录**独立重算统计结论**，不是重新训练模型。
+> 训练类结果的原始 JSON 与重训脚本都在，但模型断点已清理、本轮未重训（见 §5）。
+
+### 1.1 完整台账（__N_TOTAL__ 项）
+
+__LEDGER__
+
+---
+
+## 2. 已验证结论（可写入论文正文）
+
+以下每条都带 `[Vxx]`，对应 `verify_all.py` 的 PASS 项与原始证据文件。
+
+### 2.1 算子与梯度
+
+- **[V01]** `sgc_mix` 反向传播经 fp64 有限差分检验，相对误差 u=1.67e−10、c=3.19e−10。
+- **[V02]** `selective_mix`（含遗忘门偏置的梯度）检验通过，worst < 1e−8。
+- **[V06]** 显式 fp64 全流程下 FFT 与 IIR 输出相对误差 2.43e−14 / 8.81e−14 / 3.40e−13（L=64/128/256），
+  直接证明两种形式**数学等价**；fp32 路径的 1e−5 ~ 1e−4 偏差确系浮点舍入。
+- **[V06b]** 实现注意点：`sgc_core` 的 `F32` 被用作**函数默认参数值**，定义时静态绑定；
+  切换模块变量不改变已绑定 dtype，做 fp64 对照必须显式传 `dtype=np.float64`。
+
+### 2.2 三条结构性质
+
+- **[V04][V05]** FFT 整段与 IIR 流式 fp32 下 4 个长度全部 `bitwise=False`；相对误差随 L 单调增长
+  （64→512：1.15e−5 → 2.18e−4 量级）。原始记录在 `results_structural.json:T1_duality`。
+  **表述纪律**：写「数学等价、fp32 不逐位」，不写「逐位一致」。
+- **[V07][V08]** 扰动未来 token 后，IIR 流式路径过去输出 `past_bitwise_identical=True`、
+  `max_past_abs_diff=0.0`；FFT 整段路径 `fft_path_bitwise_identical=False`。
+  **严格因果是递推实现的性质，不是训练路径的性质。**
+- **[V09]** 状态字节 = 4(2MD+(K−1)D+1)，在 L=1024 / 8192 / 65536 / 1000000 上
+  逐字节同为 **402,436 B**（D=768, M=64, K=4）。
+
+### 2.3 命题 5 误差界
+
+- **[V03]** θ_min=π/8192 对应 1/|sinθ| = 2607.5947。⚠️ 这是**按技术报告给定参数代入计算**，
+  属口径核对，不是独立验证，不作「吻合」证据。
+- **[V10]** 64 个基上，随 |ỹ| 重构的「口径 B」界违反 0/64；未含 1/|sinθ| 的旧界
+  违反 36/64、最坏 15.4×。裸 u（口径 A）不成立。
+
+### 2.4 频率网格正交性（本文主要贡献）
+
+- **[V11]** 默认 logfreq 网格（M=32, L=128）Gram 条件数 **1.35e36**，非对角余弦 0.9965 —— 基近乎线性相关。
+- **[V12]** 线性均匀 θ∈[0.3, π−0.3] 的 cond = **3.97e3**，改善约 3.4e32 倍。
+- **[V23]** `linear30` 在 `osc` 上的收敛曲线：250 步 0.8555 → 500 步 0.9199 → 750 步 0.9434 →
+  1000 步 0.9570 → 1250 步 0.9766 → 1500 步 0.9844。
+- **[V22]** 与 TS@3000 步 0.8535 的配对 bootstrap：diff **+0.1309**，95% CI **[+0.0996, +0.1621]**。
+  ⚠️ 步数不等，结论表述须带此限定（见 §6 B2）。
+
+### 2.5 能力对照
+
+从 512 个共用 held-out 样本的 `correct` 列表独立重算配对 bootstrap（4000 次）：
+
+| 任务 | SGC | TS | diff | 95% CI | 判定 | 证据 |
+|---|---|---|---|---|---|---|
+| MQAR G=4 | 0.3066 | **0.3945** | −0.0879 | [−0.1367, −0.0391] | **TS 显著优** | [V17] |
+| 聚合 L=65 | 1.0000 | 1.0000 | 0 | — | 打平 | [V19] |
+| 精确计数 | 0.5059 | 0.5059 | 0 | — | **无效行**（双方 near chance） | [V18] |
+| 短程 LM ppl | 8.364 | **7.770** | +7.6% | — | TS 优 | [V20] |
+| osc0 (ε=0) | **0.9941** | 0.9551 | +0.0391 | [+0.0215, +0.0586] | SGC 显著优 | [V21a] |
+| osc05 (ε=0.05) | **0.8887** | 0.8477 | +0.0410 | [+0.0039, +0.0762] | SGC 显著优 | [V21b] |
+| osc (ε=0.15) | 0.8379 | 0.8535 | −0.0156 | [−0.0527, +0.0215] | 噪声内 | [V21c] |
+
+- **[V25]** ρ_max 0.99→0.9999（记忆窗口 τ 99→9999）MQAR 0.1797→0.1426，**加长记忆无改善**。
+- **[V26]** selective 门控（多 9408 参数）2000 步 MQAR 0.2871，低于 LTI 基线 0.3066。
+- **[V24]** 随机基消融：osc0 300 步随机基 1.0000 vs 振荡基 0.8418。
+  ⚠️ 随机基破坏因果结构，**不是合法对照**；「成因是正交性而非振荡先验」属推论，见 §3 C12。
+
+### 2.6 成本（解析账本，非部署实测）
+
+- **[V13]** 本文配置（D=768 / 12 层 / M=64 / K=4 / V=32000 / bf16）下：
+  权重 0.238 GiB + O(1) 状态 4.61 MiB = **0.242 GiB @1M**；同规模 TS KV cache **34.3 GiB**；
+  KV/状态 ≈ **7633×**。这是**解析计算**，不是 1M 上下文的实际部署测量。
+- **[V15][V16]** 从 `results_throughput.json` 重算 log-log 斜率 **1.16 vs 2.09**（量级符合
+  O(L log L) / O(L²)）；L=2048 时 TS 慢 **4.96×**，交叉点约 L=512。
+  ⚠️ 原始 rows 混用 B=2（L≤1024）与 B=1（L=2048），斜率仅作量级参考（见 §6 B6）。
+
+- **[V27]** 技术报告引用逐条核对：46 项中 35 PASS，11 FAIL 全部在报告侧且已修订。
+
+---
+
+## 3. 猜想与未验证主张（**统一按猜想处理**）
+
+以下 __N_CJ__ 项**没有任何本文实测支撑**。正文中若提及，必须写「猜想 / 技术报告声称 /
+本文未验证」，**不得写成事实、不得进 Abstract 的结论句、不得作为后续推论的前提**。
+
+__CONJ__
+
+### 3.1 分类说明
+
+- **C01–C09** 来自技术报告的声称。它们是作者原文里的陈述，但**本文没有实现或运行**
+  对应模块/实验，因此在本文中只能是「技术报告声称，本文未验证」。
+  特别注意 C03（1.948 GiB / 1M→8M 增量为 0）与 C04（2GB 端侧训练成功）：
+  这两条在上一版曾被误写成「未验证/未运行」，现更正为「技术报告声称，本文未复现」。
+- **C10–C13** 是**本文自己的推论**。其中 C11 虽有 [V11][V12] 的 cond 实测支持，
+  但「近零 θ 同时导致容量塌缩」的因果链未做隔离实验；C12 的消融对照不合法（[V24]），
+  因此仍按猜想写。
+- **C14** 是 2026-11-04 被打断的半成品（TS 800 步 vs SGC 极点 300 步，双方近 chance），
+  文件已移入 `excluded/`，**不得进入论文或补充材料**。
+
+### 3.2 由猜想降级后，哪些原结论必须改写
+
+| 原表述 | 分级版表述 |
+|---|---|
+| 「修复后 MQAR 在噪声内追平 attention（72% 参数）」 | 「技术报告声称 R1 使 MQAR 追平，本文未实现该模块（C01，猜想）」 |
+| 「1M 上下文 1.948 GiB，KV/状态数量级差异」 | 「本文解析账本为 0.242 GiB vs 34.3 GiB（[V13]）；技术报告的 1.948 GiB 部署未复现（C03，猜想）」 |
+| 「R2 hybrid 网格把 cond 从 1e19 降到 1.4」 | 「技术报告声称 R2 达成该结果（C06，猜想）；本文只测了自己的线性网格 1e36→4e3（[V11][V12]）」 |
+| 「超过 attention 与非注意力约束互斥」 | 「本文结构性推论，未做判决性实验（C10，猜想）」 |
+| 「反超原因是基的正交性」 | 「实测显示正交性与性能同向变化；因果归因未隔离（C12，猜想）」 |
+
+---
+
+## 4. 一键复现验证
+
+```bash
+cd repro
+python verify_all.py            # 输出 results_verification.json + PASS/FAIL 表
+python audit_against_paper.py   # 技术报告引用逐条核对
+```
+
+**本轮实际运行结果**：__N_TOTAL__ 项，PASS __N_OK__ / FAIL __N_FAIL__ / 猜想 __N_CJ__。
+所有 R / A / S 级结论均由脚本**重新计算**（不是照抄 JSON）：
+gradcheck、fp64 双形式对偶、流式因果、四长度状态字节、64 基命题 5 口径、
+Gram 条件数、解析账本、吞吐斜率回归、7 组配对 bootstrap、收敛曲线。
+
+**环境**：纯 NumPy + SciPy，无 GPU / 无 PyTorch，2 核 CPU / 2 GB 内存沙盒；
+全部算子含手写自动微分。固定 `np.random.default_rng(0)` 等随机种子。
+
+**原始记录**：`results_structural.json`、`results_all.json`、`results_throughput.json`、
+`results_grid_chunk.json`、`results_grid_sweep.json`、`results_rho.json`、
+`results_selective.json`、`results_osc_ablation.json`、`results_citation_audit.json`
+全部保留，未删改。
+
+---
+
+## 5. 局限（必须连同结论一起读）
+
+1. **S 类不是重新训练**：训练类结果的模型断点已清理，本轮**未重训**；
+   统计结论是从原始 held-out `correct` 列表独立重算。重训命令见 `reproduce.sh`。
+2. **单 seed**：全部结论只有 seed 0；配对 bootstrap 仅含样本内方差，不含 seed 间方差，CI 偏窄。
+3. **步数 / 算力不等**：[V22] 是 SGC 1500 步 vs TS 3000 步，且 TS 侧未同等调参。
+4. **吞吐口径**：B=1 与 B=2 混在同一回归（[V15]）。
+5. **任务为合成任务**：`osc` 系列自造，未测真实语言 / 物理数据；随机基消融不合法（[V24]）。
+6. **规模**：D=48–56、2 层、5–8 万参数，与技术报告配置差两个数量级；绝对值不可直接比较。
+7. **未做的工作**：≥5 seed、等步数对照、平凡基线、合法消融、相关工作 DOI 核对、
+   固定 commit hash 与一键复现脚本（§6）。
+
+---
+
+## 6. 投稿前待补（本次未伪造任何数据）
+
+| # | 事项 | 状态 |
+|---|---|---|
+| B1 | ≥5 seed 重跑全部显著性判定，报 mean±std | ⬜ |
+| B2 | [V22] 补等步数（1500/1500、3000/3000）与等算力对照，TS 侧同等调参 | ⬜ |
+| B3 | `osc` 补平凡基线；排查 osc0 随机基 300 步即 1.0000 是否任务过易 / 泄漏 | ⬜ |
+| B4 | 补保持因果结构的替代基消融 + M 数量扫描 | ⬜ |
+| B5 | MQAR `linear30` 与默认网格补同一步数对照 | ⬜ |
+| B6 | 吞吐统一 batch 后重测斜率 | ⬜ |
+| B7 | 补相关工作（S4/S5/Hyena/Mamba/GLA、线性注意力、状态追踪 / TC⁰），逐条核 DOI | ⬜ |
+| D1 | 固定 commit hash；补 `requirements.txt` + 环境 / 超参表 | ⬜ |
+| D2 | 双盲匿名化；按目标年份 ICML CfP 核对 Generative AI 条款 | ⬜ |
+
+补不齐的项须在 Limitations 如实标注，**不得略去、不得升级为结论**。
+
+---
+
+## 7. 引用口径与 AI 使用声明
+
+### 7.1 引用口径
+
+技术报告《SimplCore-0.1-α》是**作者本人的未公开手稿，无 arXiv ID / DOI**。
+把它当「已发表论文」引用会触发幽灵文献风险。推荐处理（详见上一版修订报告 §16.5）：
+把架构定义、三条定理、命题 5、账本口径与 probe 协议**吸收进本文**，
+全文 `§X` 改为本文章节号；或先发 arXiv 预印本再引用。
+引用核对结果 [V27]：`audit_against_paper.py` 46 项中 35 PASS，
+11 FAIL 全部是报告侧的归因转述 / 伪吻合 / 漏项，已修订。
+
+### 7.2 AI 使用声明（中英文，投稿时填入工具名与版本）
+
+> **AI 使用声明**
+> 研究问题、架构猜想与模块设计均由作者提出。作者在实现阶段使用生成式 AI 工具
+> （名称 / 版本 / 访问日期：______），用于：① 核心算子与自动微分参考实现的编码辅助；
+> ② 实验脚本与统计绘图代码；③ 文稿初稿的语言组织。生成式 AI **未**用于确定研究问题、
+> 提出架构猜想、判断实验结论，亦未用于生成实验数据或参考文献。
+> 作者对 AI 生成的全部代码逐项复核：所有算子经 fp64 有限差分梯度检验，
+> 全部实验重新执行并留存原始结果，全部对技术报告的引用逐条核对。
+> 作者对论文全部内容承担完全责任。
+
+> **AI Usage Statement (EN)**
+> The research question, architectural hypotheses, and module designs were conceived by
+> the author. A generative AI tool (name/version/access date: ___) was used for
+> implementation assistance (operators and automatic differentiation), experimental
+> scripts and plotting code, and language organization of the draft. It was not used to
+> formulate hypotheses, draw conclusions, generate data, or produce references. All
+> AI-assisted code was reviewed; every operator passed fp64 finite-difference gradient
+> checks, all experiments were rerun with raw results archived, and every claim
+> attributed to the underlying technical report was verified against the source.
+> The author takes full responsibility for all content.
+
+**ICML 合规要点**：允许 LLM 辅助写作与研究；LLM 不得列为作者；作者对全部内容承担完全责任；
+禁止提示注入；方法实现相关的 AI 使用写在 experimental setup，纯拼写 / 语法 / 格式编辑无需声明。
+**请核对目标年份 CfP**（ICML 2026 已于 2026 年 7 月举行）。若同时用于学位论文，
+另需附《人工智能工具使用声明》并留存提示词、原始输入输出与多版本迭代记录。
+
+---
+
+## 附录：文件索引
+
+| 文件 | 用途 |
+|---|---|
+| `ICML_evidence_graded.md`（本文件） | **证据分级版论文骨架**：只写可复现结论，猜想集中 §3 |
+| `ICML_revised_report.md` | 上一版修订报告（22 处修订 + §16 核对），保留全部历史章节 |
+| `ICML_checklist.md` | 投稿核查清单（A/C 完成、B/D 待补） |
+| `results_verification.json` | 本轮一键验证的机器可读台账 |
+| `verify_all.py` | 一键复现验证脚本 |
+| `audit_against_paper.py` | 技术报告引用逐条核对 |
+| `results_citation_audit.json` | 引用核对结果 |
+| `excluded/` | 半成品实验，已排除出投稿材料 |
+| `reproduce.sh` | 训练类结果的重跑命令清单（本轮未重训） |
+| `README_ICML.md` | 整个修订包索引 |
+"""
+
+DOC = (DOC.replace("__RUN_DATE__", "2026-11-04")
+          .replace("__N_OK__", str(V["n_pass"]))
+          .replace("__N_FAIL__", str(V["n_fail"]))
+          .replace("__N_CJ__", str(len(cj)))
+          .replace("__N_TOTAL__", str(V["total"]))
+          .replace("__LEDGER__", LEDGER)
+          .replace("__CONJ__", CONJ))
+
+open("ICML_证据分级版.md", "w", encoding="utf-8").write(DOC)
+open("ICML_evidence_graded.md", "w", encoding="utf-8").write(DOC)
+open("证据分级台账.md", "w", encoding="utf-8").write(
+    "# 证据分级台账（由 verify_all.py 自动生成）\n\n"
+    f"运行日期 2026-11-04｜共 {V['total']} 项：PASS {V['n_pass']} / FAIL {V['n_fail']} / "
+    f"猜想 {len(cj)}\n\n" + LEDGER + "\n\n## 猜想清单（统一按猜想写）\n\n" + CONJ + "\n")
+print("已生成:")
+for f in ["ICML_证据分级版.md", "ICML_evidence_graded.md", "证据分级台账.md"]:
+    print("  ", f, len(open(f, encoding="utf-8").read().splitlines()), "行")

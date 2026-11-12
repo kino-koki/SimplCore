@@ -1,0 +1,187 @@
+{
+  "gate": {
+    "primary": false,
+    "secondary": false,
+    "regression_both_arms_bit_identical": true,
+    "gamma0_init_identical": true,
+    "gamma_gradcheck": true,
+    "all_invariants_pass": true,
+    "no_failed_run": true,
+    "ALL_PASS": false
+  },
+  "paired": [
+    {
+      "a": "H_isolated",
+      "b": "B_gated",
+      "n": 5,
+      "mean_diff": 0.002386,
+      "sd": 0.010675,
+      "ci95_normal": [
+        -0.006971,
+        0.011744
+      ],
+      "ci95_bootstrap": [
+        -0.004212,
+        0.012003
+      ],
+      "all_same_sign": false,
+      "significant_at_95": false,
+      "per_seed_diff": [
+        -0.001174,
+        0.020788,
+        -0.006899,
+        0.000811,
+        -0.001596
+      ]
+    },
+    {
+      "a": "H_isolated",
+      "b": "G_slotted",
+      "n": 5,
+      "mean_diff": -0.000367,
+      "sd": 0.00061,
+      "ci95_normal": [
+        -0.000902,
+        0.000167
+      ],
+      "ci95_bootstrap": [
+        -0.000821,
+        0.000138
+      ],
+      "all_same_sign": false,
+      "significant_at_95": false,
+      "per_seed_diff": [
+        -0.000649,
+        -0.000701,
+        0.000426,
+        -0.001028,
+        0.000115
+      ]
+    },
+    {
+      "a": "H_bigram",
+      "b": "B_gated",
+      "n": 5,
+      "mean_diff": -0.014442,
+      "sd": 0.024825,
+      "ci95_normal": [
+        -0.036202,
+        0.007318
+      ],
+      "ci95_bootstrap": [
+        -0.032396,
+        0.006665
+      ],
+      "all_same_sign": false,
+      "significant_at_95": false,
+      "per_seed_diff": [
+        -0.034177,
+        -0.025085,
+        0.023089,
+        -0.034271,
+        -0.001766
+      ]
+    },
+    {
+      "a": "H_bigram",
+      "b": "H_isolated",
+      "n": 5,
+      "mean_diff": -0.016828,
+      "sd": 0.031255,
+      "ci95_normal": [
+        -0.044225,
+        0.010568
+      ],
+      "ci95_bootstrap": [
+        -0.038982,
+        0.008838
+      ],
+      "all_same_sign": false,
+      "significant_at_95": false,
+      "per_seed_diff": [
+        -0.033002,
+        -0.045873,
+        0.029987,
+        -0.035082,
+        -0.000171
+      ]
+    },
+    {
+      "a": "G_slotted",
+      "b": "B_gated",
+      "n": 5,
+      "mean_diff": 0.002753,
+      "sd": 0.011001,
+      "ci95_normal": [
+        -0.00689,
+        0.012396
+      ],
+      "ci95_bootstrap": [
+        -0.004132,
+        0.012683
+      ],
+      "all_same_sign": false,
+      "significant_at_95": false,
+      "per_seed_diff": [
+        -0.000526,
+        0.021489,
+        -0.007325,
+        0.001839,
+        -0.001711
+      ]
+    }
+  ],
+  "regression": {
+    "B_gated": {
+      "step5": [
+        3.4373760808098077,
+        3.5039069872166606,
+        3.4439716540777217,
+        3.499681668148302,
+        3.4103689392036607
+      ],
+      "step6": [
+        3.4373760808098077,
+        3.5039069872166606,
+        3.4439716540777217,
+        3.499681668148302,
+        3.4103689392036607
+      ],
+      "bit_identical": true
+    },
+    "G_slotted": {
+      "step5": [
+        3.4368503901223093,
+        3.5253959605056164,
+        3.4366470359180474,
+        3.5015206760862494,
+        3.408658372754251
+      ],
+      "step6": [
+        3.4368503901223093,
+        3.5253959605056164,
+        3.4366470359180474,
+        3.5015206760862494,
+        3.408658372754251
+      ],
+      "bit_identical": true
+    }
+  },
+  "whitebox": {
+    "gamma0_forward_max_abs_diff": 0.0,
+    "raw_vs_bank_argmax_agreement": 1.0,
+    "raw_shape": [
+      1,
+      65,
+      65
+    ],
+    "raw_is_finite": true,
+    "gamma_analytic": -10.35066588337075,
+    "gamma_numeric": -10.35066588164213,
+    "gamma_rel_err": 8.350287902216368e-11,
+    "gamma_gradcheck_pass": true,
+    "bank_vs_bigram_top1_agreement": 0.415385
+  },
+  "wall_s": 158.03,
+  "result_file": "realtrain/results/step6_real.json"
+}

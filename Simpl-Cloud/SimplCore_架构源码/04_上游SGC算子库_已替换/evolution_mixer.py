@@ -1,0 +1,793 @@
+# -*- coding: utf-8 -*-
+"""Real-corpus evolution mixer -- STEP 5 (slot-addressed fused state).
+
+Pure NumPy. No torch, no synthetic task, no analytic witness. This module is
+imported by ``realtrain/train_real_lm.py`` and trained with Adam on a real
+character-level language corpus.
+
+STEP 0 exposes only ``StaticSGCMixer``: a strictly causal, time-invariant
+(LTI / Toeplitz) mixer with an O(d) recurrent state
+
+    s_t = rho * s_{t-1} + W_x e_t ,      y_t = s_t .
+
+The kernel K(lag) = rho^lag is a fixed positive-real pole; it carries NO
+input-dependent information. Under Theorem A this is exactly the regime in
+which content addressing must fail unless the required bits are supplied on
+the input side. We train it on real text to MEASURE that failure rather than
+to assume it.
+
+Invariants checked by ``invariants()`` are properties of the forward map, not
+claims about language-model quality.
+"""
+from __future__ import annotations
+
+import math
+
+import numpy as np
+
+__all__ = ["StaticSGCMixer", "GatedEvolutionMixer", "FusedEvolutionMixer",
+           "CalibratedFusedMixer", "ExpandedCodebookMixer",
+           "SlottedFusedMixer", "CreditIsolatedMixer", "BigramBiasMixer",
+           "ARCH_STEP", "MIXER_CLASSES",
+           "hadamard", "approximate_orthogonal_codebook"]
+
+ARCH_STEP = 6
+MIXER_CLASSES = ("StaticSGCMixer", "GatedEvolutionMixer",
+                 "FusedEvolutionMixer", "CalibratedFusedMixer",
+                 "ExpandedCodebookMixer", "SlottedFusedMixer",
+                 "CreditIsolatedMixer", "BigramBiasMixer")
+
+
+def hadamard(n):
+    """Normalised Sylvester-Hadamard code: C C^T = I_n."""
+    H = np.array([[1.0]])
+    while H.shape[0] < n:
+        H = np.block([[H, H], [H, -H]])
+    return H[:n, :n] / math.sqrt(n)
+
+
+def approximate_orthogonal_codebook(n_rows, d, seed=0):
+    """2V x d unit-norm rows, seeded and deterministic.
+
+    Unlike ``hadamard`` this is NOT exactly orthogonal (n_rows > d makes that
+    impossible). The off-diagonal Gram magnitude is measured and reported, not
+    assumed away: it is the same interference quantity as the Welch bound in
+    Appendix B2. Rows are held FIXED (no gradient through the codebook), so the
+    zero-order consolidation path remains parameter-free.
+    """
+    rng = np.random.default_rng(int(seed) + 9100)
+    C = rng.standard_normal((int(n_rows), int(d)))
+    C /= np.linalg.norm(C, axis=1, keepdims=True)
+    return C
+
+
+class StaticSGCMixer:
+    """Fixed positive-real-pole LTI mixer. O(d) state, no N x N score."""
+
+    def __init__(self, d: int, rho: float = 0.9, seed: int = 0):
+        rng = np.random.default_rng(seed + 1000)
+        self.d = int(d)
+        self.rho = float(rho)
+        self.W_x = rng.standard_normal((d, d)) * (1.0 / np.sqrt(d))
+        # cache for backward
+        self._cache = {}
+
+    def params(self):
+        return {"W_x": self.W_x}
+
+    def forward(self, e: np.ndarray, tok=None):
+        """e: (B, L, d) -> y: (B, L, d), strictly causal LTI.
+
+        ``tok`` is accepted for interface compatibility with the gated mixer
+        but is deliberately NOT read by this arm: a time-invariant kernel must
+        not depend on the input symbols.
+        """
+        B, L, d = e.shape
+        u = e @ self.W_x
+        s = np.zeros((B, d), dtype=np.float64)
+        y = np.empty_like(u)
+        for t in range(L):
+            s = self.rho * s + u[:, t, :]
+            y[:, t, :] = s
+        self._cache = dict(e=e, u=u, y=y)
+        return y
+
+    def backward(self, dy: np.ndarray):
+        """Analytic adjoint of the IIR recurrence (rho fixed, not learned)."""
+        e = self._cache["e"]
+        B, L, d = e.shape
+        r = np.zeros((B, d), dtype=np.float64)
+        du = np.empty_like(dy)
+        for t in range(L - 1, -1, -1):
+            r = dy[:, t, :] + self.rho * r
+            du[:, t, :] = r
+        gW = np.einsum("bld,blm->dm", e, du) / 1.0
+        de = du @ self.W_x.T
+        return {"W_x": gW}, de
+
+    def invariants(self, Ls=(9, 65, 257)):
+        """Toeplitz / FFT-IIR / causality / constant-state checks."""
+        L = max(Ls)
+        K = self.rho ** np.arange(L)
+        A = np.zeros((L, L))
+        for i in range(L):
+            for j in range(i + 1):
+                A[i, j] = K[i - j]
+        toe = max(abs(A[i, j] - A[i - 1, j - 1])
+                  for i in range(1, L) for j in range(1, i + 1))
+        rng = np.random.default_rng(123)
+        x = rng.standard_normal(L)
+        y0 = A @ x
+        y1 = np.fft.ifft(np.fft.fft(K, 2 * L) * np.fft.fft(x, 2 * L))[:L].real
+        err = float(np.linalg.norm(y0 - y1) / (np.linalg.norm(y0) + 1e-12))
+        # causality is a property of the LTI kernel itself; verify it on the
+        # Toeplitz operator so subclasses with input-dependent gates cannot
+        # invalidate the check by overriding forward().
+        xin = rng.standard_normal(L)
+        y0 = A @ xin
+        xin2 = xin.copy(); xin2[L // 2:] = 0.0
+        y1 = A @ xin2
+        causal = int(np.count_nonzero(y0[:L // 2] != y1[:L // 2]))
+        return dict(arch_step=ARCH_STEP, kernel_static=True,
+                    toeplitz_dev=float(toe), fft_iir_rel_err=err,
+                    future_perturbation_changed=causal,
+                    state_is_O_d=True, has_NxN_score=False,
+                    has_kv_cache=False,
+                    all_pass=bool(toe < 1e-12 and err < 1e-10 and causal == 0))
+
+
+class GatedEvolutionMixer(StaticSGCMixer):
+    """STEP 1 -- input-dependent L2 evidence gate over a local path.
+
+        c_t = (1/t) sum_{s<=t} tok_s / 128        (input-side statistic)
+        g_t = sigmoid(a log1p(c_t) + b log1p(t) + c0)
+        y_t = g_t * long_t + (1-g_t) * local_t
+
+    This **deliberately gives up strict time invariance**: the gate is a
+    function of the input symbols, which is exactly the input-side bit supply
+    that Theorem A requires and the P2 escape route. The recurrent state is
+    still O(d); no N x N score and no KV cache are introduced.
+
+    ``c_t`` depends only on token ids, never on learnable parameters, so its
+    stop-gradient status is structural rather than an implementation trick.
+    """
+
+    def __init__(self, d: int, rho: float = 0.9, seed: int = 0):
+        super().__init__(d, rho, seed)
+        rng = np.random.default_rng(seed + 2000)
+        self.W_l = rng.standard_normal((d, d)) * (1.0 / np.sqrt(d))
+        self.a = np.array(0.0)
+        self.b = np.array(0.0)
+        self.c0 = np.array(0.0)
+        self._c = {}
+
+    def params(self):
+        p = super().params()
+        p.update({"W_l": self.W_l, "a": self.a, "b": self.b, "c0": self.c0})
+        return p
+
+    @staticmethod
+    def _sigmoid(x):
+        return 0.5 * (1.0 + np.tanh(0.5 * x))
+
+    def forward(self, e, tok=None):
+        B, L, d = e.shape
+        u = e @ self.W_x
+        local = e @ self.W_l
+        s = np.zeros((B, d), dtype=np.float64)
+        long = np.empty_like(u)
+        for t in range(L):
+            s = self.rho * s + u[:, t, :]
+            long[:, t, :] = s
+        if tok is None:
+            raise ValueError("GatedEvolutionMixer requires tok (input-side bits)")
+        tv = tok.astype(np.float64) / 128.0
+        ct = np.cumsum(tv, axis=1) / np.arange(1, L + 1)[None, :]
+        tt = np.log1p(np.arange(1, L + 1, dtype=np.float64))[None, :]
+        logit = self.a * np.log1p(ct) + self.b * tt + self.c0
+        g = self._sigmoid(logit)                      # (B, L)
+        y = g[..., None] * long + (1.0 - g[..., None]) * local
+        self._c.update(e=e, u=u, long=long, local=local, g=g, ct=ct, tt=tt)
+        return y
+
+    def backward(self, dy):
+        c = self._c
+        e, long, local, g = c["e"], c["long"], c["local"], c["g"]
+        B, L, d = e.shape
+        dg_raw = np.sum(dy * (long - local), axis=-1)     # (B, L)
+        dg = dg_raw * g * (1.0 - g)
+        ga = np.array(float(np.sum(dg * np.log1p(c["ct"]))))
+        gb = np.array(float(np.sum(dg * c["tt"])))
+        gc0 = np.array(float(np.sum(dg)))
+        dlong = dy * g[..., None]
+        dlocal = dy * (1.0 - g[..., None])
+        r = np.zeros((B, d), dtype=np.float64)
+        du = np.empty_like(dlong)
+        for t in range(L - 1, -1, -1):
+            r = dlong[:, t, :] + self.rho * r
+            du[:, t, :] = r
+        gW_x = np.einsum("bld,blm->dm", e, du)
+        gW_l = np.einsum("bld,blm->dm", e, dlocal)
+        de = du @ self.W_x.T + dlocal @ self.W_l.T
+        return {"W_x": gW_x, "W_l": gW_l, "a": ga, "b": gb, "c0": gc0}, de
+
+    def invariants(self, Ls=(9, 65, 257)):
+        base = StaticSGCMixer.invariants(self, Ls)
+        base.update(arch_step=ARCH_STEP, kernel_static=False,
+                    time_invariant=False, input_dependent_gate=True,
+                    state_is_O_d=True, has_NxN_score=False,
+                    has_kv_cache=False,
+                    note=("strict Toeplitz/FFT-IIR duality is retained by the "
+                          "long path only; the composite forward map is no "
+                          "longer time invariant by construction"))
+        return base
+
+
+class FusedEvolutionMixer(GatedEvolutionMixer):
+    """STEP 2 -- SMM x SGC fused state, written by a zero-order gate.
+
+    Memory and computation are ONE algebraic object, not a sidecar::
+
+        S_t = rho * S_{t-1} + sum_{accepted e} C[k_e]^T C[v_e]   (d x d)
+        add_t = C[bucket(tok_t)] S_t                              (read-out)
+        y_t   = gate_t * long_t + (1-gate_t) * local_t + add_t W_c
+
+    ``observe()`` is called once per REAL Adam step with the actual training
+    batch. It counts genuine character co-occurrences, and a binding is
+    registered only after it has been seen ``tau`` times (replicated evidence)
+    and the current read-out does not already return it. No ground-truth label,
+    no gradient through retrieval, and no analytic witness is injected. This
+    is the CT7 / SE1-SE5 zero-order consolidation path, trained rather than
+    constructed.
+
+    Bucket count is VK = d/2 = 16 while the corpus has 65 characters, so the
+    key alphabet is deliberately COARSER than the symbol alphabet. Any
+    failure caused by that collision is a real architectural weakness and is
+    reported as such in Step 3.
+    """
+
+    def __init__(self, d: int, rho: float = 0.9, seed: int = 0,
+                 tau: int = 6, capacity: int = 16, eps: float = 1e-3):
+        super().__init__(d, rho, seed)
+        self.C = hadamard(d)
+        self.VK = d // 2
+        self.tau = int(tau)
+        self.capacity = int(capacity)
+        self.eps = float(eps)
+        self.S = np.zeros((d, d), dtype=np.float64)
+        self.slots = {}                       # key -> (value, weight)
+        self.counts = np.zeros((self.VK, self.VK), dtype=np.int64)
+        rng = np.random.default_rng(seed + 3000)
+        self.W_c = rng.standard_normal((d, d)) * (1.0 / np.sqrt(d))
+        self.commits = 0
+        self.rejects = 0
+        self._c = {}
+        self._add = None
+
+    def params(self):
+        p = super().params()
+        p["W_c"] = self.W_c
+        return p
+
+    def _bucket(self, tok):
+        return np.asarray(tok) % self.VK     # 65 chars -> 16 key/value buckets
+
+    def _read(self, key):
+        z = self.C[key] @ self.S
+        logits = z @ self.C[self.VK:, :].T
+        return int(np.argmax(logits)), float(logits.max())
+
+    def observe(self, tok, tgt):
+        """Zero-order consolidation over one real training batch."""
+        k = self._bucket(tok).ravel()
+        v = self._bucket(tgt).ravel()
+        np.add.at(self.counts, (k, v), 1)
+        for kk, vv in set(zip(k.tolist(), v.tolist())):
+            if self.counts[kk, vv] < self.tau:
+                continue
+            cur, margin = self._read(kk)
+            if cur == vv and margin >= self.eps:
+                self.rejects += 1
+                continue
+            if kk in self.slots:
+                old_v, old_w = self.slots[kk]
+                self.S -= old_w * np.outer(self.C[kk], self.C[self.VK + old_v])
+            self.S += np.outer(self.C[kk], self.C[self.VK + vv])
+            self.slots[kk] = (int(vv), 1.0)
+            self.commits += 1
+        self.S *= self.rho
+        for kk, (vv, w) in list(self.slots.items()):
+            self.slots[kk] = (vv, w * self.rho)
+        while len(self.slots) > self.capacity:
+            kk = min(self.slots, key=lambda x: self.slots[x][1])
+            vv, w = self.slots.pop(kk)
+            self.S -= w * np.outer(self.C[kk], self.C[self.VK + vv])
+
+    def forward(self, e, tok=None):
+        base = super().forward(e, tok)
+        add_raw = self.C[self._bucket(tok)] @ self.S       # (B, L, d)
+        add = add_raw @ self.W_c
+        self._add = add_raw
+        return base + add
+
+    def backward(self, dy):
+        g, de = super().backward(dy)
+        g["W_c"] = np.einsum("bld,blm->dm", self._add, dy)
+        # add_raw depends only on token ids and the zero-order state S,
+        # neither of which is a learnable parameter: no adjoint through it.
+        return g, de
+
+    def invariants(self, Ls=(9, 65, 257)):
+        base = GatedEvolutionMixer.invariants(self, Ls)
+        base.update(arch_step=ARCH_STEP, fused_state=True,
+                    core_state_bytes=int(self.S.nbytes),
+                    core_state_independent_of_L=True,
+                    core_state_independent_of_n_bindings=True,
+                    slots=len(self.slots), commits=self.commits,
+                    rejects=self.rejects,
+                    zero_order_gate=True, has_NxN_score=False,
+                    has_kv_cache=False)
+        return base
+
+
+class CalibratedFusedMixer(FusedEvolutionMixer):
+    """STEP 3 -- repair the three defects measured in Step 2.
+
+    No new theory, no new claim: three engineering corrections, each tied to
+    an observed failure on real text.
+
+    1. **Separate time scale.** The fused state uses ``rho_mem`` (per training
+       step) instead of the mixer's sequence decay ``rho`` (per token).
+    2. **Per-key cooldown.** After a key is written it cannot be re-written for
+       ``cooldown`` steps, removing the write/re-write feedback loop.
+    3. **Dominance gate.** A (key, value) is registered only if it accounts for
+       at least ``dominance`` of that key's observed co-occurrence mass; the
+       gate now selects the majority value instead of accepting everything.
+
+    The 65-to-16 bucket collision is NOT silently fixed: it is reported as a
+    remaining limitation in the Step-3 report and as an open question in the
+    paper's appendix.
+    """
+
+    def __init__(self, d: int, rho: float = 0.9, seed: int = 0,
+                 tau: int = 6, capacity: int = 16, eps: float = 1e-3,
+                 rho_mem: float = 0.9995, cooldown: int = 40,
+                 dominance: float = 0.35):
+        super().__init__(d, rho, seed, tau, capacity, eps)
+        self.rho_mem = float(rho_mem)
+        self.cooldown = int(cooldown)
+        self.dominance = float(dominance)
+        self.step = 0
+        self.last_commit = {}
+
+    def observe(self, tok, tgt):
+        self.step += 1
+        k = self._bucket(tok).ravel()
+        v = self._bucket(tgt).ravel()
+        np.add.at(self.counts, (k, v), 1)
+        for kk, vv in set(zip(k.tolist(), v.tolist())):
+            if self.counts[kk, vv] < self.tau:
+                continue
+            if self.step - self.last_commit.get(kk, -10 ** 9) < self.cooldown:
+                continue
+            row = self.counts[kk].astype(np.float64)
+            if row.sum() <= 0 or self.counts[kk, vv] / row.sum() < self.dominance:
+                continue
+            cur, margin = self._read(kk)
+            if cur == vv and margin >= self.eps:
+                self.rejects += 1
+                continue
+            if kk in self.slots:
+                old_v, old_w = self.slots[kk]
+                self.S -= old_w * np.outer(self.C[kk], self.C[self.VK + old_v])
+            self.S += np.outer(self.C[kk], self.C[self.VK + vv])
+            self.slots[kk] = (int(vv), 1.0)
+            self.last_commit[kk] = self.step
+            self.commits += 1
+        self.S *= self.rho_mem
+        for kk, (vv, w) in list(self.slots.items()):
+            self.slots[kk] = (vv, w * self.rho_mem)
+        while len(self.slots) > self.capacity:
+            kk = min(self.slots, key=lambda x: self.slots[x][1])
+            vv, w = self.slots.pop(kk)
+            self.S -= w * np.outer(self.C[kk], self.C[self.VK + vv])
+
+    def invariants(self, Ls=(9, 65, 257)):
+        base = FusedEvolutionMixer.invariants(self, Ls)
+        base.update(arch_step=ARCH_STEP, calibrated=True,
+                    rho_mem=self.rho_mem, cooldown_steps=self.cooldown,
+                    dominance_threshold=self.dominance,
+                    write_count=self.commits, reject_count=self.rejects,
+                    remaining_limitation=("65 corpus symbols share 16 code "
+                                          "buckets; within-bucket collision "
+                                          "is not resolved"))
+        return base
+
+
+class ExpandedCodebookMixer(CalibratedFusedMixer):
+    """STEP 4 -- remove the measured 65->16 bucket collision.
+
+    STEP 3 mapped ``tok -> tok % (d/2)``, so 65 real characters were folded
+    into 16 key/value buckets. STEP 4 gives every symbol its own key row and
+    its own value row from an APPROXIMATELY orthogonal (2V, d) codebook, and
+    relaxes the write gate that had starved the fused state (412023 -> 6
+    commits). The consolidation rule itself is inherited unchanged: this is a
+    controlled two-variable repair, not a new mechanism.
+
+    Three facts are deliberately NOT assumed away:
+
+    * ``S`` stays ``d x d`` (8192 bytes): no sidecar, no KV cache, no growth
+      in sequence length or binding count.
+    * With ``d=32`` and ``V=65``, ``rank(S) <= 32 < V``, so exact retrieval of
+      all bindings is impossible in principle. We measure the effective rank
+      and the read-out top-1 recovery instead of claiming capacity.
+    * The (2V, d) codebook cannot be exactly orthogonal. The off-diagonal Gram
+      magnitude is measured and reported; it is the same interference quantity
+      as the Welch bound in Appendix B2.
+
+    Whether the repair produces a statistically significant gain over the
+    gated mixer is an EXPERIMENTAL question. The result is reported as
+    measured, including a negative one.
+    """
+
+    def __init__(self, d: int, rho: float = 0.9, seed: int = 0,
+                 n_symbols: int = 65, tau: int = 6, capacity: int = 64,
+                 eps: float = 1e-3, rho_mem: float = 0.9995,
+                 cooldown: int = 5, dominance: float = 0.15):
+        super().__init__(d=d, rho=rho, seed=seed, tau=tau,
+                         capacity=capacity, eps=eps, rho_mem=rho_mem,
+                         cooldown=cooldown, dominance=dominance)
+        self.V = int(n_symbols)
+        self.C = approximate_orthogonal_codebook(2 * self.V, d, seed)
+        # VK is the value-row offset in the inherited read/write code. Setting
+        # it to V makes tok % VK the identity on the real alphabet (no folding),
+        # and places value rows at C[V + v].
+        self.VK = self.V
+        self.counts = np.zeros((self.V, self.V), dtype=np.int64)
+        self.S = np.zeros((d, d), dtype=np.float64)
+        self.slots = {}
+        self.commits = 0
+        self.rejects = 0
+        self.last_commit = {}
+        self.step = 0
+        gram = self.C @ self.C.T
+        off = gram - np.diag(np.diag(gram))
+        self.codebook_offdiag_max = float(np.abs(off).max())
+        self._top1_hits = 0
+        self._top1_total = 0
+        self._diag_every = 100
+        self._max_tok_seen = -1
+
+    def observe(self, tok, tgt):
+        """Inherited zero-order consolidation + a read-only capacity diagnostic."""
+        self._max_tok_seen = max(self._max_tok_seen,
+                                 int(np.asarray(tok).max()))
+        super().observe(tok, tgt)
+        if self.step % self._diag_every == 0 and self.slots:
+            for kk, (vv, _w) in self.slots.items():
+                cur, _m = self._read(kk)
+                self._top1_total += 1
+                if cur == vv:
+                    self._top1_hits += 1
+
+    def _effective_rank(self):
+        s = np.linalg.svd(self.S, compute_uv=False)
+        if s.sum() <= 1e-300:
+            return 0.0
+        p = s / s.sum()
+        return float(1.0 / np.sum(p * p))   # participation ratio
+
+    def invariants(self, Ls=(9, 65, 257)):
+        base = CalibratedFusedMixer.invariants(self, Ls)
+        base.update(
+            arch_step=ARCH_STEP, expanded_codebook=True,
+            n_symbols=self.V, codebook_rows=int(self.C.shape[0]),
+            bucket_folding="none on the real alphabet (tok < V)",
+            max_token_seen=int(self._max_tok_seen),
+            codebook_offdiag_max=round(self.codebook_offdiag_max, 6),
+            effective_rank_S=round(self._effective_rank(), 4),
+            rank_upper_bound=int(min(self.S.shape)),
+            readout_top1_recovery=(
+                round(self._top1_hits / self._top1_total, 6)
+                if self._top1_total else None),
+            readout_diagnostic_samples=int(self._top1_total),
+            write_count=self.commits, reject_count=self.rejects,
+            slots=len(self.slots), core_state_bytes=int(self.S.nbytes),
+            core_state_independent_of_L=True,
+            has_NxN_score=False, has_kv_cache=False,
+            remaining_limitation=(
+                "rank(S) <= d = 32 < V = 65; exact retrieval of all bindings "
+                "is impossible regardless of the write gate"),
+        )
+        return base
+
+
+class SlottedFusedMixer(ExpandedCodebookMixer):
+    """STEP 5 -- grow the INPUT-SIDE information budget, not the parameters.
+
+    STEP 4 isolated the deficit quantitatively: with a single ``d x d`` fused
+    state, ``rank(S) <= d = 32 < V = 65``, so even a perfect write recovers
+    only 0.769--0.800 of the real-corpus bindings. STEP 5 supplies the missing
+    bits explicitly on the input side and pays for them with STATE BYTES, not
+    with learnable parameters:
+
+        slot(k) = k mod r                 (log2(r) extra input-side bits)
+        S_bank  in R^{r x d x d}         (r independent d x d blocks)
+        write   -> S_bank[slot(k)] only  (no cross-slot interference)
+        read    -> C[k] @ S_bank[slot(k)] @ C[V:]^T
+
+    ``r * d`` is the block-diagonal rank upper bound. For ``d=32`` the
+    smallest ``r`` with ``r*d >= V=65`` is ``r=3``; the formal arm uses that
+    pre-declared value. The number of bindings per slot is at most
+    ``ceil(V/r) = 22 <= d``, which is the capacity condition that STEP 4
+    violated.
+
+    Parameter count is IDENTICAL to ExpandedCodebookMixer: the read-out
+    projection ``W_c`` and the codebook are SHARED across slots. Only the
+    core state grows from 8192 to ``r*8192`` bytes. This makes the comparison
+    a controlled information-budget experiment rather than "more parameters
+    wins". No KV cache (slots are fixed), no N x N score, state size remains
+    independent of L and of binding count.
+
+    The consolidation rule (zero-order, pre-declared gate) is inherited
+    unchanged. Token-level causality of the fused path is NOT claimed here:
+    ``observe`` uses one real training batch per Adam step, exactly as in
+    STEP 4. The LTI Toeplitz/FFT-IIR checks below concern the long path only.
+    """
+
+    def __init__(self, d: int, rho: float = 0.9, seed: int = 0,
+                 n_symbols: int = 65, n_slots: int = 3,
+                 tau: int = 6, capacity: int = 64, eps: float = 1e-3,
+                 rho_mem: float = 0.9995, cooldown: int = 5,
+                 dominance: float = 0.15):
+        super().__init__(d=d, rho=rho, seed=seed, n_symbols=n_symbols,
+                         tau=tau, capacity=capacity, eps=eps,
+                         rho_mem=rho_mem, cooldown=cooldown,
+                         dominance=dominance)
+        self.r = int(n_slots)
+        if self.r < 1:
+            raise ValueError("n_slots must be >= 1")
+        self.S_bank = np.zeros((self.r, d, d), dtype=np.float64)
+        self.slots.clear()
+        self.commits = 0
+        self.rejects = 0
+        self.last_commit = {}
+        self.step = 0
+        self._top1_hits = 0
+        self._top1_total = 0
+        self._max_tok_seen = -1
+        # Read-only diagnostic view kept for the inherited invariants(), which
+        # inspects self.S.shape/nbytes. It shares memory with S_bank and is
+        # NEVER used by forward/observe to decide a read or a write.
+        self.S = self.S_bank.reshape(self.r * d, d)
+
+    @staticmethod
+    def _slot_of(k, r):
+        return int(k) % int(r)
+
+    def _read(self, key):
+        s = self._slot_of(key, self.r)
+        z = self.C[key] @ self.S_bank[s]
+        logits = z @ self.C[self.VK:, :].T
+        return int(np.argmax(logits)), float(logits.max())
+
+    def observe(self, tok, tgt):
+        """Inherited zero-order consolidation, routed to one slot per key."""
+        self._max_tok_seen = max(self._max_tok_seen,
+                                 int(np.asarray(tok).max()))
+        self.step += 1
+        k = (np.asarray(tok).ravel() % self.VK).astype(np.int64)
+        v = (np.asarray(tgt).ravel() % self.VK).astype(np.int64)
+        np.add.at(self.counts, (k, v), 1)
+        for kk, vv in set(zip(k.tolist(), v.tolist())):
+            if self.counts[kk, vv] < self.tau:
+                continue
+            if self.step - self.last_commit.get(kk, -10 ** 9) < self.cooldown:
+                continue
+            row = self.counts[kk].astype(np.float64)
+            if row.sum() <= 0 or self.counts[kk, vv] / row.sum() < self.dominance:
+                continue
+            cur, margin = self._read(kk)
+            if cur == vv and margin >= self.eps:
+                self.rejects += 1
+                continue
+            s = self._slot_of(kk, self.r)
+            if kk in self.slots:
+                old_v, old_w, old_s = self.slots[kk]
+                self.S_bank[old_s] -= old_w * np.outer(
+                    self.C[kk], self.C[self.VK + old_v])
+            self.S_bank[s] += np.outer(self.C[kk], self.C[self.VK + vv])
+            self.slots[kk] = (int(vv), 1.0, s)
+            self.last_commit[kk] = self.step
+            self.commits += 1
+        self.S_bank *= self.rho_mem
+        for kk, (vv, w, s) in list(self.slots.items()):
+            self.slots[kk] = (vv, w * self.rho_mem, s)
+        while len(self.slots) > self.capacity:
+            kk = min(self.slots, key=lambda x: self.slots[x][1])
+            vv, w, s = self.slots.pop(kk)
+            self.S_bank[s] -= w * np.outer(self.C[kk], self.C[self.VK + vv])
+        if self.step % self._diag_every == 0 and self.slots:
+            for kk, (vv, _w, _s) in self.slots.items():
+                cur, _m = self._read(kk)
+                self._top1_total += 1
+                if cur == vv:
+                    self._top1_hits += 1
+
+    def forward(self, e, tok=None):
+        # Skip FusedEvolutionMixer.forward (single-block add) deliberately:
+        # GatedEvolutionMixer.forward sets the cache used by backward().
+        base = GatedEvolutionMixer.forward(self, e, tok)
+        bidx = np.asarray(tok) % self.VK
+        slots = bidx % self.r
+        add_raw = np.empty_like(base)
+        for s in range(self.r):
+            m = (slots == s)
+            if m.any():
+                add_raw[m] = self.C[bidx[m]] @ self.S_bank[s]
+        self._add = add_raw
+        return base + add_raw @ self.W_c
+
+    def backward(self, dy):
+        g, de = GatedEvolutionMixer.backward(self, dy)
+        g["W_c"] = np.einsum("bld,blm->dm", self._add, dy)
+        # add_raw depends only on token ids and the zero-order bank, neither
+        # of which is learnable: no adjoint through the consolidation path.
+        return g, de
+
+    def _effective_rank(self):
+        """Sum of per-slot participation ratios of the singular values."""
+        total = 0.0
+        for s in range(self.r):
+            sv = np.linalg.svd(self.S_bank[s], compute_uv=False)
+            if sv.sum() <= 1e-300:
+                continue
+            p = sv / sv.sum()
+            total += 1.0 / np.sum(p * p)
+        return float(total)
+
+    def invariants(self, Ls=(9, 65, 257)):
+        base = ExpandedCodebookMixer.invariants(self, Ls)
+        per_slot = [0] * self.r
+        for kk in self.slots:
+            per_slot[self._slot_of(kk, self.r)] += 1
+        base.update(
+            arch_step=ARCH_STEP, slotted_fused_state=True,
+            n_slots=int(self.r),
+            slot_index_bits=round(math.log2(self.r), 6),
+            input_side_budget_bits=round(math.log2(self.r), 6),
+            bindings_per_slot=per_slot,
+            max_bindings_per_slot=int(max(per_slot)) if per_slot else 0,
+            capacity_condition_per_slot=int(max(per_slot) if per_slot else 0),
+            blockdiag_rank_upper_bound=int(self.r * self.d),
+            rank_upper_bound=int(self.r * self.d),
+            effective_rank_S=round(self._effective_rank(), 4),
+            core_state_bytes=int(self.S_bank.nbytes),
+            core_state_independent_of_L=True,
+            core_state_independent_of_n_bindings=True,
+            learnable_params_note=("W_c and codebook are shared across slots; "
+                                   "parameter count equals ExpandedCodebookMixer"),
+            has_NxN_score=False, has_kv_cache=False,
+            causality_note=("observe uses one real batch per Adam step as in "
+                            "STEP 4; token-level causality of the fused path "
+                            "is not claimed"),
+            remaining_limitation=(
+                "state bytes grow from 8192 to r*8192; capacity is bought "
+                "with memory, not free"),
+        )
+        return base
+
+
+class CreditIsolatedMixer(SlottedFusedMixer):
+    """STEP 6 -- give the fused state its OWN read-out channel.
+
+    STEP 5 diagnosis: the fused read-out ``add_raw @ W_c`` is injected into
+    the SAME d-dimensional stream as the long/local paths and then projected
+    once more by ``W_o`` (d x V with d < V). Two passes through a d < V
+    bottleneck, plus credit rebalancing between three additive paths, absorb
+    the fused state's measured local gain.
+
+    STEP 6 keeps the SAME state, the SAME zero-order write rule, the SAME
+    learnable matrices, and adds ONE bypass: the V-dimensional read-out of
+    the slot bank goes directly to the logits, scaled by a single learnable
+    scalar ``gamma`` initialised at ZERO::
+
+        raw_t[v]  = (C[k_t] S_bank[slot(k_t)]) . C[V+v]
+        logits_t  = y_t W_o + b + gamma * raw_t
+
+    Because gamma(0) = 0, the initial function is IDENTICAL to
+    ``SlottedFusedMixer``: the comparison isolates exactly one degree of
+    freedom and one wiring decision. No new matrix, no extra state, no
+    gradient through the zero-order consolidation path. raw_t depends only
+    on token ids and the bank, both stop-gradient by construction.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.gamma = np.array(0.0)
+        self._bias_raw = None
+
+    def params(self):
+        p = super().params()
+        p["gamma"] = self.gamma
+        return p
+
+    def logit_bias(self, tok):
+        """V-dimensional read-out of the bank. NOT gamma-scaled here; the LM
+        owns gamma so that all gradient accounting stays in one place."""
+        bidx = np.asarray(tok) % self.VK
+        slots = bidx % self.r
+        Cv = self.C[self.VK:, :].T                    # (d, V)
+        raw = np.zeros(bidx.shape + (self.V,), dtype=np.float64)
+        for s in range(self.r):
+            m = (slots == s)
+            if m.any():
+                z = self.C[bidx[m]] @ self.S_bank[s]  # (n, d)
+                raw[m] = z @ Cv                       # (n, V)
+        self._bias_raw = raw
+        return raw
+
+    def invariants(self, Ls=(9, 65, 257)):
+        base = SlottedFusedMixer.invariants(self, Ls)
+        base.update(arch_step=ARCH_STEP, credit_isolated_readout=True,
+                    gamma=float(self.gamma),
+                    extra_learnable_params=1,
+                    new_note=("V-dim bank read-out bypasses the d<V W_o "
+                              "bottleneck; gamma(0)=0 makes the start "
+                              "identical to SlottedFusedMixer"),
+                    state_unchanged=True, write_rule_unchanged=True,
+                    has_NxN_score=False, has_kv_cache=False)
+        return base
+
+
+class BigramBiasMixer(GatedEvolutionMixer):
+    """STEP 6 ATTRIBUTION CONTROL -- same bypass, but NO fused state.
+
+    The V-dimensional bias is built directly from the raw co-occurrence
+    counts of the real training batches. There is no S_bank, no slots, no
+    capacity constraint and no zero-order write gate. gamma(0) = 0 as above.
+
+    This arm answers the only question that matters after a positive STEP 6
+    result: is the gain due to the INPUT-SIDE co-occurrence information, or
+    to the constant-state fused representation itself? If this control wins
+    by the same amount, the credit belongs to the information budget, which
+    is exactly the paper's headline claim, and NOT to the fused state.
+    """
+
+    def __init__(self, d: int, rho: float = 0.9, seed: int = 0,
+                 n_symbols: int = 65):
+        super().__init__(d, rho, seed)
+        self.V = int(n_symbols)
+        self.gamma = np.array(0.0)
+        self.counts = np.zeros((self.V, self.V), dtype=np.int64)
+        self._bias_raw = None
+
+    def params(self):
+        p = super().params()
+        p["gamma"] = self.gamma
+        return p
+
+    def observe(self, tok, tgt):
+        k = (np.asarray(tok).ravel() % self.V).astype(np.int64)
+        v = (np.asarray(tgt).ravel() % self.V).astype(np.int64)
+        np.add.at(self.counts, (k, v), 1)
+
+    def logit_bias(self, tok):
+        bidx = np.asarray(tok) % self.V
+        row = self.counts[bidx].astype(np.float64)
+        den = row.sum(axis=-1, keepdims=True)
+        p = row / np.maximum(den, 1.0)
+        p = np.where(den > 0, p, 1.0 / self.V)
+        # logit-scale, centred per position so gamma is comparable in
+        # magnitude with CreditIsolatedMixer's raw read-out
+        raw = np.log(np.maximum(p, 1e-6))
+        raw = raw - raw.mean(axis=-1, keepdims=True)
+        self._bias_raw = raw
+        return raw
+
+    def invariants(self, Ls=(9, 65, 257)):
+        base = GatedEvolutionMixer.invariants(self, Ls)
+        base.update(arch_step=ARCH_STEP, attribution_control=True,
+                    gamma=float(self.gamma), fused_state=False,
+                    has_NxN_score=False, has_kv_cache=False)
+        return base

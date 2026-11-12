@@ -115,6 +115,20 @@ def test_state_bytes_grow_with_batch() -> None:
     assert stream_state_bytes(cfg, batch=4) == 4 * stream_state_bytes(cfg, batch=1)
 
 
+def test_state_bytes_include_only_allocated_evidence_accumulators() -> None:
+    off = _sgc(evidence_gate=False)
+    on = _sgc(evidence_gate=True)
+    assert stream_state_bytes(on) - stream_state_bytes(off) == \
+        4 * on.num_layers
+
+
+def test_snn_stream_bytes_include_membrane_state() -> None:
+    cfg = _sgc(mixer="snn-sgc")
+    base = _sgc()
+    assert stream_state_bytes(cfg) - stream_state_bytes(base) == \
+        4 * cfg.num_layers * cfg.dim
+
+
 # ---------------------------------------------------------------------------
 # token / 算力预算
 # ---------------------------------------------------------------------------

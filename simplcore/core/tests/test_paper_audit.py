@@ -41,7 +41,7 @@ def test_honesty_note_marks_s7_as_speculation(rep) -> None:
 
 
 def test_kv_single_source_matches_longctx_claim(rep) -> None:
-    """KV 单一事实源 = 120 GiB（longctx_eval 同一口径），论文文本必须一致。"""
+    """KV 单一事实源 = 120 GiB（longctx_eval 同一口径），复现报告必须一致。"""
     c = {x["id"]: x for x in rep["checks"]}
     assert c["C06-kv-1m"]["actual"] == 120 * 2 ** 30
     assert c["C07-kv-paper-text"]["match"] is True

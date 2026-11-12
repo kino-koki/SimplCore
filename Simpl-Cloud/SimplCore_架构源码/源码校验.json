@@ -1,0 +1,11 @@
+{
+ "py_total": 42,
+ "compile_pass": 42,
+ "compile_fail": [],
+ "bom_files": [],
+ "missing_source": 0,
+ "missing_list": [],
+ "credential_excluded": [],
+ "absolute_path_hits": [],
+ "files_total": 43
+}

@@ -1,0 +1,777 @@
+{
+ "status": "trained layer x hop matrix, 5 seeds",
+ "claim": "With the inter-layer interface fixed to the codebook's own value->key swap M (shared, NOT a parameter), a stack whose ONLY learned weights are Wq and Wout -- both from random initialisation -- reproduces the analytic exactly-H-layer pattern. This closes v6.3's open optimisation gap without changing the static kernel, the O(1) state, or adding any N x N score / KV cache. It is an EXPERIMENT, not a theorem.",
+ "architecture": "M = C[V_K:,:]^T C[:V_K,:] is an algebraic object of the Sylvester-Hadamard dictionary. It is shared by all layers, so parameter count is INDEPENDENT of depth.",
+ "protocol": {
+  "steps": 400,
+  "lr": 0.02,
+  "batch": 64,
+  "d": 64,
+  "V": 64,
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "layers": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "hops": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "optimizer": "Adam",
+  "norm": "graph (fully differentiable)"
+ },
+ "rows": [
+  {
+   "hops": 1,
+   "layers": 1,
+   "seed": 0,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 1,
+   "seed": 1,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 1,
+   "seed": 2,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 1,
+   "seed": 3,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 1,
+   "seed": 4,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 2,
+   "seed": 0,
+   "acc": 0.029296875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 2,
+   "seed": 1,
+   "acc": 0.03125,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 2,
+   "seed": 2,
+   "acc": 0.0390625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 2,
+   "seed": 3,
+   "acc": 0.0390625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 2,
+   "seed": 4,
+   "acc": 0.037109375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 3,
+   "seed": 0,
+   "acc": 0.025390625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 3,
+   "seed": 1,
+   "acc": 0.03515625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 3,
+   "seed": 2,
+   "acc": 0.037109375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 3,
+   "seed": 3,
+   "acc": 0.03125,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 3,
+   "seed": 4,
+   "acc": 0.03515625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 4,
+   "seed": 0,
+   "acc": 0.046875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 4,
+   "seed": 1,
+   "acc": 0.029296875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 4,
+   "seed": 2,
+   "acc": 0.029296875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 4,
+   "seed": 3,
+   "acc": 0.025390625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 1,
+   "layers": 4,
+   "seed": 4,
+   "acc": 0.017578125,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 1,
+   "seed": 0,
+   "acc": 0.162109375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 1,
+   "seed": 1,
+   "acc": 0.15625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 1,
+   "seed": 2,
+   "acc": 0.169921875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 1,
+   "seed": 3,
+   "acc": 0.1484375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 1,
+   "seed": 4,
+   "acc": 0.14453125,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 2,
+   "seed": 0,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 2,
+   "seed": 1,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 2,
+   "seed": 2,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 2,
+   "seed": 3,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 2,
+   "seed": 4,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 3,
+   "seed": 0,
+   "acc": 0.033203125,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 3,
+   "seed": 1,
+   "acc": 0.015625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 3,
+   "seed": 2,
+   "acc": 0.037109375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 3,
+   "seed": 3,
+   "acc": 0.029296875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 3,
+   "seed": 4,
+   "acc": 0.033203125,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 4,
+   "seed": 0,
+   "acc": 0.021484375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 4,
+   "seed": 1,
+   "acc": 0.029296875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 4,
+   "seed": 2,
+   "acc": 0.02734375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 4,
+   "seed": 3,
+   "acc": 0.025390625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 2,
+   "layers": 4,
+   "seed": 4,
+   "acc": 0.025390625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 1,
+   "seed": 0,
+   "acc": 0.12109375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 1,
+   "seed": 1,
+   "acc": 0.1015625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 1,
+   "seed": 2,
+   "acc": 0.169921875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 1,
+   "seed": 3,
+   "acc": 0.1328125,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 1,
+   "seed": 4,
+   "acc": 0.154296875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 2,
+   "seed": 0,
+   "acc": 0.24609375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 2,
+   "seed": 1,
+   "acc": 0.283203125,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 2,
+   "seed": 2,
+   "acc": 0.28515625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 2,
+   "seed": 3,
+   "acc": 0.29296875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 2,
+   "seed": 4,
+   "acc": 0.25390625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 3,
+   "seed": 0,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 3,
+   "seed": 1,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 3,
+   "seed": 2,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 3,
+   "seed": 3,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 3,
+   "seed": 4,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 4,
+   "seed": 0,
+   "acc": 0.017578125,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 4,
+   "seed": 1,
+   "acc": 0.021484375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 4,
+   "seed": 2,
+   "acc": 0.02734375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 4,
+   "seed": 3,
+   "acc": 0.029296875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 3,
+   "layers": 4,
+   "seed": 4,
+   "acc": 0.01953125,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 1,
+   "seed": 0,
+   "acc": 0.169921875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 1,
+   "seed": 1,
+   "acc": 0.115234375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 1,
+   "seed": 2,
+   "acc": 0.169921875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 1,
+   "seed": 3,
+   "acc": 0.16015625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 1,
+   "seed": 4,
+   "acc": 0.123046875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 2,
+   "seed": 0,
+   "acc": 0.265625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 2,
+   "seed": 1,
+   "acc": 0.310546875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 2,
+   "seed": 2,
+   "acc": 0.25,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 2,
+   "seed": 3,
+   "acc": 0.248046875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 2,
+   "seed": 4,
+   "acc": 0.25390625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 3,
+   "seed": 0,
+   "acc": 0.451171875,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 3,
+   "seed": 1,
+   "acc": 0.443359375,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 3,
+   "seed": 2,
+   "acc": 0.431640625,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 3,
+   "seed": 3,
+   "acc": 0.39453125,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 3,
+   "seed": 4,
+   "acc": 0.408203125,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 4,
+   "seed": 0,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 4,
+   "seed": 1,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 4,
+   "seed": 2,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 4,
+   "seed": 3,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  },
+  {
+   "hops": 4,
+   "layers": 4,
+   "seed": 4,
+   "acc": 1.0,
+   "params": 6144,
+   "steps": 400
+  }
+ ],
+ "grid": [
+  {
+   "hops": 1,
+   "cells": [
+    {
+     "mean": 1.0,
+     "sd": 0.0,
+     "n": 5
+    },
+    {
+     "mean": 0.03515625,
+     "sd": 0.004096909563164655,
+     "n": 5
+    },
+    {
+     "mean": 0.0328125,
+     "sd": 0.004170733692199731,
+     "n": 5
+    },
+    {
+     "mean": 0.0296875,
+     "sd": 0.009600160724566022,
+     "n": 5
+    }
+   ]
+  },
+  {
+   "hops": 2,
+   "cells": [
+    {
+     "mean": 0.15625,
+     "sd": 0.009160968280905136,
+     "n": 5
+    },
+    {
+     "mean": 1.0,
+     "sd": 0.0,
+     "n": 5
+    },
+    {
+     "mean": 0.0296875,
+     "sd": 0.007452650011069889,
+     "n": 5
+    },
+    {
+     "mean": 0.02578125,
+     "sd": 0.002591113117465156,
+     "n": 5
+    }
+   ]
+  },
+  {
+   "hops": 3,
+   "cells": [
+    {
+     "mean": 0.1359375,
+     "sd": 0.02409874502372997,
+     "n": 5
+    },
+    {
+     "mean": 0.272265625,
+     "sd": 0.01863571944043213,
+     "n": 5
+    },
+    {
+     "mean": 1.0,
+     "sd": 0.0,
+     "n": 5
+    },
+    {
+     "mean": 0.023046875,
+     "sd": 0.004521811290152432,
+     "n": 5
+    }
+   ]
+  },
+  {
+   "hops": 4,
+   "cells": [
+    {
+     "mean": 0.14765625,
+     "sd": 0.023683603736287688,
+     "n": 5
+    },
+    {
+     "mean": 0.265625,
+     "sd": 0.023274170484009735,
+     "n": 5
+    },
+    {
+     "mean": 0.42578125,
+     "sd": 0.021323975099931534,
+     "n": 5
+    },
+    {
+     "mean": 1.0,
+     "sd": 0.0,
+     "n": 5
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "tap_mentions": 0,
+ "p_mentions": 101,
+ "theorem_b_mentions": 5,
+ "conflicts": [
+  "Theorem A's premises and the supporting propositions BOTH use the P1-P8 namespace; e.g. 'P5: two accuracy notions' and 'P5 (state order)' occur in the same section.",
+  "'Theorem B' denotes both Result 2 (two structural bounds) and the earlier state-order statement said to be folded into A(e)."
+ ],
+ "namespace_unique": false,
+ "rule": "TAP1-TAP5 reserved for Theorem A premises; P1-P8 reserved for supporting propositions; no headline label 'Theorem B'."
+}

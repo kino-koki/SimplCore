@@ -1,0 +1,26 @@
+{
+ "corollary": "R2",
+ "checks": {
+  "(a)_no_gate_all_layouts": true,
+  "(d)_extra_parity_gate_strictly_harmful": true,
+  "(f)_codebook_matches_v51_tag": true,
+  "(c)_grid_diagonal_exactly_one": true,
+  "(c)_grid_off_diagonal_at_most_chance": true,
+  "paired_CI_alternating_excludes_zero": true,
+  "duplicate_keys_degrade": true,
+  "precision_all_pass": true,
+  "(e)_conservation_all_pass": true,
+  "(e)_no_side_channel_no_position_gate": true,
+  "(e)_o1_state_and_scaling": true,
+  "(vi)_fwht_all_scales": true,
+  "(vi)_qwen3_scale_fwht": true,
+  "adjudication_all_pass": true,
+  "statement_has_full_proof": true,
+  "statement_has_boundary": true,
+  "non_vacuous_instance": true
+ },
+ "n_checks": 17,
+ "n_pass": 17,
+ "all_pass": true,
+ "note": "Checks certify witness agreement and statement formation; the proof is analytic. R2 is a premise relaxation of NT31, not a new headline theorem or ledger item."
+}

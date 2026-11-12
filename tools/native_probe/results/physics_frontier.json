@@ -1,0 +1,91 @@
+{
+ "lengths": [
+  4097,
+  8193,
+  16385
+ ],
+ "acc": {
+  "rho0.995_fp16": {
+   "L4097": 0.5,
+   "L8193": 0.25,
+   "L16385": 0.25
+  },
+  "rho0.995_fp32": {
+   "L4097": 0.875,
+   "L8193": 0.5,
+   "L16385": 0.5
+  },
+  "rho0.999_fp16": {
+   "L4097": 1.0,
+   "L8193": 0.5,
+   "L16385": 0.625
+  },
+  "rho0.999_fp32": {
+   "L4097": 1.0,
+   "L8193": 1.0,
+   "L16385": 1.0
+  },
+  "rho0.9999_fp16": {
+   "L4097": 1.0,
+   "L8193": 1.0,
+   "L16385": 0.125
+  },
+  "rho0.9999_fp32": {
+   "L4097": 1.0,
+   "L8193": 1.0,
+   "L16385": 1.0
+  },
+  "rho1.0_fp16": {
+   "L4097": 1.0,
+   "L8193": 1.0,
+   "L16385": 0.125
+  },
+  "rho1.0_fp32": {
+   "L4097": 1.0,
+   "L8193": 1.0,
+   "L16385": 1.0
+  }
+ },
+ "guards": {
+  "rho0.995": {
+   "toeplitz": true,
+   "rel_fft": 5.754500650551e-16,
+   "rel_iir": 5.754500650551e-16,
+   "strict_causality": true,
+   "state_independent_of_L": true,
+   "state_bytes": 56320,
+   "BIBO_stable": true,
+   "all_passed": true
+  },
+  "rho0.999": {
+   "toeplitz": true,
+   "rel_fft": 5.451754464557831e-16,
+   "rel_iir": 7.269005952743774e-16,
+   "strict_causality": true,
+   "state_independent_of_L": true,
+   "state_bytes": 56320,
+   "BIBO_stable": true,
+   "all_passed": true
+  },
+  "rho0.9999": {
+   "toeplitz": true,
+   "rel_fft": 6.285591496208797e-16,
+   "rel_iir": 8.081474780839883e-16,
+   "strict_causality": true,
+   "state_independent_of_L": true,
+   "state_bytes": 56320,
+   "BIBO_stable": true,
+   "all_passed": true
+  },
+  "rho1.0": {
+   "toeplitz": true,
+   "rel_fft": 5.380620325441764e-16,
+   "rel_iir": 8.967700542402942e-16,
+   "strict_causality": true,
+   "state_independent_of_L": true,
+   "state_bytes": 56320,
+   "BIBO_stable": false,
+   "all_passed": true
+  }
+ }
+}

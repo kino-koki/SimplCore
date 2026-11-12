@@ -85,7 +85,8 @@ from .probes import (AssociativeRecallTask, IntervalRecallTask, ProbeNet, ProbeT
 from .bench import (MIXER_KINDS, _cfg_from_base, _fit_quality, _flatten_scaling,
                     _measure_phase, _measure_training_step, _median,
                     _reduce_latency, _slope_loglog, _sync, bench_streaming,
-                    bench_throughput, compare_mixers)
+                    bench_throughput, compare_mixers,
+                    compare_snn_sgc_training)
 
 __all__ = [
     "evaluate_lm",
@@ -98,6 +99,7 @@ __all__ = [
     "bench_throughput",
     "bench_streaming",
     "compare_mixers",
+    "compare_snn_sgc_training",
     "tensor_peak_bytes",
     "assert_memory_probe_works",
     "make_report",

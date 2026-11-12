@@ -1,0 +1,246 @@
+{
+ "total": 44,
+ "passed": 44,
+ "failed": 0,
+ "whitelist_size": 15,
+ "ids_used": [
+  "2006.16236",
+  "2111.00396",
+  "2208.04933",
+  "2302.10866",
+  "2305.13048",
+  "2307.02486",
+  "2312.00752",
+  "2312.04927",
+  "2312.06635",
+  "2402.01032",
+  "2403.19887",
+  "2404.08819",
+  "2405.21060",
+  "2406.06484",
+  "2407.04620"
+ ],
+ "stray_ids": [],
+ "checks": [
+  {
+   "name": "摘要不含「超越 Transformer」",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "摘要不含「替代注意力」",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "摘要不含「唯一成本可行」",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "摘要不含「等效 4–7B」",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "标题不含「替代注意力」",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "摘要无 [C] 标记",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "结论无 [C] 标记",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "无未核实 arXiv ID（白名单外为 0）",
+   "passed": true,
+   "detail": "15 个已核实 ID"
+  },
+  {
+   "name": "无 doi.org / 10.xxxx 形式",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "明确不主张首次发现且禁用语仅出现在列举段",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "B1 不再标为观察性命题",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "B1 标为严格证明",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "B1 含可加分离与矛盾式",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "B1 适用范围已写明",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "B1.1 明确标为非定理",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "B4 已标为引理 + 严格证明",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "B4 注明已知来源 S5/Mamba",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "B2/B3 明确不是定理",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "0.2484 略高于 0.2476 的估计量说明保留",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "理论文档路径已挂",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "B1 数值注脚路径已挂",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "§8 已含统一分类表的已核实条目",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "§8 明确「不是实验结果表」",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "§8 明确定量对标缺口",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "相关工作文档路径已挂",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "7.3(12) 标为文献已核实",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "附录 C 形式化标为部分完成",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "附录 C 新增定量对标 P0 行",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "附录 C 仍标不宜投稿",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "证据等级 [R] 已定义并使用",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "证据等级 [E] 已定义并使用",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "证据等级 [A] 已定义并使用",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "证据等级 [C] 已定义并使用",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "含 AI 使用声明模板",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "fp32 无条件逐位已撤回",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "归档路径自洽",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 0.2484/0.2476 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 0.5430/0.4478 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 10.817/10.217 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 0.8672/1.0000 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 1.92/1.04 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 0.9720/17.67 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 1.948/120 GiB 均在稿内",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "数字对 0.1094/0.1575 均在稿内",
+   "passed": true,
+   "detail": ""
+  }
+ ]
+}

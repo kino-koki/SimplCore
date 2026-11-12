@@ -1,0 +1,41 @@
+{
+ "checks": {
+  "codebook_1_on_all_layouts": true,
+  "no_role_gate_needed": true,
+  "extra_parity_gate_is_HARMFUL": true,
+  "matches_v51_tag_without_sidechannel": true,
+  "grid_diagonal_exactly_one": true,
+  "grid_off_diagonal_at_most_chance": true,
+  "paired_CI_excludes_zero": true,
+  "paired_gapped_CI_excludes_zero": true,
+  "duplicate_keys_break_uniqueness": true,
+  "precision_all_pass": true,
+  "conservation_all_pass": true,
+  "no_external_side_channel": true,
+  "o1_state_and_scaling": true,
+  "fwht_all_pass": true
+ },
+ "all_pass": true,
+ "witnesses": {
+  "codebook_by_layout": [
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "flat_no_role_gapped": 0.9609375,
+  "flat_explicit_tag_gapped": 1.0,
+  "paired_alternating": 0.137890625,
+  "paired_alternating_ci": [
+   0.132421875,
+   0.147265625
+  ],
+  "paired_gapped": 0.0265625,
+  "paired_gapped_ci": [
+   0.02109375,
+   0.03282226562499986
+  ],
+  "duplicate": 0.94140625
+ },
+ "note": "The role distinction is now INTRINSIC to the token id (two orthogonal halves of SGC's own codebook), so no external tag, no absolute-position gate and no format prior are needed. Lemma R1 is NOT overturned: this construction escapes it through the exact route R1 SCOPE (iii) leaves open -- changing the INPUT ENCODING, not the layer interface. NT31 H5 is correspondingly relaxed; its conclusion is unchanged."
+}

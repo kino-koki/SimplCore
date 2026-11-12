@@ -1,0 +1,18 @@
+{
+  "stream_chat": {
+    "rc": 0,
+    "out": "PROMPT: 'Q: Who goes there?\\\\nA:'\n Det for in the intainst of in the can than would my thee pates of tright?\nA:\nWhat say a m\n------------------------------------------------------------\n",
+    "err": ""
+  },
+  "contract_check": {
+    "rc": 0,
+    "out": "[contract] expected=16 emitted=15 missing=[] unexpected=[] tied=True train_hits=7 sgc_hits=7 PASS=True\n",
+    "err": ""
+  },
+  "verify_final_fast": {
+    "rc": 0,
+    "out": "[load] trained model {'V': 65, 'd': 64, 'layers': 3, 'W': 12, 'rhos': [0.6, 0.9, 0.99], 'lam': 0.9, 'seed': 0, 'maxL': 512, 'n_qa': 905}\n C1 {'max_abs_diff': 8.881784197001252e-15, 'passed': True}\n C2 {'max_abs_diff': 0.0, 'passed': True}\n C3 {'max_abs_diff': 8.881784197001252e-16, 'passed': True}\n C4/C5 worst 7.105427357601002e-15 constant True\n C6 True\n C7 True 1.185474\n C8 True mean_rwr 0.8351\n C9 {'max_abs_diff': 2.4147350785597155e-15, 'passed': True}\n[verify] 10 / 10 ALL_PASS\n",
+    "err": ""
+  },
+  "all_pass": true
+}

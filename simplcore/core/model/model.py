@@ -11,7 +11,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .config import SimplCoreConfig
-from ..arch.sgc import SGCStreamState, make_norm
+from ..arch.sgc import SGCStreamState, make_norm, recurrent_dtype
 from ..arch.selective import GatedSpectralConv2
 from ..arch.abstain import AbstentionHead
 
@@ -113,6 +113,176 @@ def _make_block_for_config(config: SimplCoreConfig, layer_idx: int) -> "SimplCor
     return SimplCoreBlock(config, layer_idx)
 
 
+class ConceptState(nn.Module):
+    """NCM recurrence and optional causal next-concept prediction heads.
+
+    It is intentionally separate from the core SGC/SNN token stream: the token
+    model remains the primary predictor, while per-session concept state provides
+    a causal latent path without storing batch state on the module.
+    """
+
+    def __init__(self, dim: int, concept_dim: int, alpha: float = 0.15,
+                 beta: float = 0.7, label_classes: int = 0,
+                 group_classes: int = 0) -> None:
+        super().__init__()
+        self.dim = int(dim)
+        self.concept_dim = int(concept_dim)
+        self.alpha = float(alpha)
+        self.beta = float(beta)
+        self.proj = nn.Linear(dim, concept_dim, bias=False)
+        self.out = nn.Linear(concept_dim, dim, bias=False)
+        self.future_predictor = nn.Linear(concept_dim, dim, bias=False)
+        self.label_predictor = (
+            nn.Linear(concept_dim, label_classes, bias=False)
+            if label_classes > 0 else None)
+        self.group_predictor = (
+            nn.Linear(concept_dim, group_classes, bias=False)
+            if group_classes > 0 else None)
+
+    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict,
+                              missing_keys, unexpected_keys, error_msgs):
+        future_key = prefix + "future_predictor.weight"
+        if future_key not in state_dict:
+            state_dict[future_key] = self.future_predictor.weight.detach()
+        super()._load_from_state_dict(
+            state_dict, prefix, local_metadata, strict,
+            missing_keys, unexpected_keys, error_msgs)
+
+    def init_state(self, batch: int, device: torch.device,
+                   dtype: torch.dtype) -> torch.Tensor:
+        return torch.zeros(
+            batch, self.concept_dim, device=device,
+            dtype=recurrent_dtype(dtype))
+
+    def step(self, x: torch.Tensor, state: torch.Tensor,
+             collect_predictions: bool = False
+             ) -> Tuple[torch.Tensor, torch.Tensor, Dict[str, torch.Tensor]]:
+        if x.dim() == 3:
+            if x.shape[1] != 1:
+                raise ValueError("ConceptState.step expects one token per batch")
+            x = x[:, 0]
+        if x.dim() != 2 or x.shape[-1] != self.dim:
+            raise ValueError(f"ConceptState input must have shape (batch, {self.dim})")
+        if state.shape != (x.shape[0], self.concept_dim):
+            raise ValueError(
+                f"ConceptState state must have shape "
+                f"({x.shape[0]}, {self.concept_dim})"
+            )
+        predictions: Dict[str, torch.Tensor] = {}
+        if collect_predictions:
+            predictions["future_latent"] = self.future_predictor(state.to(
+                device=x.device, dtype=x.dtype))
+            if self.label_predictor is not None:
+                predictions["concept_labels"] = self.label_predictor(
+                    state.to(device=x.device, dtype=x.dtype))
+            if self.group_predictor is not None:
+                predictions["token_groups"] = self.group_predictor(
+                    state.to(device=x.device, dtype=x.dtype))
+        concept = self.proj(x)
+        state_dtype = recurrent_dtype(concept.dtype)
+        updated = (1.0 - self.alpha) * state.to(
+            device=x.device, dtype=state_dtype
+        ) + self.alpha * concept.to(state_dtype)
+        output = self.out(updated.to(dtype=concept.dtype))
+        return output, updated, predictions
+
+    def forward_sequence(self, x: torch.Tensor,
+                         state: Optional[torch.Tensor] = None,
+                         collect_predictions: bool = False
+                         ) -> Tuple[torch.Tensor, torch.Tensor,
+                                    Dict[str, torch.Tensor]]:
+        if x.dim() != 3 or x.shape[-1] != self.dim:
+            raise ValueError(f"ConceptState input must have shape (batch, seq, {self.dim})")
+        if state is None:
+            state = self.init_state(x.shape[0], x.device, x.dtype)
+        if x.shape[1] == 0:
+            return x.new_empty(x.shape[0], 0, self.dim), state, {}
+
+        projected = self.proj(x)
+        state_dtype = recurrent_dtype(projected.dtype)
+        projected = projected.to(state_dtype)
+        initial_state = state.to(device=x.device, dtype=state_dtype)
+        current = initial_state
+        state_parts = []
+        for token_concept in projected.unbind(dim=1):
+            current = (1.0 - self.alpha) * current + self.alpha * token_concept
+            state_parts.append(current.unsqueeze(1))
+        state_sequence = torch.cat(state_parts, dim=1)
+        output = self.out(state_sequence.to(dtype=x.dtype))
+
+        predictions: Dict[str, torch.Tensor] = {}
+        if collect_predictions:
+            previous = torch.cat(
+                (initial_state.unsqueeze(1), state_sequence[:, :-1]), dim=1)
+            previous = previous.to(dtype=x.dtype)
+            predictions["future_latent"] = self.future_predictor(previous)
+            if self.label_predictor is not None:
+                predictions["concept_labels"] = self.label_predictor(previous)
+            if self.group_predictor is not None:
+                predictions["token_groups"] = self.group_predictor(previous)
+        return output, current, predictions
+
+    def auxiliary_losses(
+        self,
+        predictions: Dict[str, torch.Tensor],
+        hidden: torch.Tensor,
+        labels: Optional[torch.Tensor],
+        groups: Optional[torch.Tensor],
+        config: SimplCoreConfig,
+    ) -> Dict[str, object]:
+        losses: Dict[str, object] = {}
+        future = predictions.get("future_latent")
+        if future is not None:
+            per_token = F.mse_loss(
+                future.float(), hidden.detach().float(), reduction="none"
+            ).mean(dim=-1)
+            count = per_token.numel()
+            loss_sum = per_token.sum()
+            losses["future_latent_loss_sum"] = loss_sum
+            losses["future_latent_count"] = count
+            losses["future_latent_loss"] = loss_sum / max(count, 1)
+
+        for name, targets, predictor, weight_name in (
+            ("concept_labels", labels, self.label_predictor, "ncm_label_weight"),
+            ("token_groups", groups, self.group_predictor, "ncm_group_weight"),
+        ):
+            if targets is None:
+                continue
+            if predictor is None:
+                raise ValueError(
+                    f"{name} targets were provided but the corresponding NCM "
+                    "class count is not configured")
+            logits = predictions[name]
+            if targets.shape != logits.shape[:2]:
+                raise ValueError(
+                    f"{name} targets must have shape {tuple(logits.shape[:2])}, "
+                    f"got {tuple(targets.shape)}")
+            targets = targets.to(device=logits.device, dtype=torch.long)
+            count = int((targets != -100).sum().item())
+            if count:
+                loss_sum = F.cross_entropy(
+                    logits.reshape(-1, logits.size(-1)),
+                    targets.reshape(-1), ignore_index=-100, reduction="sum")
+            else:
+                loss_sum = logits.sum() * 0.0
+            losses[f"{name}_loss_sum"] = loss_sum
+            losses[f"{name}_count"] = count
+            losses[f"{name}_loss"] = loss_sum / max(count, 1)
+
+        weighted = hidden.sum() * 0.0
+        for source, weight_name in (
+            ("future_latent", "ncm_future_weight"),
+            ("concept_labels", "ncm_label_weight"),
+            ("token_groups", "ncm_group_weight"),
+        ):
+            loss_sum = losses.get(f"{source}_loss_sum")
+            count = int(losses.get(f"{source}_count", 0))
+            if loss_sum is not None and count:
+                weighted = weighted + getattr(config, weight_name) * loss_sum / count
+        losses["ncm_loss"] = weighted
+        return losses
+
+
 class SimplCoreModel(nn.Module):
     """SimplCore causal language model (non-attention backbone).
 
@@ -121,6 +291,12 @@ class SimplCoreModel(nn.Module):
     which is what makes length extrapolation and O(1)-state streaming well
     defined — and what removes the KV-cache that grows linearly with the
     sequence in Transformer decoders.
+
+    NCM opt-in: if ``config.use_ncm`` is enabled, we add a small concept state
+    parallel to the ordinary SGC/SNN stream. This is a semantic summary channel,
+    not a Transformer-style attention cache; the model still behaves as a
+    standard causal LM while the concept pathway provides a richer concept-level
+    representation for chat and reasoning tasks.
     """
 
     def __init__(self, config: SimplCoreConfig) -> None:
@@ -138,6 +314,14 @@ class SimplCoreModel(nn.Module):
             self.head.weight = self.tok_emb.weight
         # L4 拒答门: 可选的 grounded 预测头（默认关闭；需外部证据标签才能训练）
         self.abstain_head = AbstentionHead(config.dim) if config.use_abstain else None
+        self.ncm = ConceptState(
+            config.dim,
+            config.ncm_dim,
+            config.ncm_alpha,
+            config.ncm_beta,
+            config.ncm_label_classes,
+            config.ncm_group_classes,
+        ) if config.use_ncm else None
         self.apply(self._init_weights)
         # CMT 记忆注入投影：零初始化 → 初始为恒等（不改变基座行为），训练后自学
         self.memory_in = nn.Linear(config.dim, config.dim, bias=False) if config.use_memory else None
@@ -164,7 +348,10 @@ class SimplCoreModel(nn.Module):
                 text: Optional[str] = None, codec=None,
                 return_abstain: bool = False,
                 memory: Optional[torch.Tensor] = None,
-                stream_state: Optional[SGCStreamState] = None):
+                stream_state: Optional[SGCStreamState] = None,
+                ncm_label_targets: Optional[torch.Tensor] = None,
+                ncm_group_targets: Optional[torch.Tensor] = None,
+                return_ncm_aux: bool = False):
         """统一前向入口：接受 token ID 张量或文本字符串（无词表模式）.
 
         * ``idx_or_x`` 为张量 → 传统路径：token ID → 嵌入 → 前向；
@@ -203,23 +390,55 @@ class SimplCoreModel(nn.Module):
             targets = torch.tensor([codec.encode(targets)],
                                    device=next(self.parameters()).device)
         B, L = idx_or_x.shape
+        if (ncm_label_targets is not None or ncm_group_targets is not None
+                or return_ncm_aux) and self.ncm is None:
+            raise ValueError("NCM targets/output require SimplCoreConfig(use_ncm=True)")
+        if (ncm_label_targets is not None or ncm_group_targets is not None) \
+                and not return_ncm_aux:
+            raise ValueError("NCM label/group targets require return_ncm_aux=True")
+        if return_ncm_aux and targets is None:
+            raise ValueError("return_ncm_aux=True requires next-token targets")
+        if return_ncm_aux and (return_hidden or return_abstain):
+            raise ValueError("return_ncm_aux cannot be combined with hidden/abstain outputs")
         # 单块带状态前向：DDP 逐块训练必须经由 DDP.forward（reducer 才能
         # 在 no_sync / 最后一块同步之间正确切换），因此入口放在 forward。
         if stream_state is not None:
             if return_hidden or return_abstain or memory is not None:
                 raise ValueError(
                     "stream_state 模式不支持 return_hidden/return_abstain/memory")
-            logits, loss_sum, n_tok, _ = self.forward_chunk_step(
-                idx_or_x, targets, stream_state)
+            result = self.forward_chunk_step(
+                idx_or_x, targets, stream_state,
+                ncm_label_targets=ncm_label_targets,
+                ncm_group_targets=ncm_group_targets,
+                return_ncm_aux=return_ncm_aux)
+            if return_ncm_aux:
+                logits, loss_sum, n_tok, _, aux = result
+            else:
+                logits, loss_sum, n_tok, _ = result
             if targets is None:
                 return logits
-            return logits, loss_sum / max(n_tok, 1)
+            loss = loss_sum / max(n_tok, 1)
+            if return_ncm_aux:
+                return logits, loss, aux
+            return logits, loss
 
-        x = self.drop(self.tok_emb(idx_or_x))
-        mem = self._project_memory(memory)
-        for blk in self.blocks:
-            x = blk(x, mem)
-        x = self.ln_f(x)
+        ncm_hidden = None
+        ncm_predictions = None
+        if self.ncm is not None:
+            x = self.drop(self.tok_emb(idx_or_x))
+            mem = self._project_memory(memory)
+            for blk in self.blocks:
+                x = blk(x, mem)
+            ncm_hidden = x
+            concept, _, ncm_predictions = self.ncm.forward_sequence(
+                x, collect_predictions=return_ncm_aux)
+            x = self.ln_f(x + concept * self.ncm.beta)
+        else:
+            x = self.drop(self.tok_emb(idx_or_x))
+            mem = self._project_memory(memory)
+            for blk in self.blocks:
+                x = blk(x, mem)
+            x = self.ln_f(x)
         logits = self.head(x)
         if return_abstain:
             if self.abstain_head is None:
@@ -235,6 +454,11 @@ class SimplCoreModel(nn.Module):
         if targets is not None:
             loss = F.cross_entropy(logits.reshape(-1, logits.size(-1)),
                                    targets.reshape(-1), ignore_index=-100)
+            if return_ncm_aux:
+                aux = self.ncm.auxiliary_losses(
+                    ncm_predictions, ncm_hidden,
+                    ncm_label_targets, ncm_group_targets, self.config)
+                return logits, loss + aux["ncm_loss"], aux
             return logits, loss
         return logits
 
@@ -283,8 +507,13 @@ class SimplCoreModel(nn.Module):
             assert hasattr(mx, "init_state") and hasattr(mx, "step"), \
                 "SimplCore mixers must provide an O(1) init_state/step (no attention)"
             states.append(mx.init_state(batch, device, dtype))
-        return SGCStreamState(layers=states, length=0,
-                              memory=self._project_memory(memory))
+        concept_state = (
+            self.ncm.init_state(batch, device, dtype)
+            if self.ncm is not None else None
+        )
+        return SGCStreamState(
+            layers=states, length=0, memory=self._project_memory(memory),
+            concept_state=concept_state)
 
     def stream_step(self, token: Optional[torch.Tensor], state: SGCStreamState,
                     inputs_embeds: Optional[torch.Tensor] = None
@@ -319,6 +548,13 @@ class SimplCoreModel(nn.Module):
                 x = x + mem.unsqueeze(1)
             x, _ = mx.step(x, st)
             x = blk.ffn(x)
+        if self.ncm is not None:
+            if state.concept_state is None:
+                state.concept_state = self.ncm.init_state(
+                    x.shape[0], x.device, x.dtype)
+            concept, state.concept_state, _ = self.ncm.step(
+                x[:, -1, :], state.concept_state)
+            x = x + concept.unsqueeze(1) * self.ncm.beta
         x = self.ln_f(x)
         state.length += 1
         return self.head(x[:, -1, :]), state
@@ -337,6 +573,9 @@ class SimplCoreModel(nn.Module):
                 total += mx.streaming_state_bytes(batch, dtype)
             elif hasattr(mx, "stream_bytes"):
                 total += mx.stream_bytes(batch, dtype)
+        if self.ncm is not None:
+            total += batch * self.ncm.concept_dim * torch.empty(
+                (), dtype=recurrent_dtype(dtype)).element_size()
         return total
 
     # -- chunked training ----------------------------------------------------
@@ -353,16 +592,23 @@ class SimplCoreModel(nn.Module):
                               if st.conv_buf is not None else None),
                     length=st.length,
                     energy_sum=(st.energy_sum.detach()
-                                if st.energy_sum is not None else None)))
+                                if st.energy_sum is not None else None),
+                    spike_membrane=(st.spike_membrane.detach()
+                                    if st.spike_membrane is not None else None)))
             else:
                 layers.append(st)
         return SGCStreamState(
             layers=layers, length=state.length,
-            memory=(state.memory.detach() if state.memory is not None else None))
+            memory=(state.memory.detach() if state.memory is not None else None),
+            concept_state=(state.concept_state.detach()
+                           if state.concept_state is not None else None))
 
     def forward_chunk_step(self, idx_chunk: torch.Tensor,
                            targets_chunk: Optional[torch.Tensor],
-                           state: SGCStreamState):
+                           state: SGCStreamState,
+                           ncm_label_targets: Optional[torch.Tensor] = None,
+                           ncm_group_targets: Optional[torch.Tensor] = None,
+                           return_ncm_aux: bool = False):
         """跑**一个** chunk，返回 ``(logits, loss_sum, n_tok, new_state)``。
 
         训练循环必须逐块调用它并**立即 backward**：只保留当前块的计算图，
@@ -371,6 +617,11 @@ class SimplCoreModel(nn.Module):
         """
         if not self.supports_streaming:
             raise ValueError("forward_chunk_step 需要所有 mixer 提供 O(1) init_state/step")
+        if return_ncm_aux and self.ncm is None:
+            raise ValueError("return_ncm_aux=True requires use_ncm=True")
+        if (ncm_label_targets is not None or ncm_group_targets is not None) \
+                and not return_ncm_aux:
+            raise ValueError("NCM label/group targets require return_ncm_aux=True")
         for blk in self.blocks:
             if not hasattr(blk.mixer, "forward_chunk"):
                 raise ValueError(
@@ -384,6 +635,13 @@ class SimplCoreModel(nn.Module):
             x, st = blk.mixer.forward_chunk(x, st)
             state.layers[i] = st
             x = blk.ffn(x)
+        ncm_hidden = None
+        ncm_predictions = None
+        if self.ncm is not None:
+            ncm_hidden = x
+            concept, state.concept_state, ncm_predictions = self.ncm.forward_sequence(
+                x, state.concept_state, collect_predictions=return_ncm_aux)
+            x = x + concept * self.ncm.beta
         x = self.ln_f(x)
         logits = self.head(x)
         loss_sum = None
@@ -394,6 +652,13 @@ class SimplCoreModel(nn.Module):
                 ignore_index=-100, reduction="sum")
             n_tok = int((targets_chunk != -100).sum().item())
         state.length += idx_chunk.shape[1]
+        if return_ncm_aux:
+            if targets_chunk is None:
+                raise ValueError("return_ncm_aux=True requires next-token targets")
+            aux = self.ncm.auxiliary_losses(
+                ncm_predictions, ncm_hidden,
+                ncm_label_targets, ncm_group_targets, self.config)
+            return logits, loss_sum, n_tok, state, aux
         return logits, loss_sum, n_tok, state
 
     def forward_chunked(self, idx_or_x, targets: Optional[torch.Tensor] = None,
@@ -468,10 +733,16 @@ class SimplCoreModel(nn.Module):
                     # L2 证据门的前缀能量和：漏掉它会让 restore 之后的
                     # 闸门从 0 重新累积，流式输出与不中断的生成不再逐位一致。
                     "energy_sum": st.energy_sum,
+                    "spike_membrane": st.spike_membrane,
                 })
         # CMT 记忆注入：漏掉它会让带记忆的长会话在断点恢复后
         # 记忆注入静默消失——这正是 _project_memory 声明要杜绝的"静默丢弃"。
-        return {"length": state.length, "layers": layers, "memory": state.memory}
+        return {
+            "length": state.length,
+            "layers": layers,
+            "memory": state.memory,
+            "concept_state": state.concept_state,
+        }
 
     def restore_stream(self, ckpt: dict) -> "SGCStreamState":
         """从 :meth:`checkpoint_stream` 的 dict 重建 SGCStreamState.
@@ -489,11 +760,13 @@ class SimplCoreModel(nn.Module):
                     y1=item["y1"], y2=item["y2"],
                     conv_buf=item.get("conv_buf"),
                     length=item.get("length", 0),
-                    energy_sum=item.get("energy_sum")))
+                    energy_sum=item.get("energy_sum"),
+                    spike_membrane=item.get("spike_membrane")))
             else:
                 layers.append(item)
         return SGCStreamState(layers=layers, length=ckpt.get("length", 0),
-                              memory=ckpt.get("memory"))
+                              memory=ckpt.get("memory"),
+                              concept_state=ckpt.get("concept_state"))
 
     # -- generation ----------------------------------------------------------
     @torch.no_grad()

@@ -7,6 +7,7 @@ See package docstring in ``simplcore/core/__init__.py`` and ``docs/SGC_CORE.md``
 from __future__ import annotations
 
 import math
+import warnings
 from dataclasses import dataclass
 from typing import Any, Optional, Tuple
 
@@ -101,6 +102,8 @@ class LayerStreamState:
         length: number of tokens consumed so far.
         energy_sum: (B, 1) running sum of the per-position input energy,
             used by the L2 evidence gate. Constant size.
+        spike_membrane: (B, D) optional LIF membrane state for the experimental
+            SNN-SGC mixer.
         ssm_state: 仅 SRF 路径使用——持久保存的 :class:`SelectiveSpectralSSM`
             状态（含 step 的复用 scratch）。SGM/SGC 路径恒为 ``None``。用 ``Any``
             标型以避免与 ``ssm.py`` 的循环导入；其持有的 ``h_re``/``h_im`` 与
@@ -114,6 +117,7 @@ class LayerStreamState:
     length: int = 0
     energy_sum: Optional[torch.Tensor] = None
     ssm_state: Optional[Any] = None
+    spike_membrane: Optional[torch.Tensor] = None
 
 
 @dataclass
@@ -126,11 +130,13 @@ class SGCStreamState:
         length: 已消费的 token 数。
         memory: 投影后的 CMT 压缩记忆 (B, D)；``init_stream(memory=...)`` 注入，
             ``checkpoint_stream`` / ``restore_stream`` 随断点持久化。
+        concept_state: 可选 NCM 概念递归状态 (B, concept_dim)，随会话状态独立保存。
     """
 
     layers: list
     length: int = 0
     memory: Optional[torch.Tensor] = None    # 投影后的 CMT 压缩记忆 (B, D)
+    concept_state: Optional[torch.Tensor] = None
 
     def detach(self) -> "SGCStreamState":
         for st in self.layers:
@@ -143,11 +149,17 @@ class SGCStreamState:
             st.y2 = st.y2.detach()
             if st.conv_buf is not None:
                 st.conv_buf = st.conv_buf.detach()
+            if st.spike_membrane is not None:
+                st.spike_membrane = st.spike_membrane.detach()
             # SRF 路径持久保存了 ssm_state，其 h_re/h_im 与 y1/y2 是别名；
             # detach 后必须重新锚定，否则持久状态会指向旧（未 detach）张量。
             if st.ssm_state is not None:
                 st.ssm_state.h_re = st.y1
                 st.ssm_state.h_im = st.y2
+        if self.memory is not None:
+            self.memory = self.memory.detach()
+        if self.concept_state is not None:
+            self.concept_state = self.concept_state.detach()
         return self
 
     def num_bytes(self) -> int:
@@ -165,6 +177,10 @@ class SGCStreamState:
                 total += st.conv_buf.numel() * st.conv_buf.element_size()
             if st.energy_sum is not None:
                 total += st.energy_sum.numel() * st.energy_sum.element_size()
+            if st.spike_membrane is not None:
+                total += st.spike_membrane.numel() * st.spike_membrane.element_size()
+        if self.concept_state is not None:
+            total += self.concept_state.numel() * self.concept_state.element_size()
         return total
 
 
@@ -262,6 +278,11 @@ class SpectralGlobalConv(nn.Module):
         norm: "rmsnorm" or "layernorm".
         fft_dtype: dtype for the FFT path; ``torch.float32`` by default.
         eps: norm epsilon.
+        kernel_norm: "none" (default, bitwise-compatible with all existing
+            checkpoints) or "analytic_l2" — divide each oscillator's readout
+            coefficient by its infinite-horizon L2 energy. Removes the
+            length-dependent injection drift; no L-dependent term is
+            introduced, so FFT/IIR duality and O(1) state are preserved.
     """
 
     def __init__(
@@ -272,16 +293,19 @@ class SpectralGlobalConv(nn.Module):
         local_kernel: int = 4,
         content_gate: bool = True,
         out_gate: bool = False,
-        evidence_gate: bool = True,
-        uncertainty_gate: bool = True,
+        evidence_gate: bool = False,      # P0-4: 与 SimplCoreConfig / 技术报告 §3.1 对齐
+        uncertainty_gate: bool = False,
         norm: str = "rmsnorm",
         fft_dtype: Optional[torch.dtype] = torch.float32,
         eps: float = 1e-6,
+        num_kernels: int = 1,
         use_mixer_stream: bool = False,
         path_gate: bool = False,
         inst_nonlin: bool = False,
         init_mode: str = "logfreq",
         rho_param: str = "sigmoid",
+        linear_floor: float = 0.3,
+        kernel_norm: str = "none",
     ) -> None:
         super().__init__()
         if dim <= 0:
@@ -290,7 +314,18 @@ class SpectralGlobalConv(nn.Module):
             raise ValueError("num_bases must be positive")
         if local_kernel < 1:
             raise ValueError("local_kernel must be >= 1")
+        if kernel_norm not in ("none", "analytic_l2"):
+            raise ValueError(
+                f"unknown kernel_norm={kernel_norm!r} (none | analytic_l2)")
+        if kernel_norm != "none" and use_mixer_stream:
+            # 融合算子在 C++ 侧直接读 coef，未实现解析归一；必须回退 PyTorch
+            # step 路径，否则 FFT/IIR 对偶静默破裂。显式报错而非静默降级。
+            raise ValueError(
+                "kernel_norm='analytic_l2' is incompatible with "
+                "use_mixer_stream=True (fused op reads raw coef); "
+                "set use_mixer_stream=False")
 
+        self.kernel_norm = kernel_norm
         self.dim = dim
         self.num_bases = num_bases
         self.local_kernel = local_kernel
@@ -313,14 +348,27 @@ class SpectralGlobalConv(nn.Module):
         #   逐点函数不经过卷积/递推，两种形式天然一致；给"当下"路径一个
         #   非线性响应，与长程线性卷积形成曲率对比。
         self.inst_nonlin = inst_nonlin
-        # init_mode：振荡基网格初始化（"logfreq" | "legacy"），见
-        # _init_oscillator_grid。默认 logfreq（legacy 均匀网格在
-        # tau = 2M-1（首个公共零点，周期 2M；后续在 2Mk-1）处有公共零点
-        # ——核恒 0 的时间盲点，coef 修不了，由 _assert_no_common_zero 守护）。
-        if init_mode not in ("legacy", "logfreq", "hybrid"):
+        # init_mode：振荡基网格初始化，见 _init_oscillator_grid。
+        #   * "logfreq"（历史默认）：theta 对数分布 [pi/decay_max, 0.9*pi/2]。
+        #     ★ 实测缺陷：低频端绝对间隔趋零，字典近似共线 ——
+        #       仓库守护口径 (Psi=sin((t+1)theta), L=512, SVD) 下
+        #       M=32 时数值秩 24/32、cond 1.92e16；含 rho 的真实字典
+        #       条件数更差。表征容量塌缩，与命题5 的 1/|sin(theta)| 发散同源。
+        #   * "hybrid"：线性均匀 + 黄金比扰动，修了秩缺失但仍保留
+        #       theta_min=pi/decay_max（数值病态未根除）。
+        #   * "linear"（推荐用于新训练）：theta 线性均匀
+        #       [linear_floor, pi-linear_floor]，默认 floor=0.3。
+        #       同口径 cond 1.04、秩 32/32；零参数零 FLOPs 零状态开销。
+        #   * "legacy"：均匀网格有代数公共零点（tau=2M-1 等），显式拒绝。
+        if init_mode not in ("legacy", "logfreq", "hybrid", "linear"):
             raise ValueError(
-                f"unknown init_mode: {init_mode!r} (legacy | logfreq | hybrid)")
+                f"unknown init_mode: {init_mode!r} "
+                f"(legacy | logfreq | hybrid | linear)")
+        if not (0.0 < float(linear_floor) < math.pi / 2):
+            raise ValueError(
+                f"linear_floor must be in (0, pi/2), got {linear_floor}")
         self.init_mode = init_mode
+        self.linear_floor = float(linear_floor)
         # rho_param：衰减极点参数化。
         #   * "sigmoid"（默认）：rho = sigmoid(raw).clamp(max=1-1e-6)。
         #     torch fp32 sigmoid 在 raw ≳ 16.636（=24·ln2，exp(x)/(1+exp(x))
@@ -346,8 +394,9 @@ class SpectralGlobalConv(nn.Module):
         self.out_proj = nn.Linear(dim, dim, bias=False)
 
         # --- long-range oscillator bank --------------------------------------
-        rho0, theta0 = _init_oscillator_grid(num_bases, decay_max,
-                                             mode=self.init_mode)
+        rho0, theta0 = _init_oscillator_grid(
+            num_bases, decay_max, mode=self.init_mode,
+            theta_floor=self.linear_floor)
         # θ 钳制下界在构造时冻结（跟随 decay_max，见 theta_clamp_floor）
         self._theta_floor = theta_clamp_floor(decay_max)
         if rho_param == "logspace":
@@ -360,6 +409,65 @@ class SpectralGlobalConv(nn.Module):
         # Small non-zero init so that d/d(rho), d/d(theta) are live from step 0
         # (with coef == 0 the kernel does not depend on rho/theta at all).
         self.coef = nn.Parameter(torch.randn(num_bases, dim) * 0.02)
+
+        # --- MoK: Mixture-of-Kernels（逐位置内容路由，修复 pairwise 缺陷）----
+        #
+        # 架构缺陷（实测，非推测）
+        # ----------------------
+        # 注意力:  y[i] = Σ_j softmax(q_i·k_j/√d)·v_j
+        #   权重 a[i,j] 是**位置对 (i,j) 的内容函数** —— 二阶（pairwise）交互。
+        # SGC:     y[i] = Σ_τ K[τ]·u[i-τ]
+        #   核 K 是**输入无关的常数**；输入相关部分只有逐元素门控
+        #   （content_gate / evidence_gate / uncertainty_gate / path_gate），
+        #   这些门控只能逐位置、逐通道地缩放，**无法表达
+        #   "位置 i 应当聚合历史的哪种模式"**。
+        #   → 余弦只能拟合"平均位置分布"，复现不了逐 token 的内容路由。
+        #   这是 TS→SC 迁移里 mixer 余弦长期卡在 0.55~0.97 的结构性原因。
+        #
+        # 修复：核本身成为输入的函数 —— N 个核的**逐位置**加权混合
+        #   y_long[t] = Σ_k g_k(h_t) · conv(u, K_k)[t],   g = softmax(W h_t)
+        #
+        # 为什么这修的是根因
+        #   * 逐位置：每个 token 依据自身内容选择不同的历史聚合模式
+        #     → 同一序列里不同位置可以有不同的"关注模式"，这是 pairwise
+        #       路由在卷积框架下可达到的最强形式。
+        #   * 仍然卷积：每个 conv(u, K_k) 是纯因果卷积 → FFT 仍 O(L log L)。
+        #
+        # 为什么核心契约不破（这是本设计的关键）
+        #   所有核**共享同一组振荡基 psi**（rho/theta），只有 readout 系数
+        #   coef 不同。于是 IIR 递推
+        #       y_new = a·y1 + b·y2 + c·u
+        #   与核无关 —— 状态 (y1,y2) 的形状/字节数与 num_kernels 完全无关，
+        #   **O(1) 流式状态逐字节不变**。多核只体现在 readout：
+        #       nxt_k = einsum("bmd,kmd->bkd", y_new, coefs)
+        #       nxt   = Σ_k g_k · nxt_k
+        #   代价是 readout 的 K 倍常数 FLOPs，与序列长度无关。
+        #
+        # 对偶性：g_k(h_t) 是 h_t 的因果函数，与序列其余位置无关 —— 与
+        #   content_gate / path_gate 同构 → 并行(FFT) 与流式(IIR) 逐位一致。
+        #
+        # 兼容：num_kernels=1 时不创建任何新参数、走原代码路径，逐位等价。
+        self.num_kernels = int(num_kernels)
+        if self.num_kernels < 1:
+            raise ValueError("num_kernels must be >= 1")
+        if self.num_kernels > 1:
+            # 多核 readout 系数；coef[0] 是原核，其余小随机初始化，
+            # 保证 num_kernels=1 的参数语义不变。
+            self.coefs = nn.Parameter(
+                torch.randn(self.num_kernels, num_bases, dim) * 0.02)
+            with torch.no_grad():
+                self.coefs[0].copy_(self.coef)
+            # 逐位置路由器：D → K。
+            # ★ 不能 zero-init：若 g 恒为均匀 1/K 且所有核初始相同，
+            #   ∂L/∂K_k ∝ g_k·G 对每个 k 完全相同 → 对称性锁定，
+            #   各核永远收到同一梯度、无法分化（MoE 经典陷阱，见
+            #   RoutedSpectralGlobalConv.route_proj 的同类处理）。
+            #   用 0.01 小随机打破对称：g 仍近似均匀（≈1/K），
+            #   起步接近"平均核"，但梯度已能分流。
+            self.kernel_route = nn.Linear(dim, self.num_kernels, bias=True)
+            with torch.no_grad():
+                self.kernel_route.weight.normal_(0, 0.01)
+                self.kernel_route.bias.zero_()
 
         # Per-channel instantaneous (diagonal) term; init 1 keeps the block close
         # to identity at the start of training.
@@ -404,7 +512,40 @@ class SpectralGlobalConv(nn.Module):
     # -- kernel ---------------------------------------------------------------
     def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict,
                               missing_keys, unexpected_keys, error_msgs) -> None:
-        """在两种 rho 参数化之间迁移 checkpoint。"""
+        """在两种 rho 参数化之间迁移 checkpoint；并把单核 checkpoint 热启动到 MoK。
+
+        MoK 热启动（重要，否则 TS2SC 已有全部 mixer 权重作废）
+        ------------------------------------------------------
+        单核 checkpoint 只有 ``coef``，没有 ``coefs`` / ``kernel_route``。
+        映射规则：
+          * ``coefs[k] = coef`` 对所有 k（所有核初始化为同一个核）
+          * ``kernel_route`` 保持 zero-init（路由均匀 = 1/K）
+        因为 Σ_k g_k = 1 且所有 K_k 相同，若 router 也置零则
+            y_long = Σ_k g_k · conv(u, K) = conv(u, K)
+        → 输出**逐位等价**（可显式把 router 置零来获得精确热启动）。
+        但默认注入 0.01 小随机 router 以打破梯度对称，此时输出是
+        **近似等价**（相对误差 ~1% 量级）：起步接近"平均核"，
+        不丢已有知识、不引入初始化冲击，且训练能真正让各核分化。
+        """
+        if self.num_kernels > 1:
+            ck = prefix + "coefs"
+            c1 = prefix + "coef"
+            if ck not in state_dict and c1 in state_dict:
+                coef = state_dict[c1]
+                state_dict[ck] = coef.unsqueeze(0).expand(
+                    self.num_kernels, -1, -1).clone()
+                # 注意：保留 state_dict[c1]（不删）。多核模块仍注册 ``coef``
+                # 作为兼容占位参数（M×D，前向不走它），这样单核/多核
+                # checkpoint 都能 strict=True 双向加载，不破坏任何既有权重。
+                # 补上 router 参数，使 strict=True 也能直接加载。
+                # 必须是**小随机而非零**：热启动时所有核被复制成同一个核，
+                # 若 g 还恒等于 1/K，则梯度对称、多核永久退化为单核。
+                state_dict[prefix + "kernel_route.weight"] = (
+                    torch.randn(self.num_kernels, self.dim, dtype=coef.dtype,
+                                device=coef.device) * 0.01)
+                state_dict[prefix + "kernel_route.bias"] = torch.zeros(
+                    self.num_kernels, dtype=coef.dtype, device=coef.device)
+
         old = prefix + "raw_rho"
         new = prefix + "raw_rho_log"
         if self.rho_param == "logspace" and old in state_dict and new not in state_dict:
@@ -419,6 +560,56 @@ class SpectralGlobalConv(nn.Module):
         super()._load_from_state_dict(
             state_dict, prefix, local_metadata, strict,
             missing_keys, unexpected_keys, error_msgs)
+
+    def _psi_l2_inv(self, dtype) -> Optional[torch.Tensor]:
+        """每个振荡基在**无限长**序列上能量的倒数平方根，形状 (M,)。
+
+        闭式（严格与 L 无关，因此可安全用于 FFT 与 IIR 两条路径）::
+
+            ||psi_m||^2_oo = SUM_{t>=0} rho^{2t} sin^2((t+1)theta)
+                           = 1/2/(1-z) - 1/2 (c-z)/(1-2zc+z^2),
+            z = rho^2, c = cos(2 theta).
+
+        推导：sin^2(a)=(1-cos 2a)/2，几何级数 SUM z^t e^{2i(t+1)theta} 取实部。
+        数值核对见 docs/kernel_norm_fix.md（m=31: 闭式 354.4743 =
+        L=8192 数值 354.4710）。
+
+        为什么需要它（实测架构缺陷）
+        --------------------------------
+        未归一化时 ``long[t] = SUM_tau K[tau] u[t-tau]`` 的累加项数随 t 增长，
+        rho->1 的慢基几乎不衰减，注入幅度随序列长度单调膨胀；而注意力的
+        softmax 是凸组合、幅度与 L 无关。实测 Qwen3-0.6B 迁移 ck 上
+        L=8->256 时 SGC long 的 rms 增长 2.82x，teacher attn@v 反而降到 0.27x
+        ——方向相反。生成时序列逐 token 变长，mixer 注入持续增大，正是
+        「前言不搭后语」的结构来源。
+
+        把 1/||psi_m||_oo 吸收进 readout 系数 coef 后，每个基对核的贡献
+        变为单位能量，long 的统计幅度由 coef 决定、与 L 无关。
+        递推 (y1,y2) 完全不变 —— 只是 readout 缩放，故 O(1) 状态、
+        FFT/IIR 对偶、因果性全部保持。梯度仍可经 rho/theta 回流。
+        """
+        if self.kernel_norm == "none":
+            return None
+        rho, theta = self.oscillator_params()
+        rho = rho.to(dtype); theta = theta.to(dtype)
+        z = (rho * rho).clamp(max=1.0 - 1e-7)
+        c = torch.cos(2.0 * theta)
+        denom = (1.0 - 2.0 * z * c + z * z).clamp_min(1e-12)
+        e2 = 0.5 / (1.0 - z) - 0.5 * (c - z) / denom
+        return torch.rsqrt(e2.clamp_min(1e-8))                       # (M,)
+
+    def _coef_eff(self, dtype) -> torch.Tensor:
+        """readout 系数（单核）：归一化因子已吸收，形状 (M,D)。"""
+        c = self.coef.to(dtype)
+        inv = self._psi_l2_inv(dtype)
+        return c if inv is None else c * inv.unsqueeze(1)
+
+    def _coefs_eff(self, dtype) -> torch.Tensor:
+        """readout 系数（MoK 多核）：形状 (K,M,D)。"""
+        c = self.coefs.to(dtype) if self.num_kernels > 1 \
+            else self.coef.to(dtype).unsqueeze(0)
+        inv = self._psi_l2_inv(dtype)
+        return c if inv is None else c * inv.view(1, -1, 1)
 
     def oscillator_params(self) -> Tuple[torch.Tensor, torch.Tensor]:
         """Return (rho, theta), both of shape (M,), with rho in (0,1), theta in (0,pi).
@@ -461,8 +652,37 @@ class SpectralGlobalConv(nn.Module):
         tau = torch.arange(length, device=device, dtype=dtype).unsqueeze(0)      # (1,L)
         log_rho = torch.log(rho.to(dtype)).unsqueeze(1)                          # (M,1)
         psi = torch.exp(log_rho * tau) * torch.sin((tau + 1.0) * theta.to(dtype).unsqueeze(1))
-        kernel = self.coef.to(dtype).t() @ psi                                   # (D, M) @ (M, L)
+        c = self._coefs_eff(dtype)[0] if self.num_kernels > 1 \
+            else self._coef_eff(dtype)
+        kernel = c.t() @ psi                                                     # (D, M) @ (M, L)
         return kernel.t().contiguous()                                           # (L, D)
+
+    def build_kernels(self, length: int, device=None, dtype=None) -> torch.Tensor:
+        """物化 MoK 核栈，shape ``(K, length, D)``。
+
+        所有核共享同一组振荡基 ``psi``（rho/theta），只有 readout 系数不同 ——
+        这是"多核不增大 O(1) 状态"的结构原因（见 ``__init__`` 的 MoK 注释）。
+        ``num_kernels == 1`` 时返回单核栈，与 :meth:`build_kernel` 一致。
+        """
+        rho, theta = self.oscillator_params()
+        device = device if device is not None else self.coef.device
+        dtype = dtype if dtype is not None else self.coef.dtype
+        tau = torch.arange(length, device=device, dtype=dtype).unsqueeze(0)      # (1,L)
+        log_rho = torch.log(rho.to(dtype)).unsqueeze(1)                          # (M,1)
+        psi = torch.exp(log_rho * tau) * torch.sin((tau + 1.0) * theta.to(dtype).unsqueeze(1))
+        # (K, M, D) @ (M, L) -> (K, D, L) -> (K, L, D)
+        coefs = self._coefs_eff(dtype)
+        kernels = torch.matmul(coefs.transpose(-1, -2), psi)
+        return kernels.transpose(-1, -2).contiguous()
+
+    def _kernel_route_weights(self, h: torch.Tensor) -> torch.Tensor:
+        """逐位置核路由权重 ``g``，shape ``(B, L, K)``，沿 K 归一。
+
+        ``g[t] = softmax(W h_t)`` 是**当前 token 的因果函数**，与序列其余位置
+        无关 —— 与 ``content_gate`` / ``path_gate`` 同构，因此并行(FFT)与
+        流式(IIR)两种形式在 fp32 内逐位一致，FFT/IIR 对偶性不被破坏。
+        """
+        return torch.softmax(self.kernel_route(h), dim=-1)
 
     # -- forward --------------------------------------------------------------
     def _instant_term(self, u: torch.Tensor) -> torch.Tensor:
@@ -479,8 +699,17 @@ class SpectralGlobalConv(nn.Module):
         if self.content_gate:
             u = u * torch.sigmoid(self.gate_proj(h))
 
-        kernel = self.build_kernel(L, device=u.device, dtype=u.dtype)
-        long = fft_causal_conv(u, kernel, self.fft_dtype)
+        if self.num_kernels > 1:
+            # MoK：逐位置内容路由的核混合（修复 pairwise 表达力缺陷）
+            kernels = self.build_kernels(L, device=u.device, dtype=u.dtype)   # (K,L,D)
+            g = self._kernel_route_weights(h)                                  # (B,L,K)
+            long = torch.zeros_like(u)
+            for k in range(self.num_kernels):
+                long = long + g[..., k:k + 1] * fft_causal_conv(
+                    u, kernels[k], self.fft_dtype)
+        else:
+            kernel = self.build_kernel(L, device=u.device, dtype=u.dtype)
+            long = fft_causal_conv(u, kernel, self.fft_dtype)
         local = self._local_conv_full(u)
 
         if self.evidence_gate:
@@ -536,7 +765,8 @@ class SpectralGlobalConv(nn.Module):
         return rho, theta, a_eff, b_eff, small
 
     def _free_response(self, u: torch.Tensor,
-                       state: LayerStreamState) -> torch.Tensor:
+                        state: LayerStreamState,
+                        g: Optional[torch.Tensor] = None) -> torch.Tensor:
         """上一块状态在本块上的**齐次响应**，形状 (B, T, D)。
 
         与 ``fft_causal_conv(u, K)`` 的零初值部分相加，得到与整段并行/逐
@@ -559,9 +789,20 @@ class SpectralGlobalConv(nn.Module):
         small_m = (theta < 1e-3).view(-1, 1)
         p = torch.where(small_m, p_lin, p)
         q = torch.where(small_m, q_lin, q)
-        coef = self.coef.to(rd)
-        h = torch.einsum("mt,bmd->btd", p, a_eff * coef.unsqueeze(0))
-        h = h + torch.einsum("mt,bmd->btd", q, b_eff * coef.unsqueeze(0))
+        # 状态 (y1,y2) 与核无关（共享 psi），但 readout 依赖核：
+        # MoK 下自由响应必须按同一组逐位置路由权重 g 加权，
+        # 否则 chunk 形式与 full forward 在跨块处不一致。
+        if g is not None and self.num_kernels > 1:
+            coefs = self._coefs_eff(rd)                               # (K,M,D)
+            a_k = a_eff.unsqueeze(1) * coefs.unsqueeze(0)              # (B,K,M,D)
+            b_k = b_eff.unsqueeze(1) * coefs.unsqueeze(0)
+            h_k = torch.einsum("mt,bkmd->bktd", p, a_k)
+            h_k = h_k + torch.einsum("mt,bkmd->bktd", q, b_k)
+            h = torch.einsum("bktd,btk->btd", h_k, g.to(rd))
+        else:
+            coef = self._coef_eff(rd)
+            h = torch.einsum("mt,bmd->btd", p, a_eff * coef.unsqueeze(0))
+            h = h + torch.einsum("mt,bmd->btd", q, b_eff * coef.unsqueeze(0))
         return h.to(u.dtype)
 
     def _tail_state(self, u: torch.Tensor,
@@ -628,10 +869,19 @@ class SpectralGlobalConv(nn.Module):
         if self.content_gate:
             u = u * torch.sigmoid(self.gate_proj(h))
 
-        kernel = self.build_kernel(T, device=u.device, dtype=u.dtype)
-        long = fft_causal_conv(u, kernel, self.fft_dtype)
+        g = None
+        if self.num_kernels > 1:
+            kernels = self.build_kernels(T, device=u.device, dtype=u.dtype)   # (K,T,D)
+            g = self._kernel_route_weights(h)                                  # (B,T,K)
+            long = torch.zeros_like(u)
+            for k in range(self.num_kernels):
+                long = long + g[..., k:k + 1] * fft_causal_conv(
+                    u, kernels[k], self.fft_dtype)
+        else:
+            kernel = self.build_kernel(T, device=u.device, dtype=u.dtype)
+            long = fft_causal_conv(u, kernel, self.fft_dtype)
         if state is not None and state.length > 0:
-            long = long + self._free_response(u, state)
+            long = long + self._free_response(u, state, g)
 
         buf = state.conv_buf if state is not None else None
         local, new_buf = depthwise_causal_conv(u, self.local_conv.weight, buf)
@@ -791,7 +1041,14 @@ class SpectralGlobalConv(nn.Module):
         y_new = a.view(1, M, 1) * state.y1 + b.view(1, M, 1) * state.y2 + c.view(1, M, 1) * um
         state.y2, state.y1 = state.y1, y_new
 
-        nxt = torch.einsum("bmd,md->bd", y_new, self.coef.to(rd)).unsqueeze(1)   # (B,1,D) rd
+        if self.num_kernels > 1:
+            # MoK readout：状态递推与核无关（共享 psi），故 y1/y2 形状不变，
+            # 多核只体现在 readout 的 K 路 einsum + 逐位置路由加权。
+            nxt_k = torch.einsum("bmd,kmd->bkd", y_new, self._coefs_eff(rd))     # (B,K,D)
+            g_t = self._kernel_route_weights(h)                                  # (B,1,K)
+            nxt = torch.einsum("bkd,bk->bd", nxt_k, g_t.squeeze(1)).unsqueeze(1)
+        else:
+            nxt = torch.einsum("bmd,md->bd", y_new, self._coef_eff(rd)).unsqueeze(1)
         nxt = nxt.to(u.dtype)                                          # 回到计算精度再混合
         loc, state.conv_buf = depthwise_causal_conv(u, self.local_conv.weight, state.conv_buf)
 
@@ -825,27 +1082,34 @@ class SpectralGlobalConv(nn.Module):
                 f"out_gate={self.out_gate}, evidence_gate={self.evidence_gate}, "
                 f"uncertainty_gate={self.uncertainty_gate}, "
                 f"path_gate={self.path_gate}, inst_nonlin={self.inst_nonlin}, "
-                f"init_mode={self.init_mode!r}")
+                f"num_kernels={self.num_kernels}, init_mode={self.init_mode!r}, "
+                f"kernel_norm={self.kernel_norm!r}")
 
     def streaming_state_bytes(self, batch: int, dtype=torch.float32) -> int:
         """Bytes of constant streaming state, independent of sequence length.
 
         递推状态（y1/y2）按 recurrent_dtype 计字节：低精度计算时退化为 fp32，
         因此按 fp32 计；conv_buf 为短 FIR 历史、按计算精度计。
+
+        L2 证据门开启时，每条序列额外分配一个 fp32 前缀能量标量；
+        关闭时该状态不存在，账目也不应虚报这部分常驻内存。
         """
         itemsize = torch.empty(0, dtype=dtype).element_size()
         rd_itemsize = torch.empty(0, dtype=recurrent_dtype(dtype)).element_size()
         n = 2 * self.num_bases * self.dim * batch * rd_itemsize
         n += max(self.local_kernel - 1, 0) * self.dim * batch * itemsize
-        extra = 0
         if self.evidence_gate:
-            # 运行前缀能量和：每条序列一个 fp32 标量（与序列长度无关）
-            extra += batch * 4
-        return n + extra
+            n += batch * torch.empty(0, dtype=torch.float32).element_size()
+        return n
 
     def effective_kernel_rank(self, length: int) -> int:
         """Numerical rank of the kernel bank; shows the expressivity of the basis."""
         with torch.no_grad():
+            # MoK：对 K 个核分别求秩，取最大（保守上界）
+            if self.num_kernels > 1:
+                Ks = self.build_kernels(length)
+                return max(torch.linalg.matrix_rank(Ks[k]).item()
+                           for k in range(self.num_kernels))
             K = self.build_kernel(length)
             return int(torch.linalg.matrix_rank(K.t().float()))
 
@@ -908,6 +1172,11 @@ class RoutedSpectralGlobalConv(SpectralGlobalConv):
         # 显式关闭而不是静默给出错误结果。
         kwargs["use_mixer_stream"] = False
         super().__init__(*args, **kwargs)
+        if self.num_kernels > 1:
+            raise ValueError(
+                "RoutedSpectralGlobalConv 使用自己的分组谱专家路由，"
+                "与 MoK(num_kernels>1) 的逐位置核路由是两套不同的混入机制；"
+                "叠加会静默忽略 MoK 而给出不一致结果。请二选一。")
         M = self.num_bases
         if route_groups < 1 or M % route_groups:
             raise ValueError(
@@ -982,7 +1251,7 @@ class RoutedSpectralGlobalConv(SpectralGlobalConv):
     def _group_kernel(self, sel: slice, length: int, device, dtype) -> torch.Tensor:
         """第 ``sel`` 组基的核 bank (L, D)：``coef[sel].T @ psi[sel]``。"""
         psi = self._oscillator_psi(length, device=device, dtype=dtype)
-        return (self.coef.to(dtype)[sel].t() @ psi[sel]).t().contiguous()
+        return (self._coef_eff(dtype)[sel].t() @ psi[sel]).t().contiguous()
 
     def _grouped_long(self, u: torch.Tensor, w: torch.Tensor,
                       length: int) -> torch.Tensor:
@@ -1170,7 +1439,7 @@ class RoutedSpectralGlobalConv(SpectralGlobalConv):
             + c.view(1, M, 1) * u_inj
         state.y2, state.y1 = state.y1, y_new
 
-        nxt = torch.einsum("bmd,md->bd", y_new, self.coef.to(rd)).unsqueeze(1)
+        nxt = torch.einsum("bmd,md->bd", y_new, self._coef_eff(rd)).unsqueeze(1)
         nxt = nxt.to(u.dtype)
         loc, state.conv_buf = depthwise_causal_conv(
             u, self.local_conv.weight, state.conv_buf)
@@ -1241,7 +1510,8 @@ def _assert_no_common_zero(theta: torch.Tensor, num_bases: int) -> None:
 
 
 def _init_oscillator_grid(num_bases: int, decay_max: float,
-                          mode: str = "logfreq"):
+                          mode: str = "logfreq",
+                          theta_floor: float = 0.3):
     """Initialise the (rho, theta) grid of the oscillator bank.
 
     ``mode="logfreq"``（默认）：theta 对数分布，覆盖
@@ -1254,6 +1524,23 @@ def _init_oscillator_grid(num_bases: int, decay_max: float,
     ——短周期（高频）基的密度与长周期一样，长上下文任务下高频段欠采样；
     且存在公共零点（**首个 τ = 2M−1，周期 2M**，即 τ = 2Mk−1 全体）
     ——legacy 分支做公式级判定，显式选择时命中即拒绝构造。
+
+    ``mode="linear"``（推荐用于新训练）：theta **线性均匀**分布
+    ``[theta_floor, pi - theta_floor]``，默认 ``theta_floor=0.3``。
+
+    依据（独立复现，见 docs/frequency_grid_fix.md）：周期/连续信号轴上，
+    logfreq 的低频端 θ_min=pi/decay_max≈3.8e-4 使相邻基近似共线
+    （M=32 时数值秩 24/32、cond 1.92e16）；线性均匀网格把 cond 降到
+    1.04、秩满 32/32。同一模型同一参数量下收敛速度显著提升，且
+    **不增加任何参数、FLOPs 或流式状态字节**。
+
+    ★ 归因修正：消融显示换成**纯随机正交基**同样能赢，而振荡基反而较慢
+      —— 起作用的是**基的正交性/可分性**，不是"振荡归纳偏置"。正是
+      "把最慢基周期配到 decay_max"这个设计把 θ 推向 0，制造了塌缩。
+
+    ★ 边界：该改动只在周期/连续信号轴兑现；key→value 绑定轴
+      （MQAR 类任务）无收益甚至回退 —— 共享叠加状态不可分离是独立的
+      结构限制，正交网格救不了。
 
     Returns (rho0, theta0) both of shape (M,), with rho0 in (0,1) and
     theta0 in (0,pi).
@@ -1314,12 +1601,31 @@ def _init_oscillator_grid(num_bases: int, decay_max: float,
             [((m_idx[i] + golden) % 1.0) - 0.5 for i in range(num_bases)],
             dtype=torch.float64) * step * 0.5 * taper)
         theta0 = (base + jitter).clamp(theta_lo_, theta_hi_).to(torch.float32)
+    elif mode == "linear":
+        # 线性均匀 θ ∈ [f, π−f]：把低频端从 π/decay_max 抬到 f，
+        # 同时放开上界到 π−f（覆盖整个 (0,π) 而非只到 Nyquist 一半以下）。
+        # (m+0.5)/M 栅格避开端点代数结构；_assert_no_common_zero 值级守护。
+        f = float(theta_floor)
+        u = (torch.arange(num_bases, dtype=torch.float64) + 0.5) / num_bases
+        theta0 = (f + (math.pi - 2.0 * f) * u).to(torch.float32)
     else:
-        raise ValueError(f"unknown init_mode: {mode!r} (legacy | logfreq | hybrid)")
+        raise ValueError(f"unknown init_mode: {mode!r} "
+                         f"(legacy | logfreq | hybrid | linear)")
     _assert_no_common_zero(theta0, num_bases)
-    if mode == "hybrid":
-        # hybrid 必须过数值质量门（logfreq 的秩缺失是它存在的理由）
+    if mode in ("hybrid", "linear"):
+        # hybrid / linear 必须过数值质量门（logfreq 的秩缺失是它们存在的理由）
         _assert_numerical_rank(theta0, num_bases)
+    elif mode == "logfreq":
+        # P0-3（上游待修清单）：logfreq 是历史默认，不能改成硬拒绝（会破坏
+        # 既有 checkpoint 的可复现性），但也不能静默放行一个 cond~1e16、
+        # 数值秩 24/32 的字典。这里留下可审计的警告，与构造期质量门口径一致。
+        rank, cond = _grid_rank_condition(theta0, L=max(512, 4 * num_bases))
+        if rank < num_bases or cond > 1e6:
+            warnings.warn(
+                f"init_mode='logfreq': damped-oscillator grid is "
+                f"rank-deficient (rank={rank}/{num_bases}, cond={cond:.2e}); "
+                f"consider init_mode='linear' or 'hybrid' for new training.",
+                RuntimeWarning, stacklevel=2)
     return rho0, theta0
 
 

@@ -1,0 +1,50 @@
+{
+ "model": "SimplCore ARCH_STEP 8 · 端到端训练的字符级 LM",
+ "weights_file": "model.npz",
+ "weights_sha256": "ac3838e789569ae93a4ad3bdd7d51be4f7ddf55c886e1c89c6229bdbdeffd6eb",
+ "weights_bytes": 1559564,
+ "train_step": 4200,
+ "param_groups": 54,
+ "params": 202036,
+ "self_attn_keys": 0,
+ "val_bpc_shipped": 2.453225,
+ "val_bpc_std": 0.06772,
+ "old_release_step": 1500,
+ "old_release_val_bpc": 2.7184311218547994,
+ "acceptance": {
+  "n": 10,
+  "passed": 10,
+  "all_pass": true,
+  "C1_toeplitz": 8.881784197001252e-15,
+  "C2_outer_product": 0.0,
+  "C3_window": 8.881784197001252e-16,
+  "C4_full_vs_stream": 1.2434497875801753e-14,
+  "C5_state_bytes_saturated": 139776,
+  "C6_sgc_perturb_all_pass": true,
+  "C6_deltas": {
+   "Toeplitz mixture": 0.01482133,
+   "self-evolving write gate": 0.14450877,
+   "fusion alpha/gamma": 2.90345039,
+   "state inputs Wk/Wv/Wu": 1.83283088,
+   "local window pos": 0.26125548,
+   "unlinked_parameter": 0.0
+  },
+  "C7_all_params_in_graph": true,
+  "C7_zero_grad": [],
+  "C7_loss_drop_bpc": 1.066402,
+  "C8_all_speak": true,
+  "C8_heldout_all_speak": true,
+  "C8_mean_real_word_ratio": 0.8793,
+  "C8_mean_rep3": 0.0,
+  "C9_prefix_replay": 5.995204332975845e-15
+ },
+ "no_scipy_fallback": {
+  "erf_max_diff_vs_scipy": 0.0,
+  "can_load_and_generate": true
+ },
+ "hygiene": {
+  "absolute_paths": 0,
+  "credential_literals": 0
+ },
+ "boundary": "字符级 202k 参数 / 1.1MB 英文剧本；非 1B 中文助手；1.7B torch 链路需本机执行"
+}
