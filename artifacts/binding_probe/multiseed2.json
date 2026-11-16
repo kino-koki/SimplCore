@@ -1,0 +1,118 @@
+{
+  "longctx": {
+    "seed1": {
+      "sgc": {
+        "acc": 1.0,
+        "params": 88956,
+        "train_sec": 6.8
+      },
+      "sgc-bind": {
+        "acc": 1.0,
+        "params": 113536,
+        "train_sec": 147.4
+      },
+      "ts": {
+        "acc": 1.0,
+        "params": 105530,
+        "train_sec": 21.2
+      }
+    },
+    "seed2": {
+      "sgc": {
+        "acc": 1.0,
+        "params": 88956,
+        "train_sec": 7.3
+      },
+      "sgc-bind": {
+        "acc": 1.0,
+        "params": 113536,
+        "train_sec": 153.0
+      },
+      "ts": {
+        "acc": 1.0,
+        "params": 105530,
+        "train_sec": 21.5
+      }
+    }
+  },
+  "recall_transfer": {
+    "seed1": {
+      "sgc": {
+        "acc": 0.105,
+        "params": 94546,
+        "train_sec": 6.4
+      },
+      "sgc-bind": {
+        "acc": 1.0,
+        "params": 119126,
+        "train_sec": 9.1
+      },
+      "ts": {
+        "acc": 0.28,
+        "params": 111120,
+        "train_sec": 8.0
+      }
+    },
+    "seed2": {
+      "sgc": {
+        "acc": 0.14,
+        "params": 94546,
+        "train_sec": 6.4
+      },
+      "sgc-bind": {
+        "acc": 1.0,
+        "params": 119126,
+        "train_sec": 9.2
+      },
+      "ts": {
+        "acc": 0.365,
+        "params": 111120,
+        "train_sec": 8.7
+      }
+    }
+  },
+  "scale": {
+    "seed1": {
+      "sgc": {
+        "acc": 0.16,
+        "params": 636076,
+        "train_sec": 11.7
+      },
+      "sgc-bind": {
+        "acc": 1.0,
+        "params": 832692,
+        "train_sec": 19.4
+      },
+      "ts": {
+        "acc": 0.31,
+        "params": 604712,
+        "train_sec": 17.5
+      }
+    },
+    "seed2": {
+      "sgc": {
+        "acc": 0.12,
+        "params": 636076,
+        "train_sec": 11.9
+      },
+      "sgc-bind": {
+        "acc": 0.955,
+        "params": 832692,
+        "train_sec": 20.1
+      },
+      "ts": {
+        "acc": 0.33,
+        "params": 604712,
+        "train_sec": 17.3
+      }
+    }
+  },
+  "protocol": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "note": "seed0 见各原始账本；本文件补 seeds 1,2"
+  }
+}

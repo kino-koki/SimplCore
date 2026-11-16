@@ -15,6 +15,16 @@
 复杂度 `O(L log L)` 训练、`O(1)` 状态流式推理，**无位置嵌入表、无 `max_len` 截断、
 无 KV 缓存**。
 
+### 运行前自检
+
+```bash
+python -m simplcore --version
+python -m simplcore --doctor
+```
+
+这会显示包版本和最小开发环境诊断，包括缓存根目录、Torch 与 NumPy 可用性，
+便于在不同机器上快速确认工程环境。
+
 > **运行时**：训练/推理部署走**自研 CUDA·HIP/C++ 后端**（算子契约见
 > `simplcore/core/backend/backend_contract.py`，`python -m simplcore.core.backend_contract`）；
 > 仓库内 PyTorch 实现退役为**冻结数值规格（oracle）**——它是后端逐位对齐的数学定义，
@@ -196,10 +206,11 @@ O(k·B·dim) 与 L 无关）、HBM 常驻仍 O(1)；总存储不再是 O(1)，�
 | `sgc` | 谱全局卷积（默认） | 无 | O(1) IIR | `O(D·log L)` |
 | `sgc-nogate` / `sgc-nolocal` | 去内容门控 / 去局部卷积 | 无 | O(1) | `O(D·log L)` |
 | `sgc-r` | SGC-R 谱专家路由（M 基分 G 组 + 逐 token top-k 注入，MoE 路由非注意力；v1.2） | 无 | O(1)（与 sgc 逐字节同） | `O(G·D·log L)`（核按组即建即弃） |
+| `sgc-bind` | SGC + 定容绑定记忆辅助通路（key/value 分离读写，修复轴 D 绑定缺陷；MQAR 前哨 0.815 vs sgc 0.155 / attention 0.31，见 `docs/BINDING_MEMORY_MIXER.md`） | 无 | O(1)（IIR + 槽 2·S·D） | `O(D·log L + L·S·D)`（绑定 scan 逐位置） |
 | `srf` | SGC + selective SSM（输入相关 Δ） | 无 | O(1) chunked scan | `O(D·L/chunk)` |
 
 > 曾经的 `attn` / `hybrid*` / `reason_attn_every` 取值**已删除**：
-> `SimplCoreConfig.validate()` 现在只接受上面五类非注意力 mixer。
+> `SimplCoreConfig.validate()` 现在只接受上面六类非注意力 mixer。
 
 **SGC v1.2 增强**（config 开关，默认全关，开启不影响 FFT/IIR 对偶与纯洁性）：
 
@@ -270,6 +281,7 @@ offline consolidation 术语，且模块内已用**诚实边界**声明"自进�
 | `SimplCore_Paper.md` | **论文主稿（0.2-β，表达力边界刻画）**：四条表达力边界（函数类不匹配 / 静态核天花板 / 时变参数破坏 FFT 对偶 / 内容寻址等参数仍输 attention）、三条结构性质的分路径口径、`[R]/[E]/[A]/[C]` 四级证据分级、47 万参数三臂训练与 SFSC-FDCAO 六臂前哨、§7 投稿硬门槛清单。**不是 SOTA 主张；当前不宜直接投稿** |
 | `docs/SimplCore_Paper_v0.1alpha.md` | **0.1-α 原稿归档**（逐字节保留）：架构白皮书 v1.1.2 / 定理 1–4 / 命题 5–7 / §7 分轴等效参数推测 / 旧章节号，供口径追溯 |
 | `docs/THEORETICAL_EDGE.md` | **逐模块的机制层主张与边界论证**：每个模块相对传统 Transformer 的复杂度/状态/机制主张与边界（可执行断言在 `eval/claims_audit.py`） |
+| `docs/EVIDENCE_CHAIN.md` | **证据链汇总（sgc-bind）**：九项验收清单 × 13 份账本索引——MQAR/扩规模/长上下文/等预算(Mamba2)/真实词召回迁移/诚实负结果/真实语料成本/MI250 就绪 |
 | `docs/ARCHITECTURE.md` | **总体架构设计**：数据流、mixer 分类、流式、记忆、编解码、训练/评测 |
 | `docs/SGC_CORE.md` | **SGC mixer 深度解析**：振荡基字典、FFT↔IIR 对偶、内容门控、局部路径、四层闸门、流式状态 |
 | `docs/SIMPLUNITY.md` | **SimplUnity 技术文档（必读）**：冻结基座 + 路由门 + 域专属专家的 MoA 全解——前向数据流图、ExpertRouter 的 top-k/lb/z-loss 数学、index_add 梯度工程、GATE-3 无回归门、WeightBudget 三层账、五场景使用指南、诚实边界 |
@@ -397,8 +409,23 @@ offline consolidation 术语，且模块内已用**诚实边界**声明"自进�
   **这是机制实验件，绝非声称模型「有意识」**——论文本身也只是论证这些是意识的*可能*
   必要条件，且明确可被非生物系统复现。详见 `docs/BIO_ENHANCE.md`
 - ⚠️ **1B 以上规模从未实际训练**；配置与链路已打通，曲线待测（目标硬件：1× AMD Instinct MI250）
-- ⚠️ 未与 S4 / Mamba / Hyena / GLA 在 LRA 等公认基准做公平对比
-- ⚠️ 长上下文外推只有"输出有限"证据，无质量证据
+- ⚠️ 未在 LRA 等公认基准做规模化公平对比；已有 **smoke 规模等预算对照**
+  （合成任务：sgc-bind 胜 Mamba2 96/96 窗；**真实中文语料：纯 sgc/srf 胜
+  Transformer（0.836/0.831）但输 Mamba2 ~1.5 倍（1.545/1.537）**；
+  sgc-bind 因绑定通道在纯 LM 上再拖 21%——根因已定位并量化，
+  见 `docs/EVIDENCE_CHAIN.md` 与 `lm_vs_mamba2.json`）
+  （`equal_budget` harness，64K tokens）：`sgc-bind` vs **Mamba2**（HF 参考实现）
+  PPL 38.75 vs 56.54（32/32 验证窗全胜、三闸门全过）、vs Transformer
+  38.75 vs 40.02——见 `docs/BINDING_MEMORY_MIXER.md` §4.4（合成数据小规模，
+  不外推）。**D=256/8 层档**（128K tokens、32 步严重欠训练）：sgc-bind vs
+  Transformer PPL 4089 vs 3966（ratio 1.031，在 ≤1.05 容差内）、sgc vs
+  Transformer 1804 vs 3771——早期收敛口径，证据力弱于 smoke 档（§4.5）
+- ⚠️ **LRA 任务谱前哨**（`research/binding/`，≤1M 参数）：MQAR（3 seeds
+  全胜 attention）、**L=256 长上下文联想召回 1.000**、真实词分布召回迁移
+  **1.000 vs attention 0.35**、Dyck-1 状态分类 sgc-bind 0.95（+8pt vs sgc，
+  ts 0.98 仍最高）；**诚实负结果**：list-ops ts 0.485 > sgc 0.335 >
+  sgc-bind 0.265（层级运算 attention 强项）、fuzzy-jump 与多 needle 任务
+  在该预算下无区分度（全部 chance / 全部饱和）
 - ❌ 不得据此宣称任何 SOTA
 
 ### 训练增强集成（`--enhance`）

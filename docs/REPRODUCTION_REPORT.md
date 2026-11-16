@@ -6,6 +6,22 @@
 > 修复落地情况以注记标明：**R1 ✅ 已落地（`memory/binding_memory.py`）、
 > R2 ✅ 已落地（`sgc_init_mode="hybrid"`，实测数字与本报告一致）、
 > R3 ✅ 已落地（`decay_scale`）、R4 ⬜ 规划、R5 ⬜ 定位 fallback**。
+>
+> **R1 三期落地（2026-11-15）**：绑定记忆已从外挂组件升级为 **mixer 级
+> 辅助通路** `mixer="sgc-bind"`（`arch/bsgc.py`，`BindingSpectralConv`）。
+> 三处可学性修正（绑定在归一化残差流 / 残差形式寻址投影 / 硬 FIFO 写入
+> + 可学习锐度 τ；软门控写入被探针证伪并保留为失败对照）后：
+> **MQAR-4** 3 seeds 全部反超 attention（sgc-bind 均值 **0.785** vs
+> ts 0.325 vs sgc 0.158；CI 不重叠；参数 31.8K < TS 35.8K）；**扩规模**
+> D=128/4 层 0.73 vs ts 0.26；**长上下文 L=256 拉满 1.000**（ts 0.28）；
+> **等预算 harness vs Mamba2**（HF 参考实现）PPL 38.75 vs 56.54、32/32
+> 窗全胜、三闸门全过；精确指向 2 seeds 拉满 1.000。**四期扩展**：
+> 真实词分布联想召回迁移 1.000 vs attention 0.35（迁移边界关闭）；
+> list-ops 诚实负结果（ts 0.485 > sgc 0.335 > sgc-bind 0.265，层级运算
+> 仍是 attention 强项）；多 needle 深度分桶任务对 ≤1M 参数无区分度
+> （三臂全 1.0）。真实语料字符 LM 上比 sgc 差 ~5.7% PPL（检索能力专用
+> 增强的诚实成本）。设计、证伪过程与边界见
+> `docs/BINDING_MEMORY_MIXER.md`。
 
 ## 一、先把缺陷定位准：不是"聚合"，是"联想召回"
 

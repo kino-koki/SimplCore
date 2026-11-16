@@ -105,6 +105,11 @@ ARGS=(
 [[ -n "$RESUME" ]]   && ARGS+=(--resume "$RESUME")
 [[ "$TIME_BUDGET_MIN" -gt 0 ]] && ARGS+=(--time-budget-min "$TIME_BUDGET_MIN")
 
+# 分块 BPTT（4M 课程在 128GB HBM 内 OOM-free 的既定路径，见 campaign P1-chunked-4m-nooom；
+# 0 = 关闭走整段 FFT，此时 4M 窗口需 --max-kernel-gib > 30）
+TRAIN_CHUNK="${TRAIN_CHUNK:-8192}"
+[[ "$TRAIN_CHUNK" -gt 0 ]] && ARGS+=(--train-chunk "$TRAIN_CHUNK")
+
 # 编译 / 图 / 早停（与 simplcore.core.train 的开关一一对应）
 [[ "$COMPILE" -eq 1 ]] && ARGS+=(--compile --compile-mode max-autotune)
 [[ "$CUDA_GRAPH" -eq 1 ]] && ARGS+=(--cuda-graph)
@@ -119,7 +124,7 @@ echo "[MI250] launching torchrun --nproc_per_node=$NUM_GCD -m simplcore.core.tra
 echo "[MI250] ARGS: ${ARGS[*]}"
 echo "[MI250] env: ROCR_VISIBLE_DEVICES=$ROCR_VISIBLE_DEVICES HSA_FORCE_FINE_GRAIN_PCIE=$HSA_FORCE_FINE_GRAIN_PCIE PYTORCH_HIP_ALLOC_CONF=$PYTORCH_HIP_ALLOC_CONF OMP_NUM_THREADS=$OMP_NUM_THREADS"
 
-torchrun --nproc_per_node="$NUM_GCD" -m simplcore.core.train "${ARGS[@]}" \
+torchrun --nproc_per_node="$NUM_GCD" -m simplcore.core.training.train "${ARGS[@]}" \
     || { echo "[FATAL] training exited non-zero; 见 $OUT_DIR/metrics.jsonl 与 run.json" >&2; exit 1; }
 
 echo "[MI250] done. 最终模型: $OUT_DIR/last.pt（RESTORE_BEST=1 时即最佳 val 检查点）"

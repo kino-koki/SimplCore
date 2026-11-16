@@ -1,0 +1,21 @@
+{
+  "sgc-bind": {
+    "acc": 1.0,
+    "params": 112366,
+    "train_sec": 44.4
+  },
+  "ts": {
+    "acc": 0.305,
+    "params": 104360,
+    "train_sec": 109.5
+  },
+  "protocol": {
+    "task": "MQAR-4 L=256 长训 800 步",
+    "dim": 64,
+    "layers": 2,
+    "batch": 8,
+    "lr": "3e-3→1e-3@400",
+    "seed": 0,
+    "note": "检验 150 步优势是否随训练持续"
+  }
+}

@@ -144,11 +144,12 @@ TASK_SPECS: Dict[str, Dict[str, Any]] = {
 # 臂
 # ---------------------------------------------------------------------------
 def _sgc_like(dim: int, layers: int, num_bases: int, vocab_out: int,
-              seed: int) -> SimplCoreModel:
+              seed: int, mixer: str = "sgc") -> SimplCoreModel:
     torch.manual_seed(seed)
     cfg = SimplCoreConfig(vocab_size=VOCAB, dim=dim, num_layers=layers,
                           num_bases=num_bases, ffn_ratio=2.0,
                           decay_max=256.0, local_kernel=4,
+                          mixer=mixer, srf_heads=4, srf_chunk=32,
                           tie_embeddings=False)
     model = SimplCoreModel(cfg)
     # 输出类别 > 词表时扩表头（任务类别空间与输入 vocab 解耦）
@@ -182,6 +183,16 @@ def _make_arm(arm: str, dim: int, layers: int, vocab_out: int,
               seed: int) -> Tuple[nn.Module, Dict[str, int]]:
     if arm == "sgc":
         m = _sgc_like(dim, layers, num_bases=64, vocab_out=vocab_out, seed=seed)
+    elif arm == "sgc-bind":
+        # R1 修复落地臂：SGC + 定容绑定记忆辅助通路（key/value 分离 + 可微
+        # 门控写入）。槽数覆盖本协议最长序列（mqar L=96 / counting L=96 →
+        # 绑定单元数 = L-1），保证「信号绑定不被容量挤出」的机制前提。
+        m = _sgc_like(dim, layers, num_bases=64, vocab_out=vocab_out,
+                      seed=seed, mixer="sgc-bind")
+    elif arm == "srf":
+        # 仓库内置 selective-SSM mixer（Mamba 机制）——任务级内部对照臂
+        m = _sgc_like(dim, layers, num_bases=16, vocab_out=vocab_out,
+                      seed=seed, mixer="srf")
     elif arm == "local":
         m = _sgc_like(dim, layers, num_bases=2, vocab_out=vocab_out, seed=seed)
     elif arm == "ts":
@@ -259,7 +270,7 @@ def run_probe(tasks: Optional[List[str]] = None,
     seed 全程固定：同参数重跑结果确定性一致（可复现性由测试锁定）。
     """
     tasks = tasks or list(TASK_SPECS)
-    arms = arms or ["sgc", "local", "ts"]
+    arms = arms or ["sgc", "sgc-bind", "local", "ts"]
     dev = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
     rows: Dict[str, Dict[str, Any]] = {}
     for task in tasks:
@@ -308,7 +319,7 @@ def run_probe_multiseed(tasks: Optional[List[str]] = None,
     胜出）；CI 不重叠才可写"高于"。
     """
     tasks = tasks or list(TASK_SPECS)
-    arms = arms or ["sgc", "local", "ts"]
+    arms = arms or ["sgc", "sgc-bind", "local", "ts"]
     rows: Dict[str, Dict[str, Any]] = {}
     dev = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
     for task in tasks:
@@ -337,7 +348,8 @@ def run_probe_multiseed(tasks: Optional[List[str]] = None,
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description="轴 C/D 能力对照（X-axis-probe）")
     ap.add_argument("--tasks", nargs="+", default=list(TASK_SPECS))
-    ap.add_argument("--arms", nargs="+", default=["sgc", "local", "ts"])
+    ap.add_argument("--arms", nargs="+",
+                    default=["sgc", "sgc-bind", "local", "ts"])
     ap.add_argument("--steps", type=int, default=600)
     ap.add_argument("--dim", type=int, default=32)
     ap.add_argument("--layers", type=int, default=2)

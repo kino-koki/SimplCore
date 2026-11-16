@@ -1,0 +1,62 @@
+{
+  "mqar_g4": {
+    "seed1": {
+      "sgc": {
+        "acc": 0.16,
+        "params": 25610
+      },
+      "sgc-bind": {
+        "acc": 0.78,
+        "params": 31758
+      },
+      "ts": {
+        "acc": 0.295,
+        "params": 35816
+      }
+    },
+    "seed2": {
+      "sgc": {
+        "acc": 0.16,
+        "params": 25610
+      },
+      "sgc-bind": {
+        "acc": 0.76,
+        "params": 31758
+      },
+      "ts": {
+        "acc": 0.37,
+        "params": 35816
+      }
+    }
+  },
+  "precise_pointer": {
+    "seed1": {
+      "sgc": {
+        "acc": 0.92,
+        "params": 25874
+      },
+      "sgc-bind": {
+        "acc": 1.0,
+        "params": 32022
+      },
+      "ts": {
+        "acc": 1.0,
+        "params": 36080
+      }
+    },
+    "seed2": {
+      "sgc": {
+        "acc": 0.945,
+        "params": 25874
+      },
+      "sgc-bind": {
+        "acc": 1.0,
+        "params": 32022
+      },
+      "ts": {
+        "acc": 1.0,
+        "params": 36080
+      }
+    }
+  }
+}

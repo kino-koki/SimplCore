@@ -1,0 +1,73 @@
+{
+  "L96_srf_vs_bind": {
+    "srf": {
+      "acc": 0.14,
+      "params": 83628,
+      "train_sec": 7.9
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 4.3
+    },
+    "protocol": {
+      "L": 96,
+      "G": 4,
+      "steps": 150,
+      "batch": 8,
+      "dim": 64,
+      "layers": 2,
+      "seed": 0,
+      "chance": 0.125
+    }
+  },
+  "L256_srf_vs_bind": {
+    "srf": {
+      "acc": 0.12,
+      "params": 83628,
+      "train_sec": 23.8
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 7.9
+    },
+    "protocol": {
+      "L": 256,
+      "G": 4,
+      "steps": 150,
+      "batch": 8,
+      "dim": 64,
+      "layers": 2,
+      "seed": 0,
+      "chance": 0.125
+    }
+  },
+  "dyck1_L48": {
+    "sgc": {
+      "acc": 0.88,
+      "params": 87234,
+      "train_sec": 5.8
+    },
+    "sgc-bind": {
+      "acc": 0.91,
+      "params": 111814,
+      "train_sec": 8.1
+    },
+    "ts": {
+      "acc": 0.995,
+      "params": 102215,
+      "train_sec": 6.2
+    },
+    "protocol": {
+      "task": "Dyck-1 状态三分类",
+      "L": 48,
+      "classes": 3,
+      "dim": 64,
+      "layers": 2,
+      "steps": 400,
+      "batch": 8,
+      "seed": 0
+    }
+  }
+}

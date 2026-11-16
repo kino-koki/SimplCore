@@ -1,0 +1,29 @@
+{
+  "sgc": {
+    "val_loss": 1.7794,
+    "val_ppl": 5.93,
+    "params": 129922,
+    "train_sec": 13.8
+  },
+  "sgc-bind": {
+    "val_loss": 1.8365,
+    "val_ppl": 6.27,
+    "params": 154502,
+    "train_sec": 22.6
+  },
+  "ts": {
+    "val_loss": 2.402,
+    "val_ppl": 11.05,
+    "params": 135680,
+    "train_sec": 11.9
+  },
+  "protocol": {
+    "dim": 64,
+    "layers": 2,
+    "steps": 400,
+    "batch": 16,
+    "seq": 128,
+    "corpus": "corpus.txt (英文文本，字符级)",
+    "note": "90/10 train/val 切分；同 steps/lr/seed"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "sgc": {
+    "acc": 0.15,
+    "params": 101202,
+    "train_sec": 7.0
+  },
+  "sgc-bind": {
+    "acc": 1.0,
+    "params": 125782,
+    "train_sec": 10.3
+  },
+  "ts": {
+    "acc": 0.35,
+    "params": 117776,
+    "train_sec": 9.1
+  },
+  "protocol": {
+    "task": "真实词分布 MQAR（噪声=语料一元频率采样）",
+    "dim": 64,
+    "layers": 2,
+    "steps": 400,
+    "batch": 8,
+    "L": 64,
+    "G": 4,
+    "vocab": 136,
+    "classes": 8,
+    "chance": 0.125,
+    "seed": 0,
+    "keys": [
+      "coriolanus",
+      "menenius",
+      "first",
+      "they",
+      "shall",
+      "them",
+      "their",
+      "which"
+    ],
+    "values": [
+      "sicinius",
+      "from",
+      "well",
+      "were",
+      "then",
+      "second",
+      "had",
+      "let"
+    ],
+    "note": "词表分布真实、绑定结构合成；keys/values 为中频真实词"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "sgc-bind_vs_transformer_seed1234": {
+    "ppl_sc": 4088.6993566560604,
+    "ppl_ts": 3965.895171616651,
+    "ppl_ratio": 1.0309650607808047,
+    "ci95_diff": [
+      0.021473547071218492,
+      0.04020760804414749
+    ],
+    "sc_wins": 4,
+    "ts_wins": 28,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": true,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 181.6
+  },
+  "sgc-bind_vs_transformer_seed1": {
+    "ppl_sc": 4081.744197704373,
+    "ppl_ts": 3986.2948361915137,
+    "ppl_ratio": 1.0239443807934818,
+    "ci95_diff": [
+      0.017224811017513275,
+      0.03009080588817596
+    ],
+    "sc_wins": 5,
+    "ts_wins": 27,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": true,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 185.0
+  },
+  "sgc-bind_vs_transformer_seed2": {
+    "ppl_sc": 4117.50066333709,
+    "ppl_ts": 3972.89481449175,
+    "ppl_ratio": 1.0363981065690107,
+    "ci95_diff": [
+      0.025718061625957488,
+      0.045170097053050993
+    ],
+    "sc_wins": 3,
+    "ts_wins": 29,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": true,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 187.9
+  }
+}

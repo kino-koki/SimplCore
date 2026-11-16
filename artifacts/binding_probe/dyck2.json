@@ -1,0 +1,67 @@
+{
+  "sgc": {
+    "acc": 1.0,
+    "params": 87234,
+    "train_sec": 11.8
+  },
+  "sgc-bind": {
+    "acc": 1.0,
+    "params": 111814,
+    "train_sec": 14.8
+  },
+  "ts": {
+    "acc": 1.0,
+    "params": 102280,
+    "train_sec": 12.6
+  },
+  "protocol": {
+    "task": "Dyck-2 状态三分类（两类括号栈匹配）",
+    "L": 48,
+    "classes": 3,
+    "dim": 64,
+    "layers": 2,
+    "steps": 500,
+    "batch": 8,
+    "seeds": [
+      0,
+      1,
+      2
+    ]
+  },
+  "seeds": {
+    "seed1": {
+      "sgc": {
+        "acc": 1.0,
+        "params": 87234,
+        "train_sec": 11.7
+      },
+      "sgc-bind": {
+        "acc": 1.0,
+        "params": 111814,
+        "train_sec": 14.7
+      },
+      "ts": {
+        "acc": 1.0,
+        "params": 102280,
+        "train_sec": 13.1
+      }
+    },
+    "seed2": {
+      "sgc": {
+        "acc": 1.0,
+        "params": 87234,
+        "train_sec": 11.9
+      },
+      "sgc-bind": {
+        "acc": 1.0,
+        "params": 111814,
+        "train_sec": 14.8
+      },
+      "ts": {
+        "acc": 1.0,
+        "params": 102280,
+        "train_sec": 12.9
+      }
+    }
+  }
+}

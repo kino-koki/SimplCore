@@ -1,0 +1,60 @@
+{
+  "fuzzy_jump": {
+    "sgc": {
+      "acc": 0.245,
+      "params": 87234,
+      "train_sec": 6.3
+    },
+    "sgc-bind": {
+      "acc": 0.245,
+      "params": 111814,
+      "train_sec": 7.9
+    },
+    "ts": {
+      "acc": 0.255,
+      "params": 102735,
+      "train_sec": 6.2
+    },
+    "protocol": {
+      "task": "fuzzy-jump 指针追踪（步数 mod 5）",
+      "n": 40,
+      "L": 40,
+      "classes": 5,
+      "chance": 0.2,
+      "dim": 64,
+      "layers": 2,
+      "steps": 400,
+      "batch": 8,
+      "seed": 0
+    }
+  },
+  "dyck1": {
+    "sgc": {
+      "acc": 0.87,
+      "params": 87234,
+      "train_sec": 5.3
+    },
+    "sgc-bind": {
+      "acc": 0.95,
+      "params": 111814,
+      "train_sec": 10.8
+    },
+    "ts": {
+      "acc": 0.98,
+      "params": 102215,
+      "train_sec": 8.5
+    },
+    "protocol": {
+      "task": "Dyck-1 状态三分类（负前缀/归零/开放）",
+      "L": 24,
+      "classes": 3,
+      "chance": "≈1/3（随机游走基率）",
+      "dim": 64,
+      "layers": 2,
+      "steps": 400,
+      "batch": 8,
+      "seed": 0,
+      "note": "代码结构代理任务：括号匹配 = Dyck 语言成员/状态判定"
+    }
+  }
+}

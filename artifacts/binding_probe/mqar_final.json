@@ -1,0 +1,27 @@
+{
+  "sgc": {
+    "acc": 0.155,
+    "params": 25610,
+    "train_sec": 9.4
+  },
+  "sgc-bind": {
+    "acc": 0.815,
+    "params": 31758,
+    "train_sec": 116.8
+  },
+  "ts": {
+    "acc": 0.31,
+    "params": 35816,
+    "train_sec": 58.6
+  },
+  "chance": 0.125,
+  "protocol": {
+    "steps": 300,
+    "batch": 8,
+    "lr": 0.003,
+    "n_eval": 200,
+    "task": "mqar_g4",
+    "seed": 0,
+    "note": "真批量前向，三臂同口径"
+  }
+}

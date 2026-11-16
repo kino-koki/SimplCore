@@ -1,0 +1,33 @@
+{
+  "L96_G16": {
+    "sgc": {
+      "acc": 0.05,
+      "params": 90370,
+      "train_sec": 3.6
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 114950,
+      "train_sec": 5.4
+    },
+    "ts": {
+      "acc": 0.035,
+      "params": 106944,
+      "train_sec": 6.7
+    },
+    "protocol": {
+      "L": 96,
+      "G": 16,
+      "n_key": 16,
+      "n_val": 16,
+      "classes": 16,
+      "chance": 0.0625,
+      "dim": 64,
+      "layers": 2,
+      "steps": 200,
+      "batch": 8,
+      "seed": 0,
+      "note": "键空间 16（gen_mqar 的 n_cls 上限 8 之外的专用生成器）"
+    }
+  }
+}

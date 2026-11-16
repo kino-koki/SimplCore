@@ -1,0 +1,74 @@
+{
+  "L256_G4_seed1": {
+    "sgc": {
+      "acc": 0.125,
+      "params": 87786,
+      "train_sec": 4.5
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 7.9
+    },
+    "ts": {
+      "acc": 0.29,
+      "params": 104360,
+      "train_sec": 18.7
+    },
+    "protocol": {
+      "L": 256,
+      "G": 4,
+      "steps": 150,
+      "batch": 8,
+      "seed": 1
+    }
+  },
+  "L256_G4_seed2": {
+    "sgc": {
+      "acc": 0.16,
+      "params": 87786,
+      "train_sec": 4.5
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 7.9
+    },
+    "ts": {
+      "acc": 0.26,
+      "params": 104360,
+      "train_sec": 20.2
+    },
+    "protocol": {
+      "L": 256,
+      "G": 4,
+      "steps": 150,
+      "batch": 8,
+      "seed": 2
+    }
+  },
+  "L1024_G4_seed0": {
+    "sgc": {
+      "acc": 0.145,
+      "params": 87786,
+      "train_sec": 15.7
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 65.7
+    },
+    "ts": {
+      "acc": 0.115,
+      "params": 104360,
+      "train_sec": 215.8
+    },
+    "protocol": {
+      "L": 1024,
+      "G": 4,
+      "steps": 150,
+      "batch": 8,
+      "seed": 0
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "sgc": {
+    "acc": 0.49,
+    "params": 635012,
+    "train_sec": 46.5
+  },
+  "sgc-bind": {
+    "acc": 0.445,
+    "params": 831628,
+    "train_sec": 80.6
+  },
+  "ts": {
+    "acc": 0.505,
+    "params": 603035,
+    "train_sec": 62.9
+  },
+  "protocol": {
+    "task": "list-ops（嵌套 max/min/sum mod 10）",
+    "dim": 128,
+    "layers": 4,
+    "steps": 800,
+    "batch": 16,
+    "L": 48,
+    "classes": 10,
+    "chance": 0.1,
+    "seed": 0,
+    "note": "lr 3e-3→1e-3 阶梯 @400，grad clip 1.0"
+  }
+}

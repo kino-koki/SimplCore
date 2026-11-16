@@ -1,0 +1,34 @@
+{
+  "seed1": {
+    "sgc": {
+      "acc": 0.485,
+      "params": 635012,
+      "train_sec": 46.3
+    },
+    "sgc-bind": {
+      "acc": 0.39,
+      "params": 831628,
+      "train_sec": 73.6
+    }
+  },
+  "seed2": {
+    "sgc": {
+      "acc": 0.49,
+      "params": 635012,
+      "train_sec": 47.8
+    },
+    "sgc-bind": {
+      "acc": 0.48,
+      "params": 831628,
+      "train_sec": 78.6
+    }
+  },
+  "protocol": {
+    "task": "list-ops",
+    "dim": 128,
+    "layers": 4,
+    "steps": 800,
+    "batch": 16,
+    "seed_note": "seed0 见 listops_retry.json"
+  }
+}

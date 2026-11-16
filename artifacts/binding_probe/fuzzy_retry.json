@@ -1,0 +1,28 @@
+{
+  "sgc": {
+    "acc": 0.305,
+    "params": 635012,
+    "train_sec": 82.5
+  },
+  "sgc-bind": {
+    "acc": 0.32,
+    "params": 831628,
+    "train_sec": 133.1
+  },
+  "ts": {
+    "acc": 0.295,
+    "params": 601487,
+    "train_sec": 96.1
+  },
+  "protocol": {
+    "task": "fuzzy-jump（步数 mod 5）",
+    "dim": 128,
+    "layers": 4,
+    "steps": 1500,
+    "batch": 16,
+    "L": 40,
+    "chance": 0.2,
+    "seed": 0,
+    "note": "lr 阶梯 1e-3→3e-3→1e-3，grad clip 1.0"
+  }
+}

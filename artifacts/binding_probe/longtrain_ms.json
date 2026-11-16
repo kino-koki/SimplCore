@@ -1,0 +1,35 @@
+{
+  "seed1": {
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 7.7
+    },
+    "ts": {
+      "acc": 0.26,
+      "params": 104360,
+      "train_sec": 17.9
+    }
+  },
+  "seed2": {
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 8.0
+    },
+    "ts": {
+      "acc": 0.235,
+      "params": 104360,
+      "train_sec": 19.6
+    }
+  },
+  "protocol": {
+    "task": "MQAR-4 L=256",
+    "steps": 150,
+    "batch": 8,
+    "lr": 0.003,
+    "dim": 64,
+    "layers": 2,
+    "note": "seed0 见 longtrain/长上下文账本"
+  }
+}

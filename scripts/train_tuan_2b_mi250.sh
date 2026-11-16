@@ -141,7 +141,7 @@ run_stage() {
     if [[ "$DRY_RUN" -eq 1 ]]; then
         return 0
     fi
-    torchrun --nproc_per_node="$NUM_GCD" -m simplcore.core.train "${args[@]}" \
+    torchrun --nproc_per_node="$NUM_GCD" -m simplcore.core.training.train "${args[@]}" \
         || { echo "[FATAL] stage seq=$seq 失败；见 $OUT_DIR/metrics.jsonl" >&2; exit 1; }
 }
 

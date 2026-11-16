@@ -1,0 +1,83 @@
+{
+  "listops": {
+    "sgc": {
+      "acc": 0.335,
+      "params": 87234,
+      "train_sec": 5.0
+    },
+    "sgc-bind": {
+      "acc": 0.265,
+      "params": 111814,
+      "train_sec": 6.8
+    },
+    "ts": {
+      "acc": 0.485,
+      "params": 103515,
+      "train_sec": 6.1
+    },
+    "protocol": {
+      "task": "listops(嵌套 max/min/sum mod10)",
+      "dim": 64,
+      "layers": 2,
+      "steps": 300,
+      "batch": 8,
+      "L": 48,
+      "depth": "1-2 层嵌套",
+      "classes": 10,
+      "chance": 0.1,
+      "seed": 0
+    }
+  },
+  "multineedle": {
+    "chance": 0.0625,
+    "sgc": {
+      "acc": 1.0,
+      "per_depth_acc": {
+        "0.1": 1.0,
+        "0.3": 1.0,
+        "0.5": 1.0,
+        "0.7": 1.0,
+        "0.9": 1.0
+      },
+      "worst_depth_acc": 1.0,
+      "params": 89596,
+      "train_sec": 27.6
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "per_depth_acc": {
+        "0.1": 1.0,
+        "0.3": 1.0,
+        "0.5": 1.0,
+        "0.7": 1.0,
+        "0.9": 1.0
+      },
+      "worst_depth_acc": 1.0,
+      "params": 114176,
+      "train_sec": 383.3
+    },
+    "ts": {
+      "acc": 1.0,
+      "per_depth_acc": {
+        "0.1": 1.0,
+        "0.3": 1.0,
+        "0.5": 1.0,
+        "0.7": 1.0,
+        "0.9": 1.0
+      },
+      "worst_depth_acc": 1.0,
+      "params": 106170,
+      "train_sec": 49.4
+    },
+    "protocol": {
+      "task": "多 needle 深度分桶检索 (NeedleCorpus L=128, 4 needle/句)",
+      "dim": 64,
+      "layers": 2,
+      "steps": 300,
+      "batch": 8,
+      "n_values": 16,
+      "seed": 0,
+      "note": "逐深度分桶报告，worst-depth 单列（禁 average-only）"
+    }
+  }
+}

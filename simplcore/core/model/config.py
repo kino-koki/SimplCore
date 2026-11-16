@@ -200,6 +200,10 @@ class SimplCoreConfig:
     #: "logspace"（``rho = exp(-softplus(raw))``，可表达 4M 所需 0.99999975，
     #: 仅 SGC 家族 mixer 支持；state_dict 自动迁移）。
     sgc_rho_param: str = "sigmoid"
+    #: 核归一化："none"（默认，逐位兼容旧 checkpoint）| "analytic_l2"
+    #: （每振荡基按无限长 L2 能量归一 readout 系数，消除注入幅度随序列
+    #: 长度的漂移；闭式、与 L 无关，FFT/IIR 对偶保持）。零新增参数。
+    sgc_kernel_norm: str = "none"
     #: ``snn-sgc`` 的 LIF 膜电位泄漏、阈值与 surrogate 梯度斜率。
     #: 只在实验性脉冲 mixer 中消费，其他 mixer 的行为不受影响。
     snn_decay: float = 0.9
@@ -235,6 +239,15 @@ class SimplCoreConfig:
     #: switch 负载均衡辅助损失权重（0 = 关闭；训练侧显式取用，
     #: model/train 主路径不自动加）。
     sgc_route_aux: float = 1.0
+    # -- SGC-Bind 定容绑定记忆辅助通路（mixer="sgc-bind"）---------------------
+    #: 槽数 S（定容 O(S·D)，与序列长度无关）。应 ≥ 任务的关键绑定数；
+    #: 序列长于 S 时最老绑定被 FIFO 覆盖。
+    sgc_bind_slots: int = 128
+    #: 注入强度 ``mem_gate`` 的初始 logit（默认 0 → σ=0.5 起步）。
+    sgc_bind_gate_init: float = 0.0
+    #: 槽写入模式：``"bound"``（默认，硬 FIFO one-hot，探针实证可学）|
+    #: ``"soft"``（逐槽 σ 门控——**失败对照**，探针实证槽内容趋同、梯度相消）。
+    sgc_bind_mode: str = "bound"
 
     @classmethod
     def from_gate_policy(cls, gate: "GateConfig", **kw) -> "SimplCoreConfig":
@@ -622,6 +635,13 @@ def analytic_params(cfg: SimplCoreConfig) -> int:
         # SGC-R 谱专家路由器：W(D→G)+b(G)
         if cfg.mixer == "sgc-r":
             per += cfg.sgc_route_groups * d + cfg.sgc_route_groups
+        # SGC-Bind 定容绑定记忆辅助通路：addr_key/addr_value/addr_query 三个
+        # D×D 投影 + 读出锐度 τ(1) + 注入强度标量 1；soft 模式另有写入门
+        # W(2D→S)+b(S)（bound 模式无写入门参数）。
+        if cfg.mixer == "sgc-bind":
+            per += 3 * d * d + 2
+            if cfg.sgc_bind_mode == "soft":
+                per += cfg.sgc_bind_slots * (2 * d) + cfg.sgc_bind_slots
         return per
 
     per = sgc_per()

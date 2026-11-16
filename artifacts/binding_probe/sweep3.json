@@ -1,0 +1,32 @@
+{
+  "L2048_G4": {
+    "sgc": {
+      "acc": 0.09,
+      "params": 87786,
+      "train_sec": 26.9
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 180.5
+    },
+    "ts": {
+      "acc": 0.09,
+      "params": 104360,
+      "train_sec": 364.6
+    },
+    "protocol": {
+      "L": 2048,
+      "G": 4,
+      "steps": 120,
+      "batch": 8,
+      "dim": 64,
+      "layers": 2,
+      "seed": 0,
+      "chance": 0.125,
+      "step_override": {
+        "ts": 60
+      }
+    }
+  }
+}

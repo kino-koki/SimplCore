@@ -1,0 +1,114 @@
+{
+  "L128_G4": {
+    "sgc": {
+      "acc": 0.135,
+      "params": 87786,
+      "train_sec": 3.2
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 4.8
+    },
+    "ts": {
+      "acc": 0.265,
+      "params": 104360,
+      "train_sec": 6.3
+    },
+    "protocol": {
+      "L": 128,
+      "G": 4,
+      "n_cls": 8,
+      "steps": 150,
+      "batch": 8,
+      "dim": 64,
+      "layers": 2,
+      "seed": 0,
+      "chance": 0.125
+    }
+  },
+  "L256_G4": {
+    "sgc": {
+      "acc": 0.12,
+      "params": 87786,
+      "train_sec": 4.6
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 8.0
+    },
+    "ts": {
+      "acc": 0.115,
+      "params": 104360,
+      "train_sec": 18.2
+    },
+    "protocol": {
+      "L": 256,
+      "G": 4,
+      "n_cls": 8,
+      "steps": 150,
+      "batch": 8,
+      "dim": 64,
+      "layers": 2,
+      "seed": 0,
+      "chance": 0.125
+    }
+  },
+  "L512_G4": {
+    "sgc": {
+      "acc": 0.09,
+      "params": 87786,
+      "train_sec": 7.6
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 21.4
+    },
+    "ts": {
+      "acc": 0.13,
+      "params": 104360,
+      "train_sec": 67.9
+    },
+    "protocol": {
+      "L": 512,
+      "G": 4,
+      "n_cls": 8,
+      "steps": 150,
+      "batch": 8,
+      "dim": 64,
+      "layers": 2,
+      "seed": 0,
+      "chance": 0.125
+    }
+  },
+  "L96_G8": {
+    "sgc": {
+      "acc": 0.155,
+      "params": 87786,
+      "train_sec": 4.1
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 5.6
+    },
+    "ts": {
+      "acc": 0.17,
+      "params": 104360,
+      "train_sec": 6.6
+    },
+    "protocol": {
+      "L": 96,
+      "G": 8,
+      "n_cls": 8,
+      "steps": 200,
+      "batch": 8,
+      "dim": 64,
+      "layers": 2,
+      "seed": 0,
+      "chance": 0.125
+    }
+  }
+}

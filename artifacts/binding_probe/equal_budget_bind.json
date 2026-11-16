@@ -1,0 +1,48 @@
+{
+  "sgc-bind_vs_mamba2": {
+    "sc_val_loss": null,
+    "baseline_val_loss": null,
+    "sc_params_non_emb": null,
+    "baseline_params_non_emb": null,
+    "sc_tokens": null,
+    "baseline_tokens": null,
+    "ppl_sc": 38.75192890728873,
+    "ppl_baseline": 56.541930884997164,
+    "ppl_ratio": 0.6853662105404179,
+    "ci95_diff": [
+      -0.40183348543941977,
+      -0.3523364637047053
+    ],
+    "sc_wins_windows": 32,
+    "baseline_wins_windows": 0,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": true,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 29.2
+  },
+  "sgc-bind_vs_transformer": {
+    "sc_val_loss": null,
+    "baseline_val_loss": null,
+    "sc_params_non_emb": null,
+    "baseline_params_non_emb": null,
+    "sc_tokens": null,
+    "baseline_tokens": null,
+    "ppl_sc": 38.75192890728873,
+    "ppl_baseline": 40.02400814559195,
+    "ppl_ratio": 0.9682170952575293,
+    "ci95_diff": [
+      -0.048061352036893365,
+      -0.015717696398496635
+    ],
+    "sc_wins_windows": 23,
+    "baseline_wins_windows": 9,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": false,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 11.0
+  }
+}

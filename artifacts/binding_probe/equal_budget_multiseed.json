@@ -1,0 +1,104 @@
+{
+  "seed1234_vs_mamba2": {
+    "ppl_sc": 38.75192890728873,
+    "ppl_baseline": 56.541930884997164,
+    "ppl_ratio": 0.6853662105404179,
+    "ci95_diff": [
+      -0.40183348543941977,
+      -0.3523364637047053
+    ],
+    "sc_wins": 32,
+    "baseline_wins": 0,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": true,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 23.9
+  },
+  "seed1234_vs_transformer": {
+    "ppl_sc": 38.75192890728873,
+    "ppl_baseline": 40.02400814559195,
+    "ppl_ratio": 0.9682170952575293,
+    "ci95_diff": [
+      -0.048061352036893365,
+      -0.015717696398496635
+    ],
+    "sc_wins": 23,
+    "baseline_wins": 9,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": false,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 8.5
+  },
+  "seed1_vs_mamba2": {
+    "ppl_sc": 38.04434896845156,
+    "ppl_baseline": 53.03526584034295,
+    "ppl_ratio": 0.7173405915033977,
+    "ci95_diff": [
+      -0.35557693243026733,
+      -0.30930488314479593
+    ],
+    "sc_wins": 32,
+    "baseline_wins": 0,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": true,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 15.1
+  },
+  "seed1_vs_transformer": {
+    "ppl_sc": 38.04434896845156,
+    "ppl_baseline": 40.46673394446031,
+    "ppl_ratio": 0.9401388562928399,
+    "ci95_diff": [
+      -0.07892433051019906,
+      -0.043249637447297574
+    ],
+    "sc_wins": 28,
+    "baseline_wins": 4,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": false,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 8.5
+  },
+  "seed2_vs_mamba2": {
+    "ppl_sc": 37.944438667281055,
+    "ppl_baseline": 56.818426350601065,
+    "ppl_ratio": 0.667819246403322,
+    "ci95_diff": [
+      -0.42541432585567235,
+      -0.3808403505012393
+    ],
+    "sc_wins": 32,
+    "baseline_wins": 0,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": true,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 15.6
+  },
+  "seed2_vs_transformer": {
+    "ppl_sc": 37.944438667281055,
+    "ppl_baseline": 40.03809470902567,
+    "ppl_ratio": 0.9477083997887479,
+    "ci95_diff": [
+      -0.06984847076237202,
+      -0.03857172671705485
+    ],
+    "sc_wins": 29,
+    "baseline_wins": 3,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": false,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 8.5
+  }
+}

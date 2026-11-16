@@ -109,6 +109,9 @@ class LayerStreamState:
             标型以避免与 ``ssm.py`` 的循环导入；其持有的 ``h_re``/``h_im`` 与
             ``y1``/``y2`` 是同一批张量（别名），所以递推态字节仍由 ``y1``/``y2`` 计，
             不重复计费；scratch 工作集不计入常驻递推态。
+        bind_slots: 仅 ``sgc-bind`` mixer 使用——定容绑定记忆的
+            ``(slot_k, slot_v, u_prev)`` 三元组（O(S·D) + O(D)，与 L 无关）。
+            其它 mixer 恒为 ``None``。用 ``Any`` 标型避免与 ``bsgc.py`` 循环导入。
     """
 
     y1: torch.Tensor
@@ -118,6 +121,7 @@ class LayerStreamState:
     energy_sum: Optional[torch.Tensor] = None
     ssm_state: Optional[Any] = None
     spike_membrane: Optional[torch.Tensor] = None
+    bind_slots: Optional[Any] = None
 
 
 @dataclass
@@ -151,6 +155,9 @@ class SGCStreamState:
                 st.conv_buf = st.conv_buf.detach()
             if st.spike_membrane is not None:
                 st.spike_membrane = st.spike_membrane.detach()
+            if st.bind_slots is not None:
+                sk, sv, up = st.bind_slots
+                st.bind_slots = (sk.detach(), sv.detach(), up.detach())
             # SRF 路径持久保存了 ssm_state，其 h_re/h_im 与 y1/y2 是别名；
             # detach 后必须重新锚定，否则持久状态会指向旧（未 detach）张量。
             if st.ssm_state is not None:
@@ -179,6 +186,10 @@ class SGCStreamState:
                 total += st.energy_sum.numel() * st.energy_sum.element_size()
             if st.spike_membrane is not None:
                 total += st.spike_membrane.numel() * st.spike_membrane.element_size()
+            if st.bind_slots is not None:
+                for t in st.bind_slots:
+                    if isinstance(t, torch.Tensor):
+                        total += t.numel() * t.element_size()
         if self.concept_state is not None:
             total += self.concept_state.numel() * self.concept_state.element_size()
         return total

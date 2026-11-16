@@ -1,0 +1,29 @@
+{
+  "sgc": {
+    "acc": 0.15,
+    "params": 87786,
+    "train_sec": 8.7
+  },
+  "sgc-bind": {
+    "acc": 1.0,
+    "params": 112366,
+    "train_sec": 20.3
+  },
+  "ts": {
+    "acc": 0.28,
+    "params": 104360,
+    "train_sec": 42.9
+  },
+  "protocol": {
+    "dim": 64,
+    "layers": 2,
+    "steps": 300,
+    "batch": 8,
+    "lr": 0.003,
+    "L": 256,
+    "slots": 512,
+    "task": "mqar_g4",
+    "seed": 0,
+    "note": "LRA 风格：长上下文联想召回"
+  }
+}

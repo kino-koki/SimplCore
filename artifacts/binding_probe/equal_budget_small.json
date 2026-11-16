@@ -1,0 +1,48 @@
+{
+  "sgc-bind_vs_transformer_small": {
+    "sc_val_loss": null,
+    "ts_val_loss": null,
+    "sc_params_non_emb": null,
+    "ts_params_non_emb": null,
+    "sc_tokens": null,
+    "ts_tokens": null,
+    "ppl_sc": 4088.6993566560604,
+    "ppl_ts": 3965.895171616651,
+    "ppl_ratio": 1.0309650607808047,
+    "ci95_diff": [
+      0.021473547071218492,
+      0.04020760804414749
+    ],
+    "sc_wins": 4,
+    "ts_wins": 28,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": true,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 185.7
+  },
+  "sgc_vs_transformer_small": {
+    "sc_val_loss": null,
+    "ts_val_loss": null,
+    "sc_params_non_emb": null,
+    "ts_params_non_emb": null,
+    "sc_tokens": null,
+    "ts_tokens": null,
+    "ppl_sc": 1804.1154532753226,
+    "ppl_ts": 3770.5934284953155,
+    "ppl_ratio": 0.47846989803811035,
+    "ci95_diff": [
+      -0.7521239381283522,
+      -0.7233453039079905
+    ],
+    "sc_wins": 32,
+    "ts_wins": 0,
+    "gates": {
+      "X-equal-budget": true,
+      "X-param-budget": false,
+      "X-heldout-ppl": true
+    },
+    "wall_sec": 153.4
+  }
+}

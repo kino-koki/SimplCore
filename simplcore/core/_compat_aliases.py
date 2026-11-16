@@ -18,6 +18,7 @@ pyproject.toml 规定"core 产品线不得反向 import lab"。因此 lab 旧路
 from __future__ import annotations
 
 import importlib
+from pathlib import Path
 import importlib.machinery
 import importlib.util
 import sys
@@ -119,6 +120,33 @@ class _LazyLabAliasFinder:
         return spec
 
 
+def _alias_package_submodules(old: str, new: str) -> None:
+    """把包别名的**子模块**也注册进 sys.modules（含孙级，跳过 ``__main__``）.
+
+    只别名顶层模块时，``python -m simplcore.core.train`` 这类入口会把
+    ``__main__``/``main``/``cli`` 挂到别名包名下重新执行，包内
+    ``from ...model.config import ...`` 这类三级相对导入会解析到
+    ``simplcore.model`` 而炸掉（0.1-α 战役预演实录）。把真实子模块
+    预先 import 并以别名字径 setdefault 进 sys.modules 后，别名查找
+    直接命中**已按真实名初始化**的模块对象，不再在别名包名下重跑。
+    """
+    mod = sys.modules.get('simplcore.core.' + old)
+    if mod is None or not getattr(mod, '__path__', None):
+        return
+    root = Path(new.replace('.', '/'))
+    for py in sorted(root.rglob('*.py')):
+        rel = py.relative_to(root).with_suffix('').as_posix()
+        if py.name == '__main__.py' or rel.endswith('.__init__'):
+            continue
+        sub_new = new + '.' + rel
+        sub_old = 'simplcore.core.' + old + '.' + rel
+        try:
+            sub = importlib.import_module(sub_new)
+        except Exception:
+            continue
+        sys.modules.setdefault(sub_old, sub)
+
+
 def install() -> None:
     """注册旧路径别名（幂等，由 simplcore.core.__init__ 调用）。
 
@@ -132,6 +160,7 @@ def install() -> None:
         if core_pkg is not None:
             if not hasattr(core_pkg, old):
                 setattr(core_pkg, old, mod)
+        _alias_package_submodules(old, new)
     if not any(isinstance(f, _LazyLabAliasFinder) for f in sys.meta_path):
         sys.meta_path.insert(0, _LazyLabAliasFinder())
 

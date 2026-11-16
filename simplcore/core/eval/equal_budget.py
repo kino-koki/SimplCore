@@ -836,7 +836,12 @@ def _default_sc_cfg(preset: str, **over: Any) -> Any:
                   tie_embeddings=True)
     elif preset == "1b":
         from ..model.config import get_preset
-        return get_preset("tuan-1b")
+        cfg = get_preset("tuan-1b")
+        if over:
+            d = cfg.to_dict()
+            d.update(over)
+            cfg = SimplCoreConfig(**d)
+        return cfg
     else:
         raise ValueError(f"unknown preset {preset!r} (smoke|small|1b)")
     kw.update(over)
@@ -852,6 +857,8 @@ def run_comparison(*, preset: str = "smoke", mode: str = "equal_token",
                    ppl_factor: float = DEFAULT_PPL_FACTOR,
                    device: Optional[str] = None,
                    eval_every_tokens: int = 32000,
+                   sc_mixer: str = "sgc",
+                   sc_overrides: Optional[dict] = None,
                    dry_run: bool = False) -> Dict[str, Any]:
     """跑一次等预算对照，返回报告 dict（``out_path`` 不为 None 时落盘 JSON）。
 
@@ -864,6 +871,9 @@ def run_comparison(*, preset: str = "smoke", mode: str = "equal_token",
         seq_len: 窗口长度；``None`` 用 preset 默认（smoke=64，small=512）。
         corpus_root: 真实语料目录（含 ``index.json``）；``None`` 用合成语料。
         ppl_factor: ``X-heldout-ppl`` 容差。
+        sc_mixer: SimplCore 主臂 mixer 名（默认 ``sgc``）。
+        sc_overrides: 覆盖 ``SimplCoreConfig`` 任意字段的 dict（LM 调参用：
+            init_mode / kernel_norm / decay_max / num_bases / sgc_bind_* …）。
         dry_run: 只算账、不训练（账本一致性冒烟）。
     """
     if mode not in ("equal_token", "equal_flops"):
@@ -874,7 +884,14 @@ def run_comparison(*, preset: str = "smoke", mode: str = "equal_token",
         raise ValueError(
             "baseline='mamba2' currently supports equal_token only; "
             "Mamba2 FLOPs are not estimated as a hardware-comparable budget")
-    sc_cfg = _default_sc_cfg(preset)
+    _over = dict(sc_overrides or {})
+    _over.setdefault("mixer", sc_mixer)
+    sc_cfg = _default_sc_cfg(preset, **_over)
+    if getattr(sc_cfg, "mixer", "sgc") == "sgc-bind":
+        # 绑定记忆槽容按任务窗口长度取：S ≥ L 时全部绑定单元可驻留
+        # （MQAR/needle 的关键绑定分布在全窗口）。定容判据不变：S 是
+        # 固定超参，状态 O(S·D) 与 L 无关。
+        sc_cfg.sgc_bind_slots = max(sc_cfg.sgc_bind_slots, 2 * (seq_len or 64))
     if seq_len is None:
         seq_len = 64 if preset == "smoke" else 512
     dev = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))

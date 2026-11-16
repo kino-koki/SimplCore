@@ -228,7 +228,7 @@ def _ts_kv_bytes(layers: int, dim: int, seq_len: int,
 # ---------------------------------------------------------------------------
 # 主入口
 # ---------------------------------------------------------------------------
-def run_longctx_eval(*, preset: str = "smoke",
+def run_longctx_eval(*, preset: str = "smoke", mixer: str = "sgc",
                      lengths: Sequence[int] = (512,),
                      trials_per_depth: int = 2,
                      depths: Sequence[float] = (0.1, 0.3, 0.5, 0.7, 0.9),
@@ -250,11 +250,11 @@ def run_longctx_eval(*, preset: str = "smoke",
     if preset == "smoke":
         sc_kw = dict(vocab_size=None, dim=32, num_layers=2, num_bases=8,
                      ffn_ratio=2.0, local_kernel=4, decay_max=512.0,
-                     tie_embeddings=False)
+                     mixer=mixer, tie_embeddings=False)
     elif preset == "small":
         sc_kw = dict(vocab_size=None, dim=256, num_layers=8, num_bases=32,
                      ffn_ratio=4.0, local_kernel=4, decay_max=65536.0,
-                     tie_embeddings=True)
+                     mixer=mixer, tie_embeddings=True)
     elif preset == "1b":
         from ..model.config import get_preset
         sc_cfg = get_preset("tuan-1b")
@@ -269,6 +269,9 @@ def run_longctx_eval(*, preset: str = "smoke",
         corpus = NeedleCorpus(L, seed=seed)
         if sc_kw is not None:
             cfg = SimplCoreConfig(**{**sc_kw, "vocab_size": corpus.vocab_size})
+            if mixer == "sgc-bind":
+                # 槽容 ≥ 窗口长：needle 的 (close→value) 绑定须驻留到查询位
+                cfg.sgc_bind_slots = max(cfg.sgc_bind_slots, 2 * L)
         else:
             cfg = sc_cfg
         # ---- 账本（先于跑：TS 放不下就不跑假对照） -------------------------

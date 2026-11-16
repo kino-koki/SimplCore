@@ -1,0 +1,78 @@
+{
+  "steps": {
+    "1_data_pipeline": {
+      "sec": 0.1,
+      "vocab_size": 423,
+      "splits": {
+        "train": {
+          "n_docs": 113,
+          "n_tokens": 22272,
+          "n_tokens_encoded": 22487,
+          "n_windows": 87,
+          "remainder_tokens": 215,
+          "bytes": 89088,
+          "elapsed_seconds": 0.01,
+          "files": [
+            {
+              "path": "train.bin",
+              "n_tokens": 22272,
+              "windows": 87,
+              "bytes": 89088,
+              "sha256": "62e0e0644640595de1983f69810408a4e70762913e4c128e9bff4a2c82b2dcf1"
+            }
+          ]
+        },
+        "val": {
+          "n_docs": 13,
+          "n_tokens": 2560,
+          "n_tokens_encoded": 2641,
+          "n_windows": 10,
+          "remainder_tokens": 81,
+          "bytes": 10240,
+          "elapsed_seconds": 0.003,
+          "files": [
+            {
+              "path": "val.bin",
+              "n_tokens": 2560,
+              "windows": 10,
+              "bytes": 10240,
+              "sha256": "5537d910c175bb7b2fc25c3711d7191def99ee152b8eafa0999bb66e3e8f68c9"
+            }
+          ]
+        },
+        "test": {
+          "n_docs": 6,
+          "n_tokens": 1024,
+          "n_tokens_encoded": 1186,
+          "n_windows": 4,
+          "remainder_tokens": 162,
+          "bytes": 4096,
+          "elapsed_seconds": 0.003,
+          "files": [
+            {
+              "path": "test.bin",
+              "n_tokens": 1024,
+              "windows": 4,
+              "bytes": 4096,
+              "sha256": "2e46e2e48983ee64eb25c479aca68dc8289423ff0a9142cbb181ee697709e8ea"
+            }
+          ]
+        }
+      }
+    },
+    "2_campaign_gates_text": "{\n  \"preset\": \"tuan-1b\",\n  \"base_params\": 1000000000,\n  \"max_learned\": 2000000000,\n  \"total_cap\": 3000000000,\n  \"budget\": {\n    \"base_params\": 1000000000,\n    \"learned_params\": 0,\n    \"max_learned\": 2000000000,\n    \"total_cap\": 3000000000,\n    \"remaining_learned\": 2000000000,\n    \"remaining_total\": 2000000000,\n    \"vram_params\": 0,\n    \"learned_share\": 0.0\n  },\n  \"doubling\": {\n    \"claim\": \"上下文翻倍 HBM 增量 <= 1.0 GiB\",\n    \"limit_bytes\": 1073741824,\n    \"stream\": {\n      \"max_delta\": 0,\n      \"holds\": true,\n      \"note\": \"O(1) 流式状态与 L 无关，翻倍增量恒为 0\"\n    },\n    \"chunked\": {\n      \"max_delta\": 0,\n      \"holds\": true,\n      \"note\": \"分块训练显存只随 chunk 增长，与总 L 无关，增量恒为 0\"\n    },\n    \"naive\": {\n      \"fits_hbm_anywhere\": false,\n      \"overflows_from\": 524288,\n      \"note\": \"整段 FFT 随 L 线性增长（见 overflows_from 起点）—— 不可行，仅作对照\"\n    },\n    \"claim_holds\": true\n  },\n  \"schedule\": {\n    \"cap_days\": 90,\n    \"allocations\": {\n      \"Phase 0 冻结\": 30,\n      \"Phase 1 · 1B 基座\": 30,\n      \"复盘（立即）\": 2,\n      \"Phase 2 · 2B 附加参数\": 28\n    },\n    \"total_days\": 90,\n    \"holds\": true,\n    \"note\": \"Phase 0/复盘也有硬停——全程 90 天含后端验收，不是只有训练\"\n  },\n  \"phases\": [\n    {\n      \"name\": \"Phase 0 冻结\",\n      \"objective\": \"自研 CUDA/C++ 后端一致性验收（BackendContract）+ 数据 / 分词器 / 配置冻结（运行时 = 自研后端；PyTorch 退役出战役路径，torch 实现仅作冻结数值 oracle）\",\n      \"max_days\": 30,\n      \"hard_stop\": true,\n      \"hbm_gib\": 18.65,\n      \"token_budget\": null,\n      \"steps\": [\n        \"后端逐项通过 BackendContract 一致性检查（下闸门自动生成自 conformance_checks）\",\n        \"语料与词表冻结（32000 vocab 口径），文档级无泄漏切分\",\n        \"后端在 512K 上下文跑通 8192-chunk 分块流式训练；实测吞吐/MFU，修正 token 预算\",\n        \"90 天总预算下 Phase 0 不得挤占训练期：第 30 天未过 conformance 即战役重排（砍 8M 档，保 4M）\"\n      ],\n      \"gates\": [\n        {\n          \"name\": \"P0-backend-conformance\",\n          \"kind\": \"hard\",\n          \"criterion\": \"契约 simplcore-cuda-backend v1.0 全部 16 个内核有实现并通过单元测试\"\n        },\n        {\n          \"name\": \"P0-stream-bitexact\",\n          \"kind\": \"hard\",\n          \"criterion\": \"FFT 并行形式 vs IIR 流式形式，fp32 下 max|Δ| < 4e-5（4M 长度）\"\n        },\n        {\n          \"name\": \"P0-chunked-carry\",\n          \"kind\": \"hard\",\n          \"criterion\": \"分块训练的跨块状态携带 与 整段参考 逐位一致\"\n        },\n        {\n          \"name\": \"P0-frozen-mask\",\n          \"kind\": \"hard\",\n          \"criterion\": \"adamw_frozen_mask 冻结位零更新（基座冻结/适配器预算语义的前提）\"\n        },\n        {\n          \"name\": \"P0-bf16-accum\",\n          \"kind\": \"hard\",\n          \"criterion\": \"抽样内核验证 fp32 累加（GEMM / rmsnorm / cumsum / ce_loss）\"\n        },\n        {\n          \"name\": \"P0-shard-2gcd\",\n          \"kind\": \"hard\",\n          \"criterion\": \"2 GCD 切分下训练数值与单卡一致（all-reduce fp32）\"\n        },\n        {\n          \"name\": \"P0-no-attention\",\n          \"kind\": \"hard\",\n          \"criterion\": \"内核清单结构审查：零注意力 / 零 KV cache / 零位置表\"\n        },\n        {\n          \"name\": \"P0-budget-frozen\",\n          \"kind\": \"hard\",\n          \"criterion\": \"数据/分词器/配置冻结并记录哈希，之后不得更改\"\n        },\n        {\n          \"name\": \"P0-hard-stop-30d\",\n          \"kind\": \"hard\",\n          \"criterion\": \"到 30 天硬停：conformance 未全过即触发降档预案（8M→4M），训练期不动\"\n        }\n      ]\n    },\n    {\n      \"name\": \"Phase 1 · 1B 基座\",\n      \"objective\": \"1B 基座训练完成（4M 上下文学习），单张 MI250，最长 30 天，到点硬停\",\n      \"max_days\": 30,\n      \"hard_stop\": true,\n      \"hbm_gib\": 18.65,\n      \"token_budget\": 26595846220.15797,\n      \"steps\": [\n        \"上下文课程：1M → 2M → 4M 逐级翻倍，每级稳定后升级\",\n        \"每周 checkpoint + held-out loss 曲线留档\",\n        \"第 4 周起转入 4M 长上下文主训\"\n      ],\n      \"gates\": [\n        {\n          \"name\": \"P1-chunked-4m-nooom\",\n          \"kind\": \"hard\",\n          \"criterion\": \"4M 上下文分块训练在 128 GB HBM 内 OOM-free（解析估算 18.7 GiB）\"\n        },\n        {\n          \"name\": \"P1-doubling-claim\",\n          \"kind\": \"hard\",\n          \"criterion\": \"实测上下文翻倍 HBM 增量 ≤ 1.0 GiB（解析预期 0）\"\n        },\n        {\n          \"name\": \"P1-stream-bitexact-4m\",\n          \"kind\": \"hard\",\n          \"criterion\": \"4M 长度下 流式==并行 逐位一致\"\n        },\n        {\n          \"name\": \"P1-loss-stable\",\n          \"kind\": \"hard\",\n          \"criterion\": \"held-out loss 曲线稳定无发散\"\n        },\n        {\n          \"name\": \"P1-token-budget\",\n          \"kind\": \"soft\",\n          \"criterion\": \"喂满解析 token 预算 ~26.6B（MFU 实测后修正）\"\n        },\n        {\n          \"name\": \"P1-hard-stop-30d\",\n          \"kind\": \"hard\",\n          \"criterion\": \"到 30 天强制冻结最优 checkpoint，无条件进入复盘\"\n        }\n      ]\n    },\n    {\n      \"name\": \"复盘（立即）\",\n      \"objective\": \"基座完成后**立即**复盘自身：失败轨迹 → 总结为训练样本（envlearn.summarize_failures 语义）\",\n      \"max_days\": 2,\n      \"hard_stop\": true,\n      \"hbm_gib\": 0.0,\n      \"token_budget\": null,\n      \"steps\": [\n        \"收集 Phase 1 全部失败/低分轨迹（长上下文检索、代码执行）\",\n        \"总结为少量高价值训练样本（不是原样回放）\",\n        \"产出复盘报告：哪类能力缺失、2B 附加参数优先学什么\"\n      ],\n      \"gates\": [\n        {\n          \"name\": \"R-failures-summarized\",\n          \"kind\": \"hard\",\n          \"criterion\": \"失败轨迹已总结为训练样本并有清单\"\n        },\n        {\n          \"name\": \"R-report-written\",\n          \"kind\": \"hard\",\n          \"criterion\": \"复盘报告落盘，明确 2B 阶段的学习优先级\"\n        },\n        {\n          \"name\": \"R-hard-stop-2d\",\n          \"kind\": \"hard\",\n          \"criterion\": \"复盘 ≤2 天（90 天总预算零余量），超时砍样本量不砍 Phase 2\"\n        }\n      ]\n    },\n    {\n      \"name\": \"Phase 2 · 2B 附加参数\",\n      \"objective\": \"基座冻结，学习 ≤2B 适配器（总上限 3B），分阶段蒸馏，最长 28 天，多了等不了\",\n      \"max_days\": 28,\n      \"hard_stop\": true,\n      \"hbm_gib\": 65.22,\n      \"token_budget\": 10232427376.624218,\n      \"steps\": [\n        \"LearnedAdapter.grow 按复盘优先级分配 2B 预算（WeightBudget 硬拒超额）\",\n        \"分阶段蒸馏：环境交互 → 总结 → 蒸馏 → 环境验证 → no-regression gate → 退化回滚\",\n        \"每 stage 留档：loss_before/after、pass_rate、是否回滚\"\n      ],\n      \"gates\": [\n        {\n          \"name\": \"P2-base-frozen\",\n          \"kind\": \"hard\",\n          \"criterion\": \"基座权重逐位未变（快照对比）\"\n        },\n        {\n          \"name\": \"P2-budget-cap\",\n          \"kind\": \"hard\",\n          \"criterion\": \"适配器 ≤ 2B 且总权重 ≤ 3B（硬拒超额）\"\n        },\n        {\n          \"name\": \"P2-no-regression\",\n          \"kind\": \"hard\",\n          \"criterion\": \"每个 stage 通过 no-regression gate，退化即回滚\"\n        },\n        {\n          \"name\": \"P2-hard-stop-28d\",\n          \"kind\": \"hard\",\n          \"criterion\": \"到 28 天硬停，多了等不了，无延期\"\n        }\n      ]\n    }\n  ],\n  \"protocol\": [\n    {\n      \"name\": \"X-equal-budget\",\n      \"kind\": \"hard\",\n      \"criterion\": \"对照口径：与 3B Transformer 基线**等 token / 等 FLOPs**，禁止无限定宣称\"\n    },\n    {\n      \"name\": \"X-heldout-ppl\",\n      \"kind\": \"hard\",\n      \"criterion\": \"held-out 困惑度 ≤ 基线 × 1.05（目标值，非承诺；实测为准）\"\n    },\n    {\n      \"name\": \"X-longctx-retrieval\",\n      \"kind\": \"hard\",\n      \"criterion\": \"1M / 2M / 4M 长上下文检索准确率 ≥ 基线\"\n    },\n    {\n      \"name\": \"X-code-passk\",\n      \"kind\": \"hard\",\n      \"criterion\": \"代码 pass@k（CodeExecutionVerifier 真实执行）≥ 基线\"\n    },\n    {\n      \"name\": \"X-throughput\",\n      \"kind\": \"hard\",\n      \"criterion\": \"1M 上下文解码吞吐 ≥ 基线（对方 KV cache ~32 GB vs 我方流式 <1 MB）\"\n    },\n    {\n      \"name\": \"X-stream-consistency\",\n      \"kind\": \"hard\",\n      \"criterion\": \"全部评测在流式与整段两种模式下结果一致\"\n    }\n  ],\n  \"showcase\": [\n    {\n      \"name\": \"S1-deploy-2gb\",\n      \"kind\": \"hard\",\n      \"owner\": \"Phase 0（账本）+ 实机一条命令\",\n      \"claim\": \"1M 上下文完整推理 ≤ 2 GiB（1.948 GiB，含权重）\",\n      \"verify\": \"python -m simplcore.core.deploy_budget\"\n    },\n    {\n      \"name\": \"S2-doubling-zero\",\n      \"kind\": \"hard\",\n      \"owner\": \"Phase 1\",\n      \"claim\": \"上下文 1M→8M 翻倍 HBM 增量恒为 0（结构性，非调参）\",\n      \"verify\": \"python -m simplcore.core.campaign  # 阶梯表 delta 全 0\"\n    },\n    {\n      \"name\": \"S3-decode-10x\",\n      \"kind\": \"hard\",\n      \"owner\": \"Phase 1\",\n      \"claim\": \"1M 上下文解码吞吐 ≥ 10× 同卡 TS-3B（KV cache 60 GB vs 流式 30 MiB）\",\n      \"verify\": \"python -m simplcore.core.scaling  + 后端实机 benchmark\"\n    },\n    {\n      \"name\": \"S4-equal-token-ppl\",\n      \"kind\": \"hard\",\n      \"owner\": \"Phase 1\",\n      \"claim\": \"等 token 预算 held-out ppl ≤ TS-2B × 1.05\",\n      \"verify\": \"对比脚本 + runs/eval_equal_token.json（协议 X-equal-budget）\"\n    },\n    {\n      \"name\": \"S5-longctx-4m\",\n      \"kind\": \"hard\",\n      \"owner\": \"Phase 1+2\",\n      \"claim\": \"1M/2M/4M 检索+摘要综合 ≥ YaRN 扩展 TS-5B（§7 轴 C 中位预测）\",\n      \"verify\": \"评测脚本 + 原始输出留档\"\n    },\n    {\n      \"name\": \"S6-evolution-passk\",\n      \"kind\": \"hard\",\n      \"owner\": \"Phase 2\",\n      \"claim\": \"自进化前后代码 pass@k 可验证提升，含 no-regression 回滚记录\",\n      \"verify\": \"envlearn stage 日志（loss_before/after、pass_rate、rollback）\"\n    },\n    {\n      \"name\": \"S7-honest-needle\",\n      \"kind\": \"honest\",\n      \"owner\": \"Phase 1\",\n      \"claim\": \"1M needle 精确召回 < TS-2B —— 信息论边界主动呈现（30.4 MiB 状态 vs ≥2 GB 原文）\",\n      \"verify\": \"同评测脚本，结果如实入演示包\"\n    },\n    {\n      \"name\": \"S8-reproducible\",\n      \"kind\": \"hard\",\n      \"owner\": \"全程\",\n      \"claim\": \"任何人 5 分钟复验数学与账本：848 测试 + 13 证明 + 34 守卫 + 21 CLI\",\n      \"verify\": \"python -m pytest simplcore -q && python -m simplcore.core.mathproof\"\n    }\n  ],\n  \"forbidden\": [\n    \"注意力图 / 注意力热图等**机制内部**的对比（用户原话：真实输出结果，而不是注意力层面）\",\n    \"无等 token / 等 FLOPs 口径的无限定'1B 打 3B'宣称\",\n    \"自报自评（无独立 verifier 的自我打分）\",\n    \"只报平均、不报分布与最差 case 的 cherry-picking\"\n  ]\n}\n",
+    "3_dryrun_1b": {
+      "rc": 0,
+      "sec": 33.0
+    },
+    "4_train_3step": {
+      "rc": 0,
+      "sec": 12.0
+    }
+  },
+  "env": {
+    "torch": "2.14.1+cpu",
+    "cuda_avail": false
+  },
+  "total_sec": 45.0
+}

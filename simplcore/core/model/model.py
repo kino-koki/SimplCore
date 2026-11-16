@@ -594,7 +594,9 @@ class SimplCoreModel(nn.Module):
                     energy_sum=(st.energy_sum.detach()
                                 if st.energy_sum is not None else None),
                     spike_membrane=(st.spike_membrane.detach()
-                                    if st.spike_membrane is not None else None)))
+                                    if st.spike_membrane is not None else None),
+                    bind_slots=(tuple(t.detach() for t in st.bind_slots)
+                                if st.bind_slots is not None else None)))
             else:
                 layers.append(st)
         return SGCStreamState(
@@ -734,6 +736,9 @@ class SimplCoreModel(nn.Module):
                     # 闸门从 0 重新累积，流式输出与不中断的生成不再逐位一致。
                     "energy_sum": st.energy_sum,
                     "spike_membrane": st.spike_membrane,
+                    # sgc-bind 定容绑定记忆：漏掉它会让断点恢复后的绑定
+                    # 检索丢掉全部已写内容（该层辅助通路记忆归零）。
+                    "bind_slots": st.bind_slots,
                 })
         # CMT 记忆注入：漏掉它会让带记忆的长会话在断点恢复后
         # 记忆注入静默消失——这正是 _project_memory 声明要杜绝的"静默丢弃"。
@@ -761,7 +766,8 @@ class SimplCoreModel(nn.Module):
                     conv_buf=item.get("conv_buf"),
                     length=item.get("length", 0),
                     energy_sum=item.get("energy_sum"),
-                    spike_membrane=item.get("spike_membrane")))
+                    spike_membrane=item.get("spike_membrane"),
+                    bind_slots=item.get("bind_slots")))
             else:
                 layers.append(item)
         return SGCStreamState(layers=layers, length=ckpt.get("length", 0),

@@ -1,0 +1,12 @@
+{
+  "sgc": {
+    "acc": 0.315,
+    "params": 635012,
+    "train_sec": 155.2
+  },
+  "sgc-bind": {
+    "acc": 0.325,
+    "params": 831628,
+    "train_sec": 252.6
+  }
+}

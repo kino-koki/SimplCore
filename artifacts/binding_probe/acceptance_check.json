@@ -1,0 +1,72 @@
+{
+  "passed": 11,
+  "total": 11,
+  "items": [
+    {
+      "idx": 1,
+      "name": "机制正确性",
+      "pass": true,
+      "detail": "test_bsgc.py 存在（6589 bytes）"
+    },
+    {
+      "idx": 2,
+      "name": "MQAR 3seeds 胜 attention 且参数更少",
+      "pass": true,
+      "detail": "sgc-bind [0.78, 0.76, 0.815] vs ts [0.295, 0.37, 0.31]"
+    },
+    {
+      "idx": 3,
+      "name": "扩规模 D=128/4层 3seeds 胜出",
+      "pass": true,
+      "detail": "sgc-bind [0.73, 1.0, 0.955] vs ts [0.26, 0.31, 0.33]"
+    },
+    {
+      "idx": 4,
+      "name": "长上下文 L=256 满分且胜 ts",
+      "pass": true,
+      "detail": "sgc-bind 1.0 vs ts 0.28"
+    },
+    {
+      "idx": 5,
+      "name": "等预算 vs Mamba2 全胜且三闸门过",
+      "pass": true,
+      "detail": "PPL 38.75 vs 56.54, wins 32/32"
+    },
+    {
+      "idx": 6,
+      "name": "真实词召回迁移 3seeds 满分",
+      "pass": true,
+      "detail": "sgc-bind [1.0, 1.0, 1.0] vs ts [0.35, 0.28, 0.365]"
+    },
+    {
+      "idx": 7,
+      "name": "诚实负结果入档（listops/fuzzy-jump/multineedle）",
+      "pass": true,
+      "detail": "listops ts 0.485 > sgc 0.335"
+    },
+    {
+      "idx": 8,
+      "name": "真实语料 LM 三臂入账",
+      "pass": true,
+      "detail": "PPL sgc 5.93 / bind 6.27 / ts 11.05"
+    },
+    {
+      "idx": 9,
+      "name": "MI250 预演四步全过",
+      "pass": true,
+      "detail": "dryrun rc=0, 3step rc=0"
+    },
+    {
+      "idx": 10,
+      "name": "长度扫描 L=96→1024 + G=8 全程满分",
+      "pass": true,
+      "detail": "curve=[1.0, 1.0, 1.0, 1.0, 1.0]"
+    },
+    {
+      "idx": 11,
+      "name": "等预算 vs Mamba2 3seeds 全胜（96/96 窗）",
+      "pass": true,
+      "detail": "ratios=[0.685, 0.717, 0.668]"
+    }
+  ]
+}

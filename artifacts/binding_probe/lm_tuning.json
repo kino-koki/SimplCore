@@ -1,0 +1,90 @@
+{
+  "v0_sgc_default": {
+    "ppl_sc": 238.25,
+    "ppl_ts": 284.925,
+    "ratio_vs_ts": 0.8362,
+    "sc_wins": 10,
+    "overrides": {
+      "mixer": "sgc"
+    },
+    "wall_sec": 4.6
+  },
+  "v1_linear_init": {
+    "ppl_sc": 238.29,
+    "ppl_ts": 284.925,
+    "ratio_vs_ts": 0.8363,
+    "sc_wins": 10,
+    "overrides": {
+      "mixer": "sgc",
+      "sgc_init_mode": "linear"
+    },
+    "wall_sec": 3.0
+  },
+  "v2_kernel_norm": {
+    "ppl_sc": 238.284,
+    "ppl_ts": 284.925,
+    "ratio_vs_ts": 0.8363,
+    "sc_wins": 10,
+    "overrides": {
+      "mixer": "sgc",
+      "sgc_kernel_norm": "analytic_l2"
+    },
+    "wall_sec": 3.2
+  },
+  "v3_lin+norm": {
+    "ppl_sc": 238.341,
+    "ppl_ts": 284.925,
+    "ratio_vs_ts": 0.8365,
+    "sc_wins": 10,
+    "overrides": {
+      "mixer": "sgc",
+      "sgc_init_mode": "linear",
+      "sgc_kernel_norm": "analytic_l2"
+    },
+    "wall_sec": 2.1
+  },
+  "v4_horizon": {
+    "ppl_sc": 241.862,
+    "ppl_ts": 284.925,
+    "ratio_vs_ts": 0.8489,
+    "sc_wins": 10,
+    "overrides": {
+      "mixer": "sgc",
+      "sgc_init_mode": "linear",
+      "sgc_kernel_norm": "analytic_l2",
+      "decay_max": 1024.0,
+      "num_bases": 16
+    },
+    "wall_sec": 2.0
+  },
+  "v5_bind": {
+    "ppl_sc": 288.891,
+    "ppl_ts": 282.708,
+    "ratio_vs_ts": 1.0219,
+    "sc_wins": 2,
+    "overrides": {
+      "mixer": "sgc-bind",
+      "sgc_init_mode": "linear",
+      "sgc_kernel_norm": "analytic_l2",
+      "decay_max": 1024.0,
+      "num_bases": 16
+    },
+    "wall_sec": 115.9
+  },
+  "v6_srf": {
+    "ppl_sc": 236.93,
+    "ppl_ts": 284.925,
+    "ratio_vs_ts": 0.8315,
+    "sc_wins": 10,
+    "overrides": {
+      "mixer": "srf",
+      "srf_heads": 4,
+      "srf_chunk": 32
+    },
+    "wall_sec": 29.9
+  },
+  "reference": {
+    "mamba2_ppl_ratio_from_overnight": 2.01,
+    "note": "PPL 比为 vs Transformer 参照臂；Mamba2 直接对照见后续 lm_vs_mamba2.py"
+  }
+}
