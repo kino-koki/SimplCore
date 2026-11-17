@@ -290,7 +290,7 @@ class LocalPythonSandbox:
             Windows 用 Job Object 限进程内存配额（并随句柄关闭终止整个
             作业进程组）。``None`` 表示不限。
         inherit_env: 是否继承完整环境变量。默认只给最小集合（含 TEMP/TMP，
-            遵循本机"缓存放 E 盘"的约定）。
+            遵循本机"缓存放缓存盘"的约定，见 simplcore/_cache_env.py）。
     """
 
     def __init__(self, timeout_s: float = 5.0, max_output_chars: int = 4000,

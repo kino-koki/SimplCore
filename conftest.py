@@ -19,7 +19,8 @@ for _mod_name in ("sitecustomize", "codebuddy_safe_delete", "codearts_safe_delet
         if callable(_setter):
             _setter(False)
 
-# C 盘只剩 7.8G：测试期间产生的临时文件一律写 E 盘。
+# C 盘容量紧张：测试期间产生的临时文件一律写缓存盘（simplcore/_cache_env.py
+# 自动选仓库同盘等非系统盘，不再依赖固定盘符）。
 # 必须在任何业务模块导入之前 apply：tempfile.tempdir 一旦被算出来就会缓存。
 import tempfile
 

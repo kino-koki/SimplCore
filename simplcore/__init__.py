@@ -1,5 +1,6 @@
-# 必须在任何子模块导入 torch / tempfile 之前执行：C 盘只剩 7.8G，
-# 缓存一律写 E 盘。详见 simplcore/_cache_env.py 里的原因说明。
+# 必须在任何子模块导入 torch / tempfile 之前执行：C 盘容量紧张，
+# 缓存一律写非系统盘（自动选仓库同盘等，不依赖固定盘符）。
+# 详见 simplcore/_cache_env.py 里的原因说明。
 from . import _cache_env as _cache_env
 
 _cache_env.apply()

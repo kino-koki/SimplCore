@@ -46,7 +46,15 @@
 | `fixed` | 定长 `max_len` | MegaByte |
 
 共同性质：边界**单调**、**因果**（只依赖已见字节）、**流式 = 批量**
-（带进位）、**确定性**、`max_len` 防无限增长。
+逐边界一致、**确定性**、`max_len` 防无限增长。
+
+两个入口共享同一份转移逻辑：
+
+* `boundaries(byte_ids)` —— **纯批量**：不读不改任何实例状态，同一输入
+  重复调用逐项相同（可安全用于前向图 / 数据管线 / 生成重分块）；
+* `feed()` / `feed_flush()` —— **有状态流式**：进位保留未决字节，
+  返回**全流绝对下标**；`feed(全部) + feed_flush()` 与
+  `boundaries(全部)` 逐项一致（三模式均有守护测试锁定）。
 
 ### 2.3 BytePatchBridge —— 与任意 SimplCore mixer 桥接
 
@@ -55,30 +63,42 @@
 严格因果、流式推理不变——patcher 只是**因果、可流式、纯函数式**的字节
 分段器，不引入注意力 / KV cache / 学习参数。
 
-## 3. 工业级保证（守护测试 `test_bytelevel.py`，14 项）
+## 3. 工业级保证（守护测试 `test_bytelevel.py`，21 项）
 
 * **对抗 Unicode 往返**：emoji、CJK、4 字节码点、控制字符、混合文本
   encode → decode 恒等；
 * **流式 = 批量**：任意分片 `feed` + `flush` 与一次 `encode` 逐字节一致；
+  patcher 三模式的 `feed`（**全流绝对下标**）+ `flush` 与批量
+  `boundaries` 逐边界一致（含收尾 patch）；
 * **解码容错**：截断/非法字节 → U+FFFD，不抛异常；
-* **patcher 三模式**：确定性、边界单调、流式 = 批量、`max_len` 有界、
+* **patcher 三模式**：确定性、边界单调、`boundaries` **纯函数**
+  （重复调用 + 先流式消费一批均不改结果）、`max_len` 有界、
   `reset()` 清态；
 * **mixer 兼容**：sgc / sgc-bind / srf 三种 mixer 的前向 + 反向
   （梯度可达）shape/finite 检查；
+* **入口性质**：`byte_level_logits_ids` 纯字节空间（非法 UTF-8 上下文
+  不被替换字符改写、无跨调用状态泄漏）；`byte_level_logits` 不 detach，
+  梯度可达字节嵌入表；生成 greedy 确定性；
 * **空输入 / 单字节**等边界情形。
 
-## 3.5 工业级入口（文本 → 字节 → patch → 前向/生成）
+## 3.5 工业级入口（字节/文本 → patch → 前向/生成）
 
 ```python
-from simplcore.core.model.bytelevel import byte_level_logits, byte_level_generate
+from simplcore.core.model.bytelevel import (
+    byte_level_logits_ids, byte_level_logits, byte_level_generate)
 
-logits = byte_level_logits(model, "任意文本")        # (n_patches, 256) 字节词表
+logits = byte_level_logits_ids(model, byte_ids)  # 纯字节空间原语
+logits = byte_level_logits(model, "任意文本")     # (n_patches, 256) 字节词表
 out = byte_level_generate(model, "prompt", max_new_patches=8, greedy=True)
 ```
 
 * 兼容任意 SimplCore mixer（SGC / sgc-bind / SRF…）——patch 级 latent
   序列直接过 mixer 栈；O(1) 状态/流式不变；
-* 守护测试：入口与手动路径（bridge + blocks）逐值一致、生成 smoke。
+* **生成不改写上下文**：`byte_level_generate` 全程在字节 ID 空间拼接
+  上下文，绝不 decode→encode 往返——即使采到非法 UTF-8 字节（孤立续
+  字节等）也不会被替换字符悄悄改写历史；
+* 守护测试：入口与手动路径（bridge + blocks）逐值一致、纯字节空间
+  幂等、嵌入梯度可达、生成 smoke。
 
 ## 4. 与 SimplCore 全部模块的兼容
 

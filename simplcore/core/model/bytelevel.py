@@ -40,15 +40,20 @@ KV cache。
 ==========
 * **往返不变**：任意 Unicode 文本（含 emoji、CJK、控制字符、4 字节码点）
   encode → decode 恒等（无效 UTF-8 用替换字符，不抛异常）。
-* **因果**：patch 边界只依赖已见字节；流式（带进位）与批量（一次给出）
-  结果逐 token 一致。
-* **确定性**：同一输入 + 同一配置 ⇒ 同一边界；无随机性。
+* **因果**：patch 边界只依赖已见字节；流式（带进位、全流绝对下标）与
+  批量（一次给出）结果逐边界一致。
+* **确定性 / 纯批量**：:meth:`EntropyPatcher.boundaries` 是纯函数——
+  不读不改任何实例状态，同一输入重复调用逐项相同；流式状态只存在于
+  ``feed`` / ``feed_flush`` 路径。
+* **生成不改写上下文**：自回归生成全程在字节 ID 空间，绝不 bytes↔str
+  往返——采到非法 UTF-8 字节也不会被替换字符悄悄改写历史。
 * **O(1) 附加状态**：进位只含窗口/未决字节，与已处理总量无关。
 * **零第三方依赖**：纯 torch + 标准库。
 """
 from __future__ import annotations
 
 import json
+import math
 from typing import Dict, Iterator, List, Optional, Tuple
 
 import torch
@@ -140,8 +145,15 @@ class EntropyPatcher:
       即按「词」分块；超过 ``max_len`` 强制断开。
     * ``"fixed"``（MegaByte 式）：定长 ``max_len``。
 
-    全部模式共享性质：边界单调、只依赖已见字节（因果）、流式（带进位）
-    与批量一致、确定性。``max_len`` 防止 patch 无限增长（BLT 同款约束）。
+    全部模式共享性质：边界单调、只依赖已见字节（因果）、**批量与流式
+    逐边界一致**、确定性。``max_len`` 防止 patch 无限增长（BLT 同款约束）。
+
+    两个入口，共享同一份转移逻辑（:meth:`_run`）：
+    * :meth:`boundaries` —— **纯批量**：不读不改任何实例状态，同一输入
+      任意次调用逐项相同（可安全用于前向图 / 数据管线 / 生成重分块）。
+    * :meth:`feed` / :meth:`feed_flush` —— **有状态流式**：进位保留未决
+      字节，返回**全流绝对下标**；``feed(全部字节) + feed_flush()`` 与
+      ``boundaries(全部字节)`` 逐项一致。
     """
 
     def __init__(self, mode: str = "entropy", threshold: float = 4.0,
@@ -154,110 +166,114 @@ class EntropyPatcher:
         self.threshold = float(threshold)
         self.max_len = int(max_len)
         self.alphabet = int(alphabet)
-        # 在线一阶马尔可夫计数：counts[a][b] = 见过 (a→b) 的次数
-        self._counts: Dict[int, Dict[int, int]] = {}
-        self._row_totals: Dict[int, int] = {}
+        # 流式状态（仅 feed/feed_flush 使用；boundaries 不触碰）
+        self._counts: Dict[Optional[int], Dict[int, int]] = {}
+        self._row_totals: Dict[Optional[int], int] = {}
         self._pending: List[int] = []
         self._acc: float = 0.0
         self._since_break: int = 0
         self._prev: Optional[int] = None
+        self._total: int = 0          # 累计喂入字节数（绝对下标基准）
 
-    # -- 熵估计（因果、零参数）------------------------------------------------
-    def _surprise(self, prev: Optional[int], cur: int) -> float:
-        if prev is None:
-            row = self._row_totals.get(-1, 0)
-            cnt = self._counts.get(-1, {}).get(cur, 0)
-        else:
-            row = self._row_totals.get(prev, 0)
-            cnt = self._counts.get(prev, {}).get(cur, 0)
+    # -- 熵估计（因果、零参数；首字节行键统一用 None）------------------------
+    @staticmethod
+    def _surprise_s(counts: Dict, row_totals: Dict, prev: Optional[int],
+                    cur: int, alphabet: int) -> float:
+        row = row_totals.get(prev, 0)
+        cnt = counts.get(prev, {}).get(cur, 0)
         # Laplace 平滑的替代熵（bit）
-        return -float(torch.log2(torch.tensor(
-            (cnt + 1.0) / (row + self.alphabet))))
+        return -math.log2((cnt + 1.0) / (row + alphabet))
 
-    def _observe(self, prev: Optional[int], cur: int) -> None:
-        self._counts.setdefault(prev, {})
-        self._counts[prev][cur] = self._counts[prev].get(cur, 0) + 1
-        self._row_totals[prev] = self._row_totals.get(prev, 0) + 1
+    @staticmethod
+    def _observe_s(counts: Dict, row_totals: Dict, prev: Optional[int],
+                   cur: int) -> None:
+        counts.setdefault(prev, {})
+        counts[prev][cur] = counts[prev].get(cur, 0) + 1
+        row_totals[prev] = row_totals.get(prev, 0) + 1
 
-    # -- 批量 -----------------------------------------------------------------
-    def boundaries(self, byte_ids: List[int]) -> List[int]:
-        """给定字节 ID 序列，返回 patch 边界（每个 patch 的结束下标，含）."""
+    # -- 核心转移（批量/流式共用，保证两口径逐项一致）------------------------
+    def _run(self, byte_ids: List[int], state, finalize: bool):
+        """``state=(counts,row_totals,acc,since_break,prev)`` →
+        ``(bounds, new_state)``（bounds 为相对 buf 的下标）.
+
+        ``finalize=True`` 在流末尾收尾最后一个未决 patch（批量语义）；
+        流式传 ``False``，尾部留给下一次 feed 或 :meth:`feed_flush`。
+        """
+        counts, row_totals, acc, since_break, prev = state
         bounds: List[int] = []
         start = 0
-        prev_surp = 0.0
+        n = len(byte_ids)
         for i, b in enumerate(byte_ids):
             if self.mode == "fixed":
-                if i - start + 1 >= self.max_len or i == len(byte_ids) - 1:
+                if i - start + 1 >= self.max_len or (finalize and i == n - 1):
                     bounds.append(i)
                     start = i + 1
                 continue
             if self.mode == "space":
-                is_break = (b < 48 or b > 57) and (b < 65 or b > 90) and \
-                           (b < 97 or b > 122)
-                if (is_break or i == len(byte_ids) - 1) and i >= start:
-                    if i - start + 1 >= 2 or i == len(byte_ids) - 1:
-                        bounds.append(i)
-                        start = i + 1
+                is_break = not (48 <= b <= 57 or 65 <= b <= 90
+                                or 97 <= b <= 122)
+                last = finalize and i == n - 1
+                if (is_break or last) and i >= start and \
+                        (i - start + 1 >= 2 or last):
+                    bounds.append(i)
+                    start = i + 1
                 continue
             # entropy 模式
-            s = self._surprise(prev_surp if i else None, b)
-            self._observe(prev_surp if i else None, b)
-            prev_surp = b
-            self._acc += s
-            self._since_break += 1
-            if (self._acc >= self.threshold or
-                    self._since_break >= self.max_len or
-                    i == len(byte_ids) - 1):
+            s = self._surprise_s(counts, row_totals, prev, b, self.alphabet)
+            self._observe_s(counts, row_totals, prev, b)
+            prev = b
+            acc += s
+            since_break += 1
+            if (acc >= self.threshold or since_break >= self.max_len or
+                    (finalize and i == n - 1)):
                 bounds.append(i)
-                self._acc = 0.0
-                self._since_break = 0
+                acc = 0.0
+                since_break = 0
                 start = i + 1
+        return bounds, (counts, row_totals, acc, since_break, prev)
+
+    # -- 批量（纯函数）--------------------------------------------------------
+    def boundaries(self, byte_ids: List[int]) -> List[int]:
+        """给定字节 ID 序列，返回 patch 边界（每个 patch 的结束下标，含）.
+
+        **纯函数**：不读取也不修改任何实例状态；同一输入重复调用结果
+        逐项相同。与 ``feed(全部字节) + feed_flush()`` 的绝对下标逐项一致。
+        """
+        bounds, _ = self._run(list(byte_ids), ({}, {}, 0.0, 0, None),
+                              finalize=True)
         return bounds
 
-    # -- 流式（带进位）--------------------------------------------------------
+    # -- 流式（带进位；返回全流绝对下标）--------------------------------------
     def feed(self, byte_ids: List[int]) -> Tuple[List[int], bool]:
         """流式输入字节 ID，返回 ``(完整 patch 边界, 是否有边界)``.
 
-        进位保留未决字节；边界只对**完整** patch 给出（与批量一致）。
+        边界为**全流绝对下标**（含此前已消费的字节数）；未决尾部留待
+        下一次 feed 或 :meth:`feed_flush`。与批量 :meth:`boundaries` 在
+        全流上逐项一致。
         """
-        self._pending.extend(byte_ids)
-        bounds: List[int] = []
-        start = 0
-        n = len(self._pending)
-        for i in range(start, n):
-            b = self._pending[i]
-            if self.mode == "fixed":
-                if i - start + 1 >= self.max_len:
-                    bounds.append(i)
-                    start = i + 1
-                continue
-            if self.mode == "space":
-                is_break = (b < 48 or b > 57) and (b < 65 or b > 90) and \
-                           (b < 97 or b > 122)
-                if is_break and i - start + 1 >= 2:
-                    bounds.append(i)
-                    start = i + 1
-                continue
-            s = self._surprise(self._prev, b)
-            self._observe(self._prev, b)
-            self._prev = b
-            self._acc += s
-            self._since_break += 1
-            if self._acc >= self.threshold or self._since_break >= self.max_len:
-                bounds.append(i)
-                start = i + 1
-                self._acc = 0.0
-                self._since_break = 0
-        self._pending = self._pending[start:]
-        return bounds, bool(bounds)
+        base = self._total - len(self._pending)     # buf[0] 的绝对下标
+        buf = self._pending + list(byte_ids)
+        self._total += len(byte_ids)
+        bounds, state = self._run(buf, (self._counts, self._row_totals,
+                                        self._acc, self._since_break,
+                                        self._prev), finalize=False)
+        (self._counts, self._row_totals, self._acc, self._since_break,
+         self._prev) = state
+        start = bounds[-1] + 1 if bounds else 0
+        self._pending = buf[start:]
+        return [base + x for x in bounds], bool(bounds)
 
     def feed_flush(self) -> List[int]:
-        """流结束：把剩余未决字节作为一个收尾 patch（若有）."""
+        """流结束：把剩余未决字节作为一个收尾 patch（若有）.
+
+        返回**全流绝对下标**（与 :meth:`feed` 同一口径）。
+        """
         if not self._pending:
             return []
-        last = len(self._pending) - 1
+        base = self._total - len(self._pending)
+        last_rel = len(self._pending) - 1
         self._pending = []
-        return [last]
+        return [base + last_rel]
 
     def reset(self) -> None:
         self._counts.clear()
@@ -266,6 +282,7 @@ class EntropyPatcher:
         self._acc = 0.0
         self._since_break = 0
         self._prev = None
+        self._total = 0
 
 
 # =============================================================================
@@ -302,10 +319,17 @@ class BytePatchBridge:
         """patch 内字节 embedding 均值 → (n_patches, dim) 张量.
 
         emb: (vocab, dim) 的字节 embedding 矩阵。确定性、无学习参数。
+        启用 BOS/EOS 的 codec 需要词表 ≥ 258（256 字节 + 特殊符）——
+        越界字节 ID 直接报错（而不是静默产出 NaN）。
         """
         spans = list(self.patch_slices(byte_ids))
         if not spans:
             return torch.zeros(0, emb.shape[-1])
+        n_vocab = emb.shape[0]
+        if byte_ids and max(byte_ids) >= n_vocab:
+            raise ValueError(
+                f"byte id {max(byte_ids)} 超出嵌入表词表 {n_vocab}："
+                "启用 BOS/EOS 的 codec 需要模型 vocab ≥ 258（256 字节 + 特殊符）")
         out = torch.zeros(len(spans), emb.shape[-1])
         for i, (a, b) in enumerate(spans):
             out[i] = emb[a:b].mean(dim=0)
@@ -313,24 +337,25 @@ class BytePatchBridge:
 
 
 # =============================================================================
-# 工业级入口：文本 → 字节 → patch → SimplCore 前向/生成
+# 工业级入口：字节 → patch → SimplCore 前向/生成（纯字节空间）
 # =============================================================================
-def byte_level_logits(model, text: str, codec: Optional[ByteLevelCodec] = None,
-                      patcher: Optional[EntropyPatcher] = None,
-                      bridge: Optional[BytePatchBridge] = None):
-    """文本 → 字节 → 动态 patch → SimplCore 前向 → 字节词表 logits.
+def byte_level_logits_ids(model, byte_ids, codec: Optional[ByteLevelCodec] = None,
+                          patcher: Optional[EntropyPatcher] = None,
+                          bridge: Optional[BytePatchBridge] = None):
+    """字节 ID 序列 → 动态 patch → SimplCore 前向 → 字节词表 logits.
 
-    工业级 tokenizer-free 入口：模型直接理解原始字节，**不经任何 BPE
-    分词器**。兼容任意 SimplCore mixer（SGC / sgc-bind / SRF…）。
+    **纯字节空间**入口：不做任何 bytes↔str 往返——生成/评测的上下文
+    永不因非法 UTF-8 而被替换字符改写。兼容任意 SimplCore mixer
+    （SGC / sgc-bind / SRF…）。分块走纯批量 :meth:`EntropyPatcher.boundaries`
+    （同一上下文 ⇒ 同一 patch 划分 ⇒ 同一 logits，无跨调用状态泄漏）。
 
     返回 (logits (n_patches, byte_vocab))；最后一个位置的 logits 即
-    下一字节/下一 patch 的预测分布。
+    下一字节/下一 patch 的预测分布。embedding 不 detach——训练时梯度
+    可达字节嵌入表。
     """
     codec = codec or ByteLevelCodec()
-    patcher = patcher or EntropyPatcher()
-    bridge = bridge or BytePatchBridge(codec, patcher)
-    ids = codec.encode(text)
-    pm = bridge.patch_means(ids, model.tok_emb.weight.detach())
+    bridge = bridge or BytePatchBridge(codec, patcher or EntropyPatcher())
+    pm = bridge.patch_means(list(byte_ids), model.tok_emb.weight)
     h = pm.unsqueeze(0)
     for blk in model.blocks:
         h = blk(h)
@@ -339,26 +364,42 @@ def byte_level_logits(model, text: str, codec: Optional[ByteLevelCodec] = None,
     return h @ model.tok_emb.weight.t()
 
 
+def byte_level_logits(model, text: str, codec: Optional[ByteLevelCodec] = None,
+                      patcher: Optional[EntropyPatcher] = None,
+                      bridge: Optional[BytePatchBridge] = None):
+    """文本 → 字节 → 动态 patch → SimplCore 前向 → 字节词表 logits.
+
+    工业级 tokenizer-free 入口：模型直接理解原始字节，**不经任何 BPE
+    分词器**。等价于 ``byte_level_logits_ids(model, codec.encode(text))``。
+    """
+    codec = codec or ByteLevelCodec()
+    return byte_level_logits_ids(model, codec.encode(text), codec, patcher,
+                                 bridge)
+
+
 def byte_level_generate(model, prompt: str, max_new_patches: int = 8,
                         codec: Optional[ByteLevelCodec] = None,
                         patcher: Optional[EntropyPatcher] = None,
                         bridge: Optional[BytePatchBridge] = None,
                         temperature: float = 1.0,
                         greedy: bool = False):
-    """字节级自回归生成：prompt → 逐 patch 生成 → 解码回文本.
+    """字节级自回归生成：prompt → 逐字节生成 → 解码回文本.
 
-    每次生成一个 patch 的**首字节**（简化；完整 patch 解码需局部
-    解码头，见 BLT）。返回生成的文本。
+    上下文全程保持在**字节 ID 空间**（``ids + generated`` 直接拼接，
+    绝不 decode→encode 往返）——即使模型采到非法 UTF-8 字节（如孤立
+    续字节），上下文也不会被替换字符悄悄改写。每次前向对当前字节上下文
+    做纯批量分块（确定性）；逐步全前向，参考实现优先正确性（完整
+    patch 级解码需局部解码头，见 BLT）。
+
+    返回生成的文本（非法字节按 U+FFFD 显示，不影响内部上下文）。
     """
     codec = codec or ByteLevelCodec()
     patcher = patcher or EntropyPatcher()
     bridge = bridge or BytePatchBridge(codec, patcher)
-    ids = codec.encode(prompt)
+    ctx = codec.encode(prompt)
     generated: List[int] = []
     for _ in range(max_new_patches):
-        ctx = ids + generated
-        logits = byte_level_logits(model, codec.decode(ctx), codec, patcher,
-                                   bridge)
+        logits = byte_level_logits_ids(model, ctx, codec, patcher, bridge)
         last = logits[-1]
         if greedy:
             nxt = int(last.argmax().item())
@@ -368,4 +409,5 @@ def byte_level_generate(model, prompt: str, max_new_patches: int = 8,
         if nxt == codec.EOS:
             break
         generated.append(nxt)
+        ctx.append(nxt)
     return codec.decode(generated)

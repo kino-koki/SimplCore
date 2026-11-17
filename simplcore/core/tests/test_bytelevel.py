@@ -95,18 +95,40 @@ def test_entropy_mode_is_deterministic_and_bounded():
 
 
 def test_patcher_streaming_matches_batch():
-    p_batch = EntropyPatcher(mode="entropy", threshold=3.0, max_len=8)
-    p_stream = EntropyPatcher(mode="entropy", threshold=3.0, max_len=8)
-    ids = [i % 251 for i in range(400)]
-    whole = p_batch.boundaries(ids)
-    got, last = [], 0
-    for i in range(0, len(ids), 13):
-        chunk = ids[i:i + 13]
-        bounds, _ = p_stream.feed(chunk)
-        for x in bounds:
-            got.append(last + x)
-        last += len(chunk)
-    assert got == whole[:len(got)]
+    # 三模式全流等价：feed(分片) + feed_flush 的**绝对下标**与批量
+    # boundaries 逐项一致（含收尾 patch）
+    for mode in ("entropy", "space", "fixed"):
+        p_batch = EntropyPatcher(mode=mode, threshold=3.0, max_len=8)
+        p_stream = EntropyPatcher(mode=mode, threshold=3.0, max_len=8)
+        ids = [i % 251 for i in range(400)]
+        whole = p_batch.boundaries(ids)
+        got = []
+        for i in range(0, len(ids), 13):
+            bounds, _ = p_stream.feed(ids[i:i + 13])
+            got += bounds
+        got += p_stream.feed_flush()
+        assert got == whole, f"mode={mode}"
+
+
+def test_patcher_boundaries_is_pure():
+    # 纯函数：重复调用 + 先流式消费一批，均不得改变批量结果
+    p = EntropyPatcher(mode="entropy", threshold=3.0, max_len=8)
+    ids = [i % 256 for i in range(300)]
+    a = p.boundaries(ids)
+    b = p.boundaries(ids)
+    assert a == b
+    p.feed(ids[:50])
+    p.feed(ids[50:120])
+    c = p.boundaries(ids)
+    assert c == a
+
+
+def test_patcher_feed_returns_absolute_indices():
+    p = EntropyPatcher(mode="fixed", max_len=4)
+    b1, _ = p.feed(list(range(10)))       # 边界 3,7
+    assert b1 == [3, 7]
+    b2, _ = p.feed(list(range(10, 20)))   # 绝对下标 11,15,19
+    assert b2 == [11, 15, 19]
 
 
 def test_patcher_reset_clears_state():
@@ -169,6 +191,18 @@ def test_bridge_empty_input():
     assert pm.shape == (0, 32)
 
 
+def test_bridge_vocab_overflow_raises():
+    # BOS/EOS codec 产出 256/257：词表不足时必须显式报错（而非 NaN）
+    codec = ByteLevelCodec(add_bos_eos=True)
+    bridge = BytePatchBridge(codec)
+    ids = codec.encode("hi")
+    assert max(ids) >= 256
+    with pytest.raises(ValueError):
+        bridge.patch_means(ids, torch.randn(256, 32))
+    pm = bridge.patch_means(ids, torch.randn(258, 32))
+    assert pm.shape[0] >= 1 and pm.shape[1] == 32
+
+
 # =============================================================================
 # 工业级入口：byte_level_logits / byte_level_generate
 # =============================================================================
@@ -196,3 +230,26 @@ def test_byte_level_generate_smoke():
     assert isinstance(out, str)
     out2 = byte_level_generate(model, "hello", max_new_patches=3, greedy=True)
     assert out == out2            # greedy 确定性
+
+
+def test_byte_level_logits_ids_pure_byte_space():
+    # 纯字节空间入口：非法 UTF-8 上下文（孤立续字节）不被替换字符改写；
+    # 同一上下文重复前向逐值一致（无跨调用状态泄漏）
+    from simplcore.core.model.bytelevel import byte_level_logits_ids
+    model = _tiny_model("sgc-bind", 256)
+    ids = [0x41, 0xF0, 0x9F, 0x41, 0x80]   # 截断码点 + 孤立续字节
+    a = byte_level_logits_ids(model, ids)
+    b = byte_level_logits_ids(model, ids)
+    assert a.shape[0] >= 1 and torch.isfinite(a).all()
+    assert torch.allclose(a, b)
+
+
+def test_byte_level_logits_grad_reaches_embedding():
+    # 训练路径：byte_level_logits 不 detach，梯度可达字节嵌入表
+    from simplcore.core.model.bytelevel import byte_level_logits
+    model = _tiny_model("sgc", 256)
+    logits = byte_level_logits(model, "hello")
+    loss = F.cross_entropy(logits, torch.full((logits.shape[0],), 65))
+    loss.backward()
+    assert model.tok_emb.weight.grad is not None
+    assert float(model.tok_emb.weight.grad.abs().sum()) > 0
