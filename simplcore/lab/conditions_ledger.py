@@ -52,7 +52,7 @@ vs 无上限在线），C2/C3/C4 的闭环才有统计意义。120B 是把该假
 --------
 本模块输出"条件就绪度"，不是"智能已诞生"。诞生与否只能由行为验收
 （持续改进曲线 + 保留集泛化 + 独立 verifier）判定。120B 档位
-**单卡 MI250 不可训练**，最小硬件配置见 :func:`scale_ledger`。
+**单张 24GB 卡（RTX 4090D）不可训练**，最小硬件配置见 :func:`scale_ledger`。
 """
 from __future__ import annotations
 
@@ -73,9 +73,9 @@ from ..core.eval.scaling import (
 __all__ = [
     "HORIZON_2B_TOKENS",
     "GIB",
-    "HBM_PER_MI250_GIB",
+    "HBM_PER_4090D_GIB",
     "OPTIMIZER_BYTES_PER_PARAM",
-    "MI250_PEAK_TFLOPS",
+    "RTX4090D_PEAK_TFLOPS",
     "SPRINT_UTIL",
     "PRESET_NAME",
     "CONDITIONS",
@@ -88,10 +88,11 @@ __all__ = [
 #: "2B 上下文" 的 token 口径：2³¹ = 2,147,483,648 token。
 HORIZON_2B_TOKENS = 2 ** 31
 GIB = 1024 ** 3
-#: MI250 OAM 单卡 HBM（2×64 GB GCD；ROCm 暴露为两张卡，FSDP/ZeRO 切分口径同 campaign.py）。
-HBM_PER_MI250_GIB = 128.0
+#: 参考硬件单卡 HBM：RTX 4090D = 24 GB GDDR6X（口径同 campaign.py）。
+HBM_PER_4090D_GIB = 24.0
 OPTIMIZER_BYTES_PER_PARAM = 16   # bf16 权重2+梯度2 + fp32 master4 + Adam m4+v4（同 campaign.py）
-MI250_PEAK_TFLOPS = 362.1
+#: RTX 4090D bf16 稠密峰值（规格估算，实机以 Phase 0 实测为准）。见 campaign.py。
+RTX4090D_PEAK_TFLOPS = 157.0
 SPRINT_UTIL = 0.65
 PRESET_NAME = "tuan-120b"
 CHUNK_TRAIN_SEQ = 8192           # 主训练 chunk（长上下文课程另计）
@@ -210,7 +211,7 @@ def scale_ledger(
     fpt = train_flops_per_token(cfg, CHUNK_TRAIN_SEQ)
     tokens = 20.0 * params
     total_flops = tokens * fpt
-    per_gpu_rate = MI250_PEAK_TFLOPS * 1e12 * mfu * SPRINT_UTIL
+    per_gpu_rate = RTX4090D_PEAK_TFLOPS * 1e12 * mfu * SPRINT_UTIL
     deadline_rows = []
     for days in deadlines_days:
         gpus_compute = math.ceil(total_flops / (per_gpu_rate * days * 86400.0))
@@ -218,7 +219,7 @@ def scale_ledger(
 
     # -- 显存下限（ZeRO-3：权重+优化器状态均分；激活分块与 L 无关）-------------
     train_bytes = params * (2 + 2) + params * 12   # bf16 权重+梯度 + fp32 master+m+v = 16 B/参
-    gpus_memory = math.ceil(train_bytes / (HBM_PER_MI250_GIB * GIB))
+    gpus_memory = math.ceil(train_bytes / (HBM_PER_4090D_GIB * GIB))
     state = stream_state_bytes(cfg, 1)
 
     return {
@@ -240,7 +241,7 @@ def scale_ledger(
         "mfu_assumed": mfu,
         "gpus_memory_floor_zero3": gpus_memory,
         "gpu_note": (f"{gpus_memory} 卡为显存下限（{train_bytes/GIB:.0f} GiB 训练态 / "
-                     f"{HBM_PER_MI250_GIB:.0f} GiB 卡）；时限见 gpus_by_deadline，"
+                     f"{HBM_PER_4090D_GIB:.0f} GiB 卡）；时限见 gpus_by_deadline，"
                      "实际取二者较大值并留 20% 余量"),
         "gpus_by_deadline": deadline_rows,
         "hbm_compare_transformer_kv": {
@@ -297,7 +298,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
           f"{d['hbm_compare_transformer_kv']['transformer_kv_bytes']/1e15:.0f} PB（结构性不可行）")
     print(f"训练算力: {d['train_flops_per_token']/1e9:.0f} G/token × "
           f"{d['chinchilla_tokens']/1e12:.1f}T tokens = {d['total_train_flops']:.3e} FLOPs")
-    print(f"显存下限: {d['gpus_memory_floor_zero3']}× MI250（ZeRO-3 均分训练态）")
+    print(f"显存下限: {d['gpus_memory_floor_zero3']}× 24GB 卡（ZeRO-3 均分训练态）")
     for row in d["gpus_by_deadline"]:
         print(f"  {row['days']} 天时限 → ≥{row['gpus_needed_compute']} 卡（MFU={d['mfu_assumed']:.2f}）")
     print("\n-- 可证伪验收协议 --")

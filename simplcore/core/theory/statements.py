@@ -225,8 +225,8 @@ PROPOSITIONS: List[Proposition] = [
         pid="P14", theorem=None,
         title="RSI-style self-improvement as a theorem-level mechanism",
         hypothesis="Not available. RSI occurs in this repository only as an "
-                   "external survey citation (docs/TUAN_1B_TRAINING_PLAN.md:172, "
-                   "'L2 policy autonomy'); no RSI operator is implemented.",
+                   "external survey citation (REVISION_LOG.md, 'L2 policy autonomy'); "
+                   "no RSI operator is implemented.",
         claim="CONJECTURE (retained). Cannot be upgraded without a formal "
               "definition of the self-modification operator. Upgrade path: once "
               "defined, T13/T14 impose a resolvable-radius lower bound on any "

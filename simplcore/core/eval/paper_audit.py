@@ -240,9 +240,9 @@ def run_audit(root: Any = ".", *, collect_tests: bool = True) -> Dict[str, Any]:
         "campaign token 预算 vs 20×N", 0.61, round(tok_3b / (20 * 3.0e9), 2),
         tol=0.01)
 
-    # ---- C10：战役硬停日历 ----------------------------------------------------
-    add("C10-campaign-days", "Phase 0/1/复盘/2 = 30/30/2/28 天，总 90",
-        "campaign.py 常量", [30, 30, 2, 28, 90],
+    # ---- C10：战役硬停日历（2B×24h·4090D） -----------------------------------
+    add("C10-campaign-days", "Phase 0/1/复盘/2 = 1/1/0/0 天，总 2（24h 训练硬停）",
+        "campaign.py 常量", [1, 1, 0, 0, 2],
         [PHASE0_MAX_DAYS, PHASE1_MAX_DAYS, RETROSPECT_MAX_DAYS, PHASE2_MAX_DAYS,
          TOTAL_BUDGET_DAYS])
     campaign_src = (root_path / "simplcore" / "core" / "deploy" / "campaign.py").read_text(

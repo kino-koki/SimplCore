@@ -184,7 +184,7 @@ evo.save("runs/tuan-1b/unity.pt")  # 自进化成果落盘
 - ✅ 已实现：MoA 结构、top-k 路由、aux loss、预算守卫、`spawn_expert` 自进化接口、
   `--unity-domains` 按域隔离 warm-up（强制数据不同）、`UnitySelfEvolution` 后台线程管理器、
   专家持久化（save/load）、训练闭环接入、CPU 全量验证通过（8 项测试 PASS，持久化权重精确恢复）。
-- ⚠️ 未验证：在 4M 上下文 + 真实 Computer Use 轨迹上的**质量收益**——机制接线 ≠ 质量达标，需 MI250/多卡战役实测。
+- ⚠️ 未验证：在 4M 上下文 + 真实 Computer Use 轨迹上的**质量收益**——机制接线 ≠ 质量达标，需 4090D/多卡战役实测。
 - ⚠️ 后台管理器为进程内线程版；跨进程/多卡部署需改为独立进程（文档 §5.2 已给改造建议）。
 - ⚠️ 专家「数据必须不同」依赖 `--unity-domains` 提供真实分域语料；若缺省，则退化为共享流上路由自学的 MoE（仍有效，但 specialization 弱于显式分域）。
 

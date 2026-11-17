@@ -46,7 +46,7 @@ C++/CUDA；任一条件不满足自动回退纯 PyTorch。(B,D) 直调、扩展�
 
 ### 3.1 低精度（bf16 / fp16）策略
 
-MI250 主用 bf16，而融合内核的 IIR 振荡递推对数值最敏感，必须跑在 fp32 才能保证
+线上训练/服务主用 bf16，而融合内核的 IIR 振荡递推对数值最敏感，必须跑在 fp32 才能保证
 与纯 PyTorch step 的 4e-5 等价守护。因此 `ops.mixer_stream.mixer_stream_step` 在 Python
 层做归一化：
 
@@ -57,7 +57,7 @@ MI250 主用 bf16，而融合内核的 IIR 振荡递推对数值最敏感，必�
 
 这样带来两个好处（诚实工程）：
 
-* **MI250 用得上融合算子**：bf16 推理/服务不再静默回退纯 PyTorch；
+* **bf16 卡用得上融合算子**：推理/服务不再静默回退纯 PyTorch；
 * **消除潜伏 bug**：此前若强行放开 fp32 守卫，权重/状态会以 bf16 字节被当成 fp32
   读取（位 reinterpret），结果是错的；归一化方案从根上杜绝。
 
@@ -68,7 +68,7 @@ fp32 输入走零拷贝快路径，与 `test_mixer_stream.py` 的守护逐位一
 > 流式路径**（SGC / SRF / GatedSpectralConv2），由 `simplcore.core.sgc.recurrent_dtype`
 > 作为单一事实源——`init_state` 把递推状态按 `recurrent_dtype(compute_dtype)` 分配
 > （bf16/fp16 时退化为 fp32），`step` 在状态 dtype 中递推、输出再 cast 回计算精度。
-> 因此 MI250 上即使融合扩展未构建（回退纯 PyTorch），流式递推仍然是数值可信的 fp32；
+> 因此 bf16 卡上即使融合扩展未构建（回退纯 PyTorch），流式递推仍然是数值可信的 fp32；
 > 融合算子只是把同一策略搬进 C++/CUDA 以获得速度。详见 `SKILL.md` §2 低精度数值策略。
 
 ### 3.2 SRF 融合（平行模块，`srf_stream`）

@@ -1,46 +1,38 @@
 # Copyright 2026 (C) 六安市青奈科技有限责任公司
 # -*- coding: utf-8 -*-
-"""1B→3B 战役计划 —— 把"1B 打 3B Transformer，再学 2B 附加参数"的硬指标
-变成可执行、可审计、带硬停闸门的阶段计划。
+"""2B×24h 战役计划 —— 把"单张 RTX 4090D-24GB 在 24h 以内训练完整 2B 参数"
+的硬指标变成可执行、可审计、带硬停闸门的阶段计划。
 
 用户给定的硬指标（原文口径）
 ----------------------------
-1. 1B 模型 = 1B 参数 + **4M 上下文用于学习**；上下文要验证"是否真正 1M 起"，
-   且**上下文翻倍增加 ≤ 1 GiB HBM 占用**。
-2. 目标：1B 模型性能打 3B Transformer —— 用**真实输出结果**验收
-   （held-out 困惑度 / 长上下文检索 / 代码 pass@k / 解码吞吐），
-   **不接受"注意力层面"的机制内对比**。
-3. 阶段一：1B 基座，单张 MI250（128 GB HBM = 2×64 GB GCD），**最长 30 天**。
-4. 基座完成 → **立即复盘自身**（失败轨迹总结为训练样本），随后开始学习
-   **2B 附加参数，最长 28 天，多了等不了**（硬停，无延期）。
+1. 目标硬件：**单张 RTX 4090D（24 GB GDDR6X）**，24 小时以内；
+2. 训练对象：**完整 2B 参数**（tuan-2b 预设，2023M total / 1957M non-emb）；
+3. 到点硬停：24h 强制冻结最优 checkpoint，无延期。
 
 本模块只做计划与账本（纯解析计算，不建模型、不占显存、可在任何机器审计）：
 
-* **HBM 账本**：优化器状态 / O(1) 流式状态 / 分块流式训练 / 朴素整段 FFT
-  四条路径的显存公式，并逐级验证"翻倍 +1 GiB"主张在哪些路径成立——
-  结论（解析）：流式与分块路径翻倍增量 ≈ 0（≤1 GiB 成立），
-  朴素整段 FFT 随 L 线性增长（4M 时约 1.5 TB，不可行）——
-  因此**战役必须用分块流式训练**，这条是硬闸门不是建议。
-* **阶段计划**（v2：**全程 90 天总预算，零余量**）：
-  Phase 0（≤30 天，硬停，含后端验收）→ Phase 1（≤30 天，硬停）→
-  复盘（≤2 天，硬停）→ Phase 2（≤28 天，硬停，多了等不了）。
-  30+30+2+28 = 90：**任何阶段超时都触发降档预案，不挪用训练期**。
+* **显存账本**：AdamW 混合精度（16 B/参数）/ Adafactor 因子化（≈8 B/参数）/
+  O(1) 流式状态 / 分块流式训练 / 朴素整段 FFT 五条路径的显存公式——
+  结论（解析）：2B 全参在 24GB 上**只有 Adafactor + 分块流式**可行
+  （AdamW 16 B/参数 = 32 GiB 直接爆），这是硬闸门不是建议；
+* **阶段计划**（总预算 2 天，零余量）：
+  Phase 0（≤1 天，栈验收：dry-run OOM-free + 实测吞吐修正 token 预算 + 数据冻结）
+  → Phase 1（≤1 天 = **24h 训练硬停**）→ 复盘（立即，0 天）；
 * **「无人可忽视」演示包**：8 条可独立复验的主张/边界，每条配复验命令——
-  轰动的前置投资是可复验性，不是形容词。
-* **验收协议**：与 3B Transformer 的真实输出对照（等 token / 等 FLOPs 口径），
+  轰动的前置投资是可复验性，不是形容词；
+* **验收协议**：与等参数 Transformer 的真实输出对照（等 token / 等 FLOPs 口径），
   附"禁止的对比方式"清单。
 
 诚实边界
 --------
-本模块是**计划与守门**，不是训练结果。"1B 打 3B Transformer"是**目标**，
-不是已达成的事实；所有质量数字以实机实测为准
-（见 ``docs/TRAINING_BUDGET_MI250.md``：30 天有效算力 ~1.5e20 FLOPs @25% MFU，
-1B 只喂得动 20~35B tokens）。
+本模块是**计划与守门**，不是训练结果。24h × 4090D 在诚实 MFU 下只喂得动
+~0.3B tokens（tokens/param ≈ 0.15）——这是**欠训档**：训的是"完整 2B 参数"
+（全参参与更新、loss 稳定下降），不是 Chinchilla-optimal 2B（40B tokens
+需 ~55 个 24h）。所有质量数字以实机实测为准，见 ``docs/RTX4090D_TRAINING.md``。
 
-**运行时**：自研 CUDA/C++ 后端（已就绪），PyTorch 退役出战役路径；
-torch 参考实现保留为冻结数值规格 oracle。后端必须实现的算子、精度与逐位
-一致性见 ``backend_contract.py``（Phase 0 闸门自动从它生成）；CUDA 端实现
-本身不在本仓范围。
+**运行时**：``simplcore/core/training/train``（PyTorch + bf16 autocast + TF32 +
+torch.compile + CUDA Graph + Adafactor）是默认训练路径；自研 CUDA 后端为可选
+加速（契约见 ``backend_contract.py``）。
 """
 from __future__ import annotations
 
@@ -64,8 +56,9 @@ from ..eval.scaling import (
 
 __all__ = [
     "GIB",
-    "HBM_MI250_BYTES",
+    "HBM_4090D_BYTES",
     "OPTIMIZER_BYTES_PER_PARAM",
+    "ADAFACTOR_BYTES_PER_PARAM",
     "TOTAL_BUDGET_DAYS",
     "PHASE0_MAX_DAYS",
     "PHASE1_MAX_DAYS",
@@ -93,28 +86,33 @@ __all__ = [
 # 硬件与战役常量
 # ---------------------------------------------------------------------------
 GIB = 1024 ** 3
-#: MI250 OAM = 2 GCD × 64 GB HBM2e。ROCm 暴露为两张卡，须 FSDP/ZeRO 切分，
-#: 不能当单设备 128 GB 用（见 docs/TRAINING_BUDGET_MI250.md §1）。
-HBM_MI250_BYTES = 128 * GIB
+#: RTX 4090D = 24 GB GDDR6X，单设备单卡（CUDA 上下文自身占 ~0.5 GiB，
+#: 账本以 24 GiB 为硬上限、闸门按 23 GiB 实测线执行）。
+HBM_4090D_BYTES = 24 * GIB
 #: Adam 混合精度优化器状态：bf16 权重 2 + bf16 梯度 2 + fp32 master 4
-#: + Adam m 4 + Adam v 4 = 16 B/参数（同 TRAINING_BUDGET_MI250.md §4）。
+#: + Adam m 4 + Adam v 4 = 16 B/参数（mathproof P12 的 AdamW 口径）。
 OPTIMIZER_BYTES_PER_PARAM = 16
+#: Adafactor 因子化路径：fp32 参数 4 + fp32 梯度 4 + 行/列因子状态
+#: （O(m+n)，2B 时 <0.1 GiB，按 0 计）≈ 8 B/参数——**24GB 上 2B 全参的
+#: 唯一可行组合**（AdamW 16 B/参数 = 32 GiB 直接爆）。
+ADAFACTOR_BYTES_PER_PARAM = 8
 BYTES_BF16 = 2
-#: 阶段时间预算（用户原话："最长一个月" / "最长28天时间，多了等不了"）。
-PHASE1_MAX_DAYS = 30
-PHASE2_MAX_DAYS = 28
-#: v2 硬指标：**全程 3 个月（90 天）必须完全搞定**——含 Phase 0 后端验收。
-#: 分配：Phase 0 ≤30 + Phase 1 ≤30 + 复盘 ≤2 + Phase 2 ≤28 = 90，零余量。
-TOTAL_BUDGET_DAYS = 90
-PHASE0_MAX_DAYS = 30
-RETROSPECT_MAX_DAYS = 2
-#: 上下文阶梯：验证"是否真正 1M 起"，逐级翻倍到 8M。
+#: 阶段时间预算（用户原话："24h 以内训练完整的 2B 参数"）。
+#: 分配：Phase 0 栈验收 ≤1 天 + Phase 1 训练 ≤1 天（=24h 硬停）= 2 天，零余量。
+TOTAL_BUDGET_DAYS = 2
+PHASE0_MAX_DAYS = 1
+PHASE1_MAX_DAYS = 1
+PHASE2_MAX_DAYS = 0     # 本战役无 Phase 2
+RETROSPECT_MAX_DAYS = 0  # 复盘是"立即"，不占独立天数
+#: 上下文阶梯：分块流式路径显存与 L 无关的结构性验证，逐级翻倍到 8M。
 CONTEXT_LADDER: Tuple[int, ...] = (
     512 * 1024, 1024 * 1024, 2 * 1024 * 1024, 4 * 1024 * 1024, 8 * 1024 * 1024,
 )
-#: 用户主张：上下文翻倍，HBM 占用增加 ≤ 1 GiB。
+#: 结构性主张：上下文翻倍，训练显存增加 ≤ 1 GiB。
 CONTEXT_CLAIM_GIB = 1.0
-MI250_PEAK_TFLOPS = 362.1  # bf16 矩阵峰值
+#: RTX 4090D bf16 稠密峰值（tensor core，fp32 累加口径）。4090 公称 165.2，
+#: 4090D ≈ 0.95×；按规格表估算，实机以 Phase 0 实测为准。
+RTX4090D_PEAK_TFLOPS = 157.0
 
 
 # ---------------------------------------------------------------------------
@@ -144,14 +142,18 @@ def naive_fft_train_bytes(
 
 def chunked_train_bytes(
     cfg: SimplCoreConfig, params: int, chunk: int = 8192, act_tensors: int = 8,
+    bytes_per_param: Optional[int] = None,
 ) -> int:
     """分块流式训练：把长上下文切成 chunk 顺序喂入，流式状态跨块携带。
 
     显存 = 优化器状态 + **单个 chunk** 的激活，**与总上下文 L 无关**——
     这是"翻倍 +1 GiB"主张成立的训练路径，也是 Phase 1 的硬性要求。
+    ``bytes_per_param`` 缺省用 AdamW 16 B/参数口径；24GB 的 2B 战役
+    传 ``ADAFACTOR_BYTES_PER_PARAM``（8 B/参数）。
     """
+    bpp = int(bytes_per_param) if bytes_per_param is not None else OPTIMIZER_BYTES_PER_PARAM
     act = cfg.num_layers * int(chunk) * cfg.dim * act_tensors * BYTES_BF16
-    return optimizer_state_bytes(params) + act
+    return int(params) * bpp + act
 
 
 def adapter_train_flops_per_token(
@@ -166,12 +168,13 @@ def adapter_train_flops_per_token(
 
 
 def effective_flops(
-    days: float, mfu: float = 0.25, util: float = 0.65,
-    peak_tflops: float = MI250_PEAK_TFLOPS,
+    days: float, mfu: float = 0.30, util: float = 0.65,
+    peak_tflops: float = RTX4090D_PEAK_TFLOPS,
 ) -> float:
     """有效训练 FLOPs = 天数 × 86400 × 有效占比 × 峰值 × MFU。
 
-    ``util=0.65`` 来自 TRAINING_BUDGET_MI250.md（扣调试/评测/断点重启）。
+    ``util=0.65`` 扣调试/评测/断点重启（24h 战役同理）；MFU 以 Phase 0
+    实测为准，0.30 是 torch.compile + bf16 在 Ada 卡上的诚实预设。
     """
     return days * 86400.0 * util * peak_tflops * 1e12 * mfu
 
@@ -195,19 +198,21 @@ class DoublingRow:
 def doubling_report(
     cfg: SimplCoreConfig, params: int,
     ladder: Sequence[int] = CONTEXT_LADDER, chunk: int = 8192,
+    bytes_per_param: Optional[int] = None,
 ) -> List[DoublingRow]:
     """沿上下文阶梯逐级算三条路径的显存，并给出翻倍增量。"""
     rows: List[DoublingRow] = []
     prev_stream = prev_chunked = 0
     for seq_len in ladder:
         sb = stream_bytes(cfg)
-        cb = chunked_train_bytes(cfg, params, chunk=chunk)
+        cb = chunked_train_bytes(cfg, params, chunk=chunk,
+                                 bytes_per_param=bytes_per_param)
         nb = naive_fft_train_bytes(cfg, params, seq_len)
         rows.append(DoublingRow(
             seq_len=int(seq_len),
             stream_bytes=sb, stream_delta=sb - prev_stream if prev_stream else 0,
             chunked_bytes=cb, chunked_delta=cb - prev_chunked if prev_chunked else 0,
-            naive_bytes=nb, naive_fits_hbm=nb <= HBM_MI250_BYTES,
+            naive_bytes=nb, naive_fits_hbm=nb <= HBM_4090D_BYTES,
         ))
         prev_stream, prev_chunked = sb, cb
     return rows
@@ -313,7 +318,7 @@ class CampaignPlan:
             "allocations": alloc,
             "total_days": total,
             "holds": total <= TOTAL_BUDGET_DAYS,
-            "note": "Phase 0/复盘也有硬停——全程 90 天含后端验收，不是只有训练",
+            "note": "Phase 0 栈验收与 Phase 1 训练都有硬停——2 天总预算含预检，不是只有训练",
         }
 
     def gate_names(self) -> List[str]:
@@ -377,7 +382,7 @@ class CampaignPlan:
         lines: List[str] = []
         b = self.budget
         sched = self.schedule_check()
-        lines.append(f"=== 1B→3B 战役计划（preset={self.preset}） ===")
+        lines.append(f"=== 2B×24h·4090D 战役计划（preset={self.preset}） ===")
         lines.append(
             f"权重预算: base={b.base_params/1e9:.0f}B(冻结) + learned<={b.max_learned/1e9:.0f}B"
             f" | 总上限={b.total_cap/1e9:.0f}B | 显存只算可学={b.vram_params()/1e9:.2f}B")
@@ -394,7 +399,7 @@ class CampaignPlan:
             stop = f"硬停 {p.max_days} 天" if p.hard_stop else (
                 f"{p.max_days} 天" if p.max_days else "无独立预算")
             lines.append(f"\n-- {p.name}（{stop}）: {p.objective}")
-            lines.append(f"   峰值显存估算: {p.hbm_bytes/GIB:.1f} GiB / {HBM_MI250_BYTES/GIB:.0f} GiB")
+            lines.append(f"   峰值显存估算: {p.hbm_bytes/GIB:.1f} GiB / {HBM_4090D_BYTES/GIB:.0f} GiB")
             if p.token_budget:
                 lines.append(f"   token 预算: ~{p.token_budget/1e9:.1f}B tokens")
             for s in p.steps:
@@ -421,41 +426,37 @@ class CampaignPlan:
 # 组装战役
 # ---------------------------------------------------------------------------
 def build_plan(
-    preset: str = "tuan-1b",
+    preset: str = "tuan-2b",
     cfg: Optional[SimplCoreConfig] = None,
-    base_params: int = 1_000_000_000,
-    max_learned: int = 2_000_000_000,
-    total_cap: int = 3_000_000_000,
-    seq_len: int = 4 * 1024 * 1024,
-    chunk: int = 8192,
-    mfu: float = 0.25,
+    base_params: int = 2_000_000_000,
+    max_learned: int = 0,
+    total_cap: int = 2_000_000_000,
+    seq_len: int = 4096,
+    chunk: int = 4096,
+    mfu: float = 0.30,
 ) -> CampaignPlan:
-    """把用户硬指标组装成可审计的战役计划（纯解析，不建模型）。"""
+    """把"2B×24h×单张 4090D"硬指标组装成可审计的战役计划（纯解析，不建模型）。"""
     if cfg is None:
         cfg = get_preset(preset)
     analytic_total = embedding_params(cfg) + non_embedding_params(cfg)
-    if not (0.9e9 <= analytic_total <= 1.2e9):
+    if not (1.8e9 <= analytic_total <= 2.2e9):
         raise ValueError(
-            f"preset={preset} 解析参数量 {analytic_total/1e9:.3f}B 不在 1B 口径内，"
-            "战役指标按 1B 基座给定，请换 tuan-1b")
+            f"preset={preset} 解析参数量 {analytic_total/1e9:.3f}B 不在 2B 口径内，"
+            "战役指标按 2B 全参给定，请换 tuan-2b")
 
     budget = WeightBudget(
         base_params=base_params, learned_params=0,
         max_learned=max_learned, total_cap=total_cap)
 
-    # -- 显存账 ---------------------------------------------------------------
-    p1_hbm = chunked_train_bytes(cfg, base_params, chunk=chunk)
-    # Phase 2：基座 bf16 常驻（冻结，只前向）+ 2B 适配器全套优化器状态 + 单 chunk 激活
-    p2_hbm = (base_params * BYTES_BF16
-              + optimizer_state_bytes(max_learned)
-              + chunked_train_bytes(cfg, max_learned, chunk=chunk))
+    # -- 显存账（Adafactor 路径：fp32 参数+梯度+因子状态 ≈ 8 B/参数）----------
+    p1_hbm = chunked_train_bytes(cfg, base_params, chunk=chunk,
+                                 bytes_per_param=ADAFACTOR_BYTES_PER_PARAM)
 
     # -- token 预算（解析） ----------------------------------------------------
     p1_tokens = effective_flops(PHASE1_MAX_DAYS, mfu=mfu) / train_flops_per_token(cfg, seq_len)
-    p2_tokens = (effective_flops(PHASE2_MAX_DAYS, mfu=mfu)
-                 / adapter_train_flops_per_token(cfg, max_learned, seq_len))
 
-    rows = doubling_report(cfg, base_params, chunk=chunk)
+    rows = doubling_report(cfg, base_params, chunk=chunk,
+                           bytes_per_param=ADAFACTOR_BYTES_PER_PARAM)
     verdict = claim_verdict(rows)
 
     # -- 阶段 -----------------------------------------------------------------
@@ -463,123 +464,119 @@ def build_plan(
     backend_gates = [Gate(c.name, c.criterion, kind=c.kind) for c in conformance_checks()]
 
     phase0 = Phase(
-        name="Phase 0 冻结",
-        objective="自研 CUDA/C++ 后端一致性验收（BackendContract）+ 数据 / 分词器 / 配置冻结"
-                  "（运行时 = 自研后端；PyTorch 退役出战役路径，torch 实现仅作冻结数值 oracle）",
+        name="Phase 0 栈验收",
+        objective="训练栈 dry-run 验收（OOM-free + 实测吞吐修正 token 预算）+ 数据冻结",
         max_days=PHASE0_MAX_DAYS, hard_stop=True,
         steps=[
-            "后端逐项通过 BackendContract 一致性检查（下闸门自动生成自 conformance_checks）",
-            "语料与词表冻结（32000 vocab 口径），文档级无泄漏切分",
-            f"后端在 512K 上下文跑通 {chunk}-chunk 分块流式训练；实测吞吐/MFU，修正 token 预算",
-            "90 天总预算下 Phase 0 不得挤占训练期：第 30 天未过 conformance 即战役重排（砍 8M 档，保 4M）",
+            "--dry-run 随机 token 100 步：显存峰值实测 <= 23 GiB（解析估算见下）",
+            "真实数据小跑 >=200 步：实测 tokens/s 与 MFU，修正 24h token 预算",
+            "torch.compile / CUDA Graph / Adafactor 三开关逐一实测收益，锁定配置",
+            "语料与词表冻结（记录 SHA-256），文档级无泄漏切分",
         ],
         gates=backend_gates + [
             Gate("P0-budget-frozen", "数据/分词器/配置冻结并记录哈希，之后不得更改"),
-            Gate("P0-hard-stop-30d", "到 30 天硬停：conformance 未全过即触发降档预案（8M→4M），训练期不动", kind="hard"),
+            Gate("P0-oom-free-dryrun", "dry-run 100 步 OOM-free，显存峰值 <= 23 GiB", kind="hard"),
         ],
         hbm_bytes=p1_hbm,
     )
 
     phase1 = Phase(
-        name="Phase 1 · 1B 基座",
-        objective="1B 基座训练完成（4M 上下文学习），单张 MI250，最长 30 天，到点硬停",
+        name="Phase 1 · 2B 基座（24h）",
+        objective="单张 RTX 4090D-24GB 训练完整 2B 参数，24h 硬停（用户口径：24h 以内）",
         max_days=PHASE1_MAX_DAYS, hard_stop=True,
         steps=[
-            "上下文课程：1M → 2M → 4M 逐级翻倍，每级稳定后升级",
-            "每周 checkpoint + held-out loss 曲线留档",
-            "第 4 周起转入 4M 长上下文主训",
+            "bf16 autocast 前向 + fp32 参数/梯度 + Adafactor 因子化二阶矩"
+            "（24GB 上 2B 全参的唯一可行组合）",
+            f"chunked 流式训练（chunk={chunk}，激活 O(chunk)）；OOM 即降 chunk 至 2048",
+            "每 15 分钟 checkpoint + 每 30 分钟 eval；--time-budget-min 1440 硬停",
+            "训完立即 held-out ppl / 长上下文检索评测并留档",
         ],
         gates=[
-            Gate("P1-chunked-4m-nooom",
-                 f"4M 上下文分块训练在 {HBM_MI250_BYTES/GIB:.0f} GB HBM 内 OOM-free"
-                 f"（解析估算 {p1_hbm/GIB:.1f} GiB）"),
+            Gate("P1-oom-free",
+                 f"24GB 内 OOM-free（解析估算 {p1_hbm/GIB:.1f} GiB / "
+                 f"{HBM_4090D_BYTES/GIB:.0f} GiB）"),
             Gate("P1-doubling-claim",
-                 f"实测上下文翻倍 HBM 增量 ≤ {CONTEXT_CLAIM_GIB} GiB（解析预期 0）"),
-            Gate("P1-stream-bitexact-4m", "4M 长度下 流式==并行 逐位一致"),
+                 f"实测上下文翻倍显存增量 <= {CONTEXT_CLAIM_GIB} GiB（解析预期 0）"),
+            Gate("P1-stream-consistency", "流式与整段评测结果一致"),
             Gate("P1-loss-stable", "held-out loss 曲线稳定无发散"),
-            Gate("P1-token-budget", f"喂满解析 token 预算 ~{p1_tokens/1e9:.1f}B（MFU 实测后修正）",
+            Gate("P1-token-budget",
+                 f"24h 喂满解析 token 预算 ~{p1_tokens/1e9:.2f}B（MFU 实测后修正）",
                  kind="soft"),
-            Gate("P1-hard-stop-30d", "到 30 天强制冻结最优 checkpoint，无条件进入复盘", kind="hard"),
+            Gate("P1-hard-stop-24h", "到 24h 强制冻结最优 checkpoint，无条件停止", kind="hard"),
         ],
         hbm_bytes=p1_hbm, token_budget=p1_tokens,
     )
 
     retrospect = Phase(
         name="复盘（立即）",
-        objective="基座完成后**立即**复盘自身：失败轨迹 → 总结为训练样本（envlearn.summarize_failures 语义）",
+        objective="训练完成后立即评测与复盘：token 预算达成率、loss 曲线、能力快照",
         max_days=RETROSPECT_MAX_DAYS, hard_stop=True,
         steps=[
-            "收集 Phase 1 全部失败/低分轨迹（长上下文检索、代码执行）",
-            "总结为少量高价值训练样本（不是原样回放）",
-            "产出复盘报告：哪类能力缺失、2B 附加参数优先学什么",
+            "汇总 metrics.jsonl：吞吐/MFU 实测 vs 解析预算、loss 曲线",
+            "held-out ppl + 长上下文检索快照，与等 token Transformer 基线对照",
+            "诚实记录欠训档：tokens/param 实测值与下一阶段建议",
         ],
         gates=[
-            Gate("R-failures-summarized", "失败轨迹已总结为训练样本并有清单"),
-            Gate("R-report-written", "复盘报告落盘，明确 2B 阶段的学习优先级"),
-            Gate("R-hard-stop-2d", "复盘 ≤2 天（90 天总预算零余量），超时砍样本量不砍 Phase 2", kind="hard"),
+            Gate("R-metrics-summarized", "吞吐/MFU/token 预算达成率已汇总入档"),
+            Gate("R-eval-snapshot", "held-out ppl + 检索快照已留档"),
+            Gate("R-hard-stop-0d", "复盘不占训练窗口（立即完成，不占 24h）", kind="hard"),
         ],
         hbm_bytes=0,
     )
 
     phase2 = Phase(
-        name="Phase 2 · 2B 附加参数",
-        objective="基座冻结，学习 ≤2B 适配器（总上限 3B），分阶段蒸馏，最长 28 天，多了等不了",
-        max_days=PHASE2_MAX_DAYS, hard_stop=True,
-        steps=[
-            "LearnedAdapter.grow 按复盘优先级分配 2B 预算（WeightBudget 硬拒超额）",
-            "分阶段蒸馏：环境交互 → 总结 → 蒸馏 → 环境验证 → no-regression gate → 退化回滚",
-            "每 stage 留档：loss_before/after、pass_rate、是否回滚",
-        ],
-        gates=[
-            Gate("P2-base-frozen", "基座权重逐位未变（快照对比）"),
-            Gate("P2-budget-cap", f"适配器 ≤ {max_learned/1e9:.0f}B 且总权重 ≤ {total_cap/1e9:.0f}B（硬拒超额）"),
-            Gate("P2-no-regression", "每个 stage 通过 no-regression gate，退化即回滚"),
-            Gate("P2-hard-stop-28d", "到 28 天硬停，多了等不了，无延期", kind="hard"),
-        ],
-        hbm_bytes=p2_hbm, token_budget=p2_tokens,
+        name="Phase 2（本战役无）",
+        objective="单卡 24h 只交付 2B 基座；多阶段蒸馏/适配器战役不在本指标内",
+        max_days=PHASE2_MAX_DAYS, hard_stop=False,
+        steps=["（预留：如需适配器/多卡战役，另行立项）"],
+        gates=[],
+        hbm_bytes=0,
     )
 
     protocol = [
-        Gate("X-equal-budget", "对照口径：与 3B Transformer 基线**等 token / 等 FLOPs**，禁止无限定宣称"),
-        Gate("X-heldout-ppl", "held-out 困惑度 ≤ 基线 × 1.05（目标值，非承诺；实测为准）"),
-        Gate("X-longctx-retrieval", "1M / 2M / 4M 长上下文检索准确率 ≥ 基线"),
-        Gate("X-code-passk", "代码 pass@k（CodeExecutionVerifier 真实执行）≥ 基线"),
-        Gate("X-throughput", "1M 上下文解码吞吐 ≥ 基线（对方 KV cache ~32 GB vs 我方流式 <1 MB）"),
+        Gate("X-equal-budget",
+             "对照口径：与等参数 Transformer 基线**等 token / 等 FLOPs**，禁止无限定宣称"),
+        Gate("X-heldout-ppl", "held-out 困惑度报告实测值与基线比值（不承诺领先；欠训档如实呈现）"),
+        Gate("X-longctx-retrieval", "长上下文检索准确率 >= 等预算基线（chunked 流式口径）"),
         Gate("X-stream-consistency", "全部评测在流式与整段两种模式下结果一致"),
+        Gate("X-throughput", "解码吞吐 >= 基线（对方 KV cache GB 级 vs 我方流式 <1 MB）"),
     ]
     forbidden = [
         "注意力图 / 注意力热图等**机制内部**的对比（用户原话：真实输出结果，而不是注意力层面）",
-        "无等 token / 等 FLOPs 口径的无限定'1B 打 3B'宣称",
+        "无等 token / 等 FLOPs 口径的无限定宣称",
         "自报自评（无独立 verifier 的自我打分）",
         "只报平均、不报分布与最差 case 的 cherry-picking",
+        "把 24h 欠训档说成训练充分（tokens/param 实测值必须随结果一起报告）",
     ]
 
     # -- 「无人可忽视」演示包 ---------------------------------------------------
     # 轰动的前置投资是可复验性：每条主张配一条任何人拿到仓库就能跑的复验命令。
     showcase = [
         ShowcaseItem(
-            "S1-deploy-2gb", "1M 上下文完整推理 ≤ 2 GiB（1.948 GiB，含权重）",
+            "S1-deploy-2gb", "1M 上下文完整推理 <= 2 GiB（1.948 GiB，含权重）",
             "python -m simplcore.core.deploy_budget", owner="Phase 0（账本）+ 实机一条命令"),
         ShowcaseItem(
-            "S2-doubling-zero", "上下文 1M→8M 翻倍 HBM 增量恒为 0（结构性，非调参）",
+            "S2-doubling-zero", "上下文 512K→8M 翻倍训练显存增量恒为 0（结构性，非调参）",
             "python -m simplcore.core.campaign  # 阶梯表 delta 全 0", owner="Phase 1"),
         ShowcaseItem(
-            "S3-decode-10x", "1M 上下文解码吞吐 ≥ 10× 同卡 TS-3B（KV cache 60 GB vs 流式 30 MiB）",
-            "python -m simplcore.core.scaling  + 后端实机 benchmark", owner="Phase 1"),
+            "S3-2b-fits-24gb",
+            "2B 全参训练显存 < 24 GB（Adafactor + 分块流式；AdamW 32 GiB 不可行）",
+            "python -m simplcore.core.campaign  # 显存账 + P1-oom-free 闸门", owner="Phase 0"),
         ShowcaseItem(
-            "S4-equal-token-ppl", "等 token 预算 held-out ppl ≤ TS-2B × 1.05",
-            "对比脚本 + runs/eval_equal_token.json（协议 X-equal-budget）", owner="Phase 1"),
+            "S4-equal-token-ppl", "等 token 预算 held-out ppl 对照等参数 Transformer（协议 X-equal-budget）",
+            "对比脚本 + runs/eval_equal_token.json", owner="Phase 1"),
         ShowcaseItem(
-            "S5-longctx-4m", "1M/2M/4M 检索+摘要综合 ≥ YaRN 扩展 TS-5B（§7 轴 C 中位预测）",
-            "评测脚本 + 原始输出留档", owner="Phase 1+2"),
+            "S5-longctx-chunked", "分块流式长上下文评测 OOM-free（chunk 级激活，与总 L 无关）",
+            "python -m simplcore.core.longctx_eval --help", owner="Phase 1"),
         ShowcaseItem(
-            "S6-evolution-passk", "自进化前后代码 pass@k 可验证提升，含 no-regression 回滚记录",
-            "envlearn stage 日志（loss_before/after、pass_rate、rollback）", owner="Phase 2"),
+            "S6-stream-consistency", "流式与整段评测逐位一致（NT34/NT36 的操作形式）",
+            "python -m pytest simplcore/core/tests/test_stream_precision.py -q", owner="Phase 1"),
         ShowcaseItem(
-            "S7-honest-needle", "1M needle 精确召回 < TS-2B —— 信息论边界主动呈现（30.4 MiB 状态 vs ≥2 GB 原文）",
-            "同评测脚本，结果如实入演示包", kind="honest", owner="Phase 1"),
+            "S7-honest-token-budget",
+            "24h 单卡 4090D 只喂得动 ~0.3B tokens（tokens/param ≈ 0.15）——欠训档主动呈现，不宣称 SOTA",
+            "python -m simplcore.core.campaign  # token 预算行", kind="honest", owner="Phase 1"),
         ShowcaseItem(
-            "S8-reproducible", "任何人 5 分钟复验数学与账本：848 测试 + 13 证明 + 34 守卫 + 21 CLI",
+            "S8-reproducible", "任何人 5 分钟复验数学与账本：全仓 pytest + 13 项数学证明",
             "python -m pytest simplcore -q && python -m simplcore.core.mathproof", owner="全程"),
     ]
 
@@ -597,9 +594,9 @@ def build_plan(
 # ---------------------------------------------------------------------------
 def main(argv: Optional[Sequence[str]] = None) -> int:
     """CLI：``python -m simplcore.core.campaign`` —— 打印完整战役计划与账本。"""
-    ap = argparse.ArgumentParser(description="SimplCore 1B→3B 战役计划（解析账本，不占显存）")
-    ap.add_argument("--preset", default="tuan-1b", choices=sorted(SIMPLCORE_PRESETS))
-    ap.add_argument("--mfu", type=float, default=0.25, help="假设的 MFU（0-1）")
+    ap = argparse.ArgumentParser(description="SimplCore 2B×24h·4090D 战役计划（解析账本，不占显存）")
+    ap.add_argument("--preset", default="tuan-2b", choices=sorted(SIMPLCORE_PRESETS))
+    ap.add_argument("--mfu", type=float, default=0.30, help="假设的 MFU（0-1）")
     ap.add_argument("--chunk", type=int, default=8192, help="分块训练 chunk 长度")
     ap.add_argument("--json", action="store_true", help="机器可读输出")
     args = ap.parse_args(argv)

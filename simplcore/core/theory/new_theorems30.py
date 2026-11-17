@@ -978,6 +978,174 @@ NT16_30 = [
              "tunable overhead."),
         source="core/model/bytelevel.py boundaries/patch_slices",
         relates="extends NT05/NT19 (sequence-length accounting) to the input path"),
+
+    # ====================================================== GROUP IX
+    # Quantized-training precision budget for the 24h single-GPU campaign
+    # (bf16 autocast + fp32 master + Adafactor): what the rounding costs.
+    Thm(
+        nid="NT39", group="IX: quantized training",
+        title="bf16 state rounding in the two-tap recurrence is bounded by the kernel l1-norm",
+        hypothesis=(
+            "The layer's O(1) two-tap recurrence runs with its state rounded "
+            "to a floating format with relative unit roundoff u (bf16: "
+            "u = 2^-8) at every step; the recurrence is driven by bounded "
+            "input |y_t| <= Y; the impulse response K(lag) of the recurrent "
+            "filter is absolutely summable with l1-norm S_K."),
+        claim=(
+            "The accumulated state error after any number of steps satisfies "
+            "|e_t| <= S_K * u * Y / (1 - c) where c is the worst-case "
+            "per-step feedback contraction (c < 1 for the stable real-pole "
+            "families used here); for the one-pole family K(lag) = rho^lag, "
+            "S_K = 1/(1-rho) and the bound reads |e_t| <= u*Y/(1-rho)^2 "
+            "-- in particular it is INDEPENDENT of t (no drift, no "
+            "divergence), generalizing P7 from perturbation inputs to "
+            "persistent rounding noise."),
+        proof=(
+            "The rounding error at step t is a bounded input to the SAME "
+            "stable linear recurrence: e_t = c*e_(t-1) + delta_t with "
+            "|delta_t| <= u*Y (each step's state is rounded with relative "
+            "error u before entering the recurrence). Unrolling, "
+            "|e_t| <= sum_j c^j * u*Y <= u*Y/(1-c). The output path scales "
+            "this state error by the kernel's l1-norm (a stable filter "
+            "maps bounded inputs to bounded outputs with gain exactly "
+            "S_K), giving the stated bound; substituting the one-pole "
+            "S_K and c = rho gives the explicit form. All steps are "
+            "deterministic majorizations -- no probabilistic premise. QED"),
+        boundary=(
+            "A worst-case bound, not a statistical one (random-rounding "
+            "error grows like sqrt(t) in practice); it certifies the "
+            "bf16-forward/fp32-master split does not accumulate unboundedly "
+            "through the O(1) state, NOT that bf16 states alone are safe "
+            "for training (the master weights stay fp32 for that reason)."),
+        use=("Justifies the 4090D campaign's precision layout (bf16 compute "
+             "around an fp32 recurrent state): the quantization cost of the "
+             "streaming path is a fixed multiplicative factor, not a "
+             "runaway term over a 24h run."),
+        source="core/arch/sgc.py fp32 IIR recurrence; training/train/optim.py apply_cuda_tuning",
+        relates="rounding-noise dual of P7; precision counterpart of NT09"),
+
+    Thm(
+        nid="NT40", group="IX: quantized training",
+        title="fp32 accumulation of bf16 gradients: linear worst-case error budget",
+        hypothesis=(
+            "n gradient contributions g_1..g_n are each rounded to bf16 "
+            "(relative error u_g = 2^-8) and summed in an fp32 accumulator "
+            "(relative error u_a = 2^-24 per add)."),
+        claim=(
+            "The accumulated sum deviates from the exact sum by at most "
+            "|ghat - S| <= (u_g + n*u_a) * sum_i |g_i|, where S = "
+            "sum_i g_i; with the loss-normalization used by the trainer "
+            "(each micro-batch loss divided by accum before backward) the "
+            "bound applies verbatim per optimizer step. The bf16 rounding "
+            "term dominates for n << u_g/u_a = 2^16."),
+        proof=(
+            "Triangle inequality: |ghat - S| <= sum_i |g_i - round(g_i)| "
+            "+ (accumulator rounding). The first term is <= u_g*sum|g_i| "
+            "by definition of relative rounding; the accumulator adds at "
+            "most n fp32 roundings each <= u_a * (running partial sum) "
+            "<= u_a * sum|g_i| (fp32 partial sums never exceed the l1 "
+            "sum by more than rounding). Summing gives the bound. The "
+            "crossover n*u_a ~ u_g at n = 2^16 says the accumulation "
+            "order is irrelevant below 65K contributions per step -- the "
+            "trainer's accum loop is far below it. QED"),
+        boundary=(
+            "Worst case over gradient signs; random-sign gradients give "
+            "O(sqrt(n)) in expectation but that premise is not needed here "
+            "and is not claimed. Bounds the SUM, not the optimizer update "
+            "which additionally passes through Adafactor (NT41)."),
+        use=("Certifies the bf16-grad/fp32-accum split of the trainer: "
+             "gradient quantization costs a fixed relative budget "
+             "independent of how many micro-batches are accumulated."),
+        source="training/train/main.py accumulation loop; apply_cuda_tuning",
+        relates="feeds NT39's input premise; fp32-accum counterpart of NT09"),
+
+    Thm(
+        nid="NT41", group="IX: quantized training",
+        title="Adafactor's factored second moment converges geometrically for stationary statistics",
+        hypothesis=(
+            "Adafactor maintains row and column factors r_t, c_t as EMA "
+            "estimates of the row/col means of the squared gradient, with "
+            "decay beta in (0,1): r_t = beta*r_(t-1) + (1-beta)*rowmean_t, "
+            "c_t likewise; the factored second-moment estimate is "
+            "vhat_t(i,j) = r_t(i)*c_t(j)."),
+        claim=(
+            "(a) If the row means form a stationary sequence with limit "
+            "R, then |r_t - R| <= beta^t * |r_0 - R| -- geometric "
+            "convergence at rate beta, and the same for c_t. (b) If the "
+            "true second moment matrix is exactly mean-factorizable "
+            "(v(i,j) = R(i)*C(j)), the factored estimate converges to the "
+            "true v and the optimizer equals AdamW with that second "
+            "moment. (c) For general v, the per-element second-moment "
+            "error is exactly the off-diagonal (non-factorizable) "
+            "residual |v(i,j) - R(i)C(j)| -- the factorization is the "
+            "best rank-1 model under the row/col-mean constraint."),
+        proof=(
+            "(a) The EMA recursion is a linear contraction: "
+            "r_t - R = beta*(r_(t-1) - R) + (1-beta)*(rowmean_t - R); for "
+            "stationary statistics the last term vanishes at the limit and "
+            "before it is bounded by the deviation, so unrolling gives "
+            "beta^t decay. (b) Both factors converge by (a); products of "
+            "convergent sequences converge to the product. (c) "
+            "r_t(i)*c_t(j) -> R(i)C(j) by (a); the deviation "
+            "v(i,j) - R(i)C(j) is by definition the residual after "
+            "removing the multiplicative row/col-mean model, and no "
+            "other rank-1 factor built from the SAME row/col means can "
+            "reduce it -- the choice is forced by the constraint. QED"),
+        boundary=(
+            "Convergence of the ESTIMATE, not of training (no loss "
+            "descent claim); stationarity of gradient second moments is "
+            "an empirical premise, violated early in training (the "
+            "update-damping term in Adafactor mitigates, not proves). "
+            "Memory accounting (8 B/param, the 24GB enabler) is in the "
+            "campaign ledger, not here."),
+        use=("Gives the 24GB campaign's optimizer a precision contract: the "
+             "factored state is not an approximation of unknown quality "
+             "but a geometrically-converging estimate whose error is "
+             "exactly the non-factorizable mass."),
+        source="training/train/optim.py Adafactor",
+        relates="optimizer-state counterpart of NT39/NT40"),
+
+    Thm(
+        nid="NT42", group="IX: quantized training",
+        title="The 24h single-GPU 2B campaign is undertrained at ANY MFU",
+        hypothesis=(
+            "A model with N non-embedding parameters trains for wall time "
+            "T on hardware with dense peak throughput P (FLOP/s); "
+            "training costs ~6*N FLOPs per token (forward 2N + backward "
+            "4N) plus long-range terms; no gradient reuse, no compression "
+            "beyond what the 6N formula already abstracts."),
+        claim=(
+            "The achievable token budget is N_max = T*util*P*MFU/(6N + f_lr) "
+            "<= T*P/(6N), and therefore tokens/param <= T*P/(6*N^2), "
+            "INDEPENDENT of MFU, utilization, kernel quality, or precision "
+            "layout. For the 24h x RTX4090D (P = 157e12) x 2B campaign this "
+            "reads tokens/param <= 0.58 -- thirty-five times below the "
+            "Chinchilla 20x ratio even at MFU = 1.0 with zero overhead: "
+            "the undertrained status is a THEOREM of the hardware budget, "
+            "not an implementation shortfall."),
+        proof=(
+            "Each token costs at least 6*N FLOPs (the backward pass alone "
+            "is 4*N by the standard chain-rule count; no scheme that "
+            "trains all N parameters in the standard forward/backward "
+            "framework beats this to first order). The machine delivers at "
+            "most T*P FLOPs in wall time T even at MFU = 1 and util = 1. "
+            "Dividing the total FLOP budget by the per-token cost gives "
+            "N_max <= T*P/(6N); dividing by N gives the tokens/param "
+            "bound. Substituting T = 86400 s, P = 157e12, N = 2e9: "
+            "N_max <= 1.13e9, tokens/param <= 0.57. QED"),
+        boundary=(
+            "A first-order FLOP-count statement: it does not model "
+            "multi-epoch data reuse (which changes data quantity, not "
+            "the tokens/param compute ratio), MoE routing, or caches. It "
+            "says nothing about quality -- only that no 24h/4090D run can "
+            "claim Chinchilla-complete training at 2B."),
+        use=("Anchors the campaign's honest framing in arithmetic: every "
+             "result of the 24h run is reported as an undertrained-"
+             "regime datapoint, and the reporting duty (tokens/param in "
+             "the results) is a theorem-implied obligation, not a style "
+             "preference."),
+        source="deploy/campaign.py effective_flops/token budget; eval/scaling.py train_flops_per_token",
+        relates="compute-budget dual of NT38 (patch-count budget)"),
 ]
 
 THEOREMS30 = list(NT01_15) + NT16_30

@@ -1,7 +1,7 @@
 # Copyright 2026 (C) 六安市青奈科技有限责任公司
 # -*- coding: utf-8 -*-
 
-"""优化器与调度：参数组（振荡基免 decay）、warmup+cosine、ROCm 调优。"""
+"""优化器与调度：参数组（振荡基免 decay）、warmup+cosine、CUDA 调优。"""
 from __future__ import annotations
 
 
@@ -153,22 +153,32 @@ def cosine_with_warmup(step: int, total: int, warmup: int, lr: float, lr_min: fl
     return lr_min + 0.5 * (lr - lr_min) * (1.0 + math.cos(math.pi * t))
 
 
-def apply_rocm_tuning(force: bool = False) -> bool:
-    """MI250 / ROCm 训练调优。
+def apply_cuda_tuning() -> bool:
+    """NVIDIA CUDA（RTX 4090D 等）训练调优。
 
-    PyTorch 在 ROCm 上仍把设备暴露为 ``"cuda"``，``torch.cuda.*`` 通用；分布式
-    后端 ``"nccl"`` 在 ROCm 上自动映射到 RCCL。返回是否处于 ROCm 环境。
+    这些旋钮必须在**首次显存分配之前**设置（``PYTORCH_CUDA_ALLOC_CONF`` 是
+    惰性读取的），所以本函数在 ``main`` 里确定 device 之后、建模型之前调用。
+    返回是否处于 CUDA 环境。
 
-    这些旋钮必须在**首次显存分配之前**设置（``PYTORCH_HIP_ALLOC_CONF`` 是惰性
-    读取的），所以本函数在 ``main`` 里确定 device 之后、建模型之前调用。
+    * 展开式显存段：24GB 卡上大幅减少碎片，避免长训练中途 OOM；
+    * ``cudnn.benchmark``：固定输入形状（micro_batch × seq_len 全程不变）下
+      让 cuDNN 选最快算法；
+    * TF32：Ada GPU 上 fp32 matmul 走 TF32 tensor core（fp32 累加精度）；
+    * 允许 bf16 matmul 的低精度归约：吞吐优先，误差由 NT39–NT40 界定。
     """
-    is_hip = getattr(torch.version, "hip", None) is not None
-    if not (is_hip or force):
+    if not torch.cuda.is_available():
         return False
-    # 展开式显存段：128GB HBM 上大幅减少碎片，避免长训练中途 OOM。
-    os.environ.setdefault("PYTORCH_HIP_ALLOC_CONF", "expandable_segments:True")
-    # 固定输入形状（micro_batch × seq_len 全程不变）下，让 MIOpen 选最快卷积算法。
+    if getattr(torch.version, "hip", None) is not None:
+        return False                      # 本函数只调 NVIDIA 路径
+    os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
     torch.backends.cudnn.benchmark = True
-    print("[train] ROCm/MI250 tuning applied: expandable_segments, cudnn.benchmark=True")
+    torch.backends.cuda.matmul.allow_tf32 = True
+    torch.backends.cudnn.allow_tf32 = True
+    try:
+        torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction = True
+    except AttributeError:                # 旧版 torch 无该开关
+        pass
+    print("[train] CUDA tuning applied: expandable_segments, cudnn.benchmark, "
+          "TF32, bf16 reduced-precision reduction")
     return True
 

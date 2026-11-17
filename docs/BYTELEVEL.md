@@ -102,8 +102,8 @@ out = byte_level_generate(model, "prompt", max_new_patches=8, greedy=True)
 
 ## 3.6 理论层：字节级输入路径四定理（NT35–NT38，GROUP VIII）
 
-与绑定记忆通道（NT31–NT34）同格式收录进理论账本（共 57 项审计，
-`verify49` **57/57 PASS**；数值一致性检查 `theory/verify_bytelevel.py`
+与绑定记忆通道（NT31–NT34）同格式收录进理论账本（现共 61 项审计，
+`verify49` **61/61 PASS**；数值一致性检查 `theory/verify_bytelevel.py`
 **4/4 PASS**）：
 
 | # | 定理 | 内容 |

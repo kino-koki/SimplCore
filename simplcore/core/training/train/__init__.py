@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """SimplCore training loop.
 
-Designed for 1 x AMD Instinct MI250 (128 GB HBM2e, bf16, sequences of 4096)
-while remaining fully runnable on CPU for small-scale convergence proof.
+Designed for a single RTX 4090D (24 GB, bf16/TF32) while remaining fully
+runnable on CPU for small-scale convergence proof.
 
 Features that matter for a *real* training run, not a demo:
 
@@ -48,11 +48,11 @@ from .data_windows import LMWindows, resolve_data_dir
 from .distributed import setup_distributed
 from .evaluate import evaluate
 from .main import main
-from .optim import apply_rocm_tuning, build_param_groups, cosine_with_warmup
+from .optim import apply_cuda_tuning, build_param_groups, cosine_with_warmup
 
 __all__ = [
     "LMWindows",
-    "apply_rocm_tuning",
+    "apply_cuda_tuning",
     "assert_train_window_fits",
     "build_config",
     "build_param_groups",

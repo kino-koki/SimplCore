@@ -74,7 +74,6 @@ _OLD_TO_NEW = {
     "sft": "simplcore.core.training.sft",
     "sgc": "simplcore.core.arch.sgc",
     "smm": "simplcore.core.memory.smm",
-    "sprint30": "simplcore.core.deploy.sprint30",
     "srf": "simplcore.core.arch.srf",
     "ssm": "simplcore.core.arch.ssm",
     "theory": "simplcore.core.eval.claims_audit",

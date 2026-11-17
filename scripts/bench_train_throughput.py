@@ -1,6 +1,6 @@
 # Copyright 2026 (C) 六安市青奈科技有限责任公司
 # -*- coding: utf-8 -*-
-"""训练吞吐基准：tokens/s 记账（CPU/MI250 同一脚本，诚实口径）.
+"""训练吞吐基准：tokens/s 记账（CPU/GPU 同一脚本，诚实口径）.
 
 为什么需要这个脚本
 ------------------
@@ -9,7 +9,7 @@
 / 精度开关时只能看 loss 曲线猜 GPU 利用率。本脚本测四件事：
 
 1. **稳态 tokens/s**：预热后取中位数步的 token 吞吐（剔除首步编译/分配噪声）；
-2. **precision 对照**：fp32 vs bf16 autocast（MI250 主用 bf16）；
+2. **precision 对照**：fp32 vs bf16 autocast（4090D 主用 bf16）；
 3. **序列长度缩放**：tokens/s 随 ``seq_len`` 的变化（线性是健康态，
    超线性说明有 O(L²) 隐患混入）；
 4. **传输参数对照**：``num_workers=0`` vs ``>0``（合成数据下差异应趋近 0

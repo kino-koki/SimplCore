@@ -94,15 +94,13 @@ def parse_args(argv=None):
                     help="val 下降 < 该值视为'无改善'，防锯齿误停")
     ap.add_argument("--restore-best", action="store_true",
                     help="结束回滚到 best.pt（记忆场景下末态过拟合）")
-    # ---- 编译 / 图 / MI250 ---------------------------------------------
+    # ---- 编译 / 图 -----------------------------------------------------
     ap.add_argument("--compile-mode", type=str, default="max-autotune",
                     choices=["default", "reduce-overhead", "max-autotune"],
-                    help="torch.compile 模式；max-autotune 在 ROCm 上选 CK 内核（大幅提速）")
+                    help="torch.compile 模式；max-autotune 自动调优内核（大幅提速）")
     ap.add_argument("--cuda-graph", action="store_true",
-                    help="实验性：用 HIP/CUDA Graph 捕获单步 fwd+bwd（固定形状才有收益；"
+                    help="实验性：用 CUDA Graph 捕获单步 fwd+bwd（固定形状才有收益；"
                          "DDP / grad-checkpoint 下自动禁用，失败回退 eager）")
-    ap.add_argument("--mi250", action="store_true",
-                    help="强制套用 MI250/ROCm 调优（即使在 CUDA 机器上也能测这条路径）")
     # ---- 训练增强集成（opt-in，默认关闭；不开任何增强时逐位不变）--------
     ap.add_argument("--enhance", type=str, default="",
                     help="逗号分隔的增强列表：ponder,envlearn,accel,smm,dream,reasoning。"

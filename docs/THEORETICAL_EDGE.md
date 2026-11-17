@@ -469,7 +469,7 @@ SimplCore 的长程项随 `log L` 增长，Transformer 随 `L` 线性增长 —�
 | `docs/ARCHITECTURE.md` | 总体架构设计（数据流 / mixer 分类 / 流式 / 记忆 / 编解码） |
 | `docs/SGC_CORE.md` | SGC mixer 深度解析（振荡基字典 / FFT↔IIR 对偶 / 内容门控 / 四层闸门） |
 | `docs/MODULES.md` | 逐模块索引 |
-| `docs/TRAINING_BUDGET_MI250.md` | 1× MI250 上的训练预算估算 |
+| `docs/RTX4090D_TRAINING.md` | 单张 4090D-24GB 的 24h 训练预算估算 |
 
 ---
 

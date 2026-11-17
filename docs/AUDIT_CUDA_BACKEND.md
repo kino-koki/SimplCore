@@ -1,4 +1,4 @@
-# CUDA·HIP / C++ 后端算子契约审计（Track 2 · 目标硬件：AMD Instinct MI250 / ROCm）
+# CUDA·HIP / C++ 后端算子契约审计（Track 2 · 历史目标硬件：AMD Instinct MI250 / ROCm；现行战役：RTX 4090D）
 
 日期：2026-10-29 · 审计对象：`simplcore/core/backend_contract.py`、
 `conformance_runner.py`、`backend_bridge.py`、`adapter_model.py`、

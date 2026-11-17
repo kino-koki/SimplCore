@@ -1,9 +1,10 @@
 """
-Unified 57-item ledger (v5).  Single source of truth for classification.
+Unified 61-item ledger (v5).  Single source of truth for classification.
 
-  38 NEW THEOREMS  : NT01..NT38 (new_theorems15.py + new_theorems30.py,
-                     incl. the associative-memory channel NT31..NT34 and
-                     the byte-level input path NT35..NT38)
+  42 NEW THEOREMS  : NT01..NT42 (new_theorems15.py + new_theorems30.py,
+                     incl. the associative-memory channel NT31..NT34, the
+                     byte-level input path NT35..NT38, and the quantized-
+                     training precision budget NT39..NT42)
    8 FALSIFIED     : F1..F8
    5 WITHDRAWN     : W1..W5 plus W7 (registered as a 6th row in the paper's
                      Appendix F; the audit counts 5 W-slots because W7
@@ -11,7 +12,7 @@ Unified 57-item ledger (v5).  Single source of truth for classification.
    3 CONJECTURES   : C1, C3, C7
    3 EMPIRICAL     : E1, E2, E3  (no theorem can establish them)
   ----------------------------------------------------------------
-  57 total, each adjudicated exactly once by verify49.py (57/57 PASS).
+  61 total, each adjudicated exactly once by verify49.py (61/61 PASS).
 
 DISCIPLINE: PASS on a theorem item = finite-identity certification that the
 statement is correctly formed with non-empty premises (the PROOF is analytic,
@@ -75,12 +76,14 @@ def summary() -> dict:
                 non_theorems=len(NON_THEOREM),
                 verdict_distribution=by_verdict(),
                 honest_note=(
-                    "57 statements cannot all be new non-trivial theorems: 8 are "
+                    "61 statements cannot all be new non-trivial theorems: 8 are "
                     "false, 5 withdrawn, 3 unproved, 3 empirical. Inflating them "
                     "would repeat the theorem inflation this revision removes. "
                     "NT31..NT34 (2026-11-17) extend the series with the "
                     "associative-memory channel theorems; NT35..NT38 (2026-11-17) "
-                    "with the byte-level input-path theorems."))
+                    "with the byte-level input-path theorems; NT39..NT42 "
+                    "(2026-11-18) with the quantized-training precision "
+                    "budget for the 24h single-GPU campaign."))
 
 
 __all__ = ["ITEMS", "NON_THEOREM", "items", "by_verdict", "summary"]

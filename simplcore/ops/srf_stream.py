@@ -14,7 +14,7 @@ selective SSM），数学不同，故分模块、分守护测试（见 ``test_sr
   等价性由 ``simplcore/core/tests/test_srf_stream.py`` 守护。
 * 融合路径接受 ``float32`` / ``bfloat16`` / ``float16`` 输入：非 fp32 精度在 Python 层
   **归一化为 fp32** 后再下沉到 C++/CUDA（数值敏感的复数 SSM 递推恒在 fp32 执行），
-  输出再 cast 回原精度。这既让 bf16 的 MI250 推理/服务路径用得上融合算子，又杜绝了
+  输出再 cast 回原精度。这既让 bf16 的推理/服务路径用得上融合算子，又杜绝了
   "bf16 权重/状态被当作 fp32 字节误读"的潜在 bug；对 bf16 而言融合路径比纯 PyTorch
   的 bf16 step 更精确。fp32 输入走零拷贝快路径（与守护逐位一致）。
 """

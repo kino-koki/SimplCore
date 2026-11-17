@@ -4,9 +4,9 @@
   "model_family": "青小团 / Tuan",
   "description": "1B 基座（中文为主、英文保底、代码/Computer Use 基础）数据混合配比 spec。配套 2B 代码/Computer Use 适配器（见 adapter_2b）。所有 share 为 token 占比，互不重叠，按总量归一。",
   "token_budget": {
-    "target_base_tokens": "3e11 (~300B, 单 MI250 实际可行)",
+    "target_base_tokens": "3e11 (~300B, 单卡 4090D×24h 只能到 ~0.2B——本配比按比例缩减套用任意预算)",
     "target_full_tokens": "1e12 (~1T, 多节点)",
-    "note": "比例与总量无关，可直接套用任意预算；单 MI250 受算力限制，先跑 300B 阶段验证，再决定是否扩节点到 1T。"
+    "note": "比例与总量无关，可直接套用任意预算；单张 4090D 24h 约只喂得动 ~0.2B tokens（欠训档），先按比例缩减跑通全链路，再决定是否扩节点。"
   },
   "base_mix": [
     {
@@ -101,8 +101,8 @@
     "self_evolution_loop": "沙箱内跑真实任务→收集轨迹→dream 巩固(no-regression gate 逐位回滚)→accel 压浅易样本→reasoning 迭代复盘→下一轮。模型冻结、程序生长，与 Harness Learning 精神一致（手工/规则驱动版）。"
   },
   "hardware": {
-    "target": "1× AMD Instinct MI250 (128GB HBM2e, bf16, ROCm)",
-    "recommended": "8× MI250 跑 1T 阶段",
-    "launch": "scripts/train_tuan_mi250.sh --preset tuan-1b --enhance accel,reasoning"
+    "target": "1× RTX 4090D (24GB, bf16 autocast + TF32)"),
+    "recommended": "多卡扩节点跑 1T 阶段",
+    "launch": "scripts/train_tuan_2b_4090d.sh --preset tuan-2b"
   }
 }

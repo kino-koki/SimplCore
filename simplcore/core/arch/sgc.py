@@ -42,7 +42,7 @@ def theta_clamp_floor(decay_max: float) -> float:
 def recurrent_dtype(compute_dtype) -> "torch.dtype":
     """递推状态的高精度 dtype：低精度计算时退化为 fp32。
 
-    MI250 主用 bf16；IIR 振荡与 SSM 复数递推在 bf16/fp16 下会逐 token 累积
+    线上训练主用 bf16；IIR 振荡与 SSM 复数递推在 bf16/fp16 下会逐 token 累积
     舍入误差，使 O(1) 流式状态「数值可信」的前提失效。业界通行做法（Mamba /
     Mamba2）是把**递推状态**留在 fp32，只在 I/O 边界 cast。这里沿用同一策略：
     计算 dtype 为 ``bfloat16`` / ``float16`` 时递推状态恒为 ``float32``；
@@ -1022,7 +1022,7 @@ class SpectralGlobalConv(nn.Module):
             x_t = x_t.unsqueeze(1)
         # 融合热路径：在 fp32/bf16/fp16 + 扩展就绪 + 3D 输入（真实流式路径）时下沉到
         # C++/CUDA。非 fp32 精度由 ops.mixer_stream 在 Python 层归一化为 fp32 后再计算
-        # （IIR 递推恒在 fp32 执行、输出 cast 回原精度），因此 bf16 的 MI250 推理/服务
+        # （IIR 递推恒在 fp32 执行、输出 cast 回原精度），因此 bf16 的推理/服务
         # 也能用上融合算子；其余情况（扩展未构建、(B,D) 直调）回退纯 PyTorch。
         if (self.use_mixer_stream and not squeeze
                 and x_t.dtype in (torch.float32, torch.bfloat16, torch.float16)):

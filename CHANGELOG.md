@@ -598,3 +598,21 @@ m_h 只有一个非零峰，任何位置门只能**删掉**它；删到 key 后�
   （该盘已失效），按 env → 仓库同盘 → 其余非 C 盘顺序自动选择，
   全部失败时带候选清单报错。
 - **全量回归**：1260 项 collected，0 失败（exit 0）。
+
+---
+
+## 2026-11-18 — 硬件迁移：MI250/210 专用优化全删 → RTX 4090D-24GB 24h 战役
+
+- **删除**（用户指令）：全部 MI250/MI210 专用脚本与文档（3 个启动脚本、4 份
+  预算/就绪/训练计划文档、MI250 预演脚本与账本、`deploy/sprint30.py`、
+  `research/subsystems/hardware/` 的 MI250 优化器）、`--mi250` CLI 与
+  `apply_rocm_tuning`、全部文档的目标硬件口径。
+- **新增**：`campaign.py` 重写为 2B×24h×4090D 战役（Adafactor 8B/参数 =
+  24GB 唯一可行组合，AdamW 32.4 GiB 硬性不可行——账本+测试钉死）；
+  `apply_cuda_tuning`（TF32/bf16 归约/expandable_segments/cuDNN benchmark）；
+  24h 启动器 `scripts/train_tuan_2b_4090d.sh`；`docs/RTX4090D_TRAINING.md`
+  + `docs/TRAINING_RUNBOOK.md`。
+- **理论 61 项**（+NT39–NT42 量化训练精度预算）：bf16 递推舍入有界且与
+  t 无关 / fp32 梯度累积线性误差 / Adafactor 因子几何收敛 /
+  **24h×4090D×2B 在任何 MFU 下欠训（tokens/param ≤ 0.58，NT42）**。
+  `verify49` 61/61 PASS、`verify_precision` 4/4 PASS。

@@ -13,7 +13,7 @@ Extension），并提供与 :class:`~simplcore.core.sgc.SpectralGlobalConv.step`
   等价性由 ``simplcore/core/tests/test_mixer_stream.py`` 守护。
 * 融合路径接受 ``float32`` / ``bfloat16`` / ``float16`` 输入：非 fp32 精度在 Python 层
   **归一化为 fp32** 后再下沉到 C++/CUDA（数值敏感的 IIR 振荡递推恒在 fp32 执行），
-  输出再 cast 回原精度。这样做既让 bf16 的 MI250 推理/服务路径用得上融合算子，
+  输出再 cast 回原精度。这样做既让 bf16 的推理/服务路径用得上融合算子，
   又杜绝了"bf16 权重/状态被当成 fp32 字节误读"的潜在正确性 bug；对 bf16 而言融合
   路径比纯 PyTorch 的 bf16 step 更精确。fp32 输入走零拷贝快路径（与守护逐位一致）。
 """
@@ -92,7 +92,7 @@ def mixer_stream_step(mixer, x_t, state) -> Tuple[object, object]:
     * 接受 ``float32`` / ``bfloat16`` / ``float16`` 输入。
     * 数值敏感的 IIR 振荡递推**恒在 fp32 执行**：非 fp32 输入在 Python 层把 x、全部
       权重与状态张量归一化为 fp32 再下沉 C++/CUDA，输出再 cast 回原精度。这既让
-      bf16 的 MI250 推理/服务路径用得上融合算子，又杜绝了"bf16 字节被当作 fp32 误读"
+      bf16 的推理/服务路径用得上融合算子，又杜绝了"bf16 字节被当作 fp32 误读"
       的潜在 bug；对 bf16 而言，融合路径比纯 PyTorch 的 bf16 step 更精确。
     * fp32 输入走零拷贝快路径（与 ``test_mixer_stream.py`` 的 4e-5 等价守护逐位一致）。
     """

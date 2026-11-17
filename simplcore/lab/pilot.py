@@ -41,7 +41,7 @@ CPU 冒烟（本机即可）::
 
     python -m simplcore.core.pilot --rounds 2 --out runs/pilot
 
-实机档位（MI250，配合 phase1_train 预训练后的 checkpoint）::
+实机档位（RTX 4090D，配合 phase1_train 预训练后的 checkpoint）::
 
     python -m simplcore.core.pilot --rounds 8 --dim 256 --layers 6 \\
         --consolidate-epochs 4 --out runs/pilot-gpu

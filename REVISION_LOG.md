@@ -491,3 +491,19 @@ BF16 权重逐位复制、在真实 embedding 上的 SGC 对偶/因果/O(1) 验�
 **实现侧同轮加固**（`simplcore/core/model/bytelevel.py`，守护测试 16→22 项）：patcher 批量入口改纯函数（原实现复用持久计数，违反其自述的确定性保证）；修复首字节行键读写错位；`feed` 改返回全流绝对下标；生成上下文全程留在字节 id 空间（消除 decode→encode 往返对非法 UTF-8 的静默改写）；space 模式补上 max_len 强制断开；词表越界显式报错。缓存根目录不再硬编码盘符（原 E 盘已失效导致 conftest 断言失败），按 env→仓库同盘→其余非 C 盘自动选盘。
 
 **未做/不变**：字节级路径未跑训练（用户指令），论文中不作任何 LM 质量主张；核心结果仍为 A/B/C/E 四条；P1–P8 不变。
+
+## 2026-11-18 — v8.4：硬件迁移（MI250 → RTX 4090D-24GB）+ 理论账本 61 项
+
+来源：用户指令「优化 RTX 4090D-24GB 训练，删除所有为 MI250/210 做的优化；将在 24h 以内在 4090D 训练完整 2B 参数」。
+
+| 项 | v8.3 | v8.4 |
+|---|---|---|
+| 战役计划 | 1B→3B × 90 天 × 单 MI250（128 GB HBM，2 GCD） | **2B 全参 × 24h × 单张 4090D-24GB**（Phase 0 栈验收 ≤1 天 + Phase 1 训练 ≤1 天硬停）；`python -m simplcore.core.campaign` |
+| 优化器口径 | AdamW 16 B/参数（128GB 上可行） | **Adafactor ≈8 B/参数 = 24GB 上 2B 全参唯一可行组合**（AdamW 32.4 GiB 硬性不可行，账本+测试钉死） |
+| 训练栈 | ROCm/HIP 调优（expandable_segments、MIOpen） | `apply_cuda_tuning`：TF32 + bf16 低精度归约 + expandable_segments + cuDNN benchmark；`--mi250`/`apply_rocm_tuning` 全删 |
+| 删除 | — | `train_tuan_mi250.sh` / `train_tuan_2b_mi250.sh` / `smoke_hip_mi250.sh` / `mi250_rehearsal.py+json` / `campaign_gates.txt` / `MI250_READINESS.md` / `TRAINING_2B_MI250_30D.md` / `TRAINING_BUDGET_MI250.md` / `TUAN_1B_TRAINING_PLAN.md` / `TRAINING_RUNBOOK.md`（MI250 版）/ `SPRINT30.md` / `deploy/sprint30.py` / `research/subsystems/hardware/`（mi250_optimizer、amd_optimizer）；conditions_ledger 参考硬件换 4090D；全部 docs 的目标硬件改口径 |
+| 新增 | — | `scripts/train_tuan_2b_4090d.sh`（24h 启动器：adafactor + chunk 4096 + time-budget 1440）+ `docs/RTX4090D_TRAINING.md`（显存账/token 预算/优化清单/排障）+ `docs/TRAINING_RUNBOOK.md`（4090D 版） |
+| 理论账本 | 57 项（NT01–NT38） | **61 项（NT01–NT42，GROUP IX 量化训练）**：NT39 bf16 递推舍入 ≤ u·Y/(1−ρ)² 且与 t 无关；NT40 bf16 梯度 + fp32 累加线性误差预算；NT41 Adafactor 因子 β^t 几何收敛 + rank-1 一致性；**NT42 24h×4090D×2B 在任何 MFU 下都是欠训档（tokens/param ≤ 0.58）**——欠训状态是硬件预算定理，不是实现短板。`verify49` **61/61 PASS**，`verify_precision` **4/4 PASS** |
+| desk-check | — | 论文未重建（无新增论文级主张；v8.3 的 46/46 仍有效） |
+
+**诚实边界**：24h token 预算 ~0.2B（tokens/param ≈ 0.10）为欠训档，验收协议禁止把欠训档说成训练充分（NT42 定理 + forbidden 清单双重锁定）；所有 4090D 数字除规格外为解析估算，实机数字待 Phase 0/1 填充。

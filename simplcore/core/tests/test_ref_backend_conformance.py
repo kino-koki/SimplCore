@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """参考后端（fp32 CPU）的 torch 集成验收：真实 load_backend + 9 项一致性检查。
 
-本机无 torch / 无编译器时 skip；在目标机（MI250 或任意装 torch 的机器）上
+本机无 torch / 无编译器时 skip；在目标机（4090D 或任意装 torch 的机器）上
 执行 ``pytest simplcore/core/tests/test_ref_backend_conformance.py``，
 全过即 P0-backend-conformance 闸门在**真实编译库**口径下达成。
 """

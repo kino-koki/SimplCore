@@ -273,6 +273,6 @@ routing（稀疏路由）与 compression（压缩 shared expert）。据此：
 * **已验证**：上述数学与接线性质（fp32 CPU，atol=1e-4）。
 * **未验证（诚实边界）**：SGC-R 的质量效果没有任何训练或对照实验支撑
   ——routing 分支是否如 MiTA 框架预测那样改善 GATE-2 型精确检索，
-  需等预算 A/B（sgc vs sgc-r vs 对照臂）出数；MI250 主干战役（tuan-2b，
+  需等预算 A/B（sgc vs sgc-r vs 对照臂）出数；4090D 主干战役（tuan-2b，
   2026-11-30）按原 `sgc` 配置训练，不受本次变更影响。SGC-R 的训练循环
   aux 接入与规模化训练列为遗留项（SimplUnity 12 月增强窗口）。

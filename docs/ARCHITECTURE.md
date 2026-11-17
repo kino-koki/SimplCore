@@ -19,7 +19,7 @@
 > | `core/training/` | 训练域：data/（子包）/ train/（子包）/ trainer / phase1_train / training_integration / sft / ab / seqlen_curriculum / gate2 / envlearn | → model, memory, eval* |
 > | `core/eval/` | 评测与账本：eval / probes / bench / memprobe / scaling / equal_budget / longctx_eval / throughput_eval / extrapolation / code_passk_eval / claims_audit / mathproof / paper_audit / retrieval_bound / **world_probe（O(1) 状态的未来信息线性可读出探针：fp64 闭式岭回归 + 置换/多数类基线，测量而非宣称）** | → 各层 |
 > | `core/backend/` | 后端契约：backend_contract / backend_bridge / conformance_runner | → arch |
-> | `core/deploy/` | 战役与部署：campaign / deploy_budget / sprint30 | → backend, model, training, eval |
+> | `core/deploy/` | 战役与部署：campaign / deploy_budget | → backend, model, training, eval |
 >
 > 实验性模块（jitrl / pilot / conditions_ledger）隔离在 `simplcore/lab/`，
 > **core 不得 import lab**（`test_impl_isolation.py` 守护）。
@@ -209,7 +209,7 @@ SRFN（`mixer="srf"`）在 SGC 之上叠加 `SelectiveSpectralSSM`：复对角 S
 ## 10. 训练 / 评测 / 诚实纪律
 
 - `train.py` / `data.py`：bf16/TF32、梯度累积、warmup+cosine、断点续训、JSONL 指标、
-  文档级无泄漏切分。目标硬件 1× AMD Instinct MI250（128 GB HBM2e）。
+  文档级无泄漏切分。目标硬件单张 RTX 4090D（24 GB）。
   **训练窗口预算**：主路径有两种前向模式。
   * **整段并行**（默认，`--train-chunk 0`）：每个 block 物化 `(L, D)` fp32 核
     （`sgc.build_kernel`），训练显存 `O(L·D)`；`--max-kernel-gib`（默认 4 GiB）

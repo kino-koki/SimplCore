@@ -73,13 +73,13 @@ def test_conformance_checks_all_hard():
 def test_campaign_phase0_inherits_contract_gates():
     """campaign.build_plan 的 Phase 0 闸门必须自动包含契约一致性检查。"""
     plan = build_plan()
-    p0 = plan.phase("Phase 0 冻结")
+    p0 = plan.phase("Phase 0 栈验收")
     p0_names = {g.name for g in p0.gates}
     for c in conformance_checks():
         assert c.name in p0_names, f"Phase 0 缺少契约闸门 {c.name}"
-    # PyTorch 退役必须写进 Phase 0 目标
-    assert "PyTorch 退役" in p0.objective
-    assert "自研" in p0.objective
+    # 运行时口径必须写进 Phase 0 目标（PyTorch 默认路径 + 可选自研后端）
+    assert "训练栈" in p0.objective
+    assert "dry-run" in p0.objective
 
 
 def test_contract_format_and_json():

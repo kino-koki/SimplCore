@@ -39,7 +39,7 @@
 * `--gate2-strict` 时 `below_chance` 才硬停（单卡或 DDP 广播 flag）；
 * `--gate2-lengths` 会被当前 `cur_seq_len` 截断，不会在 1M 阶段偷偷跑 4M。
 
-2B 启动脚本 `scripts/train_tuan_2b_mi250.sh` 在 S5（1M）自动加 `--gate2`。
+2B 启动脚本 `scripts/train_tuan_2b_4090d.sh`（长上下文课程 S5=1M 档）测 GATE-2。
 
 ## 5. 4M 验收（离线，训练后）
 

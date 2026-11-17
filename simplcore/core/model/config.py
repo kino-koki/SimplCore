@@ -1,6 +1,6 @@
 # Copyright 2026 (C) 六安市青奈科技有限责任公司
 # -*- coding: utf-8 -*-
-"""SimplCore configuration objects and MI250-80GB scale presets."""
+"""SimplCore configuration objects and GPU scale presets."""
 from __future__ import annotations
 
 import json
@@ -70,7 +70,7 @@ class SimplCoreConfig:
     decoder, there is **no softmax self-attention and no KV cache** that grows
     with the sequence.
 
-    **Streaming precision invariant (MI250 / bf16):** the recurrent O(1) state
+    **Streaming precision invariant (bf16 GPUs):** the recurrent O(1) state
     (IIR oscillator state for SGC / gated-SGC, and the complex SSM state for SRF)
     is always held in ``float32`` when the compute dtype is ``bfloat16`` /
     ``float16`` — see :func:`simplcore.core.sgc.recurrent_dtype`. This keeps the
@@ -443,7 +443,7 @@ class SimplCoreConfig:
 
 
 # ----------------------------------------------------------------------------
-# Presets.  Sized for the stated target compute: 1 x AMD Instinct MI250
+# Presets.  Sized for the stated target compute: 1 x RTX 4090D (24 GB)
 # (128 GB HBM2e, bf16), sequence length 4096, AdamW.  Parameter counts come
 # from `analytic_params()` / `simplcore-presets` (analytic, not instantiated).
 # ----------------------------------------------------------------------------
@@ -468,13 +468,13 @@ _CTX_LONGCTX_4M = {
     ],
 }
 
-# 2B × 30 天（单 MI250，2 GCD DDP）的上下文课程。
+# 2B 长上下文课程的定容基准（until_frac 相对口径与总时长/硬件无关）。
 # 预算口径：30d × 86400 × 0.65 × 362.1 TFLOPS × 25% MFU ≈ 1.53e20 FLOPs；
 # 2.02B 每 token ≈ 11.8e9 FLOPs → ~13B tokens。until_frac 直接等于 token 占比
 # （global_batch_tokens 固定时，步数占比 = token 占比）。
 # 4M 段占 10% ≈ 1.3B tokens ≈ 325 个 4M 窗口 —— 这是"4M 可运行 + 基础长程检索"
 # 的预算，不是"4M 能力完全收敛"。要真正收敛 4M，需要再一个 30 天周期。
-_CTX_2B_4M_30D = {
+_CTX_2B_4M = {
     "max_seq_len": 4_000_000,
     "curriculum": [
         {"seq_len": 4096,    "until_frac": 0.18},
@@ -524,28 +524,29 @@ SIMPLCORE_PRESETS = {
     "srf-30m": _p(vocab_size=12288, dim=512, num_layers=10, num_bases=32,
                   decay_max=4096, local_kernel=4, num_heads=8, ffn_ratio=2.0,
                   mixer="srf", srf_heads=8, srf_chunk=32),
-    # 1B 效率目标（MI250 单卡满预算训练，见 docs/TRAINING_BUDGET_MI250.md）：
+    # 1B 效率目标（单卡满预算训练，预算口径见 docs/RTX4090D_TRAINING.md）：
     # SimplCore 1B 与同等预算的传统 attention 1B 的受控 A/B（1013M vs 1005M）。
     "tuan-1b": _p(vocab_size=32000, dim=2048, num_layers=15, num_bases=128,
                  decay_max=16384, local_kernel=4, num_heads=16, ffn_ratio=4.0,
                  context=_CTX_LONGCTX_4M),
-    # 2B 主干（30 天单 MI250 交付档）：2023M total / 1957M non-emb，
+    # 2B 主干（2B 交付档）：2023M total / 1957M non-emb，
     # 与 tuan-1b 同宽（d=2048，kernel/调优可复用）、深度翻倍（31 层），
     # 宽深比 66，嵌入占比 3.1%。按 25% MFU 的 30 天预算约 13B tokens：
     # 这是"欠训但可用"的 2B，不是 Chinchilla-optimal（20× = 40B，需 ~92 天）。
-    # 4M 课程占末段 10%（_CTX_2B_4M_30D），跑法：--train-chunk 8192 + 2 GCD DDP。
+    # 4M 课程占末段 10%（_CTX_2B_4M）。4090D-24GB 跑法：--train-chunk 4096 +
+    # Adafactor（见 docs/RTX4090D_TRAINING.md）。
     "tuan-2b": _p(vocab_size=32000, dim=2048, num_layers=31, num_bases=128,
                   decay_max=4_000_000, local_kernel=4, num_heads=16, ffn_ratio=4.0,
                   sgc_init_mode="logfreq", sgc_rho_param="logspace",
-                  context=_CTX_2B_4M_30D),
-    # Sprint-30 降档档位（simplcore/core/sprint30.py）：~0.87B，每 token FLOPs
+                  context=_CTX_2B_4M),
+    # 降档档位：~0.87B，每 token FLOPs
     # 更低，用于实测 MFU 低于下限时换回 ≥15B token 预算——交付出一个训完的
     # 0.87B，好过一个没训完的 1B。
     "tuan-870m": _p(vocab_size=32000, dim=1728, num_layers=18, num_bases=128,
                    decay_max=16384, local_kernel=4, num_heads=24, ffn_ratio=4.0,
                    context=_CTX_LONGCTX_4M),
     # 原生智能阈值档（simplcore/core/conditions_ledger.py，纯解析 preset，
-    # 单卡 MI250 不可训练——账本给出最小 GPU 数）：
+    # 单张 24GB 卡不可训练——账本给出最小 GPU 数）：
     # 120B 主干 + 选择性 SRF mixer（输入相关 Δ，非注意力）+ 2B(2^31) token
     # 上下文视野（O(1) 流式状态，结构上与 L 无关）。SGC v1.2 增强全开。
     "tuan-120b": _p(vocab_size=32000, dim=8192, num_layers=118, num_bases=256,

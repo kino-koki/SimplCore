@@ -4,9 +4,9 @@
 
 背景
 ----
-战役运行时切换为**自研 CUDA·HIP/C++ 后端**（fp32 CPU 参考实现已就绪，
-见 ``docs/REF_BACKEND.md``；生产 HIP 后端为 Phase 0 主体工作——目标硬件
-MI250/ROCm，融合流式核以 hipcc 编译 ``.cu``），PyTorch 退役出战役路径。
+战役运行时可选**自研 CUDA/C++ 后端**（fp32 CPU 参考实现已就绪，
+见 ``docs/REF_BACKEND.md``；目标硬件为单张 RTX 4090D；PyTorch 路径
+``simplcore/core/training/train`` 是默认训练路径，自研后端为可选加速）。
 仓库内的 torch 参考实现**保留为冻结的数值规格（oracle）**——它是后端要逐位
 对齐的数学定义，不参与训练部署。本文件是后端团队与架构之间的接口契约：
 
@@ -156,9 +156,9 @@ SIMPLCORE_BACKEND_OPS: List[BackendOp] = [
               "master/m/v 全 fp32；冻结位零更新（基座冻结/适配器训练的唯一入口）"),
     BackendOp("weight_decay_exempt", "optimizer", "振荡基参数豁免 decay", "bf16", "fp32",
               "对 ρ/θ 基参数不做 weight decay（掐死长程记忆的坑，参考实现已修）"),
-    # -- 双 GCD 并行 ----------------------------------------------------------
-    BackendOp("shard_allreduce", "collective", "2×GCD FSDP/ZeRO 切分", "bf16", "fp32",
-              "MI250 = 2×64 GB；梯度 all-reduce fp32，切分后与单卡数值一致"),
+    # -- 多卡并行 -------------------------------------------------------------
+    BackendOp("shard_allreduce", "collective", "多卡 FSDP/ZeRO/DDP 切分", "bf16", "fp32",
+              "梯度 all-reduce fp32，切分后与单卡数值一致"),
 ]
 
 DEFAULT_CONTRACT = BackendContract(
@@ -167,7 +167,7 @@ DEFAULT_CONTRACT = BackendContract(
     ops=SIMPLCORE_BACKEND_OPS,
     precision_policy=[
         "计算 bf16；GEMM/卷积/归一化统计/cumsum/损失 一律 fp32 累加",
-        "优化器 master 权重与 m/v 全 fp32（16 B/参数口径，见 TRAINING_BUDGET_MI250.md §4）",
+        "优化器 master 权重与 m/v 全 fp32（16 B/参数口径，见 docs/RTX4090D_TRAINING.md §2）",
         "O(1) 流式状态 fp32 常驻；与序列长度无关",
         "误差预算：任一内核 fp32 参考对照 max|Δ| ≤ 1e-2（bf16 计算口径）",
     ],
@@ -206,8 +206,8 @@ def conformance_checks(contract: Optional[BackendContract] = None) -> List[Confo
             "P0-bf16-accum",
             "抽样内核验证 fp32 累加（GEMM / rmsnorm / cumsum / ce_loss）"),
         ConformanceCheck(
-            "P0-shard-2gcd",
-            "2 GCD 切分下训练数值与单卡一致（all-reduce fp32）"),
+            "P0-shard-2way",
+            "2 路分片（DDP/FSDP/ZeRO）下训练数值与单卡一致（all-reduce fp32）"),
         ConformanceCheck(
             "P0-no-attention",
             "内核清单结构审查：零注意力 / 零 KV cache / 零位置表"),

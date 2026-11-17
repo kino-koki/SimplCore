@@ -52,9 +52,9 @@
     },
     {
       "idx": 9,
-      "name": "MI250 预演四步全过",
+      "name": "4090D 战役计划账本（2B×24h×24GB）",
       "pass": true,
-      "detail": "dryrun rc=0, 3step rc=0"
+      "detail": "hbm=18.8GiB, tokens24h=0.22B, hard-stop24h=True"
     },
     {
       "idx": 10,

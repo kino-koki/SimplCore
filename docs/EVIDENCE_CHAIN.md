@@ -23,8 +23,8 @@
 | 6 | **真实词分布召回迁移**（Zipf 噪声，3 seeds） | sgc-bind **1.000** vs ts 0.332 vs sgc 0.132 | `recall_transfer.json` + `multiseed2.json` |
 | 7 | **诚实负结果**：list-ops（ts 0.485 > sgc 0.335 > sgc-bind 0.265）、fuzzy-jump（三臂 chance）、多 needle（三臂饱和无区分度） | 已入档 | `lra_probe.json` `lra_probe2.json` |
 | 8 | **真实语料 LM 成本**（corpus.txt 字符级）：绑定通道 +5.7% PPL（检索能力专用增强的代价） | sgc 5.93 / sgc-bind 6.27 / ts 11.05 | `reallm.json` |
-| 9 | **MI250 战役就绪**：数据管线（SHA-256 manifest）、闸门清单、`tuan-1b` dry-run 启动预检、3 步实跑——四步全过；修复 2 个上卡首日必爆缺陷 | 预演四步全 ✅ | `mi250_rehearsal.json` + `campaign_gates.txt` |
-| 10 | **理论层 57 项审计**：NT01–NT38 完整解析证明（NT31–NT34 绑定记忆通道：状态长度无关 / FIFO 可寻址 / 残差绑定正确性 / 严格因果；NT35–NT38 字节级输入路径：编解码往返保真 / 分块纯函数·因果·批流一致 / O(1) 流式进位 / patch 数量预算）+ 19 项非定理分类，verify49 **57/57 PASS** | 38 定理 + 19 分类 | `theorem49_results.json` + `theory/verify_binding.py` + `theory/verify_bytelevel.py` |
+| 9 | **4090D 战役账本**（2B×24h×24GB）：Phase 0 栈验收 ≤1 天 + Phase 1 训练 ≤1 天硬停；显存 18.8 GiB < 23 GiB 实测线（Adafactor 8B/参数 + 分块流式；AdamW 16B/参数 32 GiB 硬性不可行）；24h token 预算 ~0.2B（欠训档如实标注） | `python -m simplcore.core.campaign` 可复验 | `campaign.py` + `docs/RTX4090D_TRAINING.md` |
+| 10 | **理论层 61 项审计**：NT01–NT42 完整解析证明（NT31–NT34 绑定记忆通道；NT35–NT38 字节级输入路径；NT39–NT42 量化训练精度预算：bf16 递推舍入有界 / fp32 梯度累积误差预算 / Adafactor 因子几何收敛 / **24h×4090D×2B 在任何 MFU 下都是欠训档的定理**）+ 19 项非定理分类，verify49 **61/61 PASS** | 42 定理 + 19 分类 | `theorem49_results.json` + `theory/verify_binding.py` + `theory/verify_bytelevel.py` + `theory/verify_precision.py` |
 
 ## 可执行验收
 
@@ -51,7 +51,7 @@ python research/binding/recall_transfer.py                 # 验收项 6
 python research/binding/lra_probe.py                       # 验收项 7
 python research/binding/lra_probe2.py                      # 验收项 7
 python research/binding/reallm_probe.py                    # 验收项 8
-python research/binding/mi250_rehearsal.py                 # 验收项 9
+python -m simplcore.core.campaign                          # 验收项 9（战役账本）
 ```
 
 ## 边界（引用时必须携带）
@@ -60,5 +60,6 @@ python research/binding/mi250_rehearsal.py                 # 验收项 9
   探针无显著性检验（MQAR 为 3 seeds）；
 * `sgc-bind` 的收益限于**联想召回/绑定类能力**；list-ops 与纯 LM 上为
   中性偏负（见 #7/#8）；
-* 1B→3B 战役实测（`scripts/train_tuan_mi250.sh`，chunked BPTT 已默认）
-  **依赖 MI250 硬件**，就绪状态见 `docs/MI250_READINESS.md`。
+* 2B×24h 战役实测（`scripts/train_tuan_2b_4090d.sh`，chunked BPTT +
+  Adafactor + bf16/TF32）**依赖 RTX 4090D 硬件**，预算口径见
+  `docs/RTX4090D_TRAINING.md`。

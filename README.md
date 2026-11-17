@@ -25,14 +25,14 @@ python -m simplcore --doctor
 这会显示包版本和最小开发环境诊断，包括缓存根目录、Torch 与 NumPy 可用性，
 便于在不同机器上快速确认工程环境。
 
-> **运行时**：训练/推理部署走**自研 CUDA·HIP/C++ 后端**（算子契约见
-> `simplcore/core/backend/backend_contract.py`，`python -m simplcore.core.backend_contract`）；
-> 仓库内 PyTorch 实现退役为**冻结数值规格（oracle）**——它是后端逐位对齐的数学定义，
-> 不参与部署。目标硬件为 **AMD Instinct MI250（ROCm）**：融合流式核以 CUDA 写法
-> 交付、经 PyTorch 以 hipcc 编译为 HIP（仅用 HIP 兼容原语），训练主路径走
-> `torch.compile`→ROCm CK（见 `scripts/train_tuan_mi250.sh`）。16-op 契约已有
-> **fp32 CPU 参考后端**（`csrc/sc_ref_backend.c`，验收见 `docs/REF_BACKEND.md`），
-> 生产 HIP 后端待移植。战役计划（1B→3B，硬停闸门 + HBM 账本）见
+> **运行时**：训练主路径是 **PyTorch + bf16/TF32 + torch.compile + CUDA Graph +
+> Adafactor**（`simplcore/core/training/train`，目标硬件 **单张 RTX 4090D-24GB**，
+> 战役文档 `docs/RTX4090D_TRAINING.md`，启动器 `scripts/train_tuan_2b_4090d.sh`）；
+> 可选自研 CUDA/C++ 后端的算子契约见 `simplcore/core/backend/backend_contract.py`
+> （`python -m simplcore.core.backend_contract`），仓库内 PyTorch 实现同时充当
+> **冻结数值规格（oracle）**。16-op 契约已有 **fp32 CPU 参考后端**
+> （`csrc/sc_ref_backend.c`，验收见 `docs/REF_BACKEND.md`）。
+> 战役计划（2B×24h·4090D，硬停闸门 + 显存账本）见
 > `simplcore/core/deploy/campaign.py`（`python -m simplcore.core.campaign`）。
 
 > **SGC 是 SimplCore 内部的一个 mixer 模块**（`simplcore/core/arch/sgc.py`），
@@ -246,7 +246,7 @@ simplcore/core/
 ├── training/   训练域（data/ / train/ / trainer / phase1_train / sft / gate2 / envlearn）
 ├── eval/       评测与账本（eval / probes / scaling / longctx_eval / theory / mathproof / paper_audit）
 ├── backend/    后端契约（backend_contract / backend_bridge / conformance_runner）
-└── deploy/     战役与部署（campaign / deploy_budget / sprint30）
+└── deploy/     战役与部署（campaign / deploy_budget）
 simplcore/lab/  实验性模块（jitrl / pilot / conditions_ledger），core 不得反向依赖
 ```
 
@@ -281,12 +281,11 @@ offline consolidation 术语，且模块内已用**诚实边界**声明"自进�
 | `SimplCore_Paper.md` | **论文主稿（0.2-β，表达力边界刻画）**：四条表达力边界（函数类不匹配 / 静态核天花板 / 时变参数破坏 FFT 对偶 / 内容寻址等参数仍输 attention）、三条结构性质的分路径口径、`[R]/[E]/[A]/[C]` 四级证据分级、47 万参数三臂训练与 SFSC-FDCAO 六臂前哨、§7 投稿硬门槛清单。**不是 SOTA 主张；当前不宜直接投稿** |
 | `docs/SimplCore_Paper_v0.1alpha.md` | **0.1-α 原稿归档**（逐字节保留）：架构白皮书 v1.1.2 / 定理 1–4 / 命题 5–7 / §7 分轴等效参数推测 / 旧章节号，供口径追溯 |
 | `docs/THEORETICAL_EDGE.md` | **逐模块的机制层主张与边界论证**：每个模块相对传统 Transformer 的复杂度/状态/机制主张与边界（可执行断言在 `eval/claims_audit.py`） |
-| `docs/EVIDENCE_CHAIN.md` | **证据链汇总（sgc-bind）**：九项验收清单 × 13 份账本索引——MQAR/扩规模/长上下文/等预算(Mamba2)/真实词召回迁移/诚实负结果/真实语料成本/MI250 就绪 |
+| `docs/EVIDENCE_CHAIN.md` | **证据链汇总（sgc-bind）**：九项验收清单 × 账本索引——MQAR/扩规模/长上下文/等预算(Mamba2)/真实词召回迁移/诚实负结果/真实语料成本/4090D 战役账本 |
 | `docs/BYTELEVEL.md` | **字节级主路径（tokenizer-free）**：ByteLevelCodec + EntropyPatcher（entropy/space/fixed 三模式动态分块）+ BytePatchBridge——让模型直接理解原始字节，与全部 mixer/模块兼容 |
 | `docs/ARCHITECTURE.md` | **总体架构设计**：数据流、mixer 分类、流式、记忆、编解码、训练/评测 |
 | `docs/SGC_CORE.md` | **SGC mixer 深度解析**：振荡基字典、FFT↔IIR 对偶、内容门控、局部路径、四层闸门、流式状态 |
 | `docs/SIMPLUNITY.md` | **SimplUnity 技术文档（必读）**：冻结基座 + 路由门 + 域专属专家的 MoA 全解——前向数据流图、ExpertRouter 的 top-k/lb/z-loss 数学、index_add 梯度工程、GATE-3 无回归门、WeightBudget 三层账、五场景使用指南、诚实边界 |
-| `docs/SPRINT30.md` | **30 天冲刺计划**：测后锁预算 + MFU 下限闭合 + 降档阶梯——"1 月必须完全做好训练"的硬保证（`python -m simplcore.core.sprint30`） |
 | `docs/CONDITIONS_LEDGER.md` | **智能条件账本**：五项条件可执行断言 + 120B 主干/2B token 视野阈值账本（`python -m simplcore.core.conditions_ledger`） |
 | `docs/MODULES.md` | 逐模块索引（每个模块一段职责说明） |
 | `research/` | 早期路线原型归档（**不发布、不参与 CI**），仅供考古与对照 |
@@ -356,7 +355,7 @@ offline consolidation 术语，且模块内已用**诚实边界**声明"自进�
 - ✅ **训练吞吐基准**（`scripts/bench_train_throughput.py`，0.1-α）：
   tokens/s 稳态记账（中位数 + p90）、fp32/bf16 对照、序列长度缩放健康检查
   （超线性即有 O(L²) 隐患混入）、显存峰值单列；同轮修复 Unity 域隔离
-  warm-up 的 DataLoader 硬编码 `num_workers=0`（MI250 上实测拖低 GPU 利用率
+  warm-up 的 DataLoader 硬编码 `num_workers=0`（实测拖低 GPU 利用率
   的 IO 瓶颈）——多域隔离训练吞吐提升。
 - 🧪 **物理世界模型**（`model/physics_world.py`，0.1-α，**实验功能，opt-in
   默认关闭**）：文本/多模态抗幻觉的**第三正交信号源**——L2 证据门管
@@ -409,7 +408,7 @@ offline consolidation 术语，且模块内已用**诚实边界**声明"自进�
   三条计算原则（混合计算 / 尺度不可分 / 代谢约束）做成可训练机制，同样 opt-in、零回归；
   **这是机制实验件，绝非声称模型「有意识」**——论文本身也只是论证这些是意识的*可能*
   必要条件，且明确可被非生物系统复现。详见 `docs/BIO_ENHANCE.md`
-- ⚠️ **1B 以上规模从未实际训练**；配置与链路已打通，曲线待测（目标硬件：1× AMD Instinct MI250）
+- ⚠️ **1B 以上规模从未实际训练**；配置与链路已打通，曲线待测（目标硬件：单张 RTX 4090D-24GB，24h 战役口径）
 - ⚠️ 未在 LRA 等公认基准做规模化公平对比；已有 **smoke 规模等预算对照**
   （合成任务：sgc-bind 胜 Mamba2 96/96 窗；**真实中文语料：纯 sgc/srf 胜
   Transformer（0.836/0.831）但输 Mamba2 ~1.5 倍（1.545/1.537）**；
@@ -530,8 +529,8 @@ simplcore/                       # 发布的产品线（唯一一条）
       backend_contract.py        #     自研 CUDA·HIP/C++ 后端算子契约（16 内核 + 逐位一致性）
       backend_bridge.py / conformance_runner.py
     deploy/
-      campaign.py                #     1B→3B 战役计划（HBM 账本 + 硬停闸门 + 验收协议）
-      deploy_budget.py / sprint30.py
+      campaign.py                #     2B×24h·4090D 战役计划（显存账本 + 硬停闸门 + 验收协议）
+      deploy_budget.py           #     O(1) 流式状态 / 1M 上下文 2GiB 部署账本
     common.py / bio_enhance.py   # 共享工具 / 生物启发增强（三支柱 + 代谢预算）
     tests/                       #   守护测试（以 pytest 统计为准；可选依赖项自动跳过）
   lab/                           # 实验性模块（jitrl / pilot / conditions_ledger），不承诺稳定

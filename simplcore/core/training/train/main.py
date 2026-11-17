@@ -12,7 +12,7 @@ from .checkpoint import load_checkpoint, save_checkpoint
 from .data_windows import LMWindows, resolve_data_dir, unpack_lm_batch
 from .distributed import setup_distributed
 from .evaluate import evaluate
-from .optim import apply_rocm_tuning, build_param_groups, cosine_with_warmup
+from .optim import apply_cuda_tuning, build_param_groups, cosine_with_warmup
 
 import json
 import os
@@ -75,14 +75,9 @@ def main(argv=None) -> int:
         amp_dtype = None
     else:
         amp_dtype = {"bf16": torch.bfloat16, "fp16": torch.float16}[args.dtype]
-    if device.type == "cuda":
-        # TF32 是 NVIDIA Ampere+ 概念；ROCm(CDNA2) 无 TF32，设为 no-op 不影响，
-        # 仅 NVIDIA 卡真正生效。
-        torch.backends.cuda.matmul.allow_tf32 = True
-        torch.backends.cudnn.allow_tf32 = True
-    # ROCm / MI250 调优（自动探测 HIP，或 --mi250 强制测这条路径）。
-    # 必须在首次显存分配前调用。
-    apply_rocm_tuning(force=args.mi250)
+    # NVIDIA CUDA 调优（RTX 4090D 等；TF32/分配器/cuDNN/归约精度）。
+    # 必须在首次显存分配前调用。非 CUDA 设备为 no-op。
+    apply_cuda_tuning()
 
     os.makedirs(args.out_dir, exist_ok=True)
     # ---- 配置 + 数据（先建 cfg，便于课程决定初始 seq_len）--------------------
@@ -183,8 +178,8 @@ def main(argv=None) -> int:
                 continue
             ds = LMWindows(d, "train", cur_seq_len, verify_hashes=False)
             # 与主 train_loader 同口径的传输参数（此前硬编码 num_workers=0：
-            # 多域隔离 warm-up 时每个域都在主进程串行解码 —— MI250 上这是
-            # 实测过的输入瓶颈，GPU 利用率被 IO 拖低）。
+            # 多域隔离 warm-up 时每个域都在主进程串行解码 —— 实测过的输入
+            # 瓶颈，GPU 利用率被 IO 拖低）。
             domain_loaders.append(DataLoader(
                 ds, batch_size=args.micro_batch, shuffle=True,
                 num_workers=args.num_workers, drop_last=True,
@@ -228,8 +223,8 @@ def main(argv=None) -> int:
 
     if args.compile:
         try:
-            # max-autotune 在 ROCm 上选 Composable Kernel(CK) 内核，matmul/conv
-            # 显著快于朴素 HIP 内核；首个 step 编译开销几十秒，短跑看不出来。
+            # max-autotune 让 inductor 在 NVIDIA 上自动调优 matmul/conv 内核
+            # （显著快于默认启发式）；首个 step 编译开销几十秒，短跑看不出来。
             model = torch.compile(model, mode=args.compile_mode)
             print(f"[train] torch.compile enabled (mode={args.compile_mode})")
         except Exception as exc:                       # pragma: no cover
@@ -365,8 +360,8 @@ def main(argv=None) -> int:
         dist.all_reduce(t)
         return float(t.item())
 
-    # ---- HIP/CUDA Graph：捕获单 micro-batch 的 fwd+bwd，消除每步 kernel 启动开销
-    #      （AMD 上启动开销显著；固定形状 micro_batch×seq_len 才有收益）。
+    # ---- CUDA Graph：捕获单 micro-batch 的 fwd+bwd，消除每步 kernel 启动
+    #      开销（固定形状 micro_batch×seq_len 才有收益）。
     #      仅在单卡、未开 grad-checkpoint、未开 compile 时尝试；任何失败都回退 eager。
     graph_runner = None
     if args.cuda_graph and world_size == 1 and not args.grad_checkpoint and not args.compile \
@@ -378,7 +373,7 @@ def main(argv=None) -> int:
             static_y = torch.zeros(args.micro_batch, cur_seq_len, dtype=torch.long,
                                    device=device)
             gph = torch.cuda.CUDAGraph()
-            # 预热：让 HIP/Aten 缓存与 autograd 节点就位后再捕获，避免捕获到
+            # 预热：让 Aten 缓存与 autograd 节点就位后再捕获，避免捕获到
             # 未 warmed 的缓慢路径。
             with (torch.autocast("cuda", dtype=amp_dtype)
                   if amp_dtype is not None else torch.autocast("cpu", enabled=False)):
@@ -399,9 +394,9 @@ def main(argv=None) -> int:
                 return static_loss
             graph_runner = _replay
             if is_master:
-                print("[train] CUDA/HIP graph captured (fwd+bwd per micro-batch)")
+                print("[train] CUDA graph captured (fwd+bwd per micro-batch)")
         except Exception as exc:                       # pragma: no cover
-            print(f"[train] CUDA/HIP graph capture failed, running eager: {exc}")
+            print(f"[train] CUDA graph capture failed, running eager: {exc}")
             graph_runner = None
 
     model.train()
@@ -557,7 +552,7 @@ def main(argv=None) -> int:
                         "NCM group classes are configured but the training "
                         "batch has no ncm_group_targets")
             if graph_runner is not None:
-                # HIP/CUDA Graph 回放：把本 micro-batch 拷入静态张量后 replay，
+                # CUDA Graph 回放：把本 micro-batch 拷入静态张量后 replay，
                 # 跳过每步的 kernel 启动开销。
                 static_loss = graph_runner(x, y)
                 step_loss_w += float(static_loss.detach()) * y.numel()
@@ -569,8 +564,8 @@ def main(argv=None) -> int:
                     # 计算图 —— 这是激活真正降到 O(chunk) 的关键。把多个块的
                     # logits 拼起来再 backward 会让显存退回 O(L)。
                     #
-                    # MI250 是 2×64GB GCD：用 2 进程 DDP 才能吃满 128GB 与
-                    # 整卡算力。DDP 的 reducer 支持"多次 forward+backward，
+                    # 单卡 24GB 装不下的模型用 2+ 卡 DDP/FSDP 分摊；DDP 的
+                    # reducer 支持"多次 forward+backward，
                     # 最后一次同步"（标准梯度累积语义）：块间与 micro-batch
                     # 间都用 no_sync，只有 accum 周期的最后一块正常同步。
                     rm = raw_model()
@@ -675,7 +670,7 @@ def main(argv=None) -> int:
             g_ncm_aux_w = _all_reduce_sum(pending_ncm_aux_w)
             tps = g_tokens / span
             avg = g_loss_w / max(g_tokens, 1)
-            # 单步计时：CUDA/HIP 下用事件在 log 时做一次同步读 GPU 时间，
+            # 单步计时：CUDA 下用事件在 log 时做一次同步读 GPU 时间，
             # 避免每步 synchronize 卡住 CPU（让数据加载与下一 step 的 CPU 侧
             # 工作能与 GPU 重叠，长训练实测吞吐更高）。
             if step_evt_s is not None:

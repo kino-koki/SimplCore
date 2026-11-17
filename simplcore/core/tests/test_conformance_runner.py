@@ -47,7 +47,7 @@ def test_reference_report_structure():
     names = [r.name for r in rep.results]
     assert len(names) == len(set(names)) == 9
     for must in ("P0-backend-conformance", "P0-stream-bitexact", "P0-chunked-carry",
-                 "P0-frozen-mask", "P0-bf16-accum", "P0-shard-2gcd",
+                 "P0-frozen-mask", "P0-bf16-accum", "P0-shard-2way",
                  "P0-no-attention", "C-stream-serialize", "C-rollback"):
         assert must in names
     d = rep.as_dict()
@@ -134,7 +134,7 @@ def test_broken_allreduce_caught():
                 out = out + g.to(torch.bfloat16).float()
             return out
 
-    r = _result(_run(_BrokenShard()), "P0-shard-2gcd")
+    r = _result(_run(_BrokenShard()), "P0-shard-2way")
     assert r.passed is False
 
 

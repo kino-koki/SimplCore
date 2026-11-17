@@ -448,7 +448,7 @@ def main():
         dict(id="P14", name="RSI-style self-improvement",
              verdict="CONJECTURE",
              reason="RSI appears in this repository only as an external survey citation "
-                    "(docs/TUAN_1B_TRAINING_PLAN.md:172, L2 policy autonomy). No RSI "
+                    "(REVISION_LOG.md, L2 policy autonomy). No RSI "
                     "mechanism is implemented in the architecture, so there is no object "
                     "to prove a theorem about. Upgrade path: formalize the self-modification "
                     "operator, then T13/T14 impose a resolvable-radius lower bound on any "

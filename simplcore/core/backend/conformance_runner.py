@@ -528,7 +528,7 @@ def _check_bf16_accum(ad: BackendAdapter, cfg: dict) -> ConformanceResult:
 
 
 def _check_shard(ad: BackendAdapter, cfg: dict) -> ConformanceResult:
-    """P0-shard-2gcd：2 分片 all-reduce 与单卡和逐位一致。"""
+    """P0-shard-2way：2 路分片 all-reduce 与单卡和逐位一致。"""
     g = torch.Generator().manual_seed(cfg["seed"] + 4)
     g0 = torch.randn(1024, generator=g)
     g1 = torch.randn(1024, generator=g)
@@ -539,7 +539,7 @@ def _check_shard(ad: BackendAdapter, cfg: dict) -> ConformanceResult:
     out4 = ad.shard_allreduce(gs)
     seq = gs[0] + gs[1] + gs[2] + gs[3]
     ok4 = (out4 - seq).abs().max().item() <= 1e-6 * (1 + seq.abs().max().item())
-    return ConformanceResult("P0-shard-2gcd", bool(ok and ok4),
+    return ConformanceResult("P0-shard-2way", bool(ok and ok4),
                              f"2 分片逐位={ok}, 4 分片容差内={ok4}")
 
 

@@ -6,7 +6,7 @@
 
 * 计算 dtype 为 bf16/fp16 时，所有 mixer 的递推状态（SGC / 门控 SGC 的 y1/y2，
   SRF 的 SSM ``h_re/h_im`` 别名）必须为 fp32 —— 否则 bf16 下 IIR/SSM 递推会逐
-  token 累积舍入误差，破坏 O(1) 流式状态"数值可信"的前提（MI250 主用 bf16）。
+  token 累积舍入误差，破坏 O(1) 流式状态"数值可信"的前提（线上训练主用 bf16）。
 * fp32 计算时行为与原实现逐位一致（状态即 fp32，零行为变化）。
 * 流式输出必须有限（无 NaN / Inf）。
 
@@ -67,9 +67,9 @@ def test_recurrent_state_dtype_and_finite(mixer, compute_dtype):
 
 @pytest.mark.parametrize("mixer", ["sgc", "srf", "gated"])
 def test_low_precision_state_is_fp32(mixer):
-    """针对 MI250（bf16）的关键断言：低精度计算时递推状态必为 fp32。
+    """针对 bf16 训练的关键断言：低精度计算时递推状态必为 fp32。
 
-    这样即使融合扩展未构建（回退纯 PyTorch），MI250 上的 O(1) 流式递推仍然是
+    这样即使融合扩展未构建（回退纯 PyTorch），bf16 卡上的 O(1) 流式递推仍然是
     数值可信的 fp32，而非逐 token 累积舍入误差的 bf16。
     """
     m = _build(mixer, torch.bfloat16)
