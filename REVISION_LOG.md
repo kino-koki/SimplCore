@@ -503,7 +503,7 @@ BF16 权重逐位复制、在真实 embedding 上的 SGC 对偶/因果/O(1) 验�
 | 训练栈 | ROCm/HIP 调优（expandable_segments、MIOpen） | `apply_cuda_tuning`：TF32 + bf16 低精度归约 + expandable_segments + cuDNN benchmark；`--mi250`/`apply_rocm_tuning` 全删 |
 | 删除 | — | `train_tuan_mi250.sh` / `train_tuan_2b_mi250.sh` / `smoke_hip_mi250.sh` / `mi250_rehearsal.py+json` / `campaign_gates.txt` / `MI250_READINESS.md` / `TRAINING_2B_MI250_30D.md` / `TRAINING_BUDGET_MI250.md` / `TUAN_1B_TRAINING_PLAN.md` / `TRAINING_RUNBOOK.md`（MI250 版）/ `SPRINT30.md` / `deploy/sprint30.py` / `research/subsystems/hardware/`（mi250_optimizer、amd_optimizer）；conditions_ledger 参考硬件换 4090D；全部 docs 的目标硬件改口径 |
 | 新增 | — | `scripts/train_tuan_2b_4090d.sh`（24h 启动器：adafactor + chunk 4096 + time-budget 1440）+ `docs/RTX4090D_TRAINING.md`（显存账/token 预算/优化清单/排障）+ `docs/TRAINING_RUNBOOK.md`（4090D 版） |
-| 理论账本 | 57 项（NT01–NT38） | **61 项（NT01–NT42，GROUP IX 量化训练）**：NT39 bf16 递推舍入 ≤ u·Y/(1−ρ)² 且与 t 无关；NT40 bf16 梯度 + fp32 累加线性误差预算；NT41 Adafactor 因子 β^t 几何收敛 + rank-1 一致性；**NT42 24h×4090D×2B 在任何 MFU 下都是欠训档（tokens/param ≤ 0.58）**——欠训状态是硬件预算定理，不是实现短板。`verify49` **61/61 PASS**，`verify_precision` **4/4 PASS** |
+| 理论账本 | 57 项（NT01–NT38） | **62 项（NT01–NT43，GROUP IX 量化训练）**：NT39 bf16 递推舍入 ≤ u·Y/(1−ρ)² 且与 t 无关；NT40 bf16 梯度 + fp32 累加线性误差预算；NT41 Adafactor 因子 β^t 几何收敛 + rank-1 一致性；**NT42 24h×4090D×2B 在任何 MFU 下都是欠训档（tokens/param ≤ 0.58）**——欠训状态是硬件预算定理，不是实现短板；NT43 精度栈下降方向保持 cos ≥ √(1−δ²)（tight，上升当且仅当 δ≥1）。`verify49` **62/62 PASS**，`verify_precision` **5/5 PASS** |
 | desk-check | — | 论文未重建（无新增论文级主张；v8.3 的 46/46 仍有效） |
 
 **诚实边界**：24h token 预算 ~0.2B（tokens/param ≈ 0.10）为欠训档，验收协议禁止把欠训档说成训练充分（NT42 定理 + forbidden 清单双重锁定）；所有 4090D 数字除规格外为解析估算，实机数字待 Phase 0/1 填充。

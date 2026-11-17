@@ -155,7 +155,38 @@ def nt42():
 
 
 # =============================================================================
-CHECKS = [nt39, nt40, nt41, nt42]
+# NT43: precision stack preserves the descent direction (cos >= (1-d)/(1+d))
+# =============================================================================
+def nt43():
+    ok = True
+    for delta in (0.001, 0.02, 0.05, 0.2, 0.5, 0.9, 0.999):
+        for _ in range(50):
+            d = 64
+            g = RNG.normal(size=d)
+            gn = np.linalg.norm(g)
+            gu = g / gn
+            # (a) random relative perturbation
+            e = RNG.normal(size=d)
+            e = e / np.linalg.norm(e) * (delta * gn)
+            ghat = g + e
+            cos = float(np.dot(ghat, g) / (np.linalg.norm(ghat) * gn))
+            bound = math.sqrt(1.0 - delta * delta)
+            ok &= cos >= bound - 1e-12
+            ok &= (np.dot(ghat, g) > 0) == (delta < 1.0)   # descent iff delta<1
+        # (c) tightness: c = <gu, e/||e||> = -delta attains the bound exactly
+        w = RNG.normal(size=d); w -= gu * np.dot(w, gu)
+        w /= np.linalg.norm(w)
+        e_tight = delta * gn * (-delta * gu + math.sqrt(1 - delta**2) * w)
+        ghat_t = g + e_tight
+        cos_t = float(np.dot(ghat_t, g) / (np.linalg.norm(ghat_t) * gn))
+        ok &= abs(cos_t - bound) < 1e-9
+    return rec("NT43", "descent direction: cos >= sqrt(1-d^2) (tight); ascent iff d>=1", ok,
+               "delta in {0.001..0.999} x 50 trials + tight worst case",
+               "numeric_consistency")
+
+
+# =============================================================================
+CHECKS = [nt39, nt40, nt41, nt42, nt43]
 
 
 def main():

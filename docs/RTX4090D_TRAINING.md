@@ -107,6 +107,10 @@ bash scripts/train_tuan_2b_4090d.sh          # 前台；或 nohup 后台 + 日�
 ## 8. 诚实边界
 
 * 本文所有 4090D 数字除规格值外均为**解析估算**，实机数字待 Phase 0/1 填充；
+* 精度栈有定理契约（NT39–NT43，theory 账本 62 项）：bf16 递推舍入有界且与
+  t 无关、fp32 梯度累积线性误差预算、Adafactor 因子几何收敛、欠训档是硬件
+  预算定理（tokens/param ≤ 0.58 @ MFU=1）、且全部量化层共同保住下降方向
+  （cos ≥ √(1−δ²)，tight）；
 * 24h 单卡口径下 tokens/param ≈ 0.1——**欠训档**，不构成任何能力/SOTA 主张；
 * 长上下文课程（`_CTX_2B_4M`）的 4M 末段在 24h 战役中按 `until_frac`
   相对口径缩放；4M 长程项的每 token FLOPs 增量 <1%（log L 优势，测试锁定）；

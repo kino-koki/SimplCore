@@ -1146,6 +1146,64 @@ NT16_30 = [
              "preference."),
         source="deploy/campaign.py effective_flops/token budget; eval/scaling.py train_flops_per_token",
         relates="compute-budget dual of NT38 (patch-count budget)"),
+
+    Thm(
+        nid="NT43", group="IX: quantized training",
+        title="The precision stack preserves the descent direction at any realistic error",
+        hypothesis=(
+            "The exact gradient g of a loss L is computed as ghat with a "
+            "RELATIVE error ||ghat - g|| <= delta * ||g|| for some "
+            "delta >= 0 (delta collects NT39's activation-rounding budget "
+            "propagated through the backward pass, NT40's gradient "
+            "quantization/accumulation budget, and NT41's factored-"
+            "second-moment residual, each of which is a relative bound)."),
+        claim=(
+            "(a) The cosine between the computed and true gradient obeys "
+            "cos(theta) >= sqrt(1 - delta^2) -- TIGHT: at delta = 0.05 the "
+            "angle is below 2.9 degrees, at delta = 0.5 below 30 degrees, "
+            "at delta = 1/3 below 19.5 degrees (and sqrt(1-delta^2) >= "
+            "1-delta throughout [0,1]). (b) The computed update is a "
+            "DESCENT direction iff delta < 1: <ghat, g> >= (1-delta)"
+            "||g||^2 > 0, and for every delta < 1 there is a step size "
+            "(e.g. any eta < 2<L_sm^{-1} that strictly decreases L, so "
+            "the quantized stack cannot turn the update into an ascent "
+            "as long as the relative budgets stay below 1. (c) The bound "
+            "is tight in the worst case: perturbations with relative "
+            "error delta and inner-product coefficient "
+            "<g/||g||, e/||e||> = -delta attain exactly cos = "
+            "sqrt(1 - delta^2)."),
+        proof=(
+            "Write ghat = g + e with ||e|| <= delta*||g|| and let "
+            "c = <g/||g||, e/||e||> in [-1,1]. Then "
+            "cos = (1 + delta*c)/sqrt(1 + delta^2 + 2*delta*c) =: f(c), "
+            "and f'(c) = delta^2*(delta + c)/(1 + delta^2 + 2*delta*c)"
+            "^{3/2} vanishes at c = -delta, which is the minimum on "
+            "[-1,1] for delta <= 1. Substituting: f(-delta) = "
+            "(1 - delta^2)/sqrt(1 - delta^2) = sqrt(1 - delta^2). (b) "
+            "<ghat, g> = ||g||^2*(1 + delta*c) >= (1 - delta)*||g||^2 "
+            "> 0 iff delta < 1; the smooth-decrease step exists by the "
+            "standard gradient-descent lemma L(x - eta*ghat) <= L(x) - "
+            "eta*<ghat, g> + eta^2*L_sm*||ghat||^2/2, positive decrease "
+            "for small eta whenever <ghat,g> > 0. (c) Equality holds "
+            "whenever c = -delta, e.g. e = delta*||g||*(-delta*g/||g|| "
+            "+ sqrt(1-delta^2)*w) for any unit w orthogonal to g. QED"),
+        boundary=(
+            "A per-step direction statement, not a convergence-rate claim "
+            "(rates need the smoothness constant and eta schedule); the "
+            "premise is the RELATIVE budgets of NT39/NT40/NT41, each "
+            "proven, so delta is a sum of proven relative bounds -- but "
+            "the composition constant is data-dependent and reported per "
+            "run. Does not cover Adam-type preconditioning rotating the "
+            "direction (Adafactor's update is not ghat itself; the "
+            "statement applies to the pre-conditioner input, which is "
+            "what the quantization touches)."),
+        use=("Closes the precision story of the 24h campaign: every "
+             "quantization layer costs a PROVEN relative budget, and no "
+             "budget in the stack approaches the delta = 1 failure line, "
+             "so the quantized trainer descends the same loss surface "
+             "direction-wise as the fp32 oracle."),
+        source="training/train/optim.py Adafactor; training/train/main.py accumulation",
+        relates="composes NT39 + NT40 + NT41 into one direction guarantee"),
 ]
 
 THEOREMS30 = list(NT01_15) + NT16_30

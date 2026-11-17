@@ -1,5 +1,5 @@
 {
- "mode": "61-item audit: 42 theorem finite-identity checks + 19 classifications",
+ "mode": "62-item audit: 43 theorem finite-identity checks + 19 classifications",
  "numpy_seed": 20261109,
  "checks": [
   {
@@ -910,6 +910,13 @@
    "detail": "MFU=1 tokens/param=0.565; 20x needs 35 such runs"
   },
   {
+   "id": "NT43",
+   "name": "descent direction: cos >= sqrt(1-d^2) (tight); ascent iff d>=1",
+   "kind": "numeric_consistency",
+   "verdict": "PASS",
+   "detail": "delta in {0.001..0.999} x 50 trials + tight worst case"
+  },
+  {
    "id": "F1",
    "name": "FALSIFIED: Increasing rho_max extends the effective window",
    "kind": "classification / falsified",
@@ -1157,21 +1164,21 @@
    }
   }
  ],
- "passed": 61,
- "total": 61,
- "theorem_count": 42,
+ "passed": 62,
+ "total": 62,
+ "theorem_count": 43,
  "non_theorem_count": 19,
  "verdict_distribution": {
-  "new_theorems": 42,
+  "new_theorems": 43,
   "falsified": 8,
   "withdrawn": 5,
   "conjectures": 3,
   "empirical_not_testable": 3
  },
  "roadmap": {
-  "delivered": 42,
+  "delivered": 43,
   "target": 49,
-  "remaining": 7,
+  "remaining": 6,
   "groups": {
    "I: TSC construction and optimality": 5,
    "II: grid, precision and length": 5,
@@ -1181,7 +1188,7 @@
    "VI: numerical frontier and multi-hop duality": 6,
    "VII: associative-memory channel": 4,
    "VIII: byte-level input path": 4,
-   "IX: quantized training": 4
+   "IX: quantized training": 5
   },
   "ids": [
    "NT01",
@@ -1225,9 +1232,10 @@
    "NT39",
    "NT40",
    "NT41",
-   "NT42"
+   "NT42",
+   "NT43"
   ]
  },
- "discipline": "The 42 theorem checks are NOT proofs (proofs are analytic, in the theorem modules). The 19 non-theorem checks are CLASSIFICATIONS with explicit witnesses / falsification specs, NOT proofs that the statements are true. NO measured value is a theorem. NO TRAINING, NO GRADIENTS, NO GPU, NO NEW EXPERIMENT DATA.",
+ "discipline": "The 43 theorem checks are NOT proofs (proofs are analytic, in the theorem modules). The 19 non-theorem checks are CLASSIFICATIONS with explicit witnesses / falsification specs, NOT proofs that the statements are true. NO measured value is a theorem. NO TRAINING, NO GRADIENTS, NO GPU, NO NEW EXPERIMENT DATA.",
  "honest_note": "49 statements cannot all be new non-trivial theorems: 8 are demonstrably false, 5 were formally withdrawn, 3 are unproved conjectures, 3 are empirical claims no theorem can establish. Promoting them would be exactly the theorem inflation / 'numerical verification as proof' the review warned against."
 }

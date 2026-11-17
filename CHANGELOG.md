@@ -612,7 +612,8 @@ m_h 只有一个非零峰，任何位置门只能**删掉**它；删到 key 后�
   `apply_cuda_tuning`（TF32/bf16 归约/expandable_segments/cuDNN benchmark）；
   24h 启动器 `scripts/train_tuan_2b_4090d.sh`；`docs/RTX4090D_TRAINING.md`
   + `docs/TRAINING_RUNBOOK.md`。
-- **理论 61 项**（+NT39–NT42 量化训练精度预算）：bf16 递推舍入有界且与
+- **理论 62 项**（+NT39–NT43 量化训练精度预算）：bf16 递推舍入有界且与
   t 无关 / fp32 梯度累积线性误差 / Adafactor 因子几何收敛 /
-  **24h×4090D×2B 在任何 MFU 下欠训（tokens/param ≤ 0.58，NT42）**。
-  `verify49` 61/61 PASS、`verify_precision` 4/4 PASS。
+  **24h×4090D×2B 在任何 MFU 下欠训（tokens/param ≤ 0.58，NT42）** /
+  精度栈下降方向保持 cos ≥ √(1−δ²)（NT43，tight）。
+  `verify49` 62/62 PASS、`verify_precision` 5/5 PASS。
