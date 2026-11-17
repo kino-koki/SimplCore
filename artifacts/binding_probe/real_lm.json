@@ -1,0 +1,58 @@
+{
+  "sgc": {
+    "val_ppl": 10.331,
+    "val_loss": 2.3351,
+    "tokens": 999424,
+    "params": 129922,
+    "train_sec": 71.0,
+    "done": true,
+    "val_loss_512": 2.3896
+  },
+  "sgc-bind": {
+    "val_ppl": 10.803,
+    "val_loss": 2.3798,
+    "tokens": 999424,
+    "params": 154502,
+    "train_sec": 146.7,
+    "done": true,
+    "val_loss_512": 2.4175
+  },
+  "srf": {
+    "val_ppl": 10.455,
+    "val_loss": 2.3471,
+    "tokens": 999424,
+    "params": 132100,
+    "train_sec": 206.4,
+    "done": true,
+    "val_loss_512": 2.3837
+  },
+  "ts": {
+    "val_ppl": 18.285,
+    "val_loss": 2.9061,
+    "tokens": 999424,
+    "params": 135680,
+    "train_sec": 35.9,
+    "done": true,
+    "val_loss_512": 2.9305
+  },
+  "mamba2": {
+    "val_ppl": 5.842,
+    "val_loss": 1.7651,
+    "tokens": 999424,
+    "params": 132432,
+    "train_sec": 462.7,
+    "done": true,
+    "val_loss_512": 1.8033
+  },
+  "protocol": {
+    "corpus": "corpus.txt 字符级",
+    "vocab": 62,
+    "dim": 64,
+    "layers": 2,
+    "seq": 256,
+    "steps": 244,
+    "batch": 16,
+    "tokens_per_arm": 999424,
+    "note": "1M tokens/臂；状态落盘可跨窗续跑；val 为 8 批均值"
+  }
+}

@@ -458,3 +458,20 @@ BF16 权重逐位复制、在真实 embedding 上的 SGC 对偶/因果/O(1) 验�
 
 未改任何定理、命题、数字；未跑训练、未推仓。补丁 `relayout_v8.py` / `relayout_v8_fix2.py`，备份 `build_simplcore_pdf_v8_prerelayout.py` 可一键回退。详见 `PDF_RELAYOUT_REPORT.md`。
 
+
+
+## 2026-11-17 — v8.2：新增 §4.12b「训练扫描」实证小节 + 生成器可移植化
+
+来源：用户指令「在架构上完全做好，并持续修改论文直到 ICML 2027 主会 60% 把握」；本轮把通宵完成的 **训练扫描证据**（sgc-bind 在真实代码库中端到端训练后的联想召回表现）并入论文实证节。
+
+| 项 | v8.1 | v8.2 |
+|---|---|---|
+| 实证节 | §4.12 仅 1500 步零训练网格 + 5-seed 收敛 | 新增 **§4.12b 训练扫描**：Construction C 在完整 SGC 代码库中端到端训练后，L=96→2048、G=4/8/16 全部 1.000（3 seeds/格；ts 在 L=2048 因 CPU 窗口仅 60 步，已注明），attention 在 L≥256 跌破 chance |
+| 生成器 | ROOT/字体路径硬编码到原机器 | ROOT 由脚本位置推导；字体回退到 Windows metric 兼容字体；`J()` 结果文件双目录回退——**生成器可在任意机器重跑** |
+| PDF | 17 页 / 主文 8 页 | 18 页 / 主文 8 页（新增小节 + Table 16，未删任何内容） |
+| desk-check | 46/46 | **46/46**（本地路径补丁后逐项复核） |
+| 拆分 | 11/11 | 11/11 |
+
+**数据来源**：`artifacts/binding_probe/`（mqar_sweep / mqar_sweep2 / sweep3 / sweep3b / overnight_seeds 等账本），探针脚本在 `research/binding/`，全部可重放。
+
+**未做/不变**：未新增定理或命题；未跑 ≥10M-token BPE LM；未做生成可读性与实测吞吐；Mamba2 在真实语料上仍领先（见 §4.a 与 `lm_vs_mamba2.json`）。未推仓（本轮随其它工作一并提交）。

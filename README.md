@@ -282,6 +282,7 @@ offline consolidation 术语，且模块内已用**诚实边界**声明"自进�
 | `docs/SimplCore_Paper_v0.1alpha.md` | **0.1-α 原稿归档**（逐字节保留）：架构白皮书 v1.1.2 / 定理 1–4 / 命题 5–7 / §7 分轴等效参数推测 / 旧章节号，供口径追溯 |
 | `docs/THEORETICAL_EDGE.md` | **逐模块的机制层主张与边界论证**：每个模块相对传统 Transformer 的复杂度/状态/机制主张与边界（可执行断言在 `eval/claims_audit.py`） |
 | `docs/EVIDENCE_CHAIN.md` | **证据链汇总（sgc-bind）**：九项验收清单 × 13 份账本索引——MQAR/扩规模/长上下文/等预算(Mamba2)/真实词召回迁移/诚实负结果/真实语料成本/MI250 就绪 |
+| `docs/BYTELEVEL.md` | **字节级主路径（tokenizer-free）**：ByteLevelCodec + EntropyPatcher（entropy/space/fixed 三模式动态分块）+ BytePatchBridge——让模型直接理解原始字节，与全部 mixer/模块兼容 |
 | `docs/ARCHITECTURE.md` | **总体架构设计**：数据流、mixer 分类、流式、记忆、编解码、训练/评测 |
 | `docs/SGC_CORE.md` | **SGC mixer 深度解析**：振荡基字典、FFT↔IIR 对偶、内容门控、局部路径、四层闸门、流式状态 |
 | `docs/SIMPLUNITY.md` | **SimplUnity 技术文档（必读）**：冻结基座 + 路由门 + 域专属专家的 MoA 全解——前向数据流图、ExpertRouter 的 top-k/lb/z-loss 数学、index_add 梯度工程、GATE-3 无回归门、WeightBudget 三层账、五场景使用指南、诚实边界 |

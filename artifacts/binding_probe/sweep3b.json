@@ -29,5 +29,45 @@
       "seed": 0,
       "note": "键空间 16（gen_mqar 的 n_cls 上限 8 之外的专用生成器）"
     }
+  },
+  "seeds": {
+    "seed1": {
+      "L96_G16": {
+        "sgc": {
+          "acc": 0.1,
+          "params": 90370,
+          "train_sec": 8.9
+        },
+        "sgc-bind": {
+          "acc": 1.0,
+          "params": 114950,
+          "train_sec": 7.8
+        },
+        "ts": {
+          "acc": 0.065,
+          "params": 106944,
+          "train_sec": 10.7
+        }
+      }
+    },
+    "seed2": {
+      "L96_G16": {
+        "sgc": {
+          "acc": 0.03,
+          "params": 90370,
+          "train_sec": 5.6
+        },
+        "sgc-bind": {
+          "acc": 1.0,
+          "params": 114950,
+          "train_sec": 10.3
+        },
+        "ts": {
+          "acc": 0.065,
+          "params": 106944,
+          "train_sec": 9.4
+        }
+      }
+    }
   }
 }

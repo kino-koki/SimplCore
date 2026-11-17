@@ -110,5 +110,147 @@
       "seed": 0,
       "chance": 0.125
     }
+  },
+  "seeds": {
+    "seed1": {
+      "L128_G4": {
+        "sgc": {
+          "acc": 0.12,
+          "params": 89346,
+          "train_sec": 12.6
+        },
+        "sgc-bind": {
+          "acc": 1.0,
+          "params": 113926,
+          "train_sec": 85.9
+        },
+        "ts": {
+          "acc": 0.27,
+          "params": 105920,
+          "train_sec": 36.2
+        }
+      },
+      "L512_G4": {
+        "sgc": {
+          "acc": 0.095,
+          "params": 89346,
+          "train_sec": 34.8
+        },
+        "sgc-bind": {
+          "acc": 1.0,
+          "params": 113926,
+          "train_sec": 61.6
+        },
+        "ts": {
+          "acc": 0.115,
+          "params": 105920,
+          "train_sec": 262.2
+        }
+      },
+      "L96_G8": {
+        "sgc": {
+          "acc": 0.145,
+          "params": 89346,
+          "train_sec": 9.4
+        },
+        "sgc-bind": {
+          "acc": 1.0,
+          "params": 113926,
+          "train_sec": 10.1
+        },
+        "ts": {
+          "acc": 0.165,
+          "params": 105920,
+          "train_sec": 10.9
+        }
+      },
+      "L2048_G4": {
+        "sgc": {
+          "acc": 0.12,
+          "params": 89346,
+          "train_sec": 22.9
+        },
+        "sgc-bind": {
+          "acc": 1.0,
+          "params": 113926,
+          "train_sec": 168.4
+        },
+        "ts": {
+          "acc": 0.115,
+          "params": 204224,
+          "train_sec": 576.2
+        }
+      }
+    },
+    "seed2": {
+      "L128_G4": {
+        "sgc": {
+          "acc": 0.13,
+          "params": 89346,
+          "train_sec": 58.7
+        },
+        "sgc-bind": {
+          "acc": 1.0,
+          "params": 113926,
+          "train_sec": 45.0
+        },
+        "ts": {
+          "acc": 0.305,
+          "params": 105920,
+          "train_sec": 9.9
+        }
+      },
+      "L512_G4": {
+        "sgc": {
+          "acc": 0.14,
+          "params": 89346,
+          "train_sec": 14.4
+        },
+        "sgc-bind": {
+          "acc": 1.0,
+          "params": 113926,
+          "train_sec": 92.6
+        },
+        "ts": {
+          "acc": 0.13,
+          "params": 105920,
+          "train_sec": 200.3
+        }
+      },
+      "L96_G8": {
+        "sgc": {
+          "acc": 0.145,
+          "params": 89346,
+          "train_sec": 7.9
+        },
+        "sgc-bind": {
+          "acc": 1.0,
+          "params": 113926,
+          "train_sec": 9.7
+        },
+        "ts": {
+          "acc": 0.165,
+          "params": 105920,
+          "train_sec": 8.8
+        }
+      },
+      "L2048_G4": {
+        "sgc": {
+          "acc": 0.15,
+          "params": 89346,
+          "train_sec": 23.6
+        },
+        "sgc-bind": {
+          "acc": 1.0,
+          "params": 113926,
+          "train_sec": 191.4
+        },
+        "ts": {
+          "acc": 0.135,
+          "params": 204224,
+          "train_sec": 479.0
+        }
+      }
+    }
   }
 }

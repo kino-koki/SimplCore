@@ -336,5 +336,7 @@ def test_prop5_dual_caliber_contract() -> None:
     script = (root / "scripts" / "audit_numbers_20261031.py")         .read_text(encoding="utf-8")
     assert "k*u*pert" in script or "kmax * u * pert" in script,         "audit 脚本必须使用 k·u·pert 主口径（裸 u 只作存档对照）"
     assert "错误口径" in script
-    paper = (root / "SimplCore_Paper.md").read_text(encoding="utf-8")
-    assert "0.1-α 二次审计" in paper and "2607.6" in paper,         "命题 5 双口径勘误必须留在论文正文"
+    # 论文正文已整理为投稿 PDF + 归档稿（SimplCore_Paper.md 现为状态指针）。
+    # 勘误正文保存在归档稿中，此处对归档稿校验。
+    paper = (root / "docs" / "SimplCore_Paper_v0.1alpha.md").read_text(encoding="utf-8")
+    assert "0.1-α 二次审计" in paper and "2607.6" in paper,         "命题 5 双口径勘误必须留在论文正文（归档稿）"

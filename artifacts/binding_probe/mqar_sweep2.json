@@ -70,5 +70,39 @@
       "batch": 8,
       "seed": 0
     }
+  },
+  "L1024_G4_seed1": {
+    "sgc": {
+      "acc": 0.125,
+      "params": 87786,
+      "train_sec": 25.7
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 145.8
+    },
+    "ts": {
+      "acc": 0.11,
+      "params": 104360,
+      "train_sec": 365.2
+    }
+  },
+  "L1024_G4_seed2": {
+    "sgc": {
+      "acc": 0.11,
+      "params": 87786,
+      "train_sec": 42.6
+    },
+    "sgc-bind": {
+      "acc": 1.0,
+      "params": 112366,
+      "train_sec": 368.1
+    },
+    "ts": {
+      "acc": 0.085,
+      "params": 104360,
+      "train_sec": 332.7
+    }
   }
 }
