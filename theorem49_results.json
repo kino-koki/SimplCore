@@ -1,5 +1,5 @@
 {
- "mode": "53-item audit: 34 theorem finite-identity checks + 19 classifications",
+ "mode": "57-item audit: 38 theorem finite-identity checks + 19 classifications",
  "numpy_seed": 20261109,
  "checks": [
   {
@@ -854,6 +854,34 @@
    "detail": "t* in (10, 30, 50); reads at t < t* bit-identical"
   },
   {
+   "id": "NT35",
+   "name": "codec round-trip / injectivity / total decode",
+   "kind": "numeric_consistency",
+   "verdict": "PASS",
+   "detail": "10 adversarial strings; 100 injectivity pairs; 100 random byte decodes"
+  },
+  {
+   "id": "NT36",
+   "name": "patcher purity + causality + batch==streaming",
+   "kind": "numeric_consistency",
+   "verdict": "PASS",
+   "detail": "entropy: ok; space: ok; fixed: ok"
+  },
+  {
+   "id": "NT37",
+   "name": "streaming carry is O(1) (codec<=3, patcher<=max_len-1)",
+   "kind": "numeric_consistency",
+   "verdict": "PASS",
+   "detail": "codec pending<=2; entropy pending<=0; space pending<=5; fixed pending<=7"
+  },
+  {
+   "id": "NT38",
+   "name": "patch budget: ceil(L/max_len) <= n <= L, exact partition",
+   "kind": "numeric_consistency",
+   "verdict": "PASS",
+   "detail": "30 cells checked"
+  },
+  {
    "id": "F1",
    "name": "FALSIFIED: Increasing rho_max extends the effective window",
    "kind": "classification / falsified",
@@ -1101,21 +1129,21 @@
    }
   }
  ],
- "passed": 53,
- "total": 53,
- "theorem_count": 34,
+ "passed": 57,
+ "total": 57,
+ "theorem_count": 38,
  "non_theorem_count": 19,
  "verdict_distribution": {
-  "new_theorems": 34,
+  "new_theorems": 38,
   "falsified": 8,
   "withdrawn": 5,
   "conjectures": 3,
   "empirical_not_testable": 3
  },
  "roadmap": {
-  "delivered": 34,
+  "delivered": 38,
   "target": 49,
-  "remaining": 15,
+  "remaining": 11,
   "groups": {
    "I: TSC construction and optimality": 5,
    "II: grid, precision and length": 5,
@@ -1123,7 +1151,8 @@
    "IV: algebraic structure and identifiability": 4,
    "V: self-evolution and transfer objectives": 5,
    "VI: numerical frontier and multi-hop duality": 6,
-   "VII: associative-memory channel": 4
+   "VII: associative-memory channel": 4,
+   "VIII: byte-level input path": 4
   },
   "ids": [
    "NT01",
@@ -1159,9 +1188,13 @@
    "NT31",
    "NT32",
    "NT33",
-   "NT34"
+   "NT34",
+   "NT35",
+   "NT36",
+   "NT37",
+   "NT38"
   ]
  },
- "discipline": "The 30 theorem checks are NOT proofs (proofs are analytic, in the two theorem modules). The 19 non-theorem checks are CLASSIFICATIONS with explicit witnesses / falsification specs, NOT proofs that the statements are true. NO measured value is a theorem. NO TRAINING, NO GRADIENTS, NO GPU, NO NEW EXPERIMENT DATA.",
+ "discipline": "The 38 theorem checks are NOT proofs (proofs are analytic, in the theorem modules). The 19 non-theorem checks are CLASSIFICATIONS with explicit witnesses / falsification specs, NOT proofs that the statements are true. NO measured value is a theorem. NO TRAINING, NO GRADIENTS, NO GPU, NO NEW EXPERIMENT DATA.",
  "honest_note": "49 statements cannot all be new non-trivial theorems: 8 are demonstrably false, 5 were formally withdrawn, 3 are unproved conjectures, 3 are empirical claims no theorem can establish. Promoting them would be exactly the theorem inflation / 'numerical verification as proof' the review warned against."
 }

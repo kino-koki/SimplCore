@@ -63,7 +63,7 @@
 严格因果、流式推理不变——patcher 只是**因果、可流式、纯函数式**的字节
 分段器，不引入注意力 / KV cache / 学习参数。
 
-## 3. 工业级保证（守护测试 `test_bytelevel.py`，21 项）
+## 3. 工业级保证（守护测试 `test_bytelevel.py`，22 项）
 
 * **对抗 Unicode 往返**：emoji、CJK、4 字节码点、控制字符、混合文本
   encode → decode 恒等；
@@ -99,6 +99,23 @@ out = byte_level_generate(model, "prompt", max_new_patches=8, greedy=True)
   字节等）也不会被替换字符悄悄改写历史；
 * 守护测试：入口与手动路径（bridge + blocks）逐值一致、纯字节空间
   幂等、嵌入梯度可达、生成 smoke。
+
+## 3.6 理论层：字节级输入路径四定理（NT35–NT38，GROUP VIII）
+
+与绑定记忆通道（NT31–NT34）同格式收录进理论账本（共 57 项审计，
+`verify49` **57/57 PASS**；数值一致性检查 `theory/verify_bytelevel.py`
+**4/4 PASS**）：
+
+| # | 定理 | 内容 |
+|---|------|------|
+| NT35 | 编解码往返保真 | decode∘encode = id（任意 Unicode）；encode 单射；decode 全定义（非法字节按位替换 U+FFFD，不丢位/不重排） |
+| NT36 | 分块纯函数·因果·批流一致 | `boundaries` 是纯函数（重复调用 + 先流式消费均不改结果）；边界只依赖前缀；任意分片 feed+flush 与批量逐边界一致（绝对下标） |
+| NT37 | O(1) 流式进位 | codec 进位 ≤ 3 字节（单码点续字节）；patcher 未决 ≤ max_len−1 字节——与流长无关 |
+| NT38 | patch 数量预算 | ceil(L/max_len) ≤ n_patches ≤ L，边界精确划分字节流——mixer 计算量的可调上界 |
+
+> 理论与实现协同演化的实例：NT37/NT38 要求 space 模式也强制 `max_len`
+> 断开——审查中发现实现漏掉了该约束（长字母数字串会产出无界 patch），
+> 已修复并由 `test_space_mode_max_len_bounds_patch` 锁定。
 
 ## 4. 与 SimplCore 全部模块的兼容
 

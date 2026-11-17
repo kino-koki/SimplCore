@@ -574,3 +574,27 @@ m_h 只有一个非零峰，任何位置门只能**删掉**它；删到 key 后�
 
 未改任何定理、命题、数字；未跑训练、未推仓。补丁 `relayout_v8.py` / `relayout_v8_fix2.py`，备份 `build_simplcore_pdf_v8_prerelayout.py` 可一键回退。详见 `PDF_RELAYOUT_REPORT.md`。
 
+
+---
+
+## 2026-11-17 — 字节级输入路径工业化 + 理论账本 57 项 + 4M 规模档完赛
+
+- **byte-level 模块工业化加固**（`simplcore/core/model/bytelevel.py`，
+  守护测试 16→22 项全过）：patcher 批量入口 `boundaries()` 改纯函数；
+  修复首字节行键读写错位；`feed()` 改返回全流绝对下标（三模式
+  feed+flush 与批量逐边界一致，测试锁定）；生成上下文全程留在字节
+  id 空间（消除 decode→encode 往返对非法 UTF-8 的静默改写）；
+  `byte_level_logits` 不再 detach 嵌入表；`patch_means` 词表越界显式
+  报错；space 模式补上 `max_len` 强制断开。
+- **理论账本 53→57 项**：新增 NT35–NT38（字节级输入路径：编解码往返
+  保真 / 分块纯函数·因果·批流一致 / O(1) 流式进位 / patch 数量预算），
+  `verify49` **57/57 PASS**，`verify_bytelevel` **4/4 PASS**，
+  `theorem49_results.json` 已同步。
+- **4M 真实语料规模档三臂全部完赛**（`real_lm_scale.json`）：sgc 8.13 /
+  sgc-bind 10.04 / mamba2 7.07（单种子）；同档 sgc/mamba2 差距
+  1.77×（1M）→ **1.15×**（4M）。修正了先前 1.38× 的跨档口径错误
+  与「1M mamba2 因提前止步偏低」的错误归因（1M 臂 244/244 完赛）。
+- **缓存盘自动选盘**（`simplcore/_cache_env.py`）：不再硬编码 E 盘
+  （该盘已失效），按 env → 仓库同盘 → 其余非 C 盘顺序自动选择，
+  全部失败时带候选清单报错。
+- **全量回归**：1260 项 collected，0 失败（exit 0）。

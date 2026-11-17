@@ -1,5 +1,5 @@
 """
-Full 53-item audit: 34 NEW THEOREMS (NT01..NT34) + 19 NON-THEOREM statements
+Full 57-item audit: 38 NEW THEOREMS (NT01..NT38) + 19 NON-THEOREM statements
 (8 falsified, 5 withdrawn, 3 conjectures, 3 empirical/not-testable).
 
 WHAT 'PASS' MEANS HERE (deliberately narrow):
@@ -471,6 +471,33 @@ for _r in _cap_bind:
 
 
 # =====================================================================
+# PART 2c: 4 byte-level input-path checks (NT35..NT38), reusing the
+# numeric checks of verify_bytelevel.py (same pattern as PART 2b).
+# =====================================================================
+import verify_bytelevel as VBL
+
+_cap_bylevel = []
+_orig_vbl_rec = VBL.rec
+
+
+def _vbl_cap(nid, name, ok, detail, kind="numeric_consistency"):
+    _cap_bylevel.append(dict(id=nid, name=name, kind=kind,
+                             verdict="PASS" if ok else "FAIL", detail=detail))
+    return bool(ok)
+
+
+VBL.rec = _vbl_cap
+for _fn in VBL.CHECKS:
+    try:
+        _fn()
+    except Exception as e:
+        _vbl_cap(_fn.__name__.upper(), _fn.__name__, False,
+                 dict(exception=repr(e)))
+for _r in _cap_bylevel:
+    rows.append(_r)
+
+
+# =====================================================================
 # PART 3: 19 NON-THEOREM statements, each independently adjudicated
 # =====================================================================
 NON_THEOREM = [
@@ -580,17 +607,17 @@ def main():
         k = r["kind"].split(" / ")[-1]
         by[k] = by.get(k, 0) + 1
     out = dict(
-        mode="53-item audit: 34 theorem finite-identity checks + 19 classifications",
+        mode="57-item audit: 38 theorem finite-identity checks + 19 classifications",
         numpy_seed=20261109, checks=rows, passed=passed, total=len(rows),
         theorem_count=M.summary()["delivered"],
         non_theorem_count=len(NON_THEOREM),
         verdict_distribution=dict(
-            new_theorems=34, falsified=8, withdrawn=5,
+            new_theorems=38, falsified=8, withdrawn=5,
             conjectures=3, empirical_not_testable=3),
         roadmap=M.summary(),
         discipline=(
-            "The 30 theorem checks are NOT proofs (proofs are analytic, in the "
-            "two theorem modules). The 19 non-theorem checks are CLASSIFICATIONS "
+            "The 38 theorem checks are NOT proofs (proofs are analytic, in the "
+            "theorem modules). The 19 non-theorem checks are CLASSIFICATIONS "
             "with explicit witnesses / falsification specs, NOT proofs that the "
             "statements are true. NO measured value is a theorem. NO TRAINING, "
             "NO GRADIENTS, NO GPU, NO NEW EXPERIMENT DATA."),

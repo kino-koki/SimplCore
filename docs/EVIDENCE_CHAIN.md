@@ -24,7 +24,7 @@
 | 7 | **诚实负结果**：list-ops（ts 0.485 > sgc 0.335 > sgc-bind 0.265）、fuzzy-jump（三臂 chance）、多 needle（三臂饱和无区分度） | 已入档 | `lra_probe.json` `lra_probe2.json` |
 | 8 | **真实语料 LM 成本**（corpus.txt 字符级）：绑定通道 +5.7% PPL（检索能力专用增强的代价） | sgc 5.93 / sgc-bind 6.27 / ts 11.05 | `reallm.json` |
 | 9 | **MI250 战役就绪**：数据管线（SHA-256 manifest）、闸门清单、`tuan-1b` dry-run 启动预检、3 步实跑——四步全过；修复 2 个上卡首日必爆缺陷 | 预演四步全 ✅ | `mi250_rehearsal.json` + `campaign_gates.txt` |
-| 10 | **理论层 53 项审计**：NT01–NT34 完整解析证明（新增 NT31–NT34 绑定记忆通道四定理：状态长度无关 / FIFO 可寻址 / 残差绑定正确性 / 严格因果）+ 19 项非定理分类，verify49 **53/53 PASS** | 34 定理 + 19 分类 | `theorem49_results.json` + `theory/verify_binding.py` |
+| 10 | **理论层 57 项审计**：NT01–NT38 完整解析证明（NT31–NT34 绑定记忆通道：状态长度无关 / FIFO 可寻址 / 残差绑定正确性 / 严格因果；NT35–NT38 字节级输入路径：编解码往返保真 / 分块纯函数·因果·批流一致 / O(1) 流式进位 / patch 数量预算）+ 19 项非定理分类，verify49 **57/57 PASS** | 38 定理 + 19 分类 | `theorem49_results.json` + `theory/verify_binding.py` + `theory/verify_bytelevel.py` |
 
 ## 可执行验收
 

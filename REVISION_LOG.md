@@ -475,3 +475,19 @@ BF16 权重逐位复制、在真实 embedding 上的 SGC 对偶/因果/O(1) 验�
 **数据来源**：`artifacts/binding_probe/`（mqar_sweep / mqar_sweep2 / sweep3 / sweep3b / overnight_seeds 等账本），探针脚本在 `research/binding/`，全部可重放。
 
 **未做/不变**：未新增定理或命题；未跑 ≥10M-token BPE LM；未做生成可读性与实测吞吐；Mamba2 在真实语料上仍领先（见 §4.a 与 `lm_vs_mamba2.json`）。未推仓（本轮随其它工作一并提交）。
+
+## 2026-11-17 — v8.3：字节级输入路径（tokenizer-free）入文 + 理论账本扩至 57 项
+
+来源：用户指令「抛弃分词器，让模型直接理解原始字节，开发到工业级并与全部模块兼容」。本轮把已完成工业化加固的字节级输入路径以**架构组件 + 附录证明**的形式并入论文。
+
+| 项 | v8.2 | v8.3 |
+|---|---|---|
+| 正文 §2 | 未提及输入粒度 | 新增段落 **Byte-level input path (tokenizer-free)**：Σ 实例化为原始 UTF-8 字节（256 + 2 保留 id）；因果动态 patcher（熵/词界/定长三模式）分组入 mixer；四条保证指向 Appendix A.12；明示仅为输入路径保证、不做 LM 质量主张 |
+| 附录 | A.1–A.11 | 新增 **A.12 四条输入路径保证**：(i) 编解码往返保真+单射+全定义；(ii) patch 边界因果/确定/批流一致；(iii) O(1) 流式进位（codec ≤3 字节、patcher ≤ max_len−1）；(iv) patch 数预算 ceil(L/max_len) ≤ n ≤ L——均按 PREMISE/CLAIM/PROOF/BOUNDARY 体例 |
+| 理论账本 | 53 项（NT01–NT34） | **57 项（NT01–NT38，GROUP VIII）**；`verify49` 57/57 PASS，`verify_bytelevel` 4/4 PASS。论文正文不引用 NT 编号（desk-check 纪律不变） |
+| PDF | 17 页 / 主文 8 页 | 17 页 / 主文 8 页（§2 段落 + A.12，未越 8 页限） |
+| desk-check | 46/46 | **46/46**（重建后逐项复核） |
+
+**实现侧同轮加固**（`simplcore/core/model/bytelevel.py`，守护测试 16→22 项）：patcher 批量入口改纯函数（原实现复用持久计数，违反其自述的确定性保证）；修复首字节行键读写错位；`feed` 改返回全流绝对下标；生成上下文全程留在字节 id 空间（消除 decode→encode 往返对非法 UTF-8 的静默改写）；space 模式补上 max_len 强制断开；词表越界显式报错。缓存根目录不再硬编码盘符（原 E 盘已失效导致 conftest 断言失败），按 env→仓库同盘→其余非 C 盘自动选盘。
+
+**未做/不变**：字节级路径未跑训练（用户指令），论文中不作任何 LM 质量主张；核心结果仍为 A/B/C/E 四条；P1–P8 不变。

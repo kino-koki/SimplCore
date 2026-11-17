@@ -613,6 +613,27 @@ def build():
       "distribution and is accounted for through A(v), not through B. "
       "Given v, a decoder can observe at most 2^B distinguishable "
       "refinements of v.", size=SMALL, lead=SLEAD, after=2.0)
+    P(d, "<b>Byte-level input path (tokenizer-free).</b> The architecture "
+      "is defined over an abstract alphabet Sigma; the implementation "
+      "instantiates Sigma as raw UTF-8 bytes (256 values plus two reserved "
+      "ids), with no subword tokenizer. A causal dynamic patcher groups "
+      "the byte stream into patches -- by accumulated online entropy, by "
+      "word boundaries, or at a fixed length -- and each patch enters the "
+      "mixer stack as one latent token (the mean of its byte embeddings), "
+      "so the O(1)-state streaming contract of the mixer is untouched. "
+      "Four properties are proven in Appendix A.12: (i) codec round-trip "
+      "fidelity -- decode o encode is the identity on all Unicode text and "
+      "encode is injective; (ii) patch boundaries are causal, "
+      "deterministic, and identical in batch and streaming form; (iii) the "
+      "streaming carry is O(1) -- at most three pending bytes in the "
+      "codec and at most max_len - 1 in the patcher, independent of the "
+      "stream length; (iv) the patch count obeys ceil(L / max_len) <= "
+      "n_patches <= L, so the byte-level path changes the mixer's "
+      "sequence length by a bounded, tunable factor. Generation runs "
+      "entirely in byte-id space, so an invalid UTF-8 byte can never "
+      "rewrite the context through a decode-encode round trip. These are "
+      "input-path guarantees only; no language-model quality claim is "
+      "made for them in this paper.", size=SMALL, lead=SLEAD, after=2.0)
     P(d, "<b>One layer interface (H6, unique).</b> Each static-LTI layer "
       "computes m_h[t] = <q_h, e(x_(t-1))> and "
       "z_h = sum_t K_h(L-1-t) m_h[t] e(x_t). For h < H_L the interface is "
@@ -2118,6 +2139,72 @@ def build():
                                     __import__("math").log(0.90))),
        fev("rho_fast")["mean"], fev("fused_gated")["mean"]),
       size=SMALL, lead=SLEAD, after=2.5, span=False)
+
+    # ---------------------------------------------------------------- app A.12
+    Hh(d, "A.12  Byte-level input path: the four input-path guarantees",
+       size=10.0, before=5.0, after=2.0, span=False)
+    P(d, "<b>(i) Codec round-trip fidelity.</b> PREMISE. encode maps a "
+      "Unicode string to byte ids by UTF-8; decode maps byte ids back with "
+      "U+FFFD replacing each maximal invalid subsequence; BOS/EOS, when "
+      "enabled, are reserved ids >= 256 that decode ignores. CLAIM. "
+      "decode o encode is the identity on all Unicode strings; encode is "
+      "injective on byte strings; decode is total (never fails) and "
+      "position-preserving on arbitrary byte sequences. PROOF. UTF-8 is a "
+      "bijection between scalar values and canonical byte sequences, and "
+      "concatenating valid encodings is valid, which gives the identity. "
+      "Injectivity is canonicity of UTF-8 composed with the byte/id "
+      "bijection. Replacement decoding consumes the byte string left to "
+      "right, emitting one U+FFFD per maximal invalid subsequence at its "
+      "own position and copying valid bytes verbatim; hence positions are "
+      "preserved and no byte is dropped or reordered. BOUNDARY. "
+      "Replacement is lossy by design: exactly the invalid-UTF-8 "
+      "structure is discarded.", size=SMALL, lead=SLEAD, after=2.0,
+      span=False)
+    P(d, "<b>(ii) Patcher causality, determinism, batch = streaming.</b> "
+      "PREMISE. One dynamic patcher in any of its three modes; the batch "
+      "entry boundaries() and the streaming entry feed() / feed_flush() "
+      "share one transition function. CLAIM. boundaries() is a pure "
+      "function of its input (repeated calls, before or after streaming, "
+      "agree); the boundary status of position i depends only on bytes "
+      "0..i; feeding the stream in arbitrary chunks and flushing yields "
+      "exactly the batch boundaries in absolute coordinates. PROOF. The "
+      "batch entry runs the shared transition from a fresh state and "
+      "touches no instance state, so its output is a function of the "
+      "input alone. Every break decision at position i uses only byte i "
+      "and accumulators over bytes 0..i -- no lookahead in any mode. The "
+      "streaming entry runs the same transition with finalize = false, "
+      "and feed_flush() closes the open tail by the same rule the batch "
+      "applies at the last byte; induction on the chunks gives equality. "
+      "BOUNDARY. A statement about the two entry points, not about where "
+      "boundaries fall; the entropy heuristic's placement quality is "
+      "empirical.", size=SMALL, lead=SLEAD, after=2.0, span=False)
+    P(d, "<b>(iii) O(1) streaming carry.</b> PREMISE. The codec and "
+      "patcher process an arbitrarily long stream in arbitrarily small "
+      "chunks. CLAIM. The codec withholds at most 3 bytes (the "
+      "continuation bytes of one unfinished code point) and the patcher "
+      "at most max_len - 1 bytes (the open patch); total auxiliary state "
+      "is O(max_len), independent of the stream length. PROOF. The codec "
+      "withholds only a suffix of consecutive continuation bytes; a UTF-8 "
+      "code point has at most three, and any longer suffix would contain "
+      "a leading byte, which is always emitted. The patcher forces a "
+      "boundary once the open patch reaches max_len in every mode, so "
+      "the withheld tail is below max_len. Neither bound mentions the "
+      "length. BOUNDARY. Bounds the carry, not the mixer's recurrent "
+      "state (the O(1)-in-L state budget is Result-level material in "
+      "Section 2.1).", size=SMALL, lead=SLEAD, after=2.0, span=False)
+    P(d, "<b>(iv) Patch-count budget.</b> PREMISE. The patcher with "
+      "max_len >= 2 processes L >= 1 bytes and returns boundaries that "
+      "exactly partition the stream. CLAIM. Every patch has length "
+      "between 1 and max_len, and ceil(L / max_len) <= n_patches <= L. "
+      "PROOF. Each boundary closes a non-empty run (length >= 1), a "
+      "boundary is forced when the run reaches max_len, and the last "
+      "boundary is forced at L - 1, so the boundaries partition [0, L); "
+      "summing n patches of length <= max_len to L gives n >= "
+      "ceil(L / max_len), and the all-singleton extreme gives n <= L. "
+      "BOUNDARY. A counting budget, not a compression-quality claim; the "
+      "realized patch statistics are data-dependent, and max_len is the "
+      "tunable compute dial.", size=SMALL, lead=SLEAD, after=2.5,
+      span=False)
 
     # ---------------------------------------------------------------- app B
     Hh(d, "Appendix B  Withdrawn Statements", size=11.5, before=6.0,

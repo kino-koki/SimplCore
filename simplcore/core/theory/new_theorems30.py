@@ -817,6 +817,167 @@ NT16_30 = [
              "state."),
         source="core/arch/bsgc.py binding write/read order",
         relates="pairs with NT31/NT32 for the streaming guarantee"),
+
+    # ====================================================== GROUP VIII
+    # The byte-level input path (tokenizer-free): codec + dynamic patcher +
+    # patch bridge, guarded by core/tests/test_bytelevel.py.
+    Thm(
+        nid="NT35", group="VIII: byte-level input path",
+        title="UTF-8 codec round-trip fidelity with positional replacement",
+        hypothesis=(
+            "The byte codec maps text over any Unicode alphabet to byte IDs "
+            "via UTF-8 (encode) and maps byte IDs back via UTF-8 decoding "
+            "with U+FFFD replacement of maximal invalid subsequences "
+            "(decode). BOS/EOS, when enabled, are reserved IDs >= 256 that "
+            "decode ignores."),
+        claim=(
+            "(a) decode o encode = identity on all Unicode strings (any "
+            "script, any code point, including 4-byte and control "
+            "characters). (b) encode is injective on byte strings: distinct "
+            "byte sequences are distinct ID sequences. (c) decode o encode "
+            "= identity on all byte-ID sequences up to the replacement of "
+            "invalid bytes by U+FFFD at their original positions; no byte "
+            "is dropped, duplicated, or reordered."),
+        proof=(
+            "(a) UTF-8 is a bijection between Unicode scalar values and "
+            "their canonical byte sequences; concatenation of valid "
+            "encodings is a valid encoding, so encoding each character and "
+            "decoding the concatenation returns each character. (b) UTF-8 "
+            "encoding is a function into byte strings that is injective "
+            "(canonical form), and the ID map bytes -> {0..255} is a "
+            "bijection, so the composite is injective. (c) decoding with "
+            "errors='replace' consumes the byte string left to right, "
+            "emitting one U+FFFD per maximal invalid subsequence at that "
+            "subsequence's position and copying valid bytes verbatim; "
+            "hence the output depends only on the input bytes, positionally. "
+            "QED"),
+        boundary=(
+            "Round-trip fidelity of the CODEC only. It says nothing about "
+            "model quality on byte-level inputs, and replacement of invalid "
+            "bytes is lossy by design (the information discarded is exactly "
+            "the invalid-UTF-8 structure)."),
+        use=("Justifies the tokenizer-free premise at the I/O layer: no text "
+             "is unreachable and no byte context is silently rewritten -- "
+             "the property the byte-space generation path relies on."),
+        source="core/model/bytelevel.py ByteLevelCodec",
+        relates="input-layer counterpart of NT01's exact-binding ideal"),
+
+    Thm(
+        nid="NT36", group="VIII: byte-level input path",
+        title="Patcher boundaries are causal, deterministic, and batch == streaming",
+        hypothesis=(
+            "Any patcher mode (entropy / space / fixed) of the dynamic "
+            "patcher processes a byte stream; the streaming entry feed() "
+            "carries the undecided tail between calls and feed_flush() "
+            "closes the final patch."),
+        claim=(
+            "(a) Determinism/purity: the batch boundaries() is a pure "
+            "function of its input list -- repeated calls, before or after "
+            "any streaming activity, return identical boundaries. "
+            "(b) Causality: the boundary status of position i depends only "
+            "on bytes 0..i. (c) Batch == streaming: feeding the stream in "
+            "arbitrary chunks and flushing yields exactly the batch "
+            "boundaries, in absolute stream coordinates."),
+        proof=(
+            "(a) The batch entry runs the shared transition with a fresh "
+            "state (empty counts, zero accumulators) and never reads or "
+            "writes instance state, so its output is a function of the "
+            "input alone. (b) In the shared transition the decision to "
+            "close a patch at position i uses only the byte at i, the "
+            "running accumulators, and counters derived from bytes 0..i; "
+            "no lookahead exists in any mode. (c) Both entries run the "
+            "same transition; the streaming entry differs only in that "
+            "finalize=False leaves the open patch pending, and "
+            "feed_flush() closes exactly that tail with the same rule the "
+            "batch applies at the last byte. By induction on the number of "
+            "chunks, the emitted boundary sequence with absolute offsets "
+            "equals the batch sequence. QED"),
+        boundary=(
+            "Equivalence of the two entry points, not a quality claim about "
+            "where boundaries fall (that is the entropy heuristic's "
+            "business). The Markov counts are per-call in batch mode: "
+            "re-encoding a longer context does not 'learn' from previous "
+            "calls."),
+        use=("Lets the model re-patch a growing generation context "
+             "deterministically and lets data pipelines chunk bytes "
+             "arbitrarily without changing the patches."),
+        source="core/model/bytelevel.py EntropyPatcher._run",
+        relates="byte-level analogue of NT34's streaming == batch contract"),
+
+    Thm(
+        nid="NT37", group="VIII: byte-level input path",
+        title="O(1) streaming carry for codec and patcher",
+        hypothesis=(
+            "The same codec and patcher process an arbitrarily long stream "
+            "in arbitrarily small chunks."),
+        claim=(
+            "The persistent carry is bounded by a constant independent of "
+            "the stream length: the codec's pending buffer holds at most 3 "
+            "bytes (the continuation bytes of one unfinished UTF-8 code "
+            "point), and the patcher's pending buffer holds at most "
+            "max_len - 1 bytes (the open patch), with counters of constant "
+            "size. Total auxiliary state is O(max_len) = O(1) in the "
+            "stream length L."),
+        proof=(
+            "Codec: feed() withholds only a suffix of consecutive "
+            "continuation bytes (10xxxxxx); a UTF-8 code point has at most "
+            "3 continuation bytes, and any longer suffix would contain a "
+            "leading byte, which is always emitted; hence pending <= 3. "
+            "Patcher: after each emitted boundary the open-patch counter "
+            "resets to 0, and in every mode a boundary is forced once the "
+            "open patch reaches max_len (fixed: length >= max_len; space: "
+            "length >= max_len; entropy: since_break >= max_len), so the "
+            "withheld tail is at most max_len - 1 bytes. None of these "
+            "quantities depends on L. QED"),
+        boundary=(
+            "Bounds the CARRY, not the model's recurrent state (that is "
+            "NT05/NT19/NT31). The entropy mode's Markov counts are "
+            "per-call in batch mode and unbounded in vocabulary terms "
+            "(256 x 256) across a long-lived stream -- constant in L but "
+            "large in the alphabet."),
+        use=("Certifies true online deployment: chunk size and stream "
+             "length do not change memory behavior of the input path."),
+        source="core/model/bytelevel.py feed/feed_flush carry",
+        relates="input-path counterpart of NT31 (fixed state budget)"),
+
+    Thm(
+        nid="NT38", group="VIII: byte-level input path",
+        title="Patch-count budget: ceil(L / max_len) <= n_patches <= L",
+        hypothesis=(
+            "The patcher (any mode) with max_len >= 2 processes L >= 1 "
+            "bytes and returns n_patches boundaries covering the stream "
+            "exactly (monotone, non-overlapping, last boundary = L-1)."),
+        claim=(
+            "Every patch has length between 1 and max_len, the boundaries "
+            "exactly partition the byte stream, and therefore ceil(L / "
+            "max_len) <= n_patches <= L. The bridge thus compresses the "
+            "sequence by a factor between 1 and max_len, and the "
+            "downstream mixer's cost is O(n_patches) in the patched "
+            "length."),
+        proof=(
+            "By construction each boundary closes a non-empty run of "
+            "bytes since the previous boundary (length >= 1), and in every "
+            "mode a boundary is forced once that run reaches max_len, so "
+            "no patch exceeds max_len. The boundaries partition [0, L) "
+            "because the last boundary is forced at L-1 (batch) or via "
+            "flush (streaming) and each boundary advances the start "
+            "pointer past it. Summing the patch lengths gives L, and n "
+            "patches of length <= max_len sum to at most n * max_len, so "
+            "n >= L / max_len; since n is an integer, n >= ceil(L / "
+            "max_len). The upper bound n <= L is the all-singleton "
+            "extreme. QED"),
+        boundary=(
+            "A counting budget, not a compression-quality claim: the "
+            "actual patch statistics are data-dependent (the entropy "
+            "heuristic), and the guarantee is only as good as max_len "
+            "allows. Patches are the compute unit -- smaller max_len means "
+            "more compute."),
+        use=("Gives the cost account for the tokenizer-free path: the "
+             "mixer never sees more than L patches and no less than "
+             "ceil(L / max_len), so byte-level operation has a bounded, "
+             "tunable overhead."),
+        source="core/model/bytelevel.py boundaries/patch_slices",
+        relates="extends NT05/NT19 (sequence-length accounting) to the input path"),
 ]
 
 THEOREMS30 = list(NT01_15) + NT16_30

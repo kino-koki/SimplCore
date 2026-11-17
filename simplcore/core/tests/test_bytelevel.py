@@ -83,6 +83,25 @@ def test_space_mode_breaks_at_non_alnum():
     assert b[-1] == len(ids) - 1         # 末尾收尾
 
 
+def test_space_mode_max_len_bounds_patch():
+    # 长字母数字串（如 base64）必须被 max_len 强制断开，不得无限增长
+    p = EntropyPatcher(mode="space", max_len=8)
+    ids = [97] * 100                     # 'a' * 100，无任何非字母数字
+    b = p.boundaries(ids)
+    assert b[-1] == 99
+    lens = [b[0] + 1] + [b[i] - b[i - 1] for i in range(1, len(b))]
+    assert max(lens) <= 8                # 每个 patch ≤ max_len
+    assert all(x >= 2 for x in lens)     # 非收尾 patch ≥ 2
+    # 流式与批量一致
+    ps = EntropyPatcher(mode="space", max_len=8)
+    got = []
+    for i in range(0, 100, 17):
+        bounds, _ = ps.feed(ids[i:i + 17])
+        got += bounds
+    got += ps.feed_flush()
+    assert got == b
+
+
 def test_entropy_mode_is_deterministic_and_bounded():
     p1 = EntropyPatcher(mode="entropy", threshold=3.0, max_len=8)
     p2 = EntropyPatcher(mode="entropy", threshold=3.0, max_len=8)

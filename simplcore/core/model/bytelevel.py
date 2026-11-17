@@ -213,8 +213,8 @@ class EntropyPatcher:
                 is_break = not (48 <= b <= 57 or 65 <= b <= 90
                                 or 97 <= b <= 122)
                 last = finalize and i == n - 1
-                if (is_break or last) and i >= start and \
-                        (i - start + 1 >= 2 or last):
+                if (is_break or last or i - start + 1 >= self.max_len) and \
+                        i >= start and (i - start + 1 >= 2 or last):
                     bounds.append(i)
                     start = i + 1
                 continue
