@@ -1,7 +1,8 @@
 """
-Unified 49-item ledger (v4).  Single source of truth for classification.
+Unified 53-item ledger (v5).  Single source of truth for classification.
 
-  30 NEW THEOREMS  : NT01..NT30 (new_theorems15.py + new_theorems30.py)
+  34 NEW THEOREMS  : NT01..NT34 (new_theorems15.py + new_theorems30.py,
+                     incl. the associative-memory channel NT31..NT34)
    8 FALSIFIED     : F1..F8
    5 WITHDRAWN     : W1..W5 plus W7 (registered as a 6th row in the paper's
                      Appendix F; the 49-item audit counts 5 W-slots because W7
@@ -9,7 +10,7 @@ Unified 49-item ledger (v4).  Single source of truth for classification.
    3 CONJECTURES   : C1, C3, C7
    3 EMPIRICAL     : E1, E2, E3  (no theorem can establish them)
   ----------------------------------------------------------------
-  49 total, each adjudicated exactly once by verify49.py (49/49 PASS).
+  53 total, each adjudicated exactly once by verify49.py (53/53 PASS).
 
 DISCIPLINE: PASS on a theorem item = finite-identity certification that the
 statement is correctly formed with non-empty premises (the PROOF is analytic,
@@ -50,7 +51,7 @@ NON_THEOREM = [
 
 
 def items():
-    """All 49 statements as (id, verdict, name, group, note)."""
+    """All 53 statements as (id, verdict, name, group, note)."""
     out = []
     for t in THEOREMS30:
         out.append((t.nid, "NEW_THEOREM", t.title, t.group,
@@ -68,13 +69,16 @@ def by_verdict() -> dict:
 
 
 def summary() -> dict:
-    return dict(total=49, theorems=len(THEOREMS30),
+    return dict(total=len(THEOREMS30) + len(NON_THEOREM),
+                theorems=len(THEOREMS30),
                 non_theorems=len(NON_THEOREM),
                 verdict_distribution=by_verdict(),
                 honest_note=(
-                    "49 statements cannot all be new non-trivial theorems: 8 are "
+                    "53 statements cannot all be new non-trivial theorems: 8 are "
                     "false, 5 withdrawn, 3 unproved, 3 empirical. Inflating them "
-                    "would repeat the theorem inflation this revision removes."))
+                    "would repeat the theorem inflation this revision removes. "
+                    "NT31..NT34 (2026-11-17) extend the series with the "
+                    "associative-memory channel theorems."))
 
 
 __all__ = ["ITEMS", "NON_THEOREM", "items", "by_verdict", "summary"]

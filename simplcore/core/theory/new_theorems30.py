@@ -684,6 +684,139 @@ NT16_30 = [
              "PROVES the project cannot be improved by 'add more poles / bigger "
              "grid / better code' alone -- only by leaving the premise (NT28)."),
         source="NT01/NT04/NT05/NT16/NT19/NT28 consolidated"),
+
+    # ====================================================== GROUP VII
+    # The associative-memory channel (sgc-bind): the newest architectural
+    # component, validated end-to-end by the probes in research/binding/.
+    Thm(
+        nid="NT31", group="VII: associative-memory channel",
+        title="Binding-memory state is exactly (2S+1)D scalars, independent of L",
+        hypothesis=(
+            "A binding memory with S slots and channel width D processes a "
+            "sequence of arbitrary length L >= 1. Its persistent state is the "
+            "triple (slot keys S x D, slot values S x D, previous hidden D)."),
+        claim=(
+            "The state is exactly (2S+1)D scalars after every step, for every "
+            "L, and it is a deterministic function of the input and the "
+            "initial state alone. Hence the per-step update is O(1) in L and "
+            "the state never grows with the sequence."),
+        proof=(
+            "By construction the state is the triple (sk, sv, up) with sk in "
+            "R^{SxD}, sv in R^{SxD}, up in R^D. The update at step t is "
+            "sk' = sk, sv' = sv, up' = h_t except at a write step, where the "
+            "FIFO slot (t-1) mod S is overwritten by the bound pair. Each "
+            "component is a fixed-size tensor; none of the three shapes "
+            "mentions L. Therefore the state space is R^{(2S+1)D} for every "
+            "L, the update is a deterministic map on that space, and no "
+            "quantity in the state grows with t. QED"),
+        boundary=(
+            "This bounds the STATE SIZE (a capacity budget), not the "
+            "information content: which bindings survive is NT32. It also "
+            "does not bound the compute per step of the surrounding mixer."),
+        use=("Formalizes the O(1)-in-L state claim for the binding-augmented "
+             "architecture: the channel adds a FIXED state budget, never a "
+             "growing one."),
+        source="core/model/bytelevel.py; core/arch/bsgc.py binding memory",
+        relates="extends NT05/NT19 (state accounting) to the memory channel"),
+
+    Thm(
+        nid="NT32", group="VII: associative-memory channel",
+        title="FIFO addressability: exactly the last S writes are readable",
+        hypothesis=(
+            "The same binding memory; the write at global position t (t>=1) "
+            "occupies slot (t-1) mod S; a query processed at position t reads "
+            "the slots written at positions <= t-1."),
+        claim=(
+            "(a) After W completed writes the slots contain exactly the last "
+            "min(W, S) writes (writes j = W-min(W,S) .. W-1). "
+            "(b) A binding with write index j is addressable at that query "
+            "iff j >= W - S. Equivalently, the evicted bindings are exactly "
+            "those with j < W - S. "
+            "(c) In the content-chain task with G key pairs at positions "
+            "0..2G-1 and the query at position T-1, pair i (write index 2i) "
+            "is addressable iff 2i >= (T-2) - S."),
+        proof=(
+            "Induction on the write sequence. Base: after 0 writes the slots "
+            "are empty and the set of addressable writes is empty. Step: a "
+            "write to slot (t-1) mod S overwrites exactly that slot; hence "
+            "the slot contents are always the last S distinct write indices "
+            "(or all of them if fewer than S have occurred), which is (a). "
+            "A write j is present iff j >= W - S by (a), which is (b). (c) "
+            "substitutes W = T-2 (writes at positions 1..T-2) into (b). QED"),
+        boundary=(
+            "This is an ADDRESSABILITY statement: which bindings CAN be "
+            "read. It is not a recall-accuracy guarantee -- that requires the "
+            "addressing projections to separate the keys (NT33) and is "
+            "further limited by the state-information bound (Theorem A)."),
+        use=("Draws the exact capacity regime: the architecture answers from "
+             "the last S bindings and cannot answer from evicted ones. This "
+             "is the precise, testable boundary of the channel."),
+        source="core/arch/bsgc.py FIFO slot assignment",
+        relates="operationalizes NT31 for recall; bounds NT33's applicability"),
+
+    Thm(
+        nid="NT33", group="VII: associative-memory channel",
+        title="Residual binding recovers the value exactly under a separated code",
+        hypothesis=(
+            "Identity addressing projections (ak = av = aq = 0), so the slot "
+            "key of write j is h[j] and its slot value is h[j+1]; a code C in "
+            "R^{V x D} whose key rows are unit-norm and pairwise orthogonal; "
+            "the hidden state at the key position of pair i equals the key's "
+            "code row c_{k_i}; distinct keys have distinct codes."),
+        claim=(
+            "The read-out at a query whose hidden state equals c_{k_i} returns "
+            "exactly c_{v_i} (the value bound to that key): zero interference "
+            "from every other binding, generalizing NT01 from one binding to "
+            "the multi-key memory."),
+        proof=(
+            "The score of slot j is <h_q, K_j> = <c_{k_i}, c_{k_j}> = R "
+            "delta_{k_i, k_j} by the code orthogonality, so every slot whose "
+            "key differs from the queried key has score 0 while the matching "
+            "slot has score R > 0. The softmax therefore assigns probability "
+            "1 to the matching slot and 0 to all others (in exact arithmetic; "
+            "equivalently the argmax is unique). The read is the "
+            "probability-weighted sum of the slot values, which is exactly "
+            "V_{j*} = c_{v_{j*}}. No other binding contributes. QED"),
+        boundary=(
+            "Exact arithmetic and a separated (orthogonal, unit-norm) code; "
+            "finite-temperature reads are the weighted average bounded by the "
+            "code separation, and NT08 gives the robust version. Requires the "
+            "identity addressing projections; the learned residual form "
+            "approximates it (the experiments in research/binding)."),
+        use=("Proves the constructive mechanism that the training experiments "
+             "validate: the binding memory implements exact multi-key recall "
+             "whenever the keys are separable."),
+        source="core/arch/bsgc.py residual binding; research/binding",
+        relates="extends NT01 to the multi-key memory channel"),
+
+    Thm(
+        nid="NT34", group="VII: associative-memory channel",
+        title="Strict causality of the binding write and read",
+        hypothesis=(
+            "The same binding memory, processed over positions 0..L-1."),
+        claim=(
+            "The write at position t is a function of the hidden states "
+            "h[0..t] only, the read at position t is a function of the writes "
+            "at positions <= t-1 only, and therefore any perturbation of the "
+            "input at a position t' > t leaves the read at every position "
+            "t <= t'-1 bit-identical."),
+        proof=(
+            "Induction on t. The write at position t uses the window "
+            "(h[t-1], h[t]) (the previous hidden state and the current one), "
+            "both of which depend only on the input up to t. The read at t "
+            "uses the slot contents, which by the induction hypothesis "
+            "depend only on writes at positions <= t-1 < t. Hence a "
+            "perturbation at t' > t changes no write at position <= t' - 1 <= "
+            "t and therefore no read at t <= t' - 1. QED"),
+        boundary=(
+            "Causality of the memory channel, not a recall-accuracy "
+            "statement (NT33). Streaming-with-carry equality is the "
+            "operational form and is checked numerically in verify_binding."),
+        use=("Underpins the streaming == batch equivalence of the whole "
+             "byte-level path: the model can be used online with O(1) "
+             "state."),
+        source="core/arch/bsgc.py binding write/read order",
+        relates="pairs with NT31/NT32 for the streaming guarantee"),
 ]
 
 THEOREMS30 = list(NT01_15) + NT16_30

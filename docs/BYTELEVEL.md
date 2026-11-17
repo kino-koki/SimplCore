@@ -67,6 +67,19 @@
   （梯度可达）shape/finite 检查；
 * **空输入 / 单字节**等边界情形。
 
+## 3.5 工业级入口（文本 → 字节 → patch → 前向/生成）
+
+```python
+from simplcore.core.model.bytelevel import byte_level_logits, byte_level_generate
+
+logits = byte_level_logits(model, "任意文本")        # (n_patches, 256) 字节词表
+out = byte_level_generate(model, "prompt", max_new_patches=8, greedy=True)
+```
+
+* 兼容任意 SimplCore mixer（SGC / sgc-bind / SRF…）——patch 级 latent
+  序列直接过 mixer 栈；O(1) 状态/流式不变；
+* 守护测试：入口与手动路径（bridge + blocks）逐值一致、生成 smoke。
+
 ## 4. 与 SimplCore 全部模块的兼容
 
 | 模块 | 兼容方式 |

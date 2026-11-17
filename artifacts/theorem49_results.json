@@ -1,5 +1,5 @@
 {
- "mode": "49-item audit: 30 theorem finite-identity checks + 19 classifications",
+ "mode": "53-item audit: 34 theorem finite-identity checks + 19 classifications",
  "numpy_seed": 20261109,
  "checks": [
   {
@@ -381,7 +381,7 @@
    "verdict": "PASS",
    "detail": {
     "toeplitz_dev": 1.6653345369377348e-16,
-    "fft_iir_rel": 4.2606332124101666e-16,
+    "fft_iir_rel": 4.678342350881751e-16,
     "state_scalars": 60,
     "depends_on_L": false
    }
@@ -512,7 +512,7 @@
     "rank": 8,
     "kernel": 16,
     "bound": 16,
-    "collision_residual": 7.771561172376096e-16,
+    "collision_residual": 8.326672684688674e-16,
     "nonlinear_output_identical": true,
     "n1_kernel": 0,
     "premises": [
@@ -561,7 +561,7 @@
    "kind": "analytic identity + finite certification",
    "verdict": "PASS",
    "detail": {
-    "turan_max_dev": 2.0886070650760757e-15,
+    "turan_max_dev": 1.887379141862766e-15,
     "double_root_dev": 3.3306690738754696e-15,
     "real_all_positive": true,
     "conjugate_has_nonpositive": true,
@@ -644,7 +644,7 @@
    "verdict": "PASS",
    "detail": {
     "summary_collision_residual": 2.6645352591003757e-15,
-    "teacher_answer_gap": 1.599552501601445,
+    "teacher_answer_gap": 1.5995525016014454,
     "layer_checks": [
      {
       "layers": 1,
@@ -824,6 +824,34 @@
     "jointly_tight": true,
     "note": "order 2 / R<2V / 2M*R*N<4M*V*N / real poles; each forced by a DIFFERENT theorem"
    }
+  },
+  {
+   "id": "NT31",
+   "name": "state = (2S+1)D scalars, independent of L",
+   "kind": "numeric_consistency",
+   "verdict": "PASS",
+   "detail": "S=8,D=16,L=1: 272 == 272; S=8,D=16,L=64: 272 == 272; S=16,D=32,L=128: 1056 == 1056; S=4,D=8,L=1000: 72 == 72"
+  },
+  {
+   "id": "NT32",
+   "name": "FIFO slots hold exactly the last S writes",
+   "kind": "numeric_consistency",
+   "verdict": "PASS",
+   "detail": "S=8, writes=63, checked slots 56..62"
+  },
+  {
+   "id": "NT33",
+   "name": "residual binding: exact multi-key recovery",
+   "kind": "numeric_consistency",
+   "verdict": "PASS",
+   "detail": "G=8, separated unit-norm code, identity projections"
+  },
+  {
+   "id": "NT34",
+   "name": "strict causality of the binding write/read",
+   "kind": "numeric_consistency",
+   "verdict": "PASS",
+   "detail": "t* in (10, 30, 50); reads at t < t* bit-identical"
   },
   {
    "id": "F1",
@@ -1073,28 +1101,29 @@
    }
   }
  ],
- "passed": 49,
- "total": 49,
- "theorem_count": 30,
+ "passed": 53,
+ "total": 53,
+ "theorem_count": 34,
  "non_theorem_count": 19,
  "verdict_distribution": {
-  "new_theorems": 30,
+  "new_theorems": 34,
   "falsified": 8,
   "withdrawn": 5,
   "conjectures": 3,
   "empirical_not_testable": 3
  },
  "roadmap": {
-  "delivered": 30,
+  "delivered": 34,
   "target": 49,
-  "remaining": 19,
+  "remaining": 15,
   "groups": {
    "I: TSC construction and optimality": 5,
    "II: grid, precision and length": 5,
    "III: multi-hop, self-evolution, equivalence": 5,
    "IV: algebraic structure and identifiability": 4,
    "V: self-evolution and transfer objectives": 5,
-   "VI: numerical frontier and multi-hop duality": 6
+   "VI: numerical frontier and multi-hop duality": 6,
+   "VII: associative-memory channel": 4
   },
   "ids": [
    "NT01",
@@ -1126,7 +1155,11 @@
    "NT27",
    "NT28",
    "NT29",
-   "NT30"
+   "NT30",
+   "NT31",
+   "NT32",
+   "NT33",
+   "NT34"
   ]
  },
  "discipline": "The 30 theorem checks are NOT proofs (proofs are analytic, in the two theorem modules). The 19 non-theorem checks are CLASSIFICATIONS with explicit witnesses / falsification specs, NOT proofs that the statements are true. NO measured value is a theorem. NO TRAINING, NO GRADIENTS, NO GPU, NO NEW EXPERIMENT DATA.",

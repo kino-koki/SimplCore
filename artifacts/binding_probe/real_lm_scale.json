@@ -1,0 +1,27 @@
+{
+  "sgc": {
+    "val_ppl": 8.125,
+    "val_loss": 2.0949,
+    "val_loss_512": 2.0515,
+    "val_ppl_512": 7.78,
+    "tokens": 3997696,
+    "params": 1057028,
+    "train_sec": 230.6,
+    "done": true
+  },
+  "sgc-bind": {
+    "val_ppl": 10.043,
+    "val_loss": 2.3068,
+    "val_loss_512": 2.2511,
+    "val_ppl_512": 9.498,
+    "tokens": 3997696,
+    "params": 1253644,
+    "train_sec": 522.7,
+    "done": true
+  },
+  "mamba2_partial": {
+    "step": 200,
+    "total": 976,
+    "note": "CPU 窗口限制（~13s/步，参考实现无 CUDA 核）；1M 档已完整（5.84）足以支撑结论，4M 档中止"
+  }
+}

@@ -167,3 +167,32 @@ def test_bridge_empty_input():
     bridge = BytePatchBridge(codec)
     pm = bridge.patch_means([], torch.randn(256, 32))
     assert pm.shape == (0, 32)
+
+
+# =============================================================================
+# 工业级入口：byte_level_logits / byte_level_generate
+# =============================================================================
+def test_byte_level_logits_matches_manual_path():
+    from simplcore.core.model.bytelevel import byte_level_logits
+    model = _tiny_model("sgc-bind", 256)
+    text = "你好，byte-level world！"
+    logits = byte_level_logits(model, text)
+    # 与手动路径（bridge + blocks）逐值一致
+    codec = ByteLevelCodec()
+    bridge = BytePatchBridge(codec)
+    pm = bridge.patch_means(codec.encode(text), model.tok_emb.weight.detach())
+    h = pm.unsqueeze(0)
+    for blk in model.blocks:
+        h = blk(h)
+    manual = model.ln_f(h)[0] @ model.tok_emb.weight.t()
+    assert torch.allclose(logits, manual, atol=1e-5)
+    assert logits.shape == manual.shape
+
+
+def test_byte_level_generate_smoke():
+    from simplcore.core.model.bytelevel import byte_level_generate
+    model = _tiny_model("sgc", 256)
+    out = byte_level_generate(model, "hello", max_new_patches=3, greedy=True)
+    assert isinstance(out, str)
+    out2 = byte_level_generate(model, "hello", max_new_patches=3, greedy=True)
+    assert out == out2            # greedy 确定性

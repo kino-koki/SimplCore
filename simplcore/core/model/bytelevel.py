@@ -310,3 +310,62 @@ class BytePatchBridge:
         for i, (a, b) in enumerate(spans):
             out[i] = emb[a:b].mean(dim=0)
         return out
+
+
+# =============================================================================
+# 工业级入口：文本 → 字节 → patch → SimplCore 前向/生成
+# =============================================================================
+def byte_level_logits(model, text: str, codec: Optional[ByteLevelCodec] = None,
+                      patcher: Optional[EntropyPatcher] = None,
+                      bridge: Optional[BytePatchBridge] = None):
+    """文本 → 字节 → 动态 patch → SimplCore 前向 → 字节词表 logits.
+
+    工业级 tokenizer-free 入口：模型直接理解原始字节，**不经任何 BPE
+    分词器**。兼容任意 SimplCore mixer（SGC / sgc-bind / SRF…）。
+
+    返回 (logits (n_patches, byte_vocab))；最后一个位置的 logits 即
+    下一字节/下一 patch 的预测分布。
+    """
+    codec = codec or ByteLevelCodec()
+    patcher = patcher or EntropyPatcher()
+    bridge = bridge or BytePatchBridge(codec, patcher)
+    ids = codec.encode(text)
+    pm = bridge.patch_means(ids, model.tok_emb.weight.detach())
+    h = pm.unsqueeze(0)
+    for blk in model.blocks:
+        h = blk(h)
+    h = model.ln_f(h)[0]
+    # 字节词表头（tie_embeddings 时即 embedding 转置）
+    return h @ model.tok_emb.weight.t()
+
+
+def byte_level_generate(model, prompt: str, max_new_patches: int = 8,
+                        codec: Optional[ByteLevelCodec] = None,
+                        patcher: Optional[EntropyPatcher] = None,
+                        bridge: Optional[BytePatchBridge] = None,
+                        temperature: float = 1.0,
+                        greedy: bool = False):
+    """字节级自回归生成：prompt → 逐 patch 生成 → 解码回文本.
+
+    每次生成一个 patch 的**首字节**（简化；完整 patch 解码需局部
+    解码头，见 BLT）。返回生成的文本。
+    """
+    codec = codec or ByteLevelCodec()
+    patcher = patcher or EntropyPatcher()
+    bridge = bridge or BytePatchBridge(codec, patcher)
+    ids = codec.encode(prompt)
+    generated: List[int] = []
+    for _ in range(max_new_patches):
+        ctx = ids + generated
+        logits = byte_level_logits(model, codec.decode(ctx), codec, patcher,
+                                   bridge)
+        last = logits[-1]
+        if greedy:
+            nxt = int(last.argmax().item())
+        else:
+            probs = torch.softmax(last / max(temperature, 1e-6), dim=-1)
+            nxt = int(torch.multinomial(probs, 1).item())
+        if nxt == codec.EOS:
+            break
+        generated.append(nxt)
+    return codec.decode(generated)

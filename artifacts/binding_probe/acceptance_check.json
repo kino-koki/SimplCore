@@ -1,12 +1,12 @@
 {
-  "passed": 11,
-  "total": 11,
+  "passed": 13,
+  "total": 13,
   "items": [
     {
       "idx": 1,
       "name": "机制正确性",
       "pass": true,
-      "detail": "test_bsgc.py 存在（6589 bytes）"
+      "detail": "test_bsgc.py 存在（6764 bytes）"
     },
     {
       "idx": 2,
@@ -67,6 +67,18 @@
       "name": "等预算 vs Mamba2 3seeds 全胜（96/96 窗）",
       "pass": true,
       "detail": "ratios=[0.685, 0.717, 0.668]"
+    },
+    {
+      "idx": 12,
+      "name": "真实语料等预算负结果入档（Mamba2 领先，需诚实记录）",
+      "pass": true,
+      "detail": "mamba2 ratios=[2.0066989342617387, 2.0307783277055313], ts ratios=[1.0406082152933562]"
+    },
+    {
+      "idx": 13,
+      "name": "根因定位：绑定通道拖累纯 LM（非初始化伪影）",
+      "pass": true,
+      "detail": "mqar gate0=0.92 gate-4=0.195; listops bind=288.891 vs sgc=238.25"
     }
   ]
 }

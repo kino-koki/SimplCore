@@ -1,5 +1,5 @@
 """
-Full 49-item audit: 30 NEW THEOREMS (NT01..NT30) + 19 NON-THEOREM statements
+Full 53-item audit: 34 NEW THEOREMS (NT01..NT34) + 19 NON-THEOREM statements
 (8 falsified, 5 withdrawn, 3 conjectures, 3 empirical/not-testable).
 
 WHAT 'PASS' MEANS HERE (deliberately narrow):
@@ -444,6 +444,33 @@ for _fn in (n16, n17, n18, n19, n20, n21, n22, n23, n24, n25,
 
 
 # =====================================================================
+# PART 2b: 4 associative-memory channel checks (NT31..NT34), reusing the
+# numeric checks of verify_binding.py (as PART 1 reuses verify15).
+# =====================================================================
+import verify_binding as VB
+
+_cap_bind = []
+_orig_vb_rec = VB.rec
+
+
+def _vb_cap(nid, name, ok, detail, kind="numeric_consistency"):
+    _cap_bind.append(dict(id=nid, name=name, kind=kind,
+                          verdict="PASS" if ok else "FAIL", detail=detail))
+    return bool(ok)
+
+
+VB.rec = _vb_cap
+for _fn in VB.CHECKS:
+    try:
+        _fn()
+    except Exception as e:
+        _vb_cap(_fn.__name__.upper(), _fn.__name__, False,
+                dict(exception=repr(e)))
+for _r in _cap_bind:
+    rows.append(_r)
+
+
+# =====================================================================
 # PART 3: 19 NON-THEOREM statements, each independently adjudicated
 # =====================================================================
 NON_THEOREM = [
@@ -553,12 +580,12 @@ def main():
         k = r["kind"].split(" / ")[-1]
         by[k] = by.get(k, 0) + 1
     out = dict(
-        mode="49-item audit: 30 theorem finite-identity checks + 19 classifications",
+        mode="53-item audit: 34 theorem finite-identity checks + 19 classifications",
         numpy_seed=20261109, checks=rows, passed=passed, total=len(rows),
         theorem_count=M.summary()["delivered"],
         non_theorem_count=len(NON_THEOREM),
         verdict_distribution=dict(
-            new_theorems=30, falsified=8, withdrawn=5,
+            new_theorems=34, falsified=8, withdrawn=5,
             conjectures=3, empirical_not_testable=3),
         roadmap=M.summary(),
         discipline=(

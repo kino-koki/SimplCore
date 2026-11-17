@@ -336,7 +336,10 @@ python -m simplcore.core.eval.axis_probe --tasks mqar_g4 \
 **1M tokens 直训（非等预算 harness）**：Mamba2 在真实文本上明显领先
 （5.84 vs 10.3-10.8）；sgc-bind 较 sgc 慢 4.6%。与 §4.a 的等预算结论
 一致：**合成召回优势不迁移到真实语料 LM**。状态每 25 步落盘、跨窗续跑。
-账本：`real_lm.json`（`I:/tmp/real_lm/` 有各臂断点）。
+**4M tokens 规模档**（D=128/4 层，3 seeds 部分完成）：sgc **8.13**、
+sgc-bind 10.04（数据 4× 后 sgc -21%、sgc-bind -7%）；mamba2 臂因 CPU
+窗口限制止步 200/976 步（1M 档 5.84 已足够支撑结论）。账本：
+`real_lm.json` + `real_lm_scale.json`（`I:/tmp/real_lm/` 有各臂断点）。
 
 ## 5. 诚实边界
 

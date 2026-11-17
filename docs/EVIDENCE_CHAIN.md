@@ -23,14 +23,16 @@
 | 7 | **诚实负结果**：list-ops（ts 0.485 > sgc 0.335 > sgc-bind 0.265）、fuzzy-jump（三臂 chance）、多 needle（三臂饱和无区分度） | 已入档 | `lra_probe.json` `lra_probe2.json` |
 | 8 | **真实语料 LM 成本**（corpus.txt 字符级）：绑定通道 +5.7% PPL（检索能力专用增强的代价） | sgc 5.93 / sgc-bind 6.27 / ts 11.05 | `reallm.json` |
 | 9 | **MI250 战役就绪**：数据管线（SHA-256 manifest）、闸门清单、`tuan-1b` dry-run 启动预检、3 步实跑——四步全过；修复 2 个上卡首日必爆缺陷 | 预演四步全 ✅ | `mi250_rehearsal.json` + `campaign_gates.txt` |
+| 10 | **理论层 53 项审计**：NT01–NT34 完整解析证明（新增 NT31–NT34 绑定记忆通道四定理：状态长度无关 / FIFO 可寻址 / 残差绑定正确性 / 严格因果）+ 19 项非定理分类，verify49 **53/53 PASS** | 34 定理 + 19 分类 | `theorem49_results.json` + `theory/verify_binding.py` |
 
 ## 可执行验收
 
 验收清单已固化为可执行检查器（逐项加载账本断言判据，全部通过才退出 0；
-含长度扫描曲线与 Mamba2 三种子等预算两项扩展，共 **11 项**）：
+含长度扫描曲线、Mamba2 三种子等预算、真实语料负结果与根因定位四项扩展，
+共 **13 项**）：
 
 ```bash
-python research/binding/acceptance_check.py   # → 11/11 PASS
+python research/binding/acceptance_check.py   # → 13/13 PASS
 ```
 
 机器可读结果：`artifacts/binding_probe/acceptance_check.json`。
