@@ -1,27 +1,44 @@
 {
-  "sgc": {
-    "val_ppl": 8.125,
-    "val_loss": 2.0949,
-    "val_loss_512": 2.0515,
-    "val_ppl_512": 7.78,
-    "tokens": 3997696,
-    "params": 1057028,
-    "train_sec": 230.6,
-    "done": true
-  },
-  "sgc-bind": {
-    "val_ppl": 10.043,
-    "val_loss": 2.3068,
-    "val_loss_512": 2.2511,
-    "val_ppl_512": 9.498,
-    "tokens": 3997696,
-    "params": 1253644,
-    "train_sec": 522.7,
-    "done": true
-  },
-  "mamba2_partial": {
-    "step": 200,
-    "total": 976,
-    "note": "CPU 窗口限制（~13s/步，参考实现无 CUDA 核）；1M 档已完整（5.84）足以支撑结论，4M 档中止"
-  }
+ "sgc": {
+  "val_ppl": 8.125,
+  "val_loss": 2.0949,
+  "val_loss_512": 2.0515,
+  "val_ppl_512": 7.78,
+  "tokens": 3997696,
+  "params": 1057028,
+  "train_sec": 230.6,
+  "done": true
+ },
+ "sgc-bind": {
+  "val_ppl": 10.043,
+  "val_loss": 2.3068,
+  "val_loss_512": 2.2511,
+  "val_ppl_512": 9.498,
+  "tokens": 3997696,
+  "params": 1253644,
+  "train_sec": 522.7,
+  "done": true
+ },
+ "mamba2": {
+  "val_ppl": 7.068,
+  "val_loss": 1.9556,
+  "val_loss_512": 1.9011,
+  "val_ppl_512": 6.693,
+  "tokens": 3997696,
+  "params": 1069660,
+  "train_sec": 526.0,
+  "done": true
+ },
+ "protocol": {
+  "corpus": "cn_*.jsonl + corpus.txt 合并（中英混合真实文本）",
+  "chars": 433726,
+  "vocab": 484,
+  "dim": 128,
+  "layers": 4,
+  "seq": 256,
+  "steps": 976,
+  "batch": 16,
+  "tokens_per_arm": 3997696,
+  "note": "4M tokens/臂；状态每 50 步落盘可跨窗续跑；val=8 批均值"
+ }
 }
