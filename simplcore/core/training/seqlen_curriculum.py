@@ -229,7 +229,10 @@ def build_curriculum(args, cfg, max_steps: int) -> SeqLenCurriculum:
     否则就绪度视为中性（按调度推进，行为与自适应关闭时一致）。
     """
     adaptive = bool(getattr(args, "bio_adaptive_curriculum", False))
-    if getattr(args, "seq_len_curriculum", None):
+    # CLI 显式给出 --seq-len-curriculum（含空串）时优先于预设 context：
+    # 空串 = 显式禁用课程（固定 --seq-len）。只判真值会让 "" 落回预设
+    # 阶梯——24h 硬停战役的预算算术会被长 seq 阶段击穿（NT46）。
+    if getattr(args, "seq_len_curriculum", None) is not None:
         cur = SeqLenCurriculum.from_cli(args.seq_len_curriculum, max_steps)
     else:
         ctx = getattr(cfg, "context", None)

@@ -155,6 +155,27 @@ def test_build_curriculum_adaptive_flag():
     print("[ok] build_curriculum honours adaptive flag")
 
 
+def test_build_curriculum_empty_string_disables_preset():
+    """--seq-len-curriculum "" 显式禁用预设阶梯（NT46 预算算术）：
+
+    只判真值会让空串落回预设 context 阶梯——24h 硬停战役的长 seq 阶段
+    每步 token = micro×seq，预算会被击穿（1B 档全程 ~101B tokens）。
+    """
+    preset_ctx = {"max_seq_len": 4000000, "curriculum": [
+        {"seq_len": 4096, "until_frac": 0.18},
+        {"seq_len": 4000000}]}
+    cfg = type("C", (), {"context": preset_ctx})()
+    # 不给 CLI（None）→ 预设阶梯生效（向后兼容）
+    args_none = argparse.Namespace(seq_len_curriculum=None,
+                                   bio_adaptive_curriculum=False)
+    assert build_curriculum(args_none, cfg, 1000).max_seq_len == 4000000
+    # 显式空串 → 禁用（空课程，回退固定 --seq-len）
+    args_empty = argparse.Namespace(seq_len_curriculum="",
+                                    bio_adaptive_curriculum=False)
+    cur2 = build_curriculum(args_empty, cfg, 1000)
+    assert len(cur2.stages) == 0 and not cur2
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_") and callable(fn):
