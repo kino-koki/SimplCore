@@ -520,3 +520,17 @@ BF16 权重逐位复制、在真实 embedding 上的 SGC 对偶/因果/O(1) 验�
 | NT44（新增） | — | **Adafactor 前置条件器路径**：||p̂−p||/||p|| ≤ δ·√(κ/(1−η)) + η/(1+√(1+η))（≤δ√κ·(1+η)+η/2）——梯度预算按二阶矩条件数平方根放大、因子残差贡献 ≤η/2（精确恒等式）；NT43 机制逐字适用 ⇒ cos ≥ √(1−δ_p²)。覆盖缺口（NT41/NT43 boundary 原注明不覆盖前置条件器）闭合 |
 | 理论账本 | 62 项 | **63 项（44 定理 + 19 分类）**；verify49 **63/63 PASS**、verify_precision **6/6 PASS** |
 | 实测口径 | — | `artifacts/4090d/measurement_template.json`（每字段带 caliber）+ `docs/RTX4090D_MEASUREMENTS.md`（三段回填表）+ `scripts/fill_measurements.py`（metrics.jsonl → MFU/tokens/s/tokens_per_param 自动回填；缺列保持 null；>20% 偏差强制 REVIEW）+ `test_measurements.py`（6 项守护） |
+
+## 2026-11-18 — v8.4c：κ 可观测化（NT45）+ 硬停课程口径（NT46）+ 启动器校准修复
+
+来源：完成度审查指出的两个方向——把 NT44 的 κ 从"报告量"升级为可计算量；评估 `_CTX_2B_4M` 课程在 24h 硬停下的收敛口径。
+
+| 项 | v8.4b | v8.4c |
+|---|---|---|
+| NT45（新增，GROUP IX） | NT44 的 κ = v_max/v_min 是"报告量"（数据相关、不可计算） | **κ 可观测化**：(a) 结构式 κ(v̂) = κ(R)·κ(C)（正 rank-1 精确恒等，因子即优化器状态）；(b) 残差合成 κ(v) ≤ (κ(v̂)+η)/(1−η)（|E| ≤ η·v̂_min 前提）；(c) **重尾时间截断**：EMA 是窗口凸组合 ⇒ v̂ ≤ 窗口 max，Pareto(α>2) 下 E[窗口 max²] = Γ(1−2/α)·n_eff^(2/α)·s₀² **与 t 无关**——重尾不会让 δ_p 随 24h 长跑漂移（累积估计量的 cap 则按 t^(2/α) 增长）。δ_p = δ√κ + η/2 全部由状态量算出 |
+| NT46（新增，GROUP X） | — | **硬停调度口径**：(a) 可达阶段恒等式 max{k : N_real ≥ N_plan·until_frac_k}；(b) **战役塌缩量化**：N_plan=1e6、B=65536、24h 预算 2.2e8 tokens ⇒ N_real/N_plan ≈ 0.0034 < 0.18——课程**全程卡死 stage 0**，4M 末段需 5.9e10 tokens（267× 预算）；(c) 校准规则：N_plan = ceil(token 预算/全局 batch)，token 键控阶梯吞吐不变、预算修订保形；(d) 汇报口径 = 各阶段 **traversed** 步数/token 数，不宣称逐阶段收敛（除非预算 ≥ Στ_k） |
+| 实 bug 修复 | — | **启动器 `--max-steps 1000000` → `MAX_STEPS=3358`**（NT46 校准规则落地；原值会让课程卡死 stage 0）；campaign Phase 1 增校准步骤行 |
+| 理论账本 | 63 项 | **65 项（46 定理 + 19 分类）**；verify49 **65/65 PASS**、verify_precision **8/8 PASS** |
+| 测试 | — | test_campaign +2（启动器校准闸门 + 阶梯展开算术）；test_measurements +1（κ 可观测三元组 + 课程口径字段）；验收 13/13 仍全过 |
+
+**诚实边界**：NT45(c) 界的是期望尺度（实现值在界内波动）；α≤2（无穷方差）破坏 NT41 平稳前提，退化为"窗口内无漂移"；τ_k 是任务相关前提、本处不推导。

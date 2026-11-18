@@ -24,7 +24,7 @@
 | 7 | **诚实负结果**：list-ops（ts 0.485 > sgc 0.335 > sgc-bind 0.265）、fuzzy-jump（三臂 chance）、多 needle（三臂饱和无区分度） | 已入档 | `lra_probe.json` `lra_probe2.json` |
 | 8 | **真实语料 LM 成本**（corpus.txt 字符级）：绑定通道 +5.7% PPL（检索能力专用增强的代价） | sgc 5.93 / sgc-bind 6.27 / ts 11.05 | `reallm.json` |
 | 9 | **4090D 战役账本**（2B×24h×24GB）：Phase 0 栈验收 ≤1 天 + Phase 1 训练 ≤1 天硬停；显存 ~19.0 GiB < 23 GiB 实测线（Adafactor 8B/参数 + 分块流式；AdamW 16B/参数 32 GiB 硬性不可行）；24h token 预算 ~0.2B（欠训档如实标注）；**实测口径模板**（MFU/显存回填，>20% 偏差强制写原因） | `python -m simplcore.core.campaign` + `test_measurements.py` 可复验 | `campaign.py` + `docs/RTX4090D_TRAINING.md` + `artifacts/4090d/measurement_template.json` |
-| 10 | **理论层 63 项审计**：NT01–NT44 完整解析证明（NT31–NT34 绑定记忆通道；NT35–NT38 字节级输入路径；NT39–NT44 量化训练精度预算：bf16 递推舍入 S_K·u·Y 有界（多极点 S_K=Π1/(1−r_k) 闭式）/ fp32 梯度累积误差预算 / Adafactor 因子几何收敛 / **24h×4090D×2B 在任何 MFU 下都是欠训档的定理** / 下降方向 cos ≥ √(1−δ²) / 前置条件器路径以 √κ 价格继承保证）+ 19 项非定理分类，verify49 **63/63 PASS** | 44 定理 + 19 分类 | `theorem49_results.json` + `theory/verify_binding.py` + `theory/verify_bytelevel.py` + `theory/verify_precision.py` |
+| 10 | **理论层 65 项审计**：NT01–NT46 完整解析证明（NT31–NT34 绑定记忆通道；NT35–NT38 字节级输入路径；NT39–NT44 量化训练精度预算：bf16 递推舍入 S_K·u·Y 有界（多极点 S_K=Π1/(1−r_k) 闭式）/ fp32 梯度累积误差预算 / Adafactor 因子几何收敛 / **24h×4090D×2B 在任何 MFU 下都是欠训档的定理** / 下降方向 cos ≥ √(1−δ²) / 前置条件器路径以 √κ 价格继承保证；NT45 κ 可观测化（κ(v̂)=κ(R)κ(C) 结构式 + 残差合成 (κ+η)/(1−η) + 重尾 EMA 窗口 t-无关截断）；NT46 GROUP X 硬停调度：分数键控课程在 N_plan≫N_real 时塌缩、token 键控吞吐不变，24h 启动器据此校准 max-steps=3358）+ 19 项非定理分类，verify49 **65/65 PASS** | 46 定理 + 19 分类 | `theorem49_results.json` + `theory/verify_binding.py` + `theory/verify_bytelevel.py` + `theory/verify_precision.py` |
 
 ## 可执行验收
 

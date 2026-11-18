@@ -27,6 +27,12 @@ SEQ_LEN="${SEQ_LEN:-4096}"
 TRAIN_CHUNK="${TRAIN_CHUNK:-4096}"
 MICRO_BATCH="${MICRO_BATCH:-2}"
 GLOBAL_BATCH_TOKENS="${GLOBAL_BATCH_TOKENS:-65536}"   # 2×4096×8 ≈ 64K tokens/step
+# NT46 校准（硬停闸门的课程口径）：N_plan 必须 = token 预算 / 每步 token。
+# 24h 解析预算 ~2.2e8 tokens（MFU 0.30，Phase 0 实测后修正）→
+# N_plan ≈ 3358 步。若按惯例给 1e6，until_frac 阶梯（0.18×N_plan=1.8e5 起）
+# 在 24h 内一步都走不到——课程整个卡在 stage 0（seq 4096），4M 末段
+# 需要 0.9×1e6×65536 ≈ 5.9e10 tokens，是预算的 267 倍。
+MAX_STEPS="${MAX_STEPS:-3358}"
 DATA_DIR="${DATA_DIR:-data/packed}"
 OUT_DIR="${OUT_DIR:-runs/tuan-2b-4090d}"
 
@@ -57,7 +63,7 @@ exec python -m simplcore.core.training.train.main \
     --optimizer adafactor \
     --lr 3e-4 --lr-min 3e-5 --weight-decay 0.1 \
     --warmup 200 \
-    --max-steps 1000000 \
+    --max-steps "$MAX_STEPS" \
     --grad-clip 1.0 \
     --eval-every 60 --eval-batches 20 \
     --log-every 10 \

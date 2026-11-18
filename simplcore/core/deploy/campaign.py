@@ -488,6 +488,9 @@ def build_plan(
             "bf16 autocast 前向 + fp32 参数/梯度 + Adafactor 因子化二阶矩"
             "（24GB 上 2B 全参的唯一可行组合）",
             f"chunked 流式训练（chunk={chunk}，激活 O(chunk)）；OOM 即降 chunk 至 2048",
+            "课程校准（NT46）：--max-steps = ceil(token 预算 / 全局 batch)"
+            "（≈3358 步），使 _CTX_2B_4M 的 until_frac 阶梯在 24h 内展开；"
+            "汇报口径 = 各阶段 traversed 步数/token 数，不宣称逐阶段收敛",
             "每 15 分钟 checkpoint + 每 30 分钟 eval；--time-budget-min 1440 硬停",
             "训完立即 held-out ppl / 长上下文检索评测并留档",
         ],

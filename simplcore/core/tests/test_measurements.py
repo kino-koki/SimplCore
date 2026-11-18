@@ -65,6 +65,20 @@ def test_template_every_measured_has_caliber(template):
     check(template)
 
 
+def test_template_precision_observables_and_curriculum(template):
+    """NT45/NT46 口径字段就位：κ 可观测三元组 + 课程遍历口径，且全为 null。"""
+    prec = template["phase1"]["precision_observables"]
+    for key in ("kappa_R_max", "kappa_C_max", "eta_residual_rel", "delta_p_bound"):
+        assert key in prec and "caliber" in prec[key]
+        assert prec[key]["measured"] is None
+    cur = template["phase1"]["curriculum_caliber"]
+    for key in ("stage_reached_max", "per_stage_tokens", "max_steps_calibrated"):
+        assert key in cur and "caliber" in cur[key]
+        assert cur[key]["measured"] is None
+    # NT46 校准算术：3358 × 65536 ≈ 2.2e8
+    assert abs(3358 * 65_536 - 2.2e8) / 2.2e8 < 0.01
+
+
 def test_template_honest_null_state(template):
     """模板分发状态：所有 *_measured 为 null（待实机），不冒充实测。"""
     for node in _walk(template):

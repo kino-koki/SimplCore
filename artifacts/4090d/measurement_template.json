@@ -148,6 +148,39 @@
     "measured": null,
     "caliber": "int——OOM 次数（>0 必须记录降档动作）"
    }
+  },
+  "precision_observables": {
+   "kappa_R_max": {
+    "measured": null,
+    "caliber": "Adafactor v_row 因子的 max/min（优化器 state 直读，NT45(a)）"
+   },
+   "kappa_C_max": {
+    "measured": null,
+    "caliber": "Adafactor v_col 因子的 max/min（NT45(a)）"
+   },
+   "eta_residual_rel": {
+    "measured": null,
+    "caliber": "NT41 残差相对界（非因子化质量 / v̂_min；NT45(b) 的 η）"
+   },
+   "delta_p_bound": {
+    "measured": null,
+    "caliber": "NT44 前置条件器预算 δ√(κ/(1−η)) + η/2 —— 由上三项算出，δ 取 NT39/NT40 预算和"
+   },
+   "_note": "NT45：κ 从'报告量'升级为优化器状态可计算量；>1 的 δ_p 触发 REVIEW（下降保证蒸发）"
+  },
+  "curriculum_caliber": {
+   "stage_reached_max": {
+    "measured": null,
+    "caliber": "实际走到的最高课程阶段（NT46(a) 可达阶段恒等式）"
+   },
+   "per_stage_tokens": {
+    "measured": null,
+    "caliber": "各阶段 traversed token 数（NT46(d)：汇报口径为遍历，非逐阶段收敛）"
+   },
+   "max_steps_calibrated": {
+    "measured": null,
+    "caliber": "启动器 N_plan = ceil(token 预算/全局 batch) = 3358（NT46(c) 校准规则）"
+   }
   }
  },
  "retrospect": {

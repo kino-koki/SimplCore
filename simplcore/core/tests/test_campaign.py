@@ -231,3 +231,28 @@ def test_plan_report_and_gates(plan):
     assert d["schedule"]["holds"] is True
     assert [p["name"] for p in d["phases"]] == [
         "Phase 0 栈验收", "Phase 1 · 2B 基座（24h）", "复盘（立即）", "Phase 2（本战役无）"]
+
+
+# ---------------------------------------------------------------------------
+# 8. NT46 课程校准硬闸门：启动器 N_plan = token 预算 / 全局 batch
+# ---------------------------------------------------------------------------
+def test_launcher_curriculum_calibrated():
+    """启动器的 --max-steps 必须按 token 预算校准（NT46）：否则 until_frac
+    阶梯在 24h 内走不到（课程卡死 stage 0）。"""
+    from pathlib import Path as _P
+    script = _P(__file__).resolve().parents[3] / "scripts" / "train_tuan_2b_4090d.sh"
+    text = script.read_text(encoding="utf-8")
+    assert 'MAX_STEPS="${MAX_STEPS:-3358}"' in text
+    assert "--max-steps \"$MAX_STEPS\"" in text
+    assert "NT46" in text                      # 校准依据在注释中可审计
+    # 校准算术：3358 步 × 65536 tokens ≈ 2.2e8 = 24h 解析预算
+    assert abs(3358 * 65_536 - 2.2e8) / 2.2e8 < 0.01
+
+
+def test_curriculum_ladder_unfolds_within_budget():
+    """校准后的阶梯在 24h 预算内完整展开（NT46 (c) 的可执行形式）。"""
+    fracs = (0.18, 0.36, 0.54, 0.70, 0.90)     # _CTX_2B_4M 阶梯
+    n_plan = 3358
+    boundaries = [round(f * n_plan) for f in fracs]
+    assert all(b < n_plan for b in boundaries)          # 全部边界可达
+    assert boundaries == sorted(set(boundaries))        # 严格递增

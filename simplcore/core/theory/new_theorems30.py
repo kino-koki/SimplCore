@@ -1302,6 +1302,158 @@ NT16_30 = [
              "run reports."),
         source="training/train/optim.py Adafactor.step (denom = sqrt(v_hat)+eps1)",
         relates="extends NT43 through the preconditioner; prices NT41's residual"),
+
+    Thm(
+        nid="NT45", group="IX: quantized training",
+        title="The condition number is observable: factor structure, residual composition, EMA heavy-tail cap",
+        hypothesis=(
+            "Adafactor's factored estimate is vhat(i,j) = R_i*C_j/mu with "
+            "mu = mean_j C_j > 0 and positive factors R, C (implementation "
+            "form in optim.py, up to the positive scalar mu); the true "
+            "second moment is v = vhat + E with E the non-factorizable "
+            "residual (NT41 (c)); NT44 consumes kappa = v_max/v_min. In "
+            "the time domain each coordinate's estimate is the EMA "
+            "vhat_t = beta*vhat_(t-1) + (1-beta)*g_t^2 with decay beta in "
+            "(0,1) and effective window n_eff = 1/(1-beta); squared-"
+            "gradient draws inside a window are i.i.d. with a Pareto tail "
+            "of index alpha > 2 and scale s0^2 (heavy-tailed gradients, "
+            "finite variance)."),
+        claim=(
+            "(a) EXACT factor structure: kappa(vhat) = kappa(R)*kappa(C) -- "
+            "the estimate's condition number is the product of the STORED "
+            "factors' condition numbers, computable from optimizer state "
+            "without ever forming v. (b) Residual composition: if "
+            "|E_ij| <= eta*vhat_min for every coordinate, then "
+            "kappa(v) <= (kappa(vhat) + eta)/(1 - eta) -- NT44's kappa is "
+            "bounded by observables (factors + NT41's residual premise), "
+            "upgrading it from a reported quantity to a computable one. "
+            "(c) Heavy-tail time cap: vhat_t <= max over the effective "
+            "window of g^2 (the EMA is a convex combination), and under "
+            "the Pareto premise E[max over n_eff draws of g^2] <= "
+            "Gamma(1 - 2/alpha) * n_eff^(2/alpha) * s0^2 -- INDEPENDENT of "
+            "t. Hence under EMA keying the realized condition number's "
+            "inflation above its stationary scale is capped by a constant "
+            "C_alpha * n_eff^(2/alpha - 1) for ALL t, whereas a cumulative "
+            "estimator's cap grows like t^(2/alpha): heavy tails cannot "
+            "drift NT44's delta_p upward over a 24h run under EMA keying, "
+            "but would under cumulative keying."),
+        proof=(
+            "(a) For a positive rank-1 matrix, max_ij R_i C_j / mu = "
+            "(max R)(max C)/mu and min_ij R_i C_j / mu = "
+            "(min R)(min C)/mu; the mu cancels in the ratio, giving "
+            "kappa(R)*kappa(C) exactly. (b) v_max <= vhat_max + |E|max <= "
+            "vhat_max + eta*vhat_min and v_min >= vhat_min - eta*vhat_min "
+            "= vhat_min*(1 - eta); dividing, "
+            "kappa(v) <= (vhat_max/vhat_min + eta)/(1 - eta). (c) "
+            "Unrolling the EMA, vhat_t = sum_k beta^k (1-beta) g_(t-k)^2 "
+            "+ beta^t vhat_0 is a convex combination (weights sum to 1 "
+            "as beta^t -> the initial-state share), so vhat_t is at most "
+            "the max of the n_eff effectively-weighted draws -- a "
+            "deterministic majorization. For the Pareto premise, "
+            "P(X > x) = (s0/x)^alpha gives E[max over n draws of X^2] = "
+            "Gamma(1 - 2/alpha) * n^(2/alpha) * s0^2 for alpha > 2 (the "
+            "standard extreme-value integral, convergent exactly when "
+            "alpha > 2); substituting n = n_eff yields the t-independent "
+            "cap, and the relative inflation over a typical coordinate is "
+            "C_alpha * n_eff^(2/alpha - 1). A cumulative estimator averages "
+            "over ALL history, whose max grows as t^(1/alpha), so its "
+            "squared cap grows as t^(2/alpha) -- unbounded. QED"),
+        boundary=(
+            "alpha <= 2 (infinite variance) breaks the stationary premise "
+            "of NT41 itself: the cap (c) then holds only per-window, and "
+            "the guarantee degrades to 'no time-drift beyond the window', "
+            "not 'bounded level'. kappa(R), kappa(C) are data-dependent "
+            "but STORED (readable from optimizer state each step); eta is "
+            "NT41's premise and equally a reported quantity. Claim (c) "
+            "bounds the EXPECTATION-scale of the cap; realized draws "
+            "fluctuate within it. The gamma factor requires alpha > 2 "
+            "strictly."),
+        use=("Closes the flagged gap in NT44: kappa is now COMPUTABLE "
+             "(kappa(v) <= (kappa(R)*kappa(C) + eta)/(1 - eta) from state) "
+             "and TIME-STABLE under heavy tails (EMA cap is t-independent). "
+             "The 24h run reports kappa(R), kappa(C), eta -- all optimizer "
+             "state -- and NT44's delta_p follows; no unobservable enters "
+             "the precision budget."),
+        source="training/train/optim.py Adafactor (v_row/v_col EMA state); NT41 residual; NT44 consumption",
+        relates="makes NT44's kappa observable; time-stability counterpart of NT41"),
+
+    # ====================================================== GROUP X
+    # Hard-stop campaign scheduling: what the 24h window can and cannot
+    # realize of the planned sequence-length curriculum.
+    Thm(
+        nid="NT46", group="X: hard-stop scheduling",
+        title="Fraction-keyed curricula collapse under throughput-uncertain hard stops; token-keyed ladders are invariant",
+        hypothesis=(
+            "A sequence-length curriculum keys its stages on optimizer "
+            "steps via until_frac of a PLANNED count N_plan (the "
+            "implementation's _from_raw: until_step = round(frac * "
+            "N_plan), boundaries monotone); training runs under a "
+            "wall-clock hard stop T with global batch B tokens/step and "
+            "realized throughput, consuming tokens_realized <= T*util*P*"
+            "MFU/F_tok (NT42's budget) and realizing N_real = "
+            "tokens_realized/B steps. Each stage k also carries an "
+            "exposure premise tau_k: the token count beyond which stage "
+            "k's length regime can be said to be 'converged at caliber' "
+            "(task-dependent, assumed given)."),
+        claim=(
+            "(a) Reachable-stage identity: the realized maximum stage is "
+            "max{k : N_real >= N_plan * until_frac_k}, and the realized "
+            "maximum sequence length is that stage's seq_len; the PLANNED "
+            "ladder is realized in full iff N_real >= N_plan. (b) Campaign "
+            "collapse quantified: with N_plan = 1e6, B = 65536, and the "
+            "24h/4090D/2B budget tokens_realized ~ 2.2e8 (MFU 0.30), "
+            "N_real/N_plan ~ 0.0034 < until_frac_1 = 0.18 -- the run stays "
+            "at stage 0 (seq 4096) for its ENTIRETY, and reaching the 4M "
+            "stage would require tokens >= 0.9*N_plan*B ~ 5.9e10, about "
+            "267x the campaign budget: fraction keying against an "
+            "aspirational N_plan is structurally mis-calibrated for hard "
+            "stops. (c) Calibration rules: the planned ladder is realized "
+            "iff N_plan <= anticipated N_real; setting N_plan = ceil("
+            "tokens_budget / B) makes the fraction ladder unfold within "
+            "the hard stop, and re-keying stages on ABSOLUTE TOKEN "
+            "thresholds makes the realized ladder throughput-INVARIANT "
+            "(it depends only on tokens consumed, the honest resource). "
+            "(d) Traversal vs convergence caliber: stage k is TRAVERSED "
+            "when reached, and 'converged at caliber' only when its "
+            "accumulated exposure >= tau_k; under a hard stop the honest "
+            "reporting caliber is traversal with per-stage token counts, "
+            "not per-stage convergence, unless tokens_budget >= "
+            "sum_k tau_k."),
+        proof=(
+            "(a) The scheduled index is the largest k whose rounded "
+            "boundary N_plan*until_frac_k is <= the current step; "
+            "substituting the realized final step N_real gives the "
+            "identity, and the planned ladder unfolds iff the last "
+            "boundary is reached, i.e. N_real >= N_plan. (b) Direct "
+            "arithmetic with the campaign constants: 0.22e8/65536 ~ 3.4e3 "
+            "steps against boundaries at 1.8e5 and up; the 4M boundary at "
+            "0.9e6 steps costs 0.9e6 * 6.55e4 ~ 5.9e10 tokens against a "
+            "2.2e8 budget. (c) A token-threshold ladder divides the token "
+            "axis: the realized stage is a function of tokens_realized "
+            "alone, and steps are tokens/B whatever the throughput -- "
+            "invariance by definition; N_plan = tokens_budget/B makes "
+            "N_real-anticipated >= N_plan by construction. (d) Definitional "
+            "with the tau_k premise. QED"),
+        boundary=(
+            "Readiness-gated (adaptive) curricula delay promotion beyond "
+            "the scheduled boundary but never before it, so the "
+            "reachability arithmetic is unchanged (boundaries are "
+            "earliest-possible). tau_k is task-dependent and NOT derived "
+            "here -- (d) defines the reporting caliber, not a convergence "
+            "rate. The claim keys on the implementation's step-based "
+            "_from_raw; a trainer that natively keys on tokens satisfies "
+            "(c)'s invariant form directly. token_realized at the hard "
+            "stop is itself MFU-dependent -- (c) calibrates against the "
+            "MFU-corrected budget from Phase 0, not the paper estimate."),
+        use=("Pins the 24h launcher's max_steps calibration (N_plan = "
+             "token budget / global batch, so the _CTX_2B_4M ladder "
+             "actually unfolds inside the window) and fixes the honest "
+             "reporting caliber: per-stage traversal counts, not "
+             "per-stage convergence claims. Prevents the silent "
+             "'curriculum stuck at stage 0' failure from burning the "
+             "one and only 24h window."),
+        source="training/train/seqlen_curriculum.py _from_raw; model/config.py _CTX_2B_4M; deploy/campaign.py token budget",
+        relates="scheduling counterpart of NT42 (compute budget); consumes the campaign ledger"),
 ]
 
 THEOREMS30 = list(NT01_15) + NT16_30

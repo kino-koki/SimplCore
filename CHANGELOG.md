@@ -627,3 +627,11 @@ m_h 只有一个非零峰，任何位置门只能**删掉**它；删到 key 后�
   `docs/RTX4090D_MEASUREMENTS.md` + 自动回填脚本
   `scripts/fill_measurements.py`（>20% 偏差强制 REVIEW；
   缺列保持 null 不编造）+ `test_measurements.py` 6 项守护。
+
+- **理论再补强（v8.4c）**：**NT45** 把 NT44 的条件数 κ 升级为可观测量
+  （κ(v̂)=κ(R)κ(C) 结构式 + 残差合成 + 重尾 Pareto 下 EMA 窗口
+  t-无关截断上界 Γ(1−2/α)·n_eff^(2/α)）；**NT46**（GROUP X）证明分数
+  键控课程在 N_plan≫N_real 时塌缩（24h 战役原会卡死 stage 0）、token
+  键控吞吐不变，并给出遍历/收敛两级汇报口径。**实 bug 修复**：启动器
+  `--max-steps` 1e6→3358（NT46 校准）。账本 65 项，verify49 65/65
+  PASS、verify_precision 8/8 PASS。

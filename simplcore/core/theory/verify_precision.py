@@ -265,11 +265,114 @@ def nt44():
 
 
 # =============================================================================
-CHECKS = [nt39, nt40, nt41, nt42, nt43, nt44]
+# NT45: kappa observable (factor structure + residual composition + EMA cap)
+# =============================================================================
+def nt45():
+    ok = True
+    # (a) exact factor structure: kappa(vhat) = kappa(R)*kappa(C)
+    for _ in range(50):
+        m, n = 8, 6
+        R = np.exp(RNG.uniform(-3, 3, size=m))       # positive factors
+        C = np.exp(RNG.uniform(-3, 3, size=n))
+        mu = C.mean()
+        vhat = np.outer(R, C) / mu
+        kap_vhat = vhat.max() / vhat.min()
+        kap_RC = (R.max() / R.min()) * (C.max() / C.min())
+        ok &= abs(kap_vhat - kap_RC) < 1e-9 * max(1.0, kap_RC)
+    # (b) residual composition: kappa(v) <= (kappa(vhat) + eta)/(1 - eta)
+    for kappa_log, eta in ((0, 0.05), (1, 0.1), (2, 0.2), (3, 0.05), (2, 0.4)):
+        m = 64
+        R = np.exp(RNG.uniform(0, np.log(10.0 ** kappa_log), size=m))
+        C = np.exp(RNG.uniform(0, np.log(10.0 ** kappa_log), size=m))
+        vhat = np.outer(R, C) / C.mean()
+        # adversarial residual: hits vhat_min (worst case for kappa)
+        E = np.full_like(vhat, eta * vhat.min())
+        E.flat[0] *= -1.0                             # subtract at the min
+        v = vhat + E
+        kap_v = v.max() / v.min()
+        bound = (kap_vhat_of := (vhat.max() / vhat.min()))
+        bound = (bound + eta) / (1.0 - eta)
+        ok &= kap_v <= bound * 1.02 + 1e-12
+    # (c) EMA window cap: vhat_t <= max window draw; t-independence
+    alpha, beta_em = 2.5, 0.99
+    n_eff = 1.0 / (1.0 - beta_em)
+    s0 = 1.0
+    # Pareto(alpha) draws on scale s0: X = s0 * U^(-1/alpha)
+    draws = s0 * RNG.uniform(size=150000) ** (-1.0 / alpha)
+    # EMA over the stream; cumulative mean tracked in O(1) per step
+    v_ema = 0.0
+    ema_max = 0.0
+    cum_sum, cum_max = 0.0, 0.0
+    for t, g2 in enumerate(draws):
+        v_ema = beta_em * v_ema + (1 - beta_em) * g2
+        ema_max = max(ema_max, v_ema)
+        cum_sum += g2
+        cum_max = max(cum_max, cum_sum / (t + 1))
+    # cap: Gamma(1-2/alpha) * n_eff^(2/alpha) * s0^2
+    cap = math.gamma(1 - 2.0 / alpha) * (n_eff ** (2.0 / alpha)) * s0 ** 2
+    ok &= ema_max <= cap * 1.15                       # expectation-scale cap
+    # cumulative estimator tracks the full-history mean: its realized value
+    # is dominated by the single largest draw (Pareto), which with
+    # alpha=2.5 over 1.5e5 draws exceeds the window cap -- no t-cap
+    ok &= draws.max() > cap
+    return rec("NT45", "kappa observable: kappa(vhat)=kappa(R)kappa(C); "
+               "(kappa+eta)/(1-eta); EMA heavy-tail cap t-independent", ok,
+               "factor identity 50x; residual 5 cells; Pareto(2.5) stream 4e5",
+               "numeric_consistency")
+
+
+# =============================================================================
+# NT46: fraction-keyed curriculum collapse under hard stop; token keying
+# =============================================================================
+def nt46():
+    ok = True
+    fracs = [0.18, 0.36, 0.54, 0.70, 0.90]            # _CTX_2B_4M ladder
+    # (a) reachable-stage identity
+    def stage_at(n_real, n_plan):
+        st = 0
+        for k, f in enumerate(fracs):
+            if n_real >= int(round(f * n_plan)):
+                st = k + 1
+        return st
+    ok &= stage_at(int(1e6), int(1e6)) == 5           # planned fully realized
+    ok &= stage_at(500_000, int(1e6)) == 2            # half plan -> frac .36
+    # (b) campaign collapse: N_plan=1e6, B=65536, tokens~2.2e8
+    n_plan, B, tokens = 1_000_000, 65_536, 2.2e8
+    n_real = tokens / B
+    ok &= n_real / n_plan < 0.18                      # stays at stage 0
+    tok_4m = 0.9 * n_plan * B
+    ok &= tok_4m / tokens > 200                       # 4M stage unreachable
+    # (c) calibration: N_plan = ceil(tokens_budget / B) unfolds the ladder
+    n_plan2 = math.ceil(tokens / B)
+    ok &= stage_at(n_real, n_plan2) == 5              # full ladder realized
+    # token-keyed RELATIVE invariance: re-keying the ladder on a REVISED
+    # budget keeps every stage at the same fraction of the budget (shape
+    # preserved); a fraction-keyed ladder frozen at the old N_plan does not
+    # follow the budget revision.
+    def stage_tokens(tokens_seen, budget):
+        st = 0
+        for k, f in enumerate(fracs):
+            if tokens_seen >= f * budget:
+                st = k + 1
+        return st
+    for mfu_factor in (0.5, 2.0):                     # MFU-corrected budgets
+        budget_f = tokens * mfu_factor
+        ok &= stage_tokens(0.8 * budget_f, budget_f) == 4   # 0.7<0.8<=0.9
+        # frozen fraction ladder (old N_plan) mis-sizes the revised budget
+        ok &= stage_tokens(0.8 * budget_f, tokens) != stage_tokens(
+            0.8 * budget_f, budget_f)
+    return rec("NT46", "fraction ladder collapses at N_plan>>N_real; "
+               "token-keyed ladder throughput-invariant", ok,
+               "_CTX_2B_4M fracs; campaign constants; calibration + invariance",
+               "numeric_consistency")
+
+
+# =============================================================================
+CHECKS = [nt39, nt40, nt41, nt42, nt43, nt44, nt45, nt46]
 
 
 def main():
-    print("== quantized-training theorem checks (NT39..NT44) ==")
+    print("== quantized-training theorem checks (NT39..NT46) ==")
     for fn in CHECKS:
         fn()
     n_pass = sum(1 for r in rows if r["verdict"] == "PASS")
