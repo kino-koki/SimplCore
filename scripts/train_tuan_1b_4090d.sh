@@ -38,6 +38,7 @@ if [ "$MODE" = "--dry-run" ] || [ "$MODE" = "dry-run" ]; then
     exec python -m simplcore.core.training.train.main \
         --preset "$PRESET" \
         --seq-len "$SEQ_LEN" \
+    --seq-len-curriculum "" \
         --train-chunk "$TRAIN_CHUNK" \
         --micro-batch "$MICRO_BATCH" \
         --optimizer "$OPTIMIZER" \
@@ -54,6 +55,7 @@ exec python -m simplcore.core.training.train.main \
     --preset "$PRESET" \
     --data-dir "$DATA_DIR" \
     --seq-len "$SEQ_LEN" \
+    --seq-len-curriculum "" \
     --train-chunk "$TRAIN_CHUNK" \
     --micro-batch "$MICRO_BATCH" \
     --global-batch-tokens "$GLOBAL_BATCH_TOKENS" \

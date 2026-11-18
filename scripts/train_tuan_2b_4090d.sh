@@ -33,6 +33,7 @@ GLOBAL_BATCH_TOKENS="${GLOBAL_BATCH_TOKENS:-65536}"   # 2×4096×8 ≈ 64K token
 # 在 24h 内一步都走不到——课程整个卡在 stage 0（seq 4096），4M 末段
 # 需要 0.9×1e6×65536 ≈ 5.9e10 tokens，是预算的 267 倍。
 MAX_STEPS="${MAX_STEPS:-3358}"
+# NT46 预算算术（必读）：预设 until_frac 阶梯是"步数分数"键控，而长seq 阶段每步 token = micro×seq（1M 阶段一步 = 8.4M tokens）。按预设阶梯走完，1B 档累计 ~101B tokens、2B 档 ~51B tokens——是 24h 预算（0.46B / 0.22B）的 100-220 倍。故 24h 战役用 --seq-len-curriculum "" 固定 seq（长上下文阶梯单独立项，按 token 预算另配）。
 DATA_DIR="${DATA_DIR:-data/packed}"
 OUT_DIR="${OUT_DIR:-runs/tuan-2b-4090d}"
 
@@ -41,6 +42,7 @@ if [ "$MODE" = "--dry-run" ] || [ "$MODE" = "dry-run" ]; then
     exec python -m simplcore.core.training.train.main \
         --preset "$PRESET" \
         --seq-len "$SEQ_LEN" \
+    --seq-len-curriculum "" \
         --train-chunk "$TRAIN_CHUNK" \
         --micro-batch "$MICRO_BATCH" \
         --optimizer adafactor \
@@ -57,6 +59,7 @@ exec python -m simplcore.core.training.train.main \
     --preset "$PRESET" \
     --data-dir "$DATA_DIR" \
     --seq-len "$SEQ_LEN" \
+    --seq-len-curriculum "" \
     --train-chunk "$TRAIN_CHUNK" \
     --micro-batch "$MICRO_BATCH" \
     --global-batch-tokens "$GLOBAL_BATCH_TOKENS" \
