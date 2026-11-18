@@ -17,14 +17,8 @@
   "val_ppl_at_3416": 5.428,
   "val_loss_at_16M": 1.7442,
   "val_ppl_at_16M": 5.722,
-  "val_ppl": 5.722,
-  "val_loss": 1.7442,
-  "val_loss_512": 1.6918,
-  "val_ppl_512": 5.429,
   "tokens": 15990784,
-  "params": 1057028,
-  "train_sec_this_leg": 108.5,
-  "done": true
+  "params": 1057028
  },
  "mamba2": {
   "val_loss_at_1220": 1.6794,
@@ -50,14 +44,8 @@
   "val_ppl_at_3600": 5.692,
   "val_loss_at_16M": 1.7105,
   "val_ppl_at_16M": 5.532,
-  "val_ppl": 5.532,
-  "val_loss": 1.7105,
-  "val_loss_512": 1.6633,
-  "val_ppl_512": 5.277,
   "tokens": 15990784,
-  "params": 1069660,
-  "train_sec_this_leg": 17.7,
-  "done": true
+  "params": 1069660
  },
  "gap_trend_error": "KeyError('val_ppl')",
  "gap_trend": {
