@@ -534,3 +534,17 @@ BF16 权重逐位复制、在真实 embedding 上的 SGC 对偶/因果/O(1) 验�
 | 测试 | — | test_campaign +2（启动器校准闸门 + 阶梯展开算术）；test_measurements +1（κ 可观测三元组 + 课程口径字段）；验收 13/13 仍全过 |
 
 **诚实边界**：NT45(c) 界的是期望尺度（实现值在界内波动）；α≤2（无穷方差）破坏 NT41 平稳前提，退化为"窗口内无漂移"；τ_k 是任务相关前提、本处不推导。
+
+
+## 2026-11-18 — v8.4d：1B×24h 战役包（对照 Mamba2 口径）
+
+来源：用户指令「一直到完全超越 Mb2，24h 训练 1B」。
+
+| 项 | 内容 |
+|---|---|
+| 启动器 | `scripts/train_tuan_1b_4090d.sh`（tuan-1b 预设 1.013B：Adafactor 7.5 GiB + 激活 1.9 GiB ≈ 9.5 GiB，micro=8 → 32K tokens/步，NT46 校准 max-steps=14063，24h 硬停 1440 分钟） |
+| 预算 | 24h token ~0.46B @ MFU 0.30（NT42 欠训口径，tokens/param ≈ 0.46 必报） |
+| 超越判据 | 同 token 等预算对照（X-equal-budget）：held-out ppl ratio < 1.0 vs Mamba2，长上下文检索 ≥ 基线，解码吞吐 ≥ 基线（O(1) 流式状态结构优势） |
+| 差距解剖 | ① 绑定通道拖累纯 LM +21%（lm_tuning.json）→ 1B 主训默认 `mixer=sgc` 零风险回收；② MFU 缺口 → Phase 0 三态+chunk 实测；③ 选择性残差 → 保持与 4M 前哨同构，架构变体留第二战役 |
+| 文档 | `docs/RTX4090D_1B_VS_MAMBA2.md`（差距解剖 + 执行计划 + 诚实边界）；README 入口同步 |
+| 修正 | `fill_measurements.py` 对齐 trainer 实际落盘键（tokens_per_s / peak_mem_gb——原键名 step_sec/mem_peak_gib 是臆造，永远回填 null）；test_measurements 同步 |

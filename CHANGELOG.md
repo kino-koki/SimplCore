@@ -635,3 +635,10 @@ m_h 只有一个非零峰，任何位置门只能**删掉**它；删到 key 后�
   键控吞吐不变，并给出遍历/收敛两级汇报口径。**实 bug 修复**：启动器
   `--max-steps` 1e6→3358（NT46 校准）。账本 65 项，verify49 65/65
   PASS、verify_precision 8/8 PASS。
+
+- **1B×24h 战役包（v8.4d）**：启动器 `train_tuan_1b_4090d.sh`
+  （1.013B，Adafactor 9.5 GiB，micro=8，NT46 校准 14063 步，
+  24h ~0.46B tokens）+ `docs/RTX4090D_1B_VS_MAMBA2.md`（1.15× 差距
+  三点解剖：绑定通道 +21% 默认关、MFU 实测、选择性残差留二战役；
+  超越判据 = 同 token ppl ratio < 1.0）；修正 fill_measurements
+  的指标键名（对齐 trainer 实际落盘）。

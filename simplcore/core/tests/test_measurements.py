@@ -95,9 +95,11 @@ def test_filler_fills_from_synthetic_metrics(tmp_path, template):
         "micro_batch": micro, "seq_len_initial": seq, "n_params": n_params,
         "argv": ["--optimizer", "adafactor"],
     }), encoding="utf-8")
-    # 20 步稳态：每步 1.0 s → tokens/s = 2*4096 = 8192
-    rows = [{"step": i, "step_sec": 5.0 if i < 10 else 1.0,
-             "tokens": i * micro * seq, "mem_peak_gib": 19.0}
+    # 30 条日志：tokens_per_s 是整窗口口径（trainer 实际键）；
+    # 预热段（前 10 条）吞吐低，稳态 8192
+    rows = [{"step": i,
+             "tokens_per_s": 1000.0 if i < 10 else 8192.0,
+             "tokens": i * micro * seq, "peak_mem_gb": 19.0}
             for i in range(30)]
     (run_dir / "metrics.jsonl").write_text(
         "\n".join(json.dumps(r) for r in rows), encoding="utf-8")
@@ -108,7 +110,7 @@ def test_filler_fills_from_synthetic_metrics(tmp_path, template):
         capture_output=True, text=True, cwd=str(ROOT))
     assert r.returncode == 0, r.stderr
     doc = json.loads(out.read_text(encoding="utf-8"))
-    # tokens/s：预热（step_sec=5）被跳过 → 中位数 1.0s → 8192
+    # tokens/s：trainer 整窗口口径直接取稳态中位数
     assert doc["phase0"]["throughput"]["tokens_per_sec"]["measured"] == 8192.0
     # MFU 已回填且在 (0,1) 的合理量级（debug 预设小模型 F_tok 小）
     assert doc["phase0"]["throughput"]["mfu"]["measured"] is not None
@@ -144,7 +146,7 @@ def test_filler_deviation_review_rule(tmp_path):
     (run_dir / "run.json").write_text(json.dumps({
         "micro_batch": 2, "seq_len_initial": 4096, "n_params": 2_000_000_000,
     }), encoding="utf-8")
-    rows = [{"step": i, "step_sec": 1.0, "tokens": i * 8192}
+    rows = [{"step": i, "tokens_per_s": 8192.0, "tokens": i * 8192}
             for i in range(30)]
     (run_dir / "metrics.jsonl").write_text(
         "\n".join(json.dumps(r) for r in rows), encoding="utf-8")

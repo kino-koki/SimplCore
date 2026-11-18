@@ -27,7 +27,9 @@ python -m simplcore --doctor
 
 > **运行时**：训练主路径是 **PyTorch + bf16/TF32 + torch.compile + CUDA Graph +
 > Adafactor**（`simplcore/core/training/train`，目标硬件 **单张 RTX 4090D-24GB**，
-> 战役文档 `docs/RTX4090D_TRAINING.md`，启动器 `scripts/train_tuan_2b_4090d.sh`）；
+> 战役文档 `docs/RTX4090D_TRAINING.md`，启动器 `scripts/train_tuan_2b_4090d.sh`
+> 与 `scripts/train_tuan_1b_4090d.sh`（1B×24h，对照 Mamba2 口径
+> `docs/RTX4090D_1B_VS_MAMBA2.md`））；
 > 可选自研 CUDA/C++ 后端的算子契约见 `simplcore/core/backend/backend_contract.py`
 > （`python -m simplcore.core.backend_contract`），仓库内 PyTorch 实现同时充当
 > **冻结数值规格（oracle）**。16-op 契约已有 **fp32 CPU 参考后端**

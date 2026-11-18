@@ -96,9 +96,10 @@ def main() -> int:
     rows = read_metrics(run_dir)
     if not rows:
         print(f"[fill] no metrics.jsonl under {run_dir} —— 只回填 run.json 可得项")
-    step_s = steady_median(rows, "step_sec") or steady_median(rows, "step_time")
-    if step_s:
-        tps = micro * seq / step_s
+    # trainer 实际落盘键：tokens_per_s（整 log 窗口口径，main.py 已防
+    # "末步 dt 冒充窗口吞吐" 的虚高）与 peak_mem_gb（GiB×1e9 口径）。
+    tps = steady_median(rows, "tokens_per_s")
+    if tps is not None:
         doc["phase0"]["throughput"]["tokens_per_sec"] = {
             "measured": round(tps, 1),
             "caliber": doc["phase0"]["throughput"]["tokens_per_sec"]["caliber"]}
@@ -114,12 +115,12 @@ def main() -> int:
                 "caliber": doc["phase0"]["throughput"]["mfu"]["caliber"]}
         except Exception as exc:                    # 缺依赖时保持 null
             print(f"[fill] MFU skipped: {exc}")
-    mem = steady_median(rows, "mem_peak_gib") or steady_median(rows, "mem_gib")
+    mem = steady_median(rows, "peak_mem_gb")
     if mem is not None:
         doc["phase1"]["memory"]["mem_peak_gib"] = {"measured": round(mem, 2)}
     if rows:
         last = rows[-1]
-        toks = last.get("tokens") or last.get("tokens_consumed")
+        toks = last.get("tokens")
         if toks is not None:
             doc["phase1"]["budget"]["tokens_total"] = {"measured": int(toks)}
             if n_params:

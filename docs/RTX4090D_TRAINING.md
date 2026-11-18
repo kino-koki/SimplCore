@@ -42,6 +42,13 @@ OOM 排障顺序：**降 chunk 4096→2048**（激活减半）→ 开 `--grad-ch
 （重算换显存，~30% 计算开销）→ 降 micro-batch。**不要**降 global batch tokens
 （有效 batch 决定收敛口径）。
 
+## 2b. 1B×24h 变体（启动器 `scripts/train_tuan_1b_4090d.sh`）
+
+1.013B（dim 2048/15 层）：Adafactor 7.5 GiB + 激活 ~1.9 GiB ≈ 9.5 GiB，
+micro=8 → 32K tokens/step，NT46 校准 max-steps=14063，24h 预算 ~0.46B
+tokens（tokens/param 0.46）。目标口径：同 token 对照完全超越 Mamba2
+（ppl ratio < 1.0），详见 `docs/RTX4090D_1B_VS_MAMBA2.md`。
+
 ## 3. 24h token 预算（欠训档，诚实口径）
 
 ```
