@@ -1,5 +1,5 @@
 {
- "mode": "62-item audit: 43 theorem finite-identity checks + 19 classifications",
+ "mode": "63-item audit: 44 theorem finite-identity checks + 19 classifications",
  "numpy_seed": 20261109,
  "checks": [
   {
@@ -883,10 +883,10 @@
   },
   {
    "id": "NT39",
-   "name": "bf16 recurrence error <= u*Y/(1-rho)^2, no drift",
+   "name": "tight kernel-gain bounds: state S_K*u*Y, output S_K^2*u*Y, S_K=1/((1-r1)(1-r2)) closed form",
    "kind": "numeric_consistency",
    "verdict": "PASS",
-   "detail": "rho=0.5: ok; rho=0.8: ok; rho=0.95: ok; T=4000 steps, bound held at every rho"
+   "detail": "one-pole rho in {0.5,0.8,0.95}; two-pole 3 configs; both bounds held"
   },
   {
    "id": "NT40",
@@ -915,6 +915,13 @@
    "kind": "numeric_consistency",
    "verdict": "PASS",
    "detail": "delta in {0.001..0.999} x 50 trials + tight worst case"
+  },
+  {
+   "id": "NT44",
+   "name": "preconditioner: ||p\u0302-p||/||p|| <= d\u221a(\u03ba/(1-\u03b7)) + \u03b7/2; cos >= \u221a(1-d_p\u00b2)",
+   "kind": "numeric_consistency",
+   "verdict": "PASS",
+   "detail": "kappa in {1,10,100,1000} x (delta,eta) grid x 20 trials"
   },
   {
    "id": "F1",
@@ -1164,21 +1171,21 @@
    }
   }
  ],
- "passed": 62,
- "total": 62,
- "theorem_count": 43,
+ "passed": 63,
+ "total": 63,
+ "theorem_count": 44,
  "non_theorem_count": 19,
  "verdict_distribution": {
-  "new_theorems": 43,
+  "new_theorems": 44,
   "falsified": 8,
   "withdrawn": 5,
   "conjectures": 3,
   "empirical_not_testable": 3
  },
  "roadmap": {
-  "delivered": 43,
+  "delivered": 44,
   "target": 49,
-  "remaining": 6,
+  "remaining": 5,
   "groups": {
    "I: TSC construction and optimality": 5,
    "II: grid, precision and length": 5,
@@ -1188,7 +1195,7 @@
    "VI: numerical frontier and multi-hop duality": 6,
    "VII: associative-memory channel": 4,
    "VIII: byte-level input path": 4,
-   "IX: quantized training": 5
+   "IX: quantized training": 6
   },
   "ids": [
    "NT01",
@@ -1233,9 +1240,10 @@
    "NT40",
    "NT41",
    "NT42",
-   "NT43"
+   "NT43",
+   "NT44"
   ]
  },
- "discipline": "The 43 theorem checks are NOT proofs (proofs are analytic, in the theorem modules). The 19 non-theorem checks are CLASSIFICATIONS with explicit witnesses / falsification specs, NOT proofs that the statements are true. NO measured value is a theorem. NO TRAINING, NO GRADIENTS, NO GPU, NO NEW EXPERIMENT DATA.",
+ "discipline": "The 44 theorem checks are NOT proofs (proofs are analytic, in the theorem modules). The 19 non-theorem checks are CLASSIFICATIONS with explicit witnesses / falsification specs, NOT proofs that the statements are true. NO measured value is a theorem. NO TRAINING, NO GRADIENTS, NO GPU, NO NEW EXPERIMENT DATA.",
  "honest_note": "49 statements cannot all be new non-trivial theorems: 8 are demonstrably false, 5 were formally withdrawn, 3 are unproved conjectures, 3 are empirical claims no theorem can establish. Promoting them would be exactly the theorem inflation / 'numerical verification as proof' the review warned against."
 }

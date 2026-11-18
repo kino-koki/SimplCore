@@ -1,0 +1,179 @@
+{
+ "_meta": {
+  "name": "rtx4090d-24h-campaign-measurements",
+  "version": "1.0",
+  "created": "2026-11-18",
+  "purpose": "24h×4090D 战役的实机实测口径模板（机器可读）。所有 *_measured 字段在实机填充前为 null——禁止把解析估算当实测值填入；每个字段都带 caliber（口径）说明填充方法。",
+  "doc_ref": "docs/RTX4090D_TRAINING.md + docs/RTX4090D_MEASUREMENTS.md",
+  "filler": "python scripts/fill_measurements.py --run-dir runs/tuan-2b-4090d --out artifacts/4090d/phase0_measurements.json",
+  "honesty_rule": "measured=null 且 estimate!=null 是合法状态；measured 与 estimate 同时存在时必须附 deviation，超 20% 要写原因。"
+ },
+ "phase0": {
+  "dryrun": {
+   "oom_free": {
+    "measured": null,
+    "caliber": "dry-run 100 步全程无 CUDA OOM（bool）"
+   },
+   "mem_peak_gib": {
+    "measured": null,
+    "estimate": 22.9,
+    "caliber": "torch.cuda.max_memory_allocated()/2^30，micro=2·chunk=4096 口径；解析估算值仅作对照"
+   },
+   "mem_reserved_gib": {
+    "measured": null,
+    "caliber": "torch.cuda.max_memory_reserved()/2^30（含碎片，与 allocated 差值即碎片开销）"
+   },
+   "wall_sec_per_step": {
+    "measured": null,
+    "caliber": "metrics.jsonl 的 step 时间中位数（预热 10 步后），单 micro-batch 口径"
+   },
+   "compile_warmup_sec": {
+    "measured": null,
+    "caliber": "首个 step 与稳态 step 的时间差（torch.compile 编译开销）"
+   }
+  },
+  "throughput": {
+   "tokens_per_sec": {
+    "measured": null,
+    "caliber": "真实数据 ≥200 步：(micro_batch × seq_len × world_size) / wall_sec_per_step，稳态中位数"
+   },
+   "mfu": {
+    "measured": null,
+    "caliber": "tokens_per_sec × train_flops_per_token(cfg, seq) / (peak_tflops × 1e12)；peak=157e12（4090D 规格估算）"
+   },
+   "mfu_by_mode": {
+    "eager": {
+     "tokens_per_sec": null,
+     "mfu": null
+    },
+    "compile_max_autotune": {
+     "tokens_per_sec": null,
+     "mfu": null
+    },
+    "cuda_graph": {
+     "tokens_per_sec": null,
+     "mfu": null
+    },
+    "caliber": "三态各 ≥50 步同形状对照；锁定胜者写入 phase1.config_locked"
+   },
+   "chunk_scaling": {
+    "rows": [],
+    "caliber": "chunk ∈ {2048, 4096, 8192} 各测 tokens/s 与 mem_peak_gib；行格式 {chunk, tokens_per_sec, mem_peak_gib, oom}"
+   }
+  },
+  "data_freeze": {
+   "manifest_sha256": {
+    "measured": null,
+    "caliber": "data/packed/manifest.json 的整体 SHA-256，冻结后不得更改"
+   },
+   "vocab_size": {
+    "measured": null,
+    "caliber": "manifest['vocab_size']（预期 32000 口径）"
+   },
+   "train_tokens": {
+    "measured": null,
+    "caliber": "manifest['splits']['train']['tokens']"
+   }
+  }
+ },
+ "phase1": {
+  "config_locked": {
+   "optimizer": {
+    "measured": null,
+    "caliber": "adafactor（24GB 硬闸门，不得改 adamw）"
+   },
+   "dtype": {
+    "measured": null,
+    "caliber": "bf16（autocast 前向 + fp32 master/梯度）"
+   },
+   "train_chunk": {
+    "measured": null,
+    "estimate": 4096,
+    "caliber": "OOM 时降 2048，需记录降档原因"
+   },
+   "micro_batch": {
+    "measured": null,
+    "estimate": 2,
+    "caliber": "run.json/argv 回填或启动器固定值（见 scripts/train_tuan_2b_4090d.sh）"
+   },
+   "global_batch_tokens": {
+    "measured": null,
+    "estimate": 65536,
+    "caliber": "run.json/argv 回填或启动器固定值（见 scripts/train_tuan_2b_4090d.sh）"
+   },
+   "lr_schedule": {
+    "measured": null,
+    "caliber": "warmup 200 + cosine 3e-4→3e-5"
+   }
+  },
+  "budget": {
+   "wall_hours_hard_stop": {
+    "measured": null,
+    "estimate": 24.0,
+    "caliber": "--time-budget-min 1440 到点软停"
+   },
+   "tokens_total": {
+    "measured": null,
+    "caliber": "metrics.jsonl 末行 tokens（全局口径）"
+   },
+   "tokens_per_param": {
+    "measured": null,
+    "caliber": "tokens_total / n_params —— NT42 定理要求必报的欠训口径（预算 ≈0.10，任何 MFU 下 <0.58）"
+   },
+   "token_budget_vs_plan": {
+    "measured": null,
+    "caliber": "tokens_total / 计划预算（campaign --mfu 实测修正后），≥0.9 为达标（P1-token-budget 软闸门）"
+   }
+  },
+  "loss_curve": {
+   "checkpoints": {
+    "measured": null,
+    "caliber": "每 15 分钟 checkpoint 时刻表 [{wall_min, step, tokens, val_loss}]"
+   },
+   "eval_points": {
+    "measured": null,
+    "caliber": "每 30 分钟 eval：[{wall_min, val_loss, val_ppl}]"
+   },
+   "diverged": {
+    "measured": null,
+    "caliber": "bool——val_loss 连续 3 次上升即标记并停（P1-loss-stable 硬闸门）"
+   }
+  },
+  "memory": {
+   "mem_peak_gib": {
+    "measured": null,
+    "caliber": "全程 torch.cuda.max_memory_allocated() 峰值（含课程换挡后的最长 seq）"
+   },
+   "oom_events": {
+    "measured": null,
+    "caliber": "int——OOM 次数（>0 必须记录降档动作）"
+   }
+  }
+ },
+ "retrospect": {
+  "final_val_ppl": {
+   "measured": null,
+   "caliber": "最优 checkpoint 的 held-out ppl"
+  },
+  "equal_token_baseline_ratio": {
+   "measured": null,
+   "caliber": "vs 等参数 Transformer 等.token 基线的 ppl 比值（协议 X-equal-budget）"
+  },
+  "longctx_retrieval": {
+   "measured": null,
+   "caliber": "chunked 流式长上下文检索准确率 + 基线比值"
+  },
+  "stream_consistency": {
+   "measured": null,
+   "caliber": "流式 vs 整段评测最大偏差（应 ≈0，X-stream-consistency）"
+  },
+  "undertrained_reported": {
+   "measured": null,
+   "caliber": "bool——tokens/param 是否随结果一起报告（NT42 义务）"
+  }
+ },
+ "deviations": {
+  "_caliber": "每条 {field, estimate, measured, deviation_pct, cause}；任何字段 deviation>20% 必须填 cause",
+  "rows": []
+ }
+}

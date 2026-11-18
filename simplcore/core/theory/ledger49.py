@@ -1,7 +1,7 @@
 """
-Unified 62-item ledger (v5).  Single source of truth for classification.
+Unified 63-item ledger (v5).  Single source of truth for classification.
 
-  43 NEW THEOREMS  : NT01..NT43 (new_theorems15.py + new_theorems30.py,
+  44 NEW THEOREMS  : NT01..NT44 (new_theorems15.py + new_theorems30.py,
                      incl. the associative-memory channel NT31..NT34, the
                      byte-level input path NT35..NT38, and the quantized-
                      training precision budget NT39..NT42)
@@ -12,7 +12,7 @@ Unified 62-item ledger (v5).  Single source of truth for classification.
    3 CONJECTURES   : C1, C3, C7
    3 EMPIRICAL     : E1, E2, E3  (no theorem can establish them)
   ----------------------------------------------------------------
-  62 total, each adjudicated exactly once by verify49.py (62/62 PASS).
+  63 total, each adjudicated exactly once by verify49.py (63/63 PASS).
 
 DISCIPLINE: PASS on a theorem item = finite-identity certification that the
 statement is correctly formed with non-empty premises (the PROOF is analytic,
@@ -76,7 +76,7 @@ def summary() -> dict:
                 non_theorems=len(NON_THEOREM),
                 verdict_distribution=by_verdict(),
                 honest_note=(
-                    "62 statements cannot all be new non-trivial theorems: 8 are "
+                    "63 statements cannot all be new non-trivial theorems: 8 are "
                     "false, 5 withdrawn, 3 unproved, 3 empirical. Inflating them "
                     "would repeat the theorem inflation this revision removes. "
                     "NT31..NT34 (2026-11-17) extend the series with the "
@@ -84,7 +84,9 @@ def summary() -> dict:
                     "with the byte-level input-path theorems; NT39..NT42 "
                     "(2026-11-18) with the quantized-training precision "
                     "budget for the 24h single-GPU campaign, with NT43 "
-                    "composing them into a descent-direction guarantee."))
+                    "composing them into a descent-direction guarantee and "
+                    "NT44 extending it through Adafactor's preconditioner "
+                    "at explicit condition-number price."))
 
 
 __all__ = ["ITEMS", "NON_THEOREM", "items", "by_verdict", "summary"]

@@ -507,3 +507,16 @@ BF16 权重逐位复制、在真实 embedding 上的 SGC 对偶/因果/O(1) 验�
 | desk-check | — | 论文未重建（无新增论文级主张；v8.3 的 46/46 仍有效） |
 
 **诚实边界**：24h token 预算 ~0.2B（tokens/param ≈ 0.10）为欠训档，验收协议禁止把欠训档说成训练充分（NT42 定理 + forbidden 清单双重锁定）；所有 4090D 数字除规格外为解析估算，实机数字待 Phase 0/1 填充。
+
+
+## 2026-11-18 — v8.4b：理论补强轮（NT39 紧界 + NT44 前置条件器）+ 实测口径模板
+
+来源：完成度审查指出的两个理论薄弱点 + 24h 战役缺实测口径。
+
+| 项 | v8.4 | v8.4b |
+|---|---|---|
+| NT39 | 松界 S_K·u·Y/(1−c)（双计反馈），仅单极点显式 | **紧界**：状态 |e| ≤ S_K·u·Y、输出 ≤ S_K²·u·Y（少一个核增益）；**多极点闭式 S_K = Π 1/(1−r_k)**（正核 Tonelli 重排），两极点族 S_K = 1/((1−r₁)(1−r₂))；数值检查含双极点仿真 + 闭式对照 |
+| NT43 措辞 | "DESCENT direction iff delta < 1"（过强：δ≥1 只是保证蒸发，非必然上升） | "GUARANTEED descent direction for delta < 1"（充分性口径） |
+| NT44（新增） | — | **Adafactor 前置条件器路径**：||p̂−p||/||p|| ≤ δ·√(κ/(1−η)) + η/(1+√(1+η))（≤δ√κ·(1+η)+η/2）——梯度预算按二阶矩条件数平方根放大、因子残差贡献 ≤η/2（精确恒等式）；NT43 机制逐字适用 ⇒ cos ≥ √(1−δ_p²)。覆盖缺口（NT41/NT43 boundary 原注明不覆盖前置条件器）闭合 |
+| 理论账本 | 62 项 | **63 项（44 定理 + 19 分类）**；verify49 **63/63 PASS**、verify_precision **6/6 PASS** |
+| 实测口径 | — | `artifacts/4090d/measurement_template.json`（每字段带 caliber）+ `docs/RTX4090D_MEASUREMENTS.md`（三段回填表）+ `scripts/fill_measurements.py`（metrics.jsonl → MFU/tokens/s/tokens_per_param 自动回填；缺列保持 null；>20% 偏差强制 REVIEW）+ `test_measurements.py`（6 项守护） |

@@ -617,3 +617,13 @@ m_h 只有一个非零峰，任何位置门只能**删掉**它；删到 key 后�
   **24h×4090D×2B 在任何 MFU 下欠训（tokens/param ≤ 0.58，NT42）** /
   精度栈下降方向保持 cos ≥ √(1−δ²)（NT43，tight）。
   `verify49` 62/62 PASS、`verify_precision` 5/5 PASS。
+
+- **理论补强轮（v8.4b）**：NT39 收紧为核增益紧界（状态 S_K·u·Y / 输出
+  S_K²·u·Y）并给出**多极点 S_K 闭式** Π1/(1−r_k)；NT43 措辞修正为
+  充分性口径；**新增 NT44**——Adafactor 前置条件器路径以二阶矩条件数
+  平方根的价格继承下降保证（覆盖缺口闭合）。账本 63 项，
+  verify49 63/63 PASS、verify_precision 6/6 PASS。
+- **实测口径模板**：`artifacts/4090d/measurement_template.json` +
+  `docs/RTX4090D_MEASUREMENTS.md` + 自动回填脚本
+  `scripts/fill_measurements.py`（>20% 偏差强制 REVIEW；
+  缺列保持 null 不编造）+ `test_measurements.py` 6 项守护。

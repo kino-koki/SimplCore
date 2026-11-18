@@ -309,6 +309,10 @@ def run_code_passk(*, problems: Optional[List[CodeProblem]] = None,
     demo = False
     if problems is None:
         problems = make_problems_small()
+        # demo 只验证协议与统计层（固定候选池、正解必然通过）；5s 的默认
+        # 超时在 CPU 高争用（并发 pytest 等）下会把正解误判 timed_out，
+        # 造成 sample_pass_rate < pass@k 的假分歧 —— demo 路径放宽到 20s。
+        timeout_s = max(timeout_s, 20.0)
     if sc_gen is None or ts_gen is None:
         demo = True
         d_sc, d_ts = make_demo_arms(k=k)

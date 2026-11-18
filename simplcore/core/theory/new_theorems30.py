@@ -984,42 +984,62 @@ NT16_30 = [
     # (bf16 autocast + fp32 master + Adafactor): what the rounding costs.
     Thm(
         nid="NT39", group="IX: quantized training",
-        title="bf16 state rounding in the two-tap recurrence is bounded by the kernel l1-norm",
+        title="bf16 state rounding in the two-tap recurrence: tight kernel-gain bounds with explicit multi-pole S_K",
         hypothesis=(
             "The layer's O(1) two-tap recurrence runs with its state rounded "
             "to a floating format with relative unit roundoff u (bf16: "
-            "u = 2^-8) at every step; the recurrence is driven by bounded "
-            "input |y_t| <= Y; the impulse response K(lag) of the recurrent "
-            "filter is absolutely summable with l1-norm S_K."),
+            "u = 2^-8) at every step; the driven state is bounded, "
+            "|state_t| <= Y for all t; the recurrence's impulse response K "
+            "(the stable real-pole family, all poles r_k in (0,1)) is "
+            "absolutely summable with l1-norm S_K = sum_lag K(lag)."),
         claim=(
-            "The accumulated state error after any number of steps satisfies "
-            "|e_t| <= S_K * u * Y / (1 - c) where c is the worst-case "
-            "per-step feedback contraction (c < 1 for the stable real-pole "
-            "families used here); for the one-pole family K(lag) = rho^lag, "
-            "S_K = 1/(1-rho) and the bound reads |e_t| <= u*Y/(1-rho)^2 "
-            "-- in particular it is INDEPENDENT of t (no drift, no "
-            "divergence), generalizing P7 from perturbation inputs to "
-            "persistent rounding noise."),
+            "(a) STATE error: the deviation of the rounded recurrence from "
+            "the exact one obeys |e_state(t)| <= S_K * u * Y for every t -- "
+            "INDEPENDENT of t (no drift, no divergence). (b) OUTPUT error: "
+            "a downstream filter from the same family reading the rounded "
+            "state adds exactly one more kernel gain, "
+            "|e_out(t)| <= S_K^2 * u * Y. (c) EXPLICIT closed form: for "
+            "the J-pole strictly-positive family S_K = product over the "
+            "poles of 1/(1-r_k); in particular the paper's two-pole "
+            "family K(lag) = sum_j r1^(lag-j) r2^j has "
+            "S_K = 1/((1-r1)(1-r2)), and the one-pole family K(lag) = "
+            "rho^lag has S_K = 1/(1-rho), giving the concrete campaign "
+            "bounds |e_state| <= u*Y/(1-rho) and |e_out| <= u*Y/(1-rho)^2 "
+            "-- generalizing P7 from a one-off perturbation to persistent "
+            "rounding noise, and tightening the earlier two-stage bound "
+            "by one kernel gain on the state path."),
         proof=(
-            "The rounding error at step t is a bounded input to the SAME "
-            "stable linear recurrence: e_t = c*e_(t-1) + delta_t with "
-            "|delta_t| <= u*Y (each step's state is rounded with relative "
-            "error u before entering the recurrence). Unrolling, "
-            "|e_t| <= sum_j c^j * u*Y <= u*Y/(1-c). The output path scales "
-            "this state error by the kernel's l1-norm (a stable filter "
-            "maps bounded inputs to bounded outputs with gain exactly "
-            "S_K), giving the stated bound; substituting the one-pole "
-            "S_K and c = rho gives the explicit form. All steps are "
-            "deterministic majorizations -- no probabilistic premise. QED"),
+            "The rounding error injected at step t is bounded by "
+            "|delta_t| <= u*Y (relative roundoff of a state bounded by Y), "
+            "and it propagates through the SAME stable linear recurrence, "
+            "so the state error is the kernel convolved with the rounding "
+            "noise: e_state(t) = sum_{s<=t} K(t-s) delta_s. Absolute "
+            "values give |e_state(t)| <= S_K * u*Y -- claim (a), with no "
+            "contraction factor needed because the kernel gain ALREADY "
+            "accounts for the feedback. Claim (b): the output path applies "
+            "the same kernel to the rounded state, so its error is the "
+            "kernel convolved with e_state, gain S_K once more; total "
+            "S_K^2. Claim (c): every kernel term is strictly positive, so "
+            "the double sum may be reordered (Tonelli), "
+            "S_K = sum_lag sum_j r1^(lag-j) r2^j = sum_j r2^j * "
+            "sum_{lag>=j} r1^(lag-j) = sum_j r2^j/(1-r1) = "
+            "1/((1-r1)(1-r2)); J factors telescope to the product form. "
+            "All steps are deterministic majorizations -- no probabilistic "
+            "premise. QED"),
         boundary=(
             "A worst-case bound, not a statistical one (random-rounding "
-            "error grows like sqrt(t) in practice); it certifies the "
+            "error grows like sqrt(t) in practice and the tight worst case "
+            "requires adversarially signed rounding); it certifies the "
             "bf16-forward/fp32-master split does not accumulate unboundedly "
             "through the O(1) state, NOT that bf16 states alone are safe "
-            "for training (the master weights stay fp32 for that reason)."),
+            "for training (the master weights stay fp32 for that reason). "
+            "S_K is finite iff every pole is strictly inside the unit disk "
+            "-- the rho -> 1 edge re-enters NT07/NT27's interior-optimum "
+            "boundary."),
         use=("Justifies the 4090D campaign's precision layout (bf16 compute "
-             "around an fp32 recurrent state): the quantization cost of the "
-             "streaming path is a fixed multiplicative factor, not a "
+             "around an fp32 recurrent state) with an explicit per-pole "
+             "budget: e.g. rho = 0.95 one-pole gives state gain 20 and "
+             "output gain 400 times u*Y -- fixed multipliers, not a "
              "runaway term over a 24h run."),
         source="core/arch/sgc.py fp32 IIR recurrence; training/train/optim.py apply_cuda_tuning",
         relates="rounding-noise dual of P7; precision counterpart of NT09"),
@@ -1096,8 +1116,10 @@ NT16_30 = [
             "descent claim); stationarity of gradient second moments is "
             "an empirical premise, violated early in training (the "
             "update-damping term in Adafactor mitigates, not proves). "
-            "Memory accounting (8 B/param, the 24GB enabler) is in the "
-            "campaign ledger, not here."),
+            "The PRECONDITIONER path (division by sqrt(vhat)) is covered "
+            "separately by NT44, which prices its condition-number cost "
+            "explicitly. Memory accounting (8 B/param, the 24GB enabler) "
+            "is in the campaign ledger, not here."),
         use=("Gives the 24GB campaign's optimizer a precision contract: the "
              "factored state is not an approximation of unknown quality "
              "but a geometrically-converging estimate whose error is "
@@ -1162,12 +1184,14 @@ NT16_30 = [
             "cos(theta) >= sqrt(1 - delta^2) -- TIGHT: at delta = 0.05 the "
             "angle is below 2.9 degrees, at delta = 0.5 below 30 degrees, "
             "at delta = 1/3 below 19.5 degrees (and sqrt(1-delta^2) >= "
-            "1-delta throughout [0,1]). (b) The computed update is a "
-            "DESCENT direction iff delta < 1: <ghat, g> >= (1-delta)"
-            "||g||^2 > 0, and for every delta < 1 there is a step size "
-            "(e.g. any eta < 2<L_sm^{-1} that strictly decreases L, so "
+            "1-delta throughout [0,1]). (b) For delta < 1 the update is a "
+            "GUARANTEED descent direction: <ghat, g> >= (1-delta)*||g||^2 "
+            "> 0, and for every delta < 1 there is a step size "
+            "(e.g. any eta < 2/L_sm) that strictly decreases L, so "
             "the quantized stack cannot turn the update into an ascent "
-            "as long as the relative budgets stay below 1. (c) The bound "
+            "as long as the relative budgets stay below 1; at delta >= 1 "
+            "the guarantee evaporates (descent is no longer ensured, "
+            "though not excluded). (c) The bound "
             "is tight in the worst case: perturbations with relative "
             "error delta and inner-product coefficient "
             "<g/||g||, e/||e||> = -delta attain exactly cos = "
@@ -1180,8 +1204,9 @@ NT16_30 = [
             "^{3/2} vanishes at c = -delta, which is the minimum on "
             "[-1,1] for delta <= 1. Substituting: f(-delta) = "
             "(1 - delta^2)/sqrt(1 - delta^2) = sqrt(1 - delta^2). (b) "
-            "<ghat, g> = ||g||^2*(1 + delta*c) >= (1 - delta)*||g||^2 "
-            "> 0 iff delta < 1; the smooth-decrease step exists by the "
+            "<ghat, g> = ||g||^2*(1 + delta*c) >= (1 - delta)*||g||^2, "
+            "positive whenever delta < 1 (the bound stops certifying "
+            "descent at delta >= 1); the smooth-decrease step exists by the "
             "standard gradient-descent lemma L(x - eta*ghat) <= L(x) - "
             "eta*<ghat, g> + eta^2*L_sm*||ghat||^2/2, positive decrease "
             "for small eta whenever <ghat,g> > 0. (c) Equality holds "
@@ -1193,10 +1218,9 @@ NT16_30 = [
             "premise is the RELATIVE budgets of NT39/NT40/NT41, each "
             "proven, so delta is a sum of proven relative bounds -- but "
             "the composition constant is data-dependent and reported per "
-            "run. Does not cover Adam-type preconditioning rotating the "
-            "direction (Adafactor's update is not ghat itself; the "
-            "statement applies to the pre-conditioner input, which is "
-            "what the quantization touches)."),
+            "run. Applies to the PRE-CONDITIONER INPUT; the preconditioned "
+            "direction itself is covered by NT44 at an explicit "
+            "condition-number price."),
         use=("Closes the precision story of the 24h campaign: every "
              "quantization layer costs a PROVEN relative budget, and no "
              "budget in the stack approaches the delta = 1 failure line, "
@@ -1204,6 +1228,80 @@ NT16_30 = [
              "direction-wise as the fp32 oracle."),
         source="training/train/optim.py Adafactor; training/train/main.py accumulation",
         relates="composes NT39 + NT40 + NT41 into one direction guarantee"),
+
+    Thm(
+        nid="NT44", group="IX: quantized training",
+        title="Adafactor's preconditioner path inherits the descent guarantee at condition-number price",
+        hypothesis=(
+            "Adafactor's update direction is p = g ⊙ d with "
+            "d_i = 1/sqrt(max(v_i, eps)), where g is the gradient and v "
+            "the second moment; the computed version uses a gradient "
+            "ghat with ||ghat - g|| <= delta * ||g|| (NT43's premise: the "
+            "NT39/NT40 budgets) and a factored estimate vhat with "
+            "ELEMENTWISE relative error |vhat_i - v_i| <= eta * v_i "
+            "(NT41's residual premise, vanishing under stationarity); "
+            "kappa = v_max / v_min is the second moment's condition "
+            "number over the coordinates that matter."),
+        claim=(
+            "(a) The preconditioned direction inherits a relative-error "
+            "budget ||phat - p|| <= [delta * sqrt(kappa/(1-eta)) + "
+            "eta/(1 + sqrt(1 + eta))] * ||p||, which for eta <= 1/2 is at "
+            "most (delta * sqrt(kappa) * (1 + eta) + eta/2) * ||p||: the "
+            "gradient budget is amplified by the SQUARE ROOT of the "
+            "condition number (mildly inflated by 1/sqrt(1-eta) through "
+            "the estimate floor) and the second-moment budget contributes "
+            "at most half its relative size. (b) By NT43's mechanism "
+            "applied to (phat, p), cos(phat, p) >= sqrt(1 - delta_p^2) "
+            "with delta_p the bound from (a), and for delta_p < 1 the "
+            "update is a GUARANTEED descent direction (at delta_p >= 1 "
+            "the guarantee evaporates). (c) Under NT41's "
+            "stationary-factorizable premise (eta -> 0) the guarantee "
+            "reduces to the clean campaign form delta_p = delta * "
+            "sqrt(kappa)."),
+        proof=(
+            "Elementwise, phat_i - p_i = ghat_i/sqrt(vhat_i) - "
+            "g_i/sqrt(v_i) = (ghat_i - g_i)/sqrt(vhat_i) + "
+            "g_i*(1/sqrt(vhat_i) - 1/sqrt(v_i)). First term: "
+            "||ghat - g||/sqrt(vhat_min) <= delta*||g||/sqrt(vhat_min), "
+            "and since ||p|| >= ||g||/sqrt(v_max) the ratio is at most "
+            "delta*sqrt(v_max/vhat_min). Second "
+            "term: for f(v) = v^(-1/2), |f(v(1+e)) - f(v)|/f(v) = "
+            "|e|/(1 + sqrt(1+e)) <= eta/(1 + sqrt(1+eta)) <= eta/2 -- an "
+            "EXACT identity (rationalize: (sqrt(v)-sqrt(v(1+e)))/(sqrt(v)"
+            "sqrt(v(1+e))) = e/(1+sqrt(1+e)) in relative form), so "
+            "elementwise bound times ||g ⊙ d|| composition gives the "
+            "stated l2 bound; the first term's ratio to ||p|| is "
+            "delta*sqrt(v_max/vhat_min) with vhat_min >= v_min*(1-eta), "
+            "i.e. delta*sqrt(kappa/(1-eta)) -- for eta <= 1/2, "
+            "1/sqrt(1-eta) <= 1+eta gives the displayed simplification. "
+            "(b) NT43's proof used only a norm-relative perturbation "
+            "premise, so it applies verbatim to the pair (phat, p). "
+            "(c) eta = 0 substitution. QED"),
+        boundary=(
+            "kappa is DATA-DEPENDENT and is the honest price of factored "
+            "preconditioning: heavy-tailed second moments (large kappa) "
+            "weaken the guarantee proportionally to sqrt(kappa), and "
+            "early in training the stationarity premise behind eta -> 0 "
+            "fails (NT41's boundary). The elementwise-relative premise "
+            "on vhat is stronger than a norm bound -- it is what the "
+            "factorization provides per coordinate (NT41 (c)); a "
+            "norm-only version would lose the eta/2 form. Update "
+            "clipping (RMS renormalization) and the beta1 EMA, when "
+            "enabled, only SHRINK the direction change and are not "
+            "needed by the proof. The elementwise-relative premise on "
+            "vhat is the per-coordinate form NT41(c) characterizes (the "
+            "error IS the non-factorizable mass); binding it by a "
+            "RELATIVE eta is an explicit premise the run reports -- it "
+            "is not implied by NT41 alone."),
+        use=("Closes the flagged coverage gap: the campaign's optimizer "
+             "path is now covered END TO END -- quantized gradients "
+             "(NT39/NT40) -> factored second moment (NT41) -> "
+             "preconditioned direction (NT44) -> descent preservation "
+             "(NT43 mechanism), with every constant either proven or "
+             "an explicit data-dependent quantity (kappa, eta) that the "
+             "run reports."),
+        source="training/train/optim.py Adafactor.step (denom = sqrt(v_hat)+eps1)",
+        relates="extends NT43 through the preconditioner; prices NT41's residual"),
 ]
 
 THEOREMS30 = list(NT01_15) + NT16_30

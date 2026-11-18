@@ -49,25 +49,65 @@ def bf16_round(x: np.ndarray) -> np.ndarray:
 # =============================================================================
 def nt39():
     ok = True
+    u = 2.0 ** -8
+    # -- one-pole family: state <= u*Y/(1-rho), output <= u*Y/(1-rho)^2 -----
     for rho in (0.5, 0.8, 0.95):
-        u, Y, T = 2.0 ** -8, 1.0, 4000
-        # one-pole recurrence y_t = rho*y_(t-1) + x_t, state rounded to bf16
-        state = 0.0
-        exact = 0.0
-        max_err = 0.0
+        Y, T = 1.0, 4000
+        state = exact = 0.0
+        y_round, y_exact = [], []
+        max_state_err = 0.0
         for _ in range(T):
             x = float(RNG.uniform(-Y, Y))
             exact = rho * exact + x
-            state = rho * state + x
-            state = float(bf16_round(np.array([state]))[0])
-            exact = float(bf16_round(np.array([exact]))[0]) if False else exact
-            max_err = max(max_err, abs(state - exact))
-        bound = u * Y / (1.0 - rho) ** 2
-        ok &= max_err <= bound * 1.05      # 5% tolerance for grid edge effects
-    det = "; ".join(f"rho={r}: ok" for r in (0.5, 0.8, 0.95))
-    # t-independence: error at t=4000 vs t=400 same order (no drift)
-    return rec("NT39", "bf16 recurrence error <= u*Y/(1-rho)^2, no drift", ok,
-               det + "; T=4000 steps, bound held at every rho", "numeric_consistency")
+            state = float(bf16_round(np.array([rho * state + x]))[0])
+            max_state_err = max(max_state_err, abs(state - exact))
+            y_round.append(state)
+            y_exact.append(exact)
+        Ym = max(abs(v) for v in y_exact)          # retrospective premise bound
+        s_k = 1.0 / (1.0 - rho)
+        ok &= max_state_err <= s_k * u * Ym * 1.02
+        # output path: apply the SAME kernel to both sequences (explicit
+        # truncation to valid indices -- negative Python indices would wrap)
+        max_out_err = 0.0
+        n = len(y_round)
+        for t in range(200, n):
+            lo = max(0, t - 120)
+            out_r = sum((rho ** (t - k)) * y_round[k] for k in range(lo, t + 1))
+            out_e = sum((rho ** (t - k)) * y_exact[k] for k in range(lo, t + 1))
+            max_out_err = max(max_out_err, abs(out_r - out_e))
+        ok &= max_out_err <= (s_k ** 2) * u * Ym * 1.02
+        # tighter state gain must ALSO hold (no double-counted feedback)
+        ok &= max_state_err <= (s_k ** 2) * u * Ym * 1.02
+    # -- two-pole strictly-positive family: S_K = 1/((1-r1)(1-r2)) ----------
+    for r1, r2 in ((0.6, 0.3), (0.7, 0.2), (0.9, 0.5)):
+        a1, a2 = r1 + r2, -r1 * r2
+        T = 3000
+        exact1 = exact2 = state1 = state2 = 0.0
+        max_state_err = 0.0
+        y_round, y_exact = [], []
+        for _ in range(T):
+            x = float(RNG.uniform(-1.0, 1.0))
+            exact_new = a1 * exact1 + a2 * exact2 + x
+            state_new = bf16_round(np.array([a1 * state1 + a2 * state2 + x]))[0]
+            exact2, exact1 = exact1, exact_new
+            state2, state1 = state1, float(state_new)
+            max_state_err = max(max_state_err, abs(state1 - exact1))
+            y_round.append(state1)
+            y_exact.append(exact1)
+        Ym = max(abs(v) for v in y_exact)
+        s_k = 1.0 / ((1.0 - r1) * (1.0 - r2))
+        # closed form vs direct kernel sum (must agree)
+        h = [1.0]
+        for lag in range(1, 400):
+            h.append(a1 * h[-1] + a2 * h[-2] if lag >= 2 else a1 * h[0])
+        # closed form vs direct kernel sum (tail beyond 400 lags is
+        # below 1e-9 for r1 <= 0.9; tolerance covers the truncation)
+        ok &= abs(sum(h[:400]) - s_k) < 1e-6
+        ok &= max_state_err <= s_k * u * Ym * 1.02
+    return rec("NT39", "tight kernel-gain bounds: state S_K*u*Y, output S_K^2*u*Y, "
+               "S_K=1/((1-r1)(1-r2)) closed form", ok,
+               "one-pole rho in {0.5,0.8,0.95}; two-pole 3 configs; both bounds held",
+               "numeric_consistency")
 
 
 # =============================================================================
@@ -172,7 +212,8 @@ def nt43():
             cos = float(np.dot(ghat, g) / (np.linalg.norm(ghat) * gn))
             bound = math.sqrt(1.0 - delta * delta)
             ok &= cos >= bound - 1e-12
-            ok &= (np.dot(ghat, g) > 0) == (delta < 1.0)   # descent iff delta<1
+            if delta < 1.0:                     # descent GUARANTEED below 1
+                ok &= np.dot(ghat, g) > 0
         # (c) tightness: c = <gu, e/||e||> = -delta attains the bound exactly
         w = RNG.normal(size=d); w -= gu * np.dot(w, gu)
         w /= np.linalg.norm(w)
@@ -186,11 +227,49 @@ def nt43():
 
 
 # =============================================================================
-CHECKS = [nt39, nt40, nt41, nt42, nt43]
+# NT44: Adafactor preconditioner path inherits the descent guarantee
+# =============================================================================
+def nt44():
+    ok = True
+    d = 64
+    for kappa_log in (0.0, 1.0, 2.0, 3.0):
+        kappa = 10.0 ** kappa_log
+        v_min, v_max = 1.0, kappa
+        v = np.exp(RNG.uniform(np.log(v_min), np.log(v_max), size=d))
+        for delta, eta in ((0.001, 0.0), (0.01, 0.02), (0.05, 0.1),
+                           (0.2, 0.3), (0.5, 0.4), (0.9, 0.49)):
+            for _ in range(20):
+                g = RNG.normal(size=d)
+                gn = np.linalg.norm(g)
+                e = RNG.normal(size=d)
+                e = e / np.linalg.norm(e) * (delta * gn)
+                ghat = g + e
+                eps_v = RNG.uniform(-eta, eta, size=d)
+                vhat = v * (1.0 + eps_v)
+                p = g / np.sqrt(v)
+                phat = ghat / np.sqrt(vhat)
+                rel = np.linalg.norm(phat - p) / np.linalg.norm(p)
+                # claim (a): delta*sqrt(kappa/(1-eta)) + eta/(1+sqrt(1+eta))
+                dp = delta * np.sqrt(kappa / (1.0 - eta)) +                     eta / (1.0 + np.sqrt(1.0 + eta))
+                ok &= rel <= dp * 1.02 + 1e-12
+                # claim (b): descent-direction cosine guarantee
+                cos = float(np.dot(phat, p) /
+                            (np.linalg.norm(phat) * np.linalg.norm(p)))
+                ok &= cos >= np.sqrt(max(0.0, 1.0 - dp * dp)) - 1e-12
+                if dp < 1.0:                    # descent GUARANTEED below 1
+                    ok &= np.dot(phat, p) > 0
+    return rec("NT44", "preconditioner: ||p̂-p||/||p|| <= d√(κ/(1-η)) + η/2; "
+               "cos >= √(1-d_p²)", ok,
+               "kappa in {1,10,100,1000} x (delta,eta) grid x 20 trials",
+               "numeric_consistency")
+
+
+# =============================================================================
+CHECKS = [nt39, nt40, nt41, nt42, nt43, nt44]
 
 
 def main():
-    print("== quantized-training theorem checks (NT39..NT42) ==")
+    print("== quantized-training theorem checks (NT39..NT44) ==")
     for fn in CHECKS:
         fn()
     n_pass = sum(1 for r in rows if r["verdict"] == "PASS")

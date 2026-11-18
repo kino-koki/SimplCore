@@ -4,6 +4,9 @@
 > **账本**：`python -m simplcore.core.campaign`（解析计算，不占显存，可在任何机器审计）
 > **启动器**：`scripts/train_tuan_2b_4090d.sh`（Phase 0 dry-run / Phase 1 24h 训练）
 > **状态**：计划与训练栈已就绪；**所有 4090D 实测数字待实机填充**（本机无卡），
+> **实测口径模板**：`docs/RTX4090D_MEASUREMENTS.md` +
+> `artifacts/4090d/measurement_template.json`（自动回填
+> `scripts/fill_measurements.py`；每字段带 caliber，>20% 偏差强制写原因）。
 > 本文所有吞吐/显存数字分"解析估算"与"实机实测"两栏，不得混用。
 > 历史 MI250 战役文档已按用户指令删除（2026-11-18，见 REVISION_LOG.md）。
 
@@ -107,7 +110,7 @@ bash scripts/train_tuan_2b_4090d.sh          # 前台；或 nohup 后台 + 日�
 ## 8. 诚实边界
 
 * 本文所有 4090D 数字除规格值外均为**解析估算**，实机数字待 Phase 0/1 填充；
-* 精度栈有定理契约（NT39–NT43，theory 账本 62 项）：bf16 递推舍入有界且与
+* 精度栈有定理契约（NT39–NT44，theory 账本 63 项）：bf16 递推舍入有界且与
   t 无关、fp32 梯度累积线性误差预算、Adafactor 因子几何收敛、欠训档是硬件
   预算定理（tokens/param ≤ 0.58 @ MFU=1）、且全部量化层共同保住下降方向
   （cos ≥ √(1−δ²)，tight）；
