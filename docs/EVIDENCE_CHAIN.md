@@ -19,7 +19,7 @@
 | 5 | **等预算 vs Mamba2**（HF 参考实现，等 token，逐窗配对 bootstrap CI，**3 seeds**） | PPL 比 **0.685 / 0.717 / 0.668**，**96/96 窗全胜**，三闸门全过；vs Transformer 0.968/0.940/0.948（80/96 窗） | `equal_budget_bind.json` + `equal_budget_multiseed.json` |
 | 5' | **更大规模等预算**（D=256/8 层/seq 256/128K tokens，3 seeds，32 步欠训练） | sgc-bind vs TS ratio 1.031/1.024/1.036（均在 ≤1.05 容差内，ts 略优；PPL ~4000 远未收敛）——**诚实记录欠训练档** | `equal_budget_small_ms.json` |
 | 5'' | **真实语料等预算**（中文 cn 语料打包，char 级，smoke 规模，3 seeds） | **vs Mamba2 直接对照：sgc 1.545 / srf 1.537（0/10 窗，负）**——差距约 1.5 倍而非初测的 2 倍（初测 2.01/2.03 混入了绑定通道拖累）。**根因定位（`lm_tuning.json`）：绑定通道拖累纯 LM**（sgc-bind 288.9 vs sgc 238.3）；**纯 sgc 0.836 / srf 0.831 vs TS（10/10 窗全胜）** | `equal_budget_real.json` + `lm_tuning.json` + `lm_vs_mamba2.json` |
-| 5''' | **真实语料规模升级**（4M tokens/臂，D=128/4 层，单种子，全部完成） | sgc **8.13** / sgc-bind 10.04 / mamba2 **7.07**——**同档**差距自 1.77×（1M）收窄至 **1.15×**（架构差距随数据规模收敛；跨档 PPL 因语料分布变宽不可直接比）；与 1M 档合看：sgc -21%、sgc-bind -7% | `real_lm.json`（1M）+ `real_lm_scale.json`（4M） |
+| 5''' | **真实语料规模升级**（4M→16M tokens/臂，D=128/4 层，单种子，全部完成） | 4M 档：sgc **8.13** / sgc-bind 10.04 / mamba2 **7.07**（差距 **1.15×**）；**16M 续训档：sgc 5.72 / mamba2 5.53（差距 1.034×）**——同档差距单调收敛 1.77×→1.15×→1.034×（8M/12M 中间采样曾短暂反超，属 val 噪声）；跨档 PPL 不可直接比 | `real_lm.json`（1M）+ `real_lm_scale.json`（4M）+ `real_lm_scale16.json`（16M） |
 | 6 | **真实词分布召回迁移**（Zipf 噪声，3 seeds） | sgc-bind **1.000** vs ts 0.332 vs sgc 0.132 | `recall_transfer.json` + `multiseed2.json` |
 | 7 | **诚实负结果**：list-ops（ts 0.485 > sgc 0.335 > sgc-bind 0.265）、fuzzy-jump（三臂 chance）、多 needle（三臂饱和无区分度） | 已入档 | `lra_probe.json` `lra_probe2.json` |
 | 8 | **真实语料 LM 成本**（corpus.txt 字符级）：绑定通道 +5.7% PPL（检索能力专用增强的代价） | sgc 5.93 / sgc-bind 6.27 / ts 11.05 | `reallm.json` |
